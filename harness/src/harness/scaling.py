@@ -5,15 +5,22 @@ from __future__ import annotations
 import asyncio
 import gc
 import os
+import sys
 import threading
 import time
 from collections.abc import Callable
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any
 
 import psutil
 
 # Try to import Rust extension for 10-50x performance
+# Add src dir to path for .so file
+_rust_path = Path(__file__).parent.parent
+if str(_rust_path) not in sys.path:
+    sys.path.insert(0, str(_rust_path))
+
 try:
     from helios_harness_rs import ResourceSampler as RustResourceSampler
     RUST_AVAILABLE = True

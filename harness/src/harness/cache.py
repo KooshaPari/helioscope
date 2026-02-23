@@ -9,6 +9,7 @@ import hashlib
 import json
 import logging
 import os
+import sys
 import threading
 import time
 from collections import deque
@@ -21,6 +22,11 @@ import psutil
 logger = logging.getLogger(__name__)
 
 # Try to import Rust extension for 10x performance
+# Add src dir to path for .so file
+_rust_path = Path(__file__).parent.parent
+if str(_rust_path) not in sys.path:
+    sys.path.insert(0, str(_rust_path))
+
 try:
     from helios_harness_rs import LruCache as RustLruCache
     from helios_harness_rs import CacheStats as RustCacheStats

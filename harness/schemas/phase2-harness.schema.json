@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/helios/phase2-harness.schema.json",
+  "title": "Phase-2 Harness Report",
+  "type": "object",
+  "required": ["schema_version", "created_at", "artifact", "targets"],
+  "properties": {
+    "schema_version": {"type": "string"},
+    "created_at": {"type": "string"},
+    "artifact": {"type": "string"},
+    "targets": {
+      "type": "array",
+      "items": {"type": "object", "required": ["repo_id", "result_code", "result"]}
+    }
+  }
+}

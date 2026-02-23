@@ -1,0 +1,15 @@
+# Phase-2 Lane B Candidate Expansion (Updated)
+
+Scope: deterministic local scan and short-list against CLI/MCP signals for phase-2.
+
+## B2 Candidates discovered
+
+| repo | git | signal_count | signals |
+|---|---|---:|---|
+| BytePort | True | 10 | README.md; backend/api/go.mod; frontend/web-next/package.json; sdk/python/pyproject.toml; backend/api/.gomodcache/go.opentelemetry.io@v0.1.0/Makefile; backend/api/.gomodcache/github.com/sagikazarmark/locafero@v0.7.0/justfile |
+| CLIProxyAPI | True | 4 | README.md; go.mod; examples/automated-auth/Makefile; infra/main.go |
+| atoms-backend | True | 5 | atoms-backend/README.md; atoms-backend/agents-adk-node/package.json; atoms-backend/central/clients/python/pyproject.toml; atoms-backend/central/clients/Makefile; atoms-backend/tests/requirements.txt |
+| carter | True | 6 | README.md; go.mod; package.json; Makefile; cmd/server/main.go; package-lock.json |
+| cursor-agent-mcp | True | 3 | README.md; package.json; package-lock.json |
+| pheno-sdk | True | 4 | README.md; clients/go/usagecollector/go.mod; pyproject.toml; Makefile |
+

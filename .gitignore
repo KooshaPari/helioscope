@@ -1,0 +1,10 @@
+.DS_Store
+*.log
+.env
+.task/
+node_modules/
+docs/node_modules/
+docs-dist/
+artifacts/
+.claude/
+.codex/

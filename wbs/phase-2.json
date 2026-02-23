@@ -1,0 +1,761 @@
+{
+  "phase": 2,
+  "name": "helios_harness_build_v1",
+  "strategy": "non-blocking DAG with explicit parent/child fallback and parallel execution",
+  "summary": "Transform Phase-1 research into reproducible harness evidence with strictness normalization and runnable validation automation.",
+  "lanes": {
+    "A": "Core Repo Hardening",
+    "B": "Candidate Expansion",
+    "C": "Governance/Strictness Equivalence",
+    "D": "Harness Architecture Implementation",
+    "E": "Validation Automation",
+    "F": "Closeout & Standards",
+    "G": "Cross-Lane Coordination"
+  },
+  "tasks": [
+    {
+      "id": "A1",
+      "lane": "A",
+      "title": "Initialize phase-2 lane-A workspace and manifest",
+      "status": "done",
+      "depends_on": [],
+      "evidence": "research/phase-2-reports/agent-a-core-repo-harden.md"
+    },
+    {
+      "id": "A2",
+      "lane": "A",
+      "title": "Repair/repairable clone topologies (codex/goose and required cliproxy copy path)",
+      "status": "done",
+      "depends_on": [
+        "A1"
+      ],
+      "evidence": "research/phase-2-reports/agent-a-core-repo-harden.md"
+    },
+    {
+      "id": "A3",
+      "lane": "A",
+      "title": "Verify and normalize branch/remote topology across core repos",
+      "status": "done",
+      "depends_on": [
+        "A2"
+      ],
+      "evidence": "research/phase-2-reports/agent-a-core-repo-harden.md"
+    },
+    {
+      "id": "A4",
+      "lane": "A",
+      "title": "Collect commit provenance and branch drift evidence",
+      "status": "done",
+      "depends_on": [
+        "A3"
+      ],
+      "evidence": "research/phase-2-reports/agent-a-core-repo-harden/artifacts/commit-provenance.txt"
+    },
+    {
+      "id": "A5",
+      "lane": "A",
+      "title": "Scan for strictness command signals in CI, scripts, AGENTS",
+      "status": "done",
+      "depends_on": [
+        "A3"
+      ],
+      "evidence": "research/phase-2-reports/agent-a-core-repo-harden/artifacts/strictness-surface.txt"
+    },
+    {
+      "id": "A6",
+      "lane": "A",
+      "title": "Inventory lockfiles/toolchain constraints for clone parity",
+      "status": "done",
+      "depends_on": [
+        "A5"
+      ],
+      "evidence": "research/phase-2-reports/agent-a-core-repo-harden/artifacts/lockfile-inventory.txt"
+    },
+    {
+      "id": "A7",
+      "lane": "A",
+      "title": "Run lockfile parity checks (frozen install or tidy validation)",
+      "status": "done",
+      "depends_on": [
+        "A6"
+      ],
+      "evidence": "research/phase-2-reports/agent-a-core-repo-harden/artifacts/lockfile-parity.txt"
+    },
+    {
+      "id": "A8",
+      "lane": "A",
+      "title": "Execute repo strictness checks with recorded outcomes",
+      "status": "done",
+      "depends_on": [
+        "A4",
+        "A5",
+        "A7"
+      ],
+      "evidence": "research/phase-2-reports/agent-a-core-repo-harden/artifacts/strictness-results.md"
+    },
+    {
+      "id": "A9",
+      "lane": "A",
+      "title": "Build strictness parity matrix and evidence roll-up",
+      "status": "done",
+      "depends_on": [
+        "A8"
+      ],
+      "evidence": "research/phase-2-reports/agent-a-core-repo-harden/artifacts/strictness-parity.md"
+    },
+    {
+      "id": "A10",
+      "lane": "A",
+      "title": "Finalize lane-A closeout and unresolved risk capture",
+      "status": "done",
+      "depends_on": [
+        "A9"
+      ],
+      "evidence": "research/phase-2-reports/agent-a-core-repo-harden/artifacts/final-closeout.txt"
+    },
+    {
+      "id": "B1",
+      "lane": "B",
+      "title": "Freeze Phase-1 baseline and define new candidate-discovery contract",
+      "status": "done",
+      "depends_on": [],
+      "evidence": "phase-1-synthesis-prep.md, artifacts/phase-1-closeout.md"
+    },
+    {
+      "id": "B2",
+      "lane": "B",
+      "title": "Enumerate local candidate repos from /temp-PRODVERCEL/485",
+      "status": "done",
+      "depends_on": [
+        "B1"
+      ],
+      "evidence": "research/phase-2-reports/agent-b-candidate-expansion.md"
+    },
+    {
+      "id": "B3",
+      "lane": "B",
+      "title": "Filter candidate list to CLI/MCP-compatible executables",
+      "status": "done",
+      "depends_on": [
+        "B2"
+      ],
+      "evidence": "research/phase-2-reports/agent-b-candidate-expansion.md"
+    },
+    {
+      "id": "B4",
+      "lane": "B",
+      "title": "Collect license/Gov evidence for filtered local candidates",
+      "status": "done",
+      "depends_on": [
+        "B3"
+      ],
+      "evidence": "research/phase-2-reports/agent-b-candidate-expansion.md"
+    },
+    {
+      "id": "B5",
+      "lane": "B",
+      "title": "Capture install command evidence for local candidates",
+      "status": "done",
+      "depends_on": [
+        "B3"
+      ],
+      "evidence": "research/phase-2-reports/agent-b-candidate-expansion.md"
+    },
+    {
+      "id": "B6",
+      "lane": "B",
+      "title": "Capture build/test/quality command evidence for local candidates",
+      "status": "done",
+      "depends_on": [
+        "B3"
+      ],
+      "evidence": "research/phase-2-reports/agent-b-candidate-expansion.md"
+    },
+    {
+      "id": "B7",
+      "lane": "B",
+      "title": "Map strictness profiles and confidence for local candidates",
+      "status": "done",
+      "depends_on": [
+        "B4",
+        "B5",
+        "B6"
+      ],
+      "evidence": "research/phase-2-reports/agent-b-candidate-expansion.md"
+    },
+    {
+      "id": "B8",
+      "lane": "B",
+      "title": "Compute delta ranking against Phase-1 shortlist",
+      "status": "done",
+      "depends_on": [
+        "B7"
+      ],
+      "evidence": "research/phase-2-reports/agent-b-candidate-expansion.md"
+    },
+    {
+      "id": "B9",
+      "lane": "B",
+      "title": "Run web-registry sweep for high-signal replacement candidates",
+      "status": "done",
+      "depends_on": [
+        "B1"
+      ],
+      "evidence": "research/phase-2-reports/agent-b-candidate-expansion/artifacts/b9-web-registry-sweep.md"
+    },
+    {
+      "id": "B10",
+      "lane": "B",
+      "title": "Publish final Phase-2 candidate shortlist and evidence package",
+      "status": "done",
+      "depends_on": [
+        "B8",
+        "B9"
+      ],
+      "evidence": "research/phase-2-reports/agent-b-candidate-expansion.md"
+    },
+    {
+      "id": "C1",
+      "lane": "C",
+      "title": "Publish strict-full contract and PASS/WARN/BLOCK decision model",
+      "status": "done",
+      "depends_on": [],
+      "evidence": "research/phase-2-reports/agent-c-governance-strictness.md"
+    },
+    {
+      "id": "C2",
+      "lane": "C",
+      "title": "Collect parent-child evidence roots and traceability map",
+      "status": "done",
+      "depends_on": [
+        "C1"
+      ],
+      "evidence": "research/phase-2-reports/agent-c-governance-strictness.md"
+    },
+    {
+      "id": "C3",
+      "lane": "C",
+      "title": "Map explicit strictness markers by target and source",
+      "status": "done",
+      "depends_on": [
+        "C2"
+      ],
+      "evidence": "research/phase-2-reports/agent-c-governance-strictness.md"
+    },
+    {
+      "id": "C4",
+      "lane": "C",
+      "title": "Normalize command families for strictness comparison",
+      "status": "done",
+      "depends_on": [
+        "C2"
+      ],
+      "evidence": "research/phase-2-reports/agent-c-governance-strictness.md"
+    },
+    {
+      "id": "C5",
+      "lane": "C",
+      "title": "Set parent/child precedence order for conflicting commands",
+      "status": "done",
+      "depends_on": [
+        "C2"
+      ],
+      "evidence": "research/phase-2-reports/agent-c-governance-strictness.md"
+    },
+    {
+      "id": "C6",
+      "lane": "C",
+      "title": "Define conflict-resolution policy and downgrade logic",
+      "status": "done",
+      "depends_on": [
+        "C5"
+      ],
+      "evidence": "research/phase-2-reports/agent-c-governance-strictness.md"
+    },
+    {
+      "id": "C7",
+      "lane": "C",
+      "title": "Attach fail/warn mapping by check criticality",
+      "status": "done",
+      "depends_on": [
+        "C4",
+        "C6"
+      ],
+      "evidence": "research/phase-2-reports/agent-c-governance-strictness.md"
+    },
+    {
+      "id": "C8",
+      "lane": "C",
+      "title": "Quantify strictness score and escalation thresholds",
+      "status": "done",
+      "depends_on": [
+        "C3",
+        "C7"
+      ],
+      "evidence": "research/phase-2-reports/agent-c-governance-strictness.md"
+    },
+    {
+      "id": "C9",
+      "lane": "C",
+      "title": "Produce target strict-full equivalence matrix",
+      "status": "done",
+      "depends_on": [
+        "C4",
+        "C7",
+        "C8"
+      ],
+      "evidence": "research/phase-2-reports/agent-c-governance-strictness.md"
+    },
+    {
+      "id": "C10",
+      "lane": "C",
+      "title": "Finalize governance gate decisions for Phase-2 execution",
+      "status": "done",
+      "depends_on": [
+        "C1",
+        "C2",
+        "C3",
+        "C4",
+        "C5",
+        "C6",
+        "C7",
+        "C8",
+        "C9"
+      ],
+      "evidence": "research/phase-2-reports/agent-c-governance-strictness.md"
+    },
+    {
+      "id": "D1",
+      "lane": "D",
+      "title": "Lock evidence schema and canonical command vocabulary",
+      "status": "done",
+      "depends_on": [],
+      "evidence": "research/phase-2-reports/agent-d-harness-architecture.md"
+    },
+    {
+      "id": "D2",
+      "lane": "D",
+      "title": "Implement repository discoverer data model",
+      "status": "done",
+      "depends_on": [
+        "D1"
+      ],
+      "evidence": "research/phase-2-reports/agent-d-harness-architecture.md"
+    },
+    {
+      "id": "D3",
+      "lane": "D",
+      "title": "Add file-system signal extraction for AGENTS/workflows",
+      "status": "done",
+      "depends_on": [
+        "D2"
+      ],
+      "evidence": "research/phase-2-reports/agent-d-harness-architecture.md"
+    },
+    {
+      "id": "D4",
+      "lane": "D",
+      "title": "Define run result envelope and runner policy",
+      "status": "done",
+      "depends_on": [
+        "D1"
+      ],
+      "evidence": "research/phase-2-reports/agent-d-harness-architecture.md"
+    },
+    {
+      "id": "D5",
+      "lane": "D",
+      "title": "Implement profile-driven command runner",
+      "status": "done",
+      "depends_on": [
+        "D3",
+        "D4"
+      ],
+      "evidence": "research/phase-2-reports/agent-d-harness-architecture.md"
+    },
+    {
+      "id": "D6",
+      "lane": "D",
+      "title": "Define normalization output model and strictness inference rules",
+      "status": "done",
+      "depends_on": [
+        "D1",
+        "D5"
+      ],
+      "evidence": "research/phase-2-reports/agent-d-harness-architecture.md"
+    },
+    {
+      "id": "D7",
+      "lane": "D",
+      "title": "Implement strictness command normalization and escalation",
+      "status": "done",
+      "depends_on": [
+        "D6"
+      ],
+      "evidence": "research/phase-2-reports/agent-d-harness-architecture.md"
+    },
+    {
+      "id": "D8",
+      "lane": "D",
+      "title": "Define JSON schema contracts for evidence envelopes",
+      "status": "done",
+      "depends_on": [
+        "D3",
+        "D6"
+      ],
+      "evidence": "research/phase-2-reports/agent-d-harness-architecture.md"
+    },
+    {
+      "id": "D9",
+      "lane": "D",
+      "title": "Build evidence packaging and indexing outputs",
+      "status": "done",
+      "depends_on": [
+        "D7",
+        "D8"
+      ],
+      "evidence": "research/phase-2-reports/agent-d-harness-architecture.md"
+    },
+    {
+      "id": "D10",
+      "lane": "D",
+      "title": "Deliver harness CLI integration tests and execution script",
+      "status": "done",
+      "depends_on": [
+        "D9"
+      ],
+      "evidence": "research/phase-2-reports/agent-d-harness-architecture.md"
+    },
+    {
+      "id": "E1",
+      "lane": "E",
+      "title": "Capture validation run-surface and baseline contract",
+      "status": "done",
+      "depends_on": [],
+      "evidence": "research/phase-2-reports/agent-e-validation-automation.md"
+    },
+    {
+      "id": "E2",
+      "lane": "E",
+      "title": "Define command map schema for canonical buckets",
+      "status": "done",
+      "depends_on": [
+        "E1"
+      ],
+      "evidence": "research/phase-2-reports/agent-e-validation-automation.md"
+    },
+    {
+      "id": "E3",
+      "lane": "E",
+      "title": "Build command discovery and normalization runner",
+      "status": "done",
+      "depends_on": [
+        "E1",
+        "E2"
+      ],
+      "evidence": "research/phase-2-reports/agent-e-validation-automation.md"
+    },
+    {
+      "id": "E4",
+      "lane": "E",
+      "title": "Generate execution DAG planner and levelized order",
+      "status": "done",
+      "depends_on": [
+        "E2",
+        "E3"
+      ],
+      "evidence": "research/phase-2-reports/agent-e-validation-automation.md"
+    },
+    {
+      "id": "E5",
+      "lane": "E",
+      "title": "Add dry-run mode and deterministic plan diff reporting",
+      "status": "done",
+      "depends_on": [
+        "E4"
+      ],
+      "evidence": "research/phase-2-reports/agent-e-validation-automation.md"
+    },
+    {
+      "id": "E6",
+      "lane": "E",
+      "title": "Publish failure budget policy and hard-stop thresholds",
+      "status": "done",
+      "depends_on": [
+        "E2",
+        "E4"
+      ],
+      "evidence": "research/phase-2-reports/agent-e-validation-automation.md"
+    },
+    {
+      "id": "E7",
+      "lane": "E",
+      "title": "Implement runner execution with retry + budget enforcement",
+      "status": "done",
+      "depends_on": [
+        "E3",
+        "E4",
+        "E5",
+        "E6"
+      ],
+      "evidence": "research/phase-2-reports/agent-e-validation-automation.md"
+    },
+    {
+      "id": "E8",
+      "lane": "E",
+      "title": "Generate evidence bundles with reproducibility metadata",
+      "status": "done",
+      "depends_on": [
+        "E7"
+      ],
+      "evidence": "research/phase-2-reports/agent-e-validation-automation.md"
+    },
+    {
+      "id": "E9",
+      "lane": "E",
+      "title": "Add replay/idempotency checks and hash parity",
+      "status": "done",
+      "depends_on": [
+        "E3",
+        "E8"
+      ],
+      "evidence": "research/phase-2-reports/agent-e-validation-automation.md"
+    },
+    {
+      "id": "E10",
+      "lane": "E",
+      "title": "Publish lane-E execution runbook and escalation drill",
+      "status": "done",
+      "depends_on": [
+        "E5",
+        "E6",
+        "E7",
+        "E8",
+        "E9"
+      ],
+      "evidence": "research/phase-2-reports/agent-e-validation-automation.md"
+    },
+    {
+      "id": "F1",
+      "lane": "F",
+      "title": "Initialize closeout evidence map and owners",
+      "status": "done",
+      "depends_on": [],
+      "evidence": "research/phase-2-reports/agent-f-closeout-delivery.md"
+    },
+    {
+      "id": "F2",
+      "lane": "F",
+      "title": "Standardize matrix schema and quality rules for closeout",
+      "status": "done",
+      "depends_on": [
+        "F1"
+      ],
+      "evidence": "research/phase-2-reports/agent-f-closeout-delivery.md"
+    },
+    {
+      "id": "F3",
+      "lane": "F",
+      "title": "Aggregate lane outputs into phase-2 matrix draft",
+      "status": "done",
+      "depends_on": [
+        "F2"
+      ],
+      "evidence": "research/phase-2-reports/agent-f-closeout-delivery.md"
+    },
+    {
+      "id": "F4",
+      "lane": "F",
+      "title": "Publish artifact quality and formatting standards",
+      "status": "done",
+      "depends_on": [
+        "F1"
+      ],
+      "evidence": "research/phase-2-reports/agent-f-closeout-delivery.md"
+    },
+    {
+      "id": "F5",
+      "lane": "F",
+      "title": "Validate closeout artifacts against standards",
+      "status": "done",
+      "depends_on": [
+        "F4"
+      ],
+      "evidence": "research/phase-2-reports/agent-f-closeout-delivery.md"
+    },
+    {
+      "id": "F6",
+      "lane": "F",
+      "title": "Build phase-2 risk baseline and impact matrix",
+      "status": "done",
+      "depends_on": [
+        "F1"
+      ],
+      "evidence": "research/phase-2-reports/agent-f-closeout-delivery.md"
+    },
+    {
+      "id": "F7",
+      "lane": "F",
+      "title": "Ingest open risks and unresolved warnings from lanes",
+      "status": "done",
+      "depends_on": [
+        "F6",
+        "A10",
+        "B10",
+        "C10",
+        "D10",
+        "E10"
+      ],
+      "evidence": "research/phase-2-reports/agent-f-closeout-delivery.md"
+    },
+    {
+      "id": "F8",
+      "lane": "F",
+      "title": "Draft persona-specific handoff checklist",
+      "status": "done",
+      "depends_on": [
+        "F3",
+        "F4",
+        "F6"
+      ],
+      "evidence": "research/phase-2-reports/agent-f-closeout-delivery.md"
+    },
+    {
+      "id": "F9",
+      "lane": "F",
+      "title": "Update WBS status transitions across phase-2 lanes",
+      "status": "done",
+      "depends_on": [
+        "F3",
+        "F5",
+        "F8"
+      ],
+      "evidence": "research/phase-2-reports/agent-f-closeout-delivery.md"
+    },
+    {
+      "id": "F10",
+      "lane": "F",
+      "title": "Finalize phase-2 closeout handoff package",
+      "status": "done",
+      "depends_on": [
+        "F3",
+        "F5",
+        "F7",
+        "F8",
+        "F9"
+      ],
+      "evidence": "research/phase-2-reports/agent-f-closeout-delivery.md"
+    },
+    {
+      "id": "G1",
+      "lane": "G",
+      "title": "Create phase-2 execution manifest and task ownership model",
+      "status": "done",
+      "depends_on": [],
+      "evidence": "wbs/phase-2.json"
+    },
+    {
+      "id": "G2",
+      "lane": "G",
+      "title": "Validate all lane files are present and parsable",
+      "status": "done",
+      "depends_on": [
+        "G1"
+      ],
+      "evidence": "artifacts/phase-2/g2-lane-file-parsability.txt"
+    },
+    {
+      "id": "G3",
+      "lane": "G",
+      "title": "Sequence execution waves by dependency depth",
+      "status": "done",
+      "depends_on": [
+        "G2"
+      ],
+      "evidence": "wbs/phase-2.json"
+    },
+    {
+      "id": "G4",
+      "lane": "G",
+      "title": "Distribute tasks across 6 child agents + self using lane assignments",
+      "status": "done",
+      "depends_on": [
+        "G3"
+      ],
+      "evidence": "wbs/phase-2.json"
+    },
+    {
+      "id": "G5",
+      "lane": "G",
+      "title": "Capture baseline clone-health evidence before task start",
+      "status": "done",
+      "depends_on": [
+        "A2",
+        "G4"
+      ],
+      "evidence": "commands/clone-playbook.md"
+    },
+    {
+      "id": "G6",
+      "lane": "G",
+      "title": "Run phase-2 lane-A and lane-B readiness pass in sandboxed batches",
+      "status": "done",
+      "depends_on": [
+        "A4",
+        "B2",
+        "G4"
+      ],
+      "evidence": "artifacts/phase-2/g6-g10-readiness.txt"
+    },
+    {
+      "id": "G7",
+      "lane": "G",
+      "title": "Run lane-C governance checks with conservative fallback assumptions",
+      "status": "done",
+      "depends_on": [
+        "C3",
+        "C8",
+        "G4"
+      ],
+      "evidence": "artifacts/phase-2/g6-g10-readiness.txt"
+    },
+    {
+      "id": "G8",
+      "lane": "G",
+      "title": "Run lane-D architecture skeleton generation and task-guards",
+      "status": "done",
+      "depends_on": [
+        "D1",
+        "D5",
+        "G4"
+      ],
+      "evidence": "artifacts/phase-2/g6-g10-readiness.txt"
+    },
+    {
+      "id": "G9",
+      "lane": "G",
+      "title": "Run lane-E validation automation and produce evidence bundle",
+      "status": "done",
+      "depends_on": [
+        "E4",
+        "E7",
+        "G4"
+      ],
+      "evidence": "artifacts/phase-2/g6-g10-readiness.txt"
+    },
+    {
+      "id": "G10",
+      "lane": "G",
+      "title": "Publish lane-F closeout package and phase-2 handoff",
+      "status": "done",
+      "depends_on": [
+        "F10",
+        "G6",
+        "G7",
+        "G8",
+        "G9"
+      ],
+      "evidence": "artifacts/phase-2/g6-g10-readiness.txt"
+    }
+  ]
+}

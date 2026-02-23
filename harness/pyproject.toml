@@ -1,0 +1,9 @@
+[project]
+name = "helios-harness"
+version = "0.1.0"
+description = "Reusable CLI/API/SDK quality harness for phase-2 evidence generation"
+requires-python = ">=3.12"
+dependencies = []
+
+[project.scripts]
+helios-harness = "harness.scripts.run_harness:main"

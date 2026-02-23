@@ -1,0 +1,16 @@
+version: '3'
+
+tasks:
+  docs:install:
+    dir: docs
+    cmds:
+      - npm install
+
+  docs:build:
+    dir: docs
+    cmds:
+      - npm run docs:build
+
+  quality:
+    cmds:
+      - task docs:build

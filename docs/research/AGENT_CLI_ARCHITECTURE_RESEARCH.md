@@ -244,3 +244,62 @@ The key is maintaining Python async efficiency while using Rust for CPU hotspots
 - Rust atoms: doc.rust-lang.org/std/sync/atomic/
 - Zero-copy: kitemetric.com/blogs/zero-copy-parsing
 - PyPy benchmarks: speed.pypy.org
+
+---
+
+## Vibe Coding & AI-Assisted Dev
+
+### Core Concepts
+
+**Vibe Coding** (Andrej Karpathy, 2025)
+- Natural language → code generation
+- Behavior over code quality
+- Trust AI outputs, verify via tests
+- Code is disposable, iterates fast
+
+**Agentic Coding**
+- Autonomous planning + execution + testing
+- Production-ready, CI/CD integrated
+- Less creative freedom, more discipline
+
+### Our Position
+
+| Aspect | Vibe Coding | Agentic | Our Approach |
+|---------|--------------|---------|--------------|
+| Testing | "vibe check" | TDD/BDD | **Hybrid** |
+| Verification | Manual | Automated | **Automated** |
+| Speed | Fast | Measured | **Fast + Safe** |
+| Production | Risky | Safe | **Safe by default** |
+
+### Key Insight
+
+Vibe coding works for prototypes. For production agents, we need:
+1. Automated test generation
+2. SWE-bench style evaluation
+3. Continuous benchmarking
+4. Telemetry + observability
+
+---
+
+## Evaluation Benchmarks
+
+### SWE-bench Family
+
+| Benchmark | Tasks | Focus | Score |
+|-----------|-------|--------|-------|
+| SWE-bench Verified | 500 | Bug fixes | Claude 4.6: 79% |
+| SWE-bench Pro | 1,865 | Enterprise | 51% |
+| SWE-rebench | 21,000+ | Contamination-free | Varies |
+| SWE-polybench | 2,110 | Multi-lang | Varies |
+
+### Our Evaluation Strategy
+
+1. **Unit tests** - Per module
+2. **Integration tests** - Agent workflows
+3. **E2E benchmarks** - SWE-bench style
+4. **Telemetry** - Production feedback
+
+---
+
+## References Updated
+- PyPy benchmarks: speed.pypy.org

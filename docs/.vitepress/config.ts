@@ -3,6 +3,7 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   title: 'heliosHarness',
   description: 'Harness docs',
+  srcExclude: ['fragemented/research/**'],
   themeConfig: {
     nav: [
       { text: 'Start Here', link: '/index' },

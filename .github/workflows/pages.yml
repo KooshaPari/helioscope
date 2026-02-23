@@ -30,6 +30,8 @@ jobs:
           cache: 'npm'
           cache-dependency-path: docs/package-lock.json
       - uses: actions/configure-pages@v5
+        with:
+          enablement: true
       - working-directory: docs
         run: npm install
       - working-directory: docs

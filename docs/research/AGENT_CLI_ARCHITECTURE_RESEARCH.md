@@ -281,6 +281,38 @@ Vibe coding works for prototypes. For production agents, we need:
 
 ---
 
+## Memory Systems
+
+### Framework Comparison
+
+| Framework | Latency | Best For |
+|-----------|---------|----------|
+| Mem0 | 1.4s | Production |
+| Mem0-graph | 2.6s | Relations |
+| OpenAI Memory | 0.9s | Prototyping |
+| LangMem | 60s | Research |
+
+### Our Architecture
+
+```python
+# Memory tiers
+class AgentMemory:
+    # Working: Python dict (instant)
+    # Episodic: SQLite (persistent)  
+    # Semantic: Vector DB (searchable)
+    # Graph: Relations (optional)
+```
+
+### Benchmarks
+
+| Benchmark | Metric | Score |
+|-----------|---------|-------|
+| SWE-b Verified | Bug fixes | 79% |
+| SWE-b Pro | Enterprise | 51% |
+| MemoryAgentBench | Memory | Varies |
+
+---
+
 ## Evaluation Benchmarks
 
 ### SWE-bench Family

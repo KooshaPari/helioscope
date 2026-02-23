@@ -507,6 +507,157 @@ codex-agent → NATS → task queue → worker pool
 
 ---
 
+## OS-Level Optimizations
+
+### macOS (Darwin)
+
+| Optimization | Command/Tool | Effect |
+|--------------|--------------|--------|
+| **DTrace** | `dtrace -p <pid>` | System-wide tracing |
+| **Instruments** | Xcode Instruments | Time Profiler, allocations |
+| **Activity Monitor** | GUI | CPU/Mem/FD/Network |
+| **Memory pressure** | `vm_stat` | Page stats |
+| **File descriptors** | `lsof -p <pid>` | FD tracking |
+| **Power profile** | `pmset -g` | Performance mode |
+| **ATS** | `sysctl kern.atrc` | Disable for dev |
+| **Spotlight** | `mdutil -i off` | Indexing pause |
+
+### Linux
+
+| Optimization | Command/Tool | Effect |
+|--------------|--------------|--------|
+| **perf** | `perf record -p <pid>` | CPU sampling |
+| **eBPF** | `bpftrace` | Kernel tracing |
+| **flamegraph** | `cargo flamegraph` | Visual profiles |
+| **htop** | `htop` | Per-core CPU |
+| **free -w** | `free -w` | Memory details |
+| **nicstat** | `nicstat 1` | Network I/O |
+| **iotop** | `iotop` | Disk I/O |
+| **cgroup v2** | `/sys/fs/cgroup` | Resource limits |
+
+### Windows (WSL2)
+
+| Optimization | Command/Tool | Effect |
+|--------------|--------------|--------|
+| **WPR/WPA** | `wpr.exe` | Performance recording |
+| **Process Explorer** | GUI | Handle tracking |
+| **VMMap** | `vmmap.exe` | Memory mapping |
+| **ETW** | `dotnet trace` | Event tracing |
+| **WSL2** | `.wslconfig` | Memory/CPU limits |
+| **Hyper-V** | VM settings | CPU affinity |
+
+### Shell-Level Optimizations
+
+| Category | Optimization | Implementation |
+|----------|--------------|----------------|
+| **subprocess** | Reuse Popen | Connection pool pattern |
+| **Pipes** | Buffered I/O | AsyncIO streams |
+| **Git** | Git hooks | Caching, lazy load |
+| **Environment** | Env vars | Load once, cache |
+| **Shells** | Process groups | Proper cleanup |
+| **Signals** | Handler registration | Graceful shutdown |
+
+---
+
+## Profiling & Benchmark Tools
+
+### Rust Profiling (from nnethercote/perf-book)
+
+| Tool | Platform | Use Case |
+|------|----------|----------|
+| **perf** | Linux | CPU/hardware counters |
+| **Instruments** | macOS | Time Profiler, Allocations |
+| **VTune** | All | CPU, memory, threading |
+| **samply** | Mac/Linux/Win | Firefox profiler viewer |
+| **flamegraph** | Linux/macOS | Flame graphs via perf/DTrace |
+| **Cachegrind** | Linux/Unix | Instruction counts |
+| **DHAT** | Linux/Unix | Allocation profiling |
+| **heaptrack** | Linux | Heap allocations |
+| **bytehound** | Linux | Memory profiler |
+| **dhat-rs** | All | Heap via Rust bindings |
+| **coz** | Linux | Causal profiling |
+
+### Cargo Configuration for Profiling
+
+```toml
+[profile.release]
+debug = "line-tables-only"
+
+[build]
+rustflags = ["-C", "force-frame-pointers=yes"]
+# Or in command line:
+# RUSTFLAGS="-C force-frame-pointers=yes" cargo build --release
+```
+
+---
+
+## Agent Harness Engineering Patterns
+
+### Key Insights from Hightouch, Anthropic, LangChain
+
+#### 1. Planning vs Execution Separation
+- Ask model to **plan first**, then execute
+- Dynamic plan updates: model can revise plan during execution
+- Use "system tool calls" for `make_plan`, `execute_step_in_plan`, `update_plan`
+
+#### 2. Context Management (File Buffering)
+- **Buffer large results to files** instead of stuffing in context
+- Keep pointer + description in context
+- Agent decides when to buffer (model-driven)
+- Session-specific scratchpad filesystem
+
+#### 3. Dynamic Subagents
+- Spawn isolated LLM threads for complex sub-tasks
+- Only summary returned to main agent
+- Intermediate "scratch paper" discarded
+- Hierarchical approach: main orchestrator → subagents
+
+#### 4. Fan-Out Pattern
+- Instead of embeddings: fan out to smaller models
+- Parallel API calls to cheap models (e.g., Haiku)
+- Each handles single classification task
+- Results aggregated back to main agent
+
+#### 5. Context Compaction
+- **Context compaction**: Summarize or drop irrelevant info
+- **Context isolation**: Keep subtasks separate
+- **Context retrieval**: Inject fresh info at right time
+- Avoid "context rot" in long sessions
+
+#### 6. Verification & Guardrails
+- Schema/format validation
+- Logic checks (tests pass)
+- Safety filters
+- Incremental progress with state saves
+
+---
+
+## Harness Architecture Components
+
+| Component | Function | Performance Impact |
+|-----------|----------|-------------------|
+| **Tool Integration** | Execute external APIs | Network latency |
+| **Memory Management** | Context beyond window | Memory growth |
+| **Context Engineering** | Prompt optimization | Token reduction |
+| **Planning/Decomposition** | Task breakdown | CPU overhead |
+| **Verification** | Output validation | Latency + CPU |
+| **Modularity** | Pluggable components | Extensibility |
+
+---
+
+## Vibecoding vs HITL
+
+**Note**: This harness follows **vibecoding** principles:
+- No human-in-the-loop (HITL) blocking
+- Autonomous agent execution
+- Self-healing, self-verifying
+- Automated context management
+- Speed over guardrails (with governance via code)
+
+This turns vibecoding into **Agent-Driven Development (Ag-DD)** through structure.
+
+---
+
 ## Summary
 
 **Key Priorities:**

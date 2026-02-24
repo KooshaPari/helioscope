@@ -412,6 +412,7 @@ dependencies = [
 name = "harness_runner"
 version = "0.1.0"
 dependencies = [
+ "rayon",
  "serde",
  "tokio",
  "tracing",

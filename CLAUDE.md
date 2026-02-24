@@ -1,46 +1,23 @@
-# heliosHarness - Research Project
+# helios_router_data — Claude Instructions
 
-> **Status**: Research/POC project. Production harness moved to `helios-cli`.
+This project uses Streamlit for the UI. Key files:
 
-## Project Type
-
-This is a **research and experimentation** project for the helios harness system. It contains:
-- Python harness implementations (research/原型)
-- Rust crate experiments
-- Cloned references (clones/)
-- Benchmarks and benchmarks
-
-## Production Code
-
-**Production harness is in `clones/helios-cli/`**
-
-The main helios-cli production code is located at:
-```
-clones/helios-cli/
-```
-
-## Key Directories
-
-| Directory | Purpose |
-|-----------|---------|
-| `harness/src/harness/` | Python harness (research) |
-| `crates/` | Rust crates (research) |
-| `clones/helios-cli/` | **Production CLI** |
-| `clones/` | Reference implementations |
+- `app.py` - Main Streamlit application
+- `src/helios_router_ui/db/schema.py` - Database layer
+- `src/helios_router_ui/pareto/engine.py` - Pareto computation
+- `src/helios_router_ui/ui/components.py` - UI components
 
 ## Commands
 
 ```bash
-# Python tests
-cd harness && uv run pytest tests
-
-# Rust tests
-cargo test --workspace
-
-# Check project
-task check
+task dev          # Start Streamlit
+task lint         # Run ruff
+task test        # Run pytest
+task check       # All checks
 ```
 
-## Governance
+## Notes
 
-This is a research sandbox. Production governance applies to `clones/helios-cli/`.
+- Uses `uv` for package management
+- Database is SQLite (`helios.db`)
+- Optional NATS integration for real-time events

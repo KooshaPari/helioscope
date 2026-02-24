@@ -1,4 +1,7 @@
 import { defineConfig } from 'vitepress'
+import { resolveDocsBase } from "../../../docs-hub/.vitepress/base.config"
+
+const docsBase = resolveDocsBase()
 
 // Supported locales: en, zh-CN, zh-TW, fa, fa-Latn
 const locales = {
@@ -12,6 +15,7 @@ const locales = {
 export default defineConfig({
   title: 'heliosHarness',
   description: 'Harness docs',
+  base: docsBase,
   srcExclude: ['fragemented/research/**'],
   locales,
   themeConfig: {

@@ -4,4 +4,16 @@ members = [
     "crates/harness_runner", 
     "crates/harness_scaling",
     "crates/harness_schema",
+    "crates/harness_discoverer",
+    "crates/harness_utils",
+    "crates/harness_normalizer",
+    "crates/harness_interfaces",
+    "crates/harness_queue",
 ]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+
+[workspace.metadata]
+rustfmt.exclude = ["crates/harness_zig"]

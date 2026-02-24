@@ -20,7 +20,16 @@ from pathlib import Path
 from typing import Any, Callable
 from uuid import UUID
 
-import psutil
+# Lazy psutil - only load when needed for process monitoring
+_psutil = None
+
+def _get_psutil():
+    global _psutil
+    if _psutil is None:
+        import psutil
+        _psutil = psutil
+    return _psutil
+
 import yaml
 from pydantic import BaseModel, ConfigDict
 
@@ -306,7 +315,7 @@ class HealthMonitor:
         agent = self._agents[agent_id]
 
         try:
-            proc = psutil.Process(agent["pid"])
+            proc = _get_psutil().Process(agent["pid"])
 
             # Check if running
             if not proc.is_running():
@@ -323,7 +332,7 @@ class HealthMonitor:
 
             return HealthStatus.HEALTHY
 
-        except psutil.NoSuchProcess:
+        except _get_psutil().NoSuchProcess:
             return HealthStatus.CRASHED
         except Exception:
             return HealthStatus.UNHEALTHY

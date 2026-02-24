@@ -17,8 +17,6 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable
 
-import psutil
-
 logger = logging.getLogger(__name__)
 
 # Try to import Rust extension for 10x performance

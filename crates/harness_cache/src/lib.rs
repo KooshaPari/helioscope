@@ -7,7 +7,7 @@ use std::collections::HashMap;
 use tokio::sync::RwLock;
 use std::sync::atomic::{AtomicU64, AtomicUsize, Ordering};
 use std::hash::{Hash, Hasher};
-use std::num::Wrapping;
+use tracing::{debug, instrument};
 
 /// Cache entry with metadata
 #[derive(Clone)]
@@ -31,10 +31,23 @@ pub struct CacheConfig {
 impl Default for CacheConfig {
     fn default() -> Self {
         Self {
-            ttl_secs: 300,
-            max_capacity: 10_000,
-            shards: 16,
+            ttl_secs: 60,        // Reduced from 300
+            max_capacity: 100,   // Reduced from 10,000
+            shards: 4,           // Reduced from 16
             name: "default".to_string(),
+            write_mode: WriteMode::WriteThrough,
+        }
+    }
+}
+
+/// Lean configuration for low-memory environments (<10MB)
+impl CacheConfig {
+    pub fn lean() -> Self {
+        Self {
+            ttl_secs: 30,
+            max_capacity: 50,
+            shards: 2,
+            name: "lean".to_string(),
             write_mode: WriteMode::WriteThrough,
         }
     }
@@ -87,6 +100,7 @@ impl ShardedCache {
     }
 
     /// Get value if valid
+    #[instrument(skip(self))]
     pub async fn get(&self, key: &str) -> Option<Vec<u8>> {
         let idx = self.shard_index(key);
         let shard = &self.shards[idx];
@@ -95,10 +109,12 @@ impl ShardedCache {
         match store.get(key) {
             Some(entry) if self.is_valid(entry) => {
                 self.stats.record_hit();
+                debug!(key, "cache hit");
                 Some(entry.value.clone())
             }
             _ => {
                 self.stats.record_miss();
+                debug!(key, "cache miss");
                 None
             }
         }
@@ -110,6 +126,7 @@ impl ShardedCache {
     }
 
     /// Set value
+    #[instrument(skip(self, value))]
     pub async fn set(&self, key: String, value: Vec<u8>) {
         let idx = self.shard_index(&key);
         let shard = &self.shards[idx];
@@ -117,8 +134,9 @@ impl ShardedCache {
         let mut store = shard.store.write().await;
         
         // Evict if at capacity
+        #[allow(clippy::let_underscore_future)]
         if store.len() >= self.config.max_capacity / self.config.shards {
-            self.evict_lru(&mut store);
+            let _ = self.evict_lru(&mut store);
         }
         
         let now = Instant::now();
@@ -187,6 +205,9 @@ impl ShardedCache {
         total
     }
 
+    #[allow(clippy::len_without_is_empty)]
+    pub async fn is_empty(&self) -> bool { self.len().await == 0 }
+
     async fn len_internal(&self, _store: &HashMap<String, CacheEntry>) -> usize {
         self.len().await
     }
@@ -253,6 +274,8 @@ impl Cache {
     pub async fn clear(&self) { self.inner.clear().await; }
     pub fn stats(&self) -> Arc<CacheStats> { self.inner.stats() }
     pub async fn len(&self) -> usize { self.inner.len().await }
+    #[allow(clippy::len_without_is_empty)]
+    pub async fn is_empty(&self) -> bool { self.inner.len().await == 0 }
 }
 
 impl Default for Cache {
@@ -278,7 +301,7 @@ impl SyncCache {
     pub fn get(&self, key: &str) -> Option<Vec<u8>> {
         let store = self.store.lock().unwrap();
         match store.get(key) {
-            Some(entry) if entry.expires_at.map_or(true, |e| e > Instant::now()) => {
+            Some(entry) if entry.expires_at.is_none_or(|e| e > Instant::now()) => {
                 self.stats.record_hit();
                 Some(entry.value.clone())
             }
@@ -302,4 +325,107 @@ impl SyncCache {
     }
 
     pub fn stats(&self) -> Arc<CacheStats> { Arc::clone(&self.stats) }
+}
+
+/// Moka-backed cache (production-grade)
+/// Provides: thread-safe, TTL, LRU, background eviction
+pub struct MokaCache {
+    cache: moka::sync::Cache<String, Vec<u8>>,
+    stats: Arc<CacheStats>,
+}
+
+impl MokaCache {
+    pub fn new(config: CacheConfig) -> Self {
+        let cache = moka::sync::Cache::builder()
+            .max_capacity(config.max_capacity as u64)
+            .time_to_live(Duration::from_secs(config.ttl_secs))
+            .name(&config.name)
+            .build();
+        
+        Self {
+            cache,
+            stats: Arc::new(CacheStats::new()),
+        }
+    }
+
+    pub fn with_lean_defaults() -> Self {
+        Self::new(CacheConfig::lean())
+    }
+
+    pub fn get(&self, key: &str) -> Option<Vec<u8>> {
+        match self.cache.get(key) {
+            Some(v) => {
+                self.stats.record_hit();
+                Some(v)
+            }
+            None => {
+                self.stats.record_miss();
+                None
+            }
+        }
+    }
+
+    pub fn set(&self, key: &str, value: Vec<u8>) {
+        self.cache.insert(key.to_string(), value);
+        self.stats.set_items(self.cache.entry_count() as usize);
+    }
+
+    pub fn invalidate(&self, key: &str) {
+        self.cache.invalidate(key);
+    }
+
+    pub fn clear(&self) {
+        self.cache.invalidate_all();
+    }
+
+    pub fn stats(&self) -> Arc<CacheStats> {
+        Arc::clone(&self.stats)
+    }
+}
+
+/// Async Moka cache for tokio runtime
+pub struct MokaAsyncCache {
+    cache: moka::future::Cache<String, Vec<u8>>,
+    stats: Arc<CacheStats>,
+}
+
+impl MokaAsyncCache {
+    pub async fn new(config: CacheConfig) -> Self {
+        let cache = moka::future::Cache::builder()
+            .max_capacity(config.max_capacity as u64)
+            .time_to_live(Duration::from_secs(config.ttl_secs))
+            .name(&format!("{}-async", config.name))
+            .build();
+        
+        Self {
+            cache,
+            stats: Arc::new(CacheStats::new()),
+        }
+    }
+
+    pub async fn get(&self, key: &str) -> Option<Vec<u8>> {
+        match self.cache.get(key).await {
+            Some(v) => {
+                self.stats.record_hit();
+                Some(v)
+            }
+            None => {
+                self.stats.record_miss();
+                None
+            }
+        }
+    }
+
+    pub async fn set(&self, key: &str, value: Vec<u8>) {
+        self.cache.insert(key.to_string(), value).await;
+        self.stats.set_items(self.cache.entry_count() as usize);
+    }
+
+    pub async fn invalidate(&self, key: &str) {
+        self.cache.invalidate(key).await;
+    }
+
+    pub fn stats(&self) -> Arc<CacheStats> {
+        Arc::clone(&self.stats)
+    }
 }

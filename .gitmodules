@@ -1,0 +1,3 @@
+[submodule "clones/helios-cli"]
+	path = clones/helios-cli
+	url = https://github.com/openai/codex.git

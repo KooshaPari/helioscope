@@ -13,7 +13,15 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-import psutil
+# Lazy psutil - only load when sampling is needed
+_psutil = None
+
+def _get_psutil():
+    global _psutil
+    if _psutil is None:
+        import psutil
+        _psutil = psutil
+    return _psutil
 
 # Try to import Rust extension for 10-50x performance
 # Add src dir to path for .so file
@@ -100,16 +108,16 @@ class ResourceSampler:
 
         # Fallback to Python
         # CPU
-        cpu_percent = psutil.cpu_percent(interval=0.1)
+        cpu_percent = _get_psutil().cpu_percent(interval=0.1)
 
         # Memory
-        mem = psutil.virtual_memory()
+        mem = _get_psutil().virtual_memory()
         memory_percent = mem.percent
         memory_available_mb = mem.available / (1024 * 1024)
 
         # File descriptors - use psutil
         try:
-            proc = psutil.Process()
+            proc = _get_psutil().Process()
             fd_count = (
                 proc.num_fds() if hasattr(proc, "num_fds") else len(proc.open_files())
             )
@@ -237,7 +245,7 @@ class MemoryPressureHandler:
 
     async def check(self):
         """Check memory pressure."""
-        mem = psutil.virtual_memory()
+        mem = _get_psutil().virtual_memory()
         percent = mem.percent / 100.0
 
         if percent >= self.CRITICAL:

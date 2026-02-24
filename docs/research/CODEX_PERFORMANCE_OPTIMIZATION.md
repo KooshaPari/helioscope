@@ -5,6 +5,35 @@
 
 ---
 
+## Fork: HeliosCLI
+
+**Location:** `clones/helios-cli` (submodule)
+
+Fork of https://github.com/openai/codex for custom optimizations.
+
+### Upstream Sync
+
+```bash
+# In helios-cli submodule
+git fetch upstream
+git checkout main
+git merge upstream/main
+
+# Track changes
+git fetch upstream
+git diff main upstream/main
+```
+
+### Optimization Branches
+
+| Branch | Focus |
+|--------|-------|
+| helios-cpu-opt | CPU optimization |
+| helios-lat-opt | Latency optimization |
+| helios-mem-opt | Memory optimization |
+
+---
+
 ## Table of Contents
 
 1. [MacOS/M1 Performance](#1-macosm1-performance)

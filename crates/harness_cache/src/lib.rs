@@ -31,10 +31,23 @@ pub struct CacheConfig {
 impl Default for CacheConfig {
     fn default() -> Self {
         Self {
-            ttl_secs: 300,
-            max_capacity: 10_000,
-            shards: 16,
+            ttl_secs: 60,        // Reduced from 300
+            max_capacity: 100,   // Reduced from 10,000
+            shards: 4,           // Reduced from 16
             name: "default".to_string(),
+            write_mode: WriteMode::WriteThrough,
+        }
+    }
+}
+
+/// Lean configuration for low-memory environments (<10MB)
+impl CacheConfig {
+    pub fn lean() -> Self {
+        Self {
+            ttl_secs: 30,
+            max_capacity: 50,
+            shards: 2,
+            name: "lean".to_string(),
             write_mode: WriteMode::WriteThrough,
         }
     }

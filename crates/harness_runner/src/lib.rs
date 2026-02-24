@@ -3,10 +3,9 @@
 
 use std::process::Stdio;
 use std::time::{Duration, Instant};
-use tokio::process::{Command, Child};
-use tokio::io::{AsyncReadExt, AsyncWriteExt};
-use std::sync::Arc;
-use tracing::{info, instrument, error};
+use tokio::process::Command;
+use tokio::io::AsyncWriteExt;
+use tracing::instrument;
 
 /// Runner configuration
 #[derive(Debug, Clone)]

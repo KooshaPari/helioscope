@@ -121,8 +121,9 @@ impl ShardedCache {
         let mut store = shard.store.write().await;
         
         // Evict if at capacity
+        #[allow(clippy::let_underscore_future)]
         if store.len() >= self.config.max_capacity / self.config.shards {
-            self.evict_lru(&mut store);
+            let _ = self.evict_lru(&mut store);
         }
         
         let now = Instant::now();
@@ -191,6 +192,9 @@ impl ShardedCache {
         total
     }
 
+    #[allow(clippy::len_without_is_empty)]
+    pub async fn is_empty(&self) -> bool { self.len().await == 0 }
+
     async fn len_internal(&self, _store: &HashMap<String, CacheEntry>) -> usize {
         self.len().await
     }
@@ -257,6 +261,8 @@ impl Cache {
     pub async fn clear(&self) { self.inner.clear().await; }
     pub fn stats(&self) -> Arc<CacheStats> { self.inner.stats() }
     pub async fn len(&self) -> usize { self.inner.len().await }
+    #[allow(clippy::len_without_is_empty)]
+    pub async fn is_empty(&self) -> bool { self.inner.len().await == 0 }
 }
 
 impl Default for Cache {
@@ -282,7 +288,7 @@ impl SyncCache {
     pub fn get(&self, key: &str) -> Option<Vec<u8>> {
         let store = self.store.lock().unwrap();
         match store.get(key) {
-            Some(entry) if entry.expires_at.map_or(true, |e| e > Instant::now()) => {
+            Some(entry) if entry.expires_at.is_none_or(|e| e > Instant::now()) => {
                 self.stats.record_hit();
                 Some(entry.value.clone())
             }

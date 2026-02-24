@@ -54,6 +54,7 @@ impl<T> Channel<T> {
 }
 
 /// Ring buffer for single producer/consumer
+#[allow(dead_code)]
 pub struct RingBuffer<T> {
     data: Vec<T>,
     read: usize,

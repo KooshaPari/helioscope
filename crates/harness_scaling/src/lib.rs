@@ -39,6 +39,7 @@ pub struct ResourceSnapshot {
 }
 
 /// Resource sampler with window
+#[allow(dead_code)]
 pub struct ResourceSampler {
     samples: VecDeque<f64>,
     window_seconds: u64,

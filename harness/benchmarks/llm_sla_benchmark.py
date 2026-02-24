@@ -28,6 +28,7 @@ import time
 import httpx
 from dataclasses import dataclass, field, asdict
 from pathlib import Path
+from harness.src.harness.resources import safe_popen, ResourceMonitor
 from typing import Any
 
 
@@ -387,14 +388,14 @@ def _run_codex_benchmark(
             (agent_dir / "task.txt").write_text(f"Agent {i}: {prompt}")
             
             cmd = binary.split() if "node" not in binary else ["node", binary.split()[-1]]
-            proc = subprocess.Popen(
+            with safe_popen(
                 cmd + ["exec", "-m", model, prompt],
                 cwd=agent_dir,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 text=True,
-            )
-            tasks.append(proc)
+            ) as proc:
+                tasks.append(proc)
         
         # Wait for all
         times = []

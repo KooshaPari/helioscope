@@ -28,6 +28,8 @@ import psutil
 import requests
 from dataclasses import dataclass, field, asdict
 from typing import Any
+
+from harness.src.harness.memory_profiler import MemoryProfiler, get_memory_usage
 import statistics
 
 

@@ -38,6 +38,7 @@ from dataclasses import dataclass, field, asdict
 from typing import Any
 
 import psutil
+from harness.src.harness.resources import safe_popen, ResourceMonitor, fd_tracker
 
 
 # ============================================================================
@@ -217,16 +218,16 @@ def run_codex_cli(
             os.makedirs(agent_dir)
             subprocess.run(["git", "init"], cwd=agent_dir, capture_output=True)
             
-            # Use minimax provider via config
-            p = subprocess.Popen(
+            # Use minimax provider via config - with safe_popen for proper cleanup
+            with safe_popen(
                 [codex_path, "-c", "model_provider=minimax", "-c", f"model={model}", "exec", prompt],
                 cwd=agent_dir,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 text=True,
                 env=env,
-            )
-            procs.append(p)
+            ) as p:
+                procs.append(p)
         
         # Wait for all
         times = []
@@ -269,25 +270,25 @@ def run_droid(
     # Run single prompt for baseline
     start = time.perf_counter()
     
-    try:
-        proc = subprocess.Popen(
-            [droid_path, "exec", prompt],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-        )
-        proc.wait()
-        elapsed = time.perf_counter() - start
-        
-        result.total_wall_time = elapsed
-        result.sla_p50 = elapsed
-        result.sla_p95 = elapsed
-        result.sla_p99 = elapsed
-        result.success = proc.returncode == 0
-        
-    except Exception as e:
-        result.error = str(e)[:100]
-        result.success = False
+    with ResourceMonitor() as monitor:
+        try:
+            with safe_popen(
+                [droid_path, "exec", prompt],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+            ) as proc:
+                proc.wait()
+            elapsed = time.perf_counter() - start
+            
+            result.total_wall_time = elapsed
+            result.sla_p50 = elapsed
+            result.sla_p95 = elapsed
+            result.sla_p99 = elapsed
+            result.success = proc.returncode == 0
+        except Exception as e:
+            result.error = str(e)[:100]
+            result.success = False
     
     return result
 
@@ -307,25 +308,25 @@ def run_claude(
     
     start = time.perf_counter()
     
-    try:
-        proc = subprocess.Popen(
-            [claude_path, "-p", prompt],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-        )
-        proc.wait()
-        elapsed = time.perf_counter() - start
+    with ResourceMonitor() as monitor:
+        try:
+            with safe_popen(
+                [claude_path, "-p", prompt],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+            ) as proc:
+                proc.wait()
+            elapsed = time.perf_counter() - start
         
-        result.total_wall_time = elapsed
-        result.sla_p50 = elapsed
-        result.sla_p95 = elapsed
-        result.sla_p99 = elapsed
-        result.success = proc.returncode == 0
-        
-    except Exception as e:
-        result.error = str(e)[:100]
-        result.success = False
+            result.total_wall_time = elapsed
+            result.sla_p50 = elapsed
+            result.sla_p95 = elapsed
+            result.sla_p99 = elapsed
+            result.success = proc.returncode == 0
+        except Exception as e:
+            result.error = str(e)[:100]
+            result.success = False
     
     return result
 

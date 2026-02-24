@@ -27,6 +27,7 @@ import httpx
 from dataclasses import dataclass, field, asdict
 from pathlib import Path
 from typing import Any
+from harness.src.harness.resources import safe_popen, ResourceMonitor
 
 
 # ============================================================================
@@ -303,15 +304,15 @@ def run_codex_benchmark(
             (agent_dir / "task.txt").write_text(f"Agent {i}: {prompt}")
             
             cmd = binary.split() if "node" not in binary else ["node", binary.split()[-1]]
-            p = subprocess.Popen(
+            with safe_popen(
                 cmd + ["exec", "-m", model, prompt],
                 cwd=agent_dir,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 text=True,
                 env=env,
-            )
-            procs.append(p)
+            ) as p:
+                procs.append(p)
             
             # Sample resources
             try:

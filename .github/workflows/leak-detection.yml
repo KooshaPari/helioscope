@@ -1,0 +1,132 @@
+name: Leak Detection
+
+on:
+  push:
+    branches: [main, feature/performance-optimization]
+  pull_request:
+    branches: [main]
+  schedule:
+    # Run daily at 3am
+    - cron: '0 3 * * *'
+
+jobs:
+  memory-leak-detect:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          
+      - name: Install dependencies
+        run: |
+          pip install psutil pytest pytest-timeout
+          
+      - name: Run memory leak detection tests
+        run: |
+          python -m pytest tests/ -v --timeout=300 -x
+          
+      - name: Run subprocess FD leak test
+        run: |
+          python -c "
+import subprocess
+import os
+import sys
+sys.path.insert(0, 'harness/src')
+from harness.resources import SubprocessManager, safe_popen
+
+# Get initial FD count
+pid = os.getpid()
+initial_fds = len(os.listdir(f'/proc/{pid}/fd'))
+
+# Run test
+for i in range(10):
+    with safe_popen(['echo', 'test'], stdout=subprocess.PIPE) as proc:
+        proc.wait()
+
+# Check final FD count
+final_fds = len(os.listdir(f'/proc/{pid}/fd'))
+leaked = final_fds - initial_fds
+print(f'FDs: initial={initial_fds}, final={final_fds}, leaked={leaked}')
+if leaked > 5:
+    print('LEAK DETECTED!')
+    sys.exit(1)
+print('No FD leaks detected')
+"
+          
+  benchmark-memory:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          
+      - name: Run memory profiling benchmark
+        run: |
+          python -c "
+import sys
+sys.path.insert(0, 'harness/src')
+from harness.memory_profiler import MemoryProfiler, get_memory_usage
+
+print('=== Memory Usage Test ===')
+mem = get_memory_usage()
+print(f'RSS: {mem[\"rss_mb\"]:.1f}MB')
+print(f'VMS: {mem[\"vms_mb\"]:.1f}MB')
+
+# Test profiler
+profiler = MemoryProfiler()
+profiler.start()
+import time
+time.sleep(0.5)
+report = profiler.stop()
+
+print(f'\\n=== Memory Growth Test ===')
+print(f'Peak RSS: {report.peak_rss_mb:.1f}MB')
+print(f'Avg RSS: {report.avg_rss_mb:.1f}MB')
+print(f'Growth: {report.rss_growth_mb:.1f}MB')
+
+if report.leaks_detected:
+    print('\\nLEAKS DETECTED:')
+    for leak in report.leaks_detected:
+        print(f'  - {leak}')
+    sys.exit(1)
+else:
+    print('\\nNo memory leaks detected')
+"
+          
+  cache-bounds-test:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          
+      - name: Test bounded cache
+        run: |
+          python -c "
+import sys
+sys.path.insert(0, 'harness/src')
+from harness.bounded_cache import BoundedCache, EvictionPolicy
+
+print('=== Bounded Cache Test ===')
+cache = BoundedCache(max_size=5, policy=EvictionPolicy.LRU)
+
+# Fill beyond capacity
+for i in range(10):
+    cache.set(f'key{i}', f'value{i}')
+
+print(f'Cache size: {len(cache)} (max: 5)')
+print(f'Stats: {cache.get_stats()}')
+
+# Verify eviction worked
+assert len(cache) <= 5, f'Cache exceeded max size: {len(cache)}'
+print('Cache bounds enforced correctly')
+"

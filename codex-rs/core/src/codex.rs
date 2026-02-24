@@ -4,7 +4,10 @@ use std::fmt::Debug;
 use std::path::Path;
 use std::path::PathBuf;
 use std::sync::Arc;
+use std::sync::Mutex as StdMutex;
+use std::sync::OnceLock;
 use std::sync::atomic::AtomicU64;
+use std::time::Instant;
 
 use crate::AuthManager;
 use crate::CodexAuth;
@@ -291,8 +294,46 @@ pub struct CodexSpawnOk {
 
 pub(crate) const INITIAL_SUBMIT_ID: &str = "";
 pub(crate) const SUBMISSION_CHANNEL_CAPACITY: usize = 512;
+pub(crate) const SUBMISSION_CHANNEL_CAPACITY_MAX: usize = 65_536;
+const SUBMISSION_CHANNEL_CAPACITY_ENV_VAR: &str = "CODEX_SUBMISSION_CHANNEL_CAPACITY";
 const CYBER_VERIFY_URL: &str = "https://chatgpt.com/cyber";
 const CYBER_SAFETY_URL: &str = "https://developers.openai.com/codex/concepts/cyber-safety";
+static SUBMISSION_ENQUEUE_TIMESTAMPS: OnceLock<StdMutex<HashMap<String, Instant>>> =
+    OnceLock::new();
+
+fn submission_enqueue_timestamps() -> &'static StdMutex<HashMap<String, Instant>> {
+    SUBMISSION_ENQUEUE_TIMESTAMPS.get_or_init(|| StdMutex::new(HashMap::new()))
+}
+
+fn record_submission_enqueue_timestamp(submission_id: &str) {
+    let mut timestamps = submission_enqueue_timestamps()
+        .lock()
+        .unwrap_or_else(|poisoned| poisoned.into_inner());
+    timestamps.insert(submission_id.to_string(), Instant::now());
+}
+
+fn take_submission_enqueue_timestamp(submission_id: &str) -> Option<Instant> {
+    let mut timestamps = submission_enqueue_timestamps()
+        .lock()
+        .unwrap_or_else(|poisoned| poisoned.into_inner());
+    timestamps.remove(submission_id)
+}
+
+fn parse_submission_channel_capacity(value: &str) -> Option<usize> {
+    let parsed = value.parse::<usize>().ok()?;
+    if parsed == 0 {
+        return None;
+    }
+    Some(parsed.min(SUBMISSION_CHANNEL_CAPACITY_MAX))
+}
+
+fn resolve_submission_channel_capacity() -> usize {
+    std::env::var(SUBMISSION_CHANNEL_CAPACITY_ENV_VAR)
+        .ok()
+        .as_deref()
+        .and_then(parse_submission_channel_capacity)
+        .unwrap_or(SUBMISSION_CHANNEL_CAPACITY)
+}
 
 impl Codex {
     /// Spawn a new [`Codex`] and initialize the session.
@@ -309,7 +350,8 @@ impl Codex {
         dynamic_tools: Vec<DynamicToolSpec>,
         persist_extended_history: bool,
     ) -> CodexResult<CodexSpawnOk> {
-        let (tx_sub, rx_sub) = async_channel::bounded(SUBMISSION_CHANNEL_CAPACITY);
+        let resolved_capacity = resolve_submission_channel_capacity();
+        let (tx_sub, rx_sub) = async_channel::bounded(resolved_capacity);
         let (tx_event, rx_event) = async_channel::unbounded();
 
         let loaded_skills = skills_manager.skills_for_config(&config);
@@ -477,10 +519,12 @@ impl Codex {
     /// Use sparingly: prefer `submit()` so Codex is responsible for generating
     /// unique IDs for each submission.
     pub async fn submit_with_id(&self, sub: Submission) -> CodexResult<()> {
-        self.tx_sub
-            .send(sub)
-            .await
-            .map_err(|_| CodexErr::InternalAgentDied)?;
+        let submission_id = sub.id.clone();
+        record_submission_enqueue_timestamp(&submission_id);
+        if self.tx_sub.send(sub).await.is_err() {
+            let _ = take_submission_enqueue_timestamp(&submission_id);
+            return Err(CodexErr::InternalAgentDied);
+        }
         Ok(())
     }
 
@@ -1316,7 +1360,7 @@ impl Session {
             hooks: Hooks::new(HooksConfig {
                 legacy_notify_argv: config.notify.clone(),
             }),
-            rollout: Mutex::new(rollout_recorder),
+            rollout: RwLock::new(rollout_recorder),
             user_shell: Arc::new(default_shell),
             shell_snapshot_tx,
             show_raw_agent_reasoning: config.show_raw_agent_reasoning,
@@ -1489,8 +1533,10 @@ impl Session {
 
     /// Ensure all rollout writes are durably flushed.
     pub(crate) async fn flush_rollout(&self) {
-        let recorder = {
-            let guard = self.services.rollout.lock().await;
+        let recorder = if let Ok(guard) = self.services.rollout.try_read() {
+            guard.clone()
+        } else {
+            let guard = self.services.rollout.read().await;
             guard.clone()
         };
         if let Some(rec) = recorder
@@ -1501,8 +1547,10 @@ impl Session {
     }
 
     pub(crate) async fn ensure_rollout_materialized(&self) {
-        let recorder = {
-            let guard = self.services.rollout.lock().await;
+        let recorder = if let Ok(guard) = self.services.rollout.try_read() {
+            guard.clone()
+        } else {
+            let guard = self.services.rollout.read().await;
             guard.clone()
         };
         if let Some(rec) = recorder
@@ -1517,21 +1565,6 @@ impl Session {
             .next_internal_sub_id
             .fetch_add(1, std::sync::atomic::Ordering::SeqCst);
         format!("auto-compact-{id}")
-    }
-
-    pub(crate) async fn route_realtime_text_input(self: &Arc<Self>, text: String) {
-        handlers::user_input_or_turn(
-            self,
-            self.next_internal_sub_id(),
-            Op::UserInput {
-                items: vec![UserInput::Text {
-                    text,
-                    text_elements: Vec::new(),
-                }],
-                final_output_json_schema: None,
-            },
-        )
-        .await;
     }
 
     pub(crate) async fn get_total_token_usage(&self) -> i64 {
@@ -2818,8 +2851,34 @@ impl Session {
     }
 
     pub(crate) async fn persist_rollout_items(&self, items: &[RolloutItem]) {
-        let recorder = {
-            let guard = self.services.rollout.lock().await;
+        if items.is_empty() {
+            return;
+        }
+        let rollout_lock_wait_start = Instant::now();
+        let recorder = if let Ok(guard) = self.services.rollout.try_read() {
+            self.services.otel_manager.record_duration(
+                "codex.rollout.persist_rollout_items.lock_wait_duration",
+                rollout_lock_wait_start.elapsed(),
+                &[],
+            );
+            self.services.otel_manager.counter(
+                "codex.rollout.persist_rollout_items.lock_wait",
+                1,
+                &[],
+            );
+            guard.clone()
+        } else {
+            let guard = self.services.rollout.read().await;
+            self.services.otel_manager.record_duration(
+                "codex.rollout.persist_rollout_items.lock_wait_duration",
+                rollout_lock_wait_start.elapsed(),
+                &[],
+            );
+            self.services.otel_manager.counter(
+                "codex.rollout.persist_rollout_items.lock_wait",
+                1,
+                &[],
+            );
             guard.clone()
         };
         if let Some(rec) = recorder
@@ -3358,6 +3417,21 @@ impl Session {
 async fn submission_loop(sess: Arc<Session>, config: Arc<Config>, rx_sub: Receiver<Submission>) {
     // To break out of this loop, send Op::Shutdown.
     while let Ok(sub) = rx_sub.recv().await {
+        let queue_depth = rx_sub.len();
+        let backlog_tag = if queue_depth > 0 { "true" } else { "false" };
+        let queue_depth_i64 = i64::try_from(queue_depth).unwrap_or(i64::MAX);
+        let otel = &sess.services.otel_manager;
+        otel.histogram("codex.submission.queue_depth", queue_depth_i64, &[]);
+        otel.counter("codex.submission.receive", 1, &[("backlog", backlog_tag)]);
+        if let Some(enqueued_at) = take_submission_enqueue_timestamp(&sub.id) {
+            otel.record_duration(
+                "codex.submission.queue_wait_duration",
+                enqueued_at.elapsed(),
+                &[],
+            );
+        }
+        let handler_start = Instant::now();
+        let mut should_exit = false;
         debug!(?sub, "Submission");
         match sub.op.clone() {
             Op::Interrupt => {
@@ -3515,13 +3589,21 @@ async fn submission_loop(sess: Arc<Session>, config: Arc<Config>, rx_sub: Receiv
             }
             Op::Shutdown => {
                 if handlers::shutdown(&sess, sub.id.clone()).await {
-                    break;
+                    should_exit = true;
                 }
             }
             Op::Review { review_request } => {
                 handlers::review(&sess, &config, sub.id.clone(), review_request).await;
             }
             _ => {} // Ignore unknown ops; enum is non_exhaustive to allow extensions.
+        }
+        otel.record_duration(
+            "codex.submission.handler_duration",
+            handler_start.elapsed(),
+            &[],
+        );
+        if should_exit {
+            break;
         }
     }
     debug!("Agent loop exited");
@@ -4175,7 +4257,7 @@ mod handlers {
         };
 
         let persistence_enabled = {
-            let rollout = sess.services.rollout.lock().await;
+            let rollout = sess.services.rollout.read().await;
             rollout.is_some()
         };
         if !persistence_enabled {
@@ -4244,7 +4326,7 @@ mod handlers {
         // Gracefully flush and shutdown rollout recorder on session end so tests
         // that inspect the rollout file do not race with the background writer.
         let recorder_opt = {
-            let mut guard = sess.services.rollout.lock().await;
+            let mut guard = sess.services.rollout.write().await;
             guard.take()
         };
         if let Some(rec) = recorder_opt
@@ -6246,6 +6328,29 @@ mod tests {
         })
     }
 
+    #[test]
+    fn parse_submission_channel_capacity_valid_value() {
+        assert_eq!(parse_submission_channel_capacity("1024"), Some(1024));
+    }
+
+    #[test]
+    fn parse_submission_channel_capacity_invalid_string_falls_back() {
+        assert_eq!(parse_submission_channel_capacity("not-a-number"), None);
+    }
+
+    #[test]
+    fn parse_submission_channel_capacity_zero_falls_back() {
+        assert_eq!(parse_submission_channel_capacity("0"), None);
+    }
+
+    #[test]
+    fn parse_submission_channel_capacity_above_max_clamps() {
+        assert_eq!(
+            parse_submission_channel_capacity("999999"),
+            Some(SUBMISSION_CHANNEL_CAPACITY_MAX)
+        );
+    }
+
     #[tokio::test]
     async fn get_base_instructions_no_user_content() {
         let prompt_with_apply_patch_instructions =
@@ -7903,7 +8008,7 @@ mod tests {
             hooks: Hooks::new(HooksConfig {
                 legacy_notify_argv: config.notify.clone(),
             }),
-            rollout: Mutex::new(None),
+            rollout: RwLock::new(None),
             user_shell: Arc::new(default_user_shell()),
             shell_snapshot_tx: watch::channel(None).0,
             show_raw_agent_reasoning: config.show_raw_agent_reasoning,
@@ -8056,7 +8161,7 @@ mod tests {
             hooks: Hooks::new(HooksConfig {
                 legacy_notify_argv: config.notify.clone(),
             }),
-            rollout: Mutex::new(None),
+            rollout: RwLock::new(None),
             user_shell: Arc::new(default_user_shell()),
             shell_snapshot_tx: watch::channel(None).0,
             show_raw_agent_reasoning: config.show_raw_agent_reasoning,

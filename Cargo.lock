@@ -233,6 +233,9 @@ version = "0.1.0"
 [[package]]
 name = "harness_queue"
 version = "0.1.0"
+dependencies = [
+ "thiserror",
+]
 
 [[package]]
 name = "harness_runner"
@@ -257,6 +260,9 @@ dependencies = [
 [[package]]
 name = "harness_utils"
 version = "0.1.0"
+dependencies = [
+ "thiserror",
+]
 
 [[package]]
 name = "hermit-abi"

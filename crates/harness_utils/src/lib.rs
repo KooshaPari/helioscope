@@ -1,5 +1,20 @@
 //! Common utilities for heliosHarness
 
+use thiserror::Error;
+
+/// Error types for utils
+#[derive(Debug, Error)]
+pub enum UtilsError {
+    #[error("Parse error: {0}")]
+    Parse(String),
+    
+    #[error("Invalid input: {0}")]
+    InvalidInput(String),
+    
+    #[error("Overflow: {0}")]
+    Overflow(String),
+}
+
 /// Fast string hashing (FNV-1a variant)
 pub fn hash_str(s: &str) -> u64 {
     let mut hash: u64 = 0xcbf29ce484222325;
@@ -44,17 +59,56 @@ mod tests {
     #[test]
     fn test_hash() {
         assert_eq!(hash_str("test"), hash_str("test"));
+        assert_ne!(hash_str("test"), hash_str("other"));
     }
 
     #[test]
     fn test_parse_kv() {
         let result = parse_kv("a=1,b=2", ',', '=');
         assert_eq!(result.len(), 2);
+        assert_eq!(result[0], ("a".to_string(), "1".to_string()));
+    }
+
+    #[test]
+    fn test_parse_kv_with_spaces() {
+        let result = parse_kv(" a = 1 , b = 2 ", ',', '=');
+        assert_eq!(result.len(), 2);
+    }
+
+    #[test]
+    fn test_parse_kv_invalid() {
+        let result = parse_kv("invalid", ',', '=');
+        assert!(result.is_empty());
+    }
+
+    #[test]
+    fn test_parse_tags() {
+        let tags = parse_tags("tag1,tag2,tag3");
+        assert_eq!(tags.len(), 3);
+    }
+
+    #[test]
+    fn test_parse_tags_with_spaces() {
+        let tags = parse_tags(" tag1 , tag2 , tag3 ");
+        assert_eq!(tags.len(), 3);
+    }
+
+    #[test]
+    fn test_parse_tags_empty() {
+        let tags = parse_tags("");
+        assert!(tags.is_empty());
     }
 
     #[test]
     fn test_palindrome() {
         assert!(is_palindrome("radar"));
+        assert!(is_palindrome("level"));
+        assert!(is_palindrome(""));
         assert!(!is_palindrome("hello"));
+    }
+
+    #[test]
+    fn test_palindrome_single_char() {
+        assert!(is_palindrome("a"));
     }
 }

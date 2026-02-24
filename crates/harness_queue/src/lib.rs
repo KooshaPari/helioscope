@@ -3,6 +3,26 @@
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::collections::VecDeque;
 use std::sync::{Arc, Mutex};
+use thiserror::Error;
+
+/// Error types for queues
+#[derive(Debug, Error)]
+pub enum QueueError {
+    #[error("Channel is closed")]
+    Closed,
+    
+    #[error("Channel is full")]
+    Full,
+    
+    #[error("Channel is empty")]
+    Empty,
+    
+    #[error("Send error: {0}")]
+    Send(String),
+    
+    #[error("Receive error: {0}")]
+    Receive(String),
+}
 
 /// MPSC (Multiple Producer Single Consumer) channel
 pub struct Channel<T> {

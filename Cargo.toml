@@ -9,6 +9,7 @@ members = [
     "crates/harness_normalizer",
     "crates/harness_interfaces",
     "crates/harness_queue",
+    "crates/harness_teammates",
 ]
 
 [workspace.package]

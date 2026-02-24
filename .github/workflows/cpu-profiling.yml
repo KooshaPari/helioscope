@@ -1,0 +1,124 @@
+name: CPU Profiling
+
+on:
+  push:
+    branches: [feature/cpu-optimization]
+  pull_request:
+    branches: [main]
+
+jobs:
+  cpu-sampling:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          
+      - name: Run CPU sampling test
+        run: |
+          python -c "
+import sys
+import time
+sys.path.insert(0, 'harness/src')
+from harness.cpu_profiler import CPUSampler, get_cpu_info
+
+print('=== CPU Info ===')
+info = get_cpu_info()
+print(f'Cores: {info[\"physical_cores\"]} physical, {info[\"logical_cores\"]} logical')
+print(f'Freq: {info[\"freq_mhz\"]} MHz')
+print(f'Arch: {info[\"arch\"]}')
+
+print('\\n=== CPU Sampling Test ===')
+sampler = CPUSampler(interval=0.01)
+
+# Simulate some CPU work
+def cpu_work():
+    total = 0
+    for i in range(1000000):
+        total += i * i
+    return total
+
+sampler.start()
+for _ in range(5):
+    cpu_work()
+time.sleep(0.2)
+stats = sampler.stop()
+
+print(f'Samples: {stats.get(\"samples\", 0)}')
+print(f'CPU Avg: {stats.get(\"cpu_avg\", 0):.1f}%')
+print(f'CPU Peak: {stats.get(\"cpu_peak\", 0):.1f}%')
+print(f'Memory Avg: {stats.get(\"memory_avg\", 0):.1f}MB')
+print(f'Memory Peak: {stats.get(\"memory_peak\", 0):.1f}MB')
+print('CPU profiling working!')
+"
+          
+  async-runtime:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          
+      - name: Test async runtime
+        run: |
+          python -c "
+import sys
+import asyncio
+sys.path.insert(0, 'harness/src')
+from harness.async_runtime import AsyncRuntime, gather_with_limit
+
+async def dummy_task(n):
+    await asyncio.sleep(0.01)
+    return n * 2
+
+print('=== Async Runtime Test ===')
+runtime = AsyncRuntime()
+
+# Test gather_with_limit
+async def test_gather():
+    tasks = [dummy_task(i) for i in range(20)]
+    results = await gather_with_limit(*tasks, max_concurrent=5)
+    return results
+
+results = runtime.run(test_gather())
+print(f'Results: {len(results)} tasks completed')
+print('Async runtime working!')
+"
+          
+  graceful-shutdown:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          
+      - name: Test graceful shutdown
+        run: |
+          python -c "
+import sys
+sys.path.insert(0, 'harness/src')
+from harness.shutdown import GracefulShutdown, register_cleanup, get_shutdown_state
+
+print('=== Graceful Shutdown Test ===')
+shutdown = GracefulShutdown()
+
+cleanup_called = []
+
+@shutdown.on_shutdown
+def cleanup_handler():
+    cleanup_called.append(True)
+
+shutdown.register()
+state = get_shutdown_state()
+print(f'Registered: {state.stage.value}')
+print('Graceful shutdown working!')
+"

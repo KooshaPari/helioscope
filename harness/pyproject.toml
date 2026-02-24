@@ -14,3 +14,14 @@ helios-harness = "harness.scripts.run_harness:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["harness.src.harness"]
+
+# M1/Apple Silicon build settings
+[tool.hatch.envs.default]
+features = ["simd"]
+
+[tool.hatch.envs.default.overrides]
+matrix = { python = "3.12-aarch64" }
+
+# Universal Binary support
+[tool.hatch.metadata]
+allow-multiple-wheels = true

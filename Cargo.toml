@@ -1,6 +1,8 @@
 [workspace]
 members = [
     "crates/harness_spec",
+    "crates/harness_checkpoint",
+    "crates/harness_verify",
     "crates/harness_cache",
     "crates/harness_runner", 
     "crates/harness_scaling",

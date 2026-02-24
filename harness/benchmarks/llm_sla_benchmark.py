@@ -138,6 +138,25 @@ def _get_model_costs(model: str) -> dict:
 # ============================================================================
 
 CLIPROXY_URL = os.environ.get("CLIPROXY_URL", "http://localhost:8317")
+DEFAULT_HARNESS = os.environ.get("HARNESS", "cliproxy")
+
+
+def detect_harness() -> str:
+    """Detect running harness type."""
+    harness = os.environ.get("HARNESS", "").lower()
+    if harness:
+        return harness
+    try:
+        import socket
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.settimeout(1)
+        result = sock.connect_ex(("localhost", 8317))
+        sock.close()
+        if result == 0:
+            return "cliproxy"
+    except:
+        pass
+    return "unknown"
 
 
 async def _monitor_system_resources(pid: int, interval: float = 0.1) -> SystemMetrics:

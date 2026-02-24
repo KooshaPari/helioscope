@@ -1,0 +1,25 @@
+[package]
+name = "harness_spec"
+version = "0.1.0"
+edition = "2021"
+description = "Specification parser and validator for heliosHarness autonomous agents"
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_yaml = "0.9"
+serde_json = "1.0"
+thiserror = "1.0"
+uuid = { version = "1.0", features = ["v4", "serde"] }
+chrono = { version = "0.4", features = ["serde"] }
+rust_decimal = { version = "1.33", features = ["serde"] }
+regex = "1.10"
+async-trait = "0.1"
+tokio = { version = "1.0", features = ["full"] }
+tracing = "0.1"
+
+[dev-dependencies]
+tokio-test = "0.4"
+rstest = "0.18"
+
+[features]
+default = []

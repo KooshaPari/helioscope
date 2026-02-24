@@ -1,16 +1,145 @@
+# =============================================================================
+# heliosHarness — Root Taskfile
+# =============================================================================
+# Hybrid Rust + Python project using uv + ruff + cargo.
+# Run `task --list` to see all available tasks.
+# =============================================================================
+
 version: '3'
 
+vars:
+  PYTHON_SRC: 'harness/src/harness'
+  PYTHON_TESTS: 'harness/tests'
+  RUST_PKG: '.'
+
 tasks:
-  docs:install:
-    dir: docs
+  default:
     cmds:
-      - npm install
+      - task --list
+    silent: true
 
-  docs:build:
-    dir: docs
+  # -- Python tasks --
+  py:lint:
+    desc: Run ruff linter
     cmds:
-      - npm run docs:build
+      - uv run ruff check {{.PYTHON_SRC}} {{.PYTHON_TESTS}}
 
-  quality:
+  py:lint:fix:
+    desc: Run ruff linter with auto-fix
     cmds:
-      - task docs:build
+      - uv run ruff check --fix {{.PYTHON_SRC}} {{.PYTHON_TESTS}}
+
+  py:format:
+    desc: Format code with ruff
+    cmds:
+      - uv run ruff format {{.PYTHON_SRC}} {{.PYTHON_TESTS}}
+
+  py:format:check:
+    desc: Check formatting without modifying
+    cmds:
+      - uv run ruff format --check {{.PYTHON_SRC}} {{.PYTHON_TESTS}}
+
+  py:typecheck:
+    desc: Run type checker
+    cmds:
+      - uv run ty check {{.PYTHON_SRC}}
+
+  py:test:
+    desc: Run tests
+    cmds:
+      - cd harness && PYTHONPATH=. uv run pytest tests
+
+  py:test:cov:
+    desc: Run tests with coverage
+    cmds:
+      - cd harness && uv run pytest --cov=src/harness --cov-report=term-missing tests
+
+  # -- Rust tasks --
+  rust:check:
+    desc: Check for compilation errors
+    cmds:
+      - cargo check --workspace
+
+  rust:clippy:
+    desc: Run clippy linter
+    cmds:
+      - cargo clippy --workspace -- --allow warnings
+
+  rust:fmt:
+    desc: Format code with rustfmt
+    cmds:
+      - cargo fmt --all
+
+  rust:test:
+    desc: Run tests
+    cmds:
+      - cargo test --workspace
+
+  rust:build:
+    desc: Build project
+    cmds:
+      - cargo build --workspace
+
+  rust:build:release:
+    desc: Build release
+    cmds:
+      - cargo build --release --workspace
+
+  rust:clean:
+    desc: Clean build artifacts
+    cmds:
+      - cargo clean
+
+  # -- Combined tasks --
+  check:
+    desc: "Canonical full-project check"
+    cmds:
+      - task: py:lint
+      - task: py:format:check
+      - task: py:typecheck
+      - task: rust:check
+      - task: rust:clippy
+
+  lint:
+    desc: "Run all linters"
+    cmds:
+      - task: py:lint
+      - task: rust:clippy
+
+  test:
+    desc: "Run all tests"
+    cmds:
+      - task: py:test
+      - task: rust:test
+
+  test:cov:
+    desc: "Run tests with coverage"
+    cmds:
+      - task: py:test:cov
+
+  build:
+    desc: "Build project"
+    cmds:
+      - task: rust:build
+
+  build:release:
+    desc: "Build release"
+    cmds:
+      - task: rust:build:release
+
+  format:
+    desc: "Format code"
+    cmds:
+      - task: py:format
+      - task: rust:fmt
+
+  clean:
+    desc: "Clean build artifacts"
+    cmds:
+      - task: rust:clean
+
+  ci:
+    desc: "Run CI pipeline"
+    cmds:
+      - task check
+      - task test

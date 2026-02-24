@@ -104,6 +104,10 @@ impl Cache {
     pub fn len(&self) -> u64 {
         self.store.read().ok().map(|s| s.len() as u64).unwrap_or(0)
     }
+
+    pub fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
 }
 
 impl Default for Cache {

@@ -378,6 +378,26 @@ def print_granular_report(result: BenchmarkResult, name: str = "CODEX") -> None:
 
 # Cliproxy LLM benchmark support
 CLIPROXY_URL = os.environ.get("CLIPROXY_URL", "http://localhost:8317")
+DEFAULT_HARNESS = os.environ.get("HARNESS", "cliproxy")
+
+
+def detect_harness() -> str:
+    """Detect running harness type."""
+    harness = os.environ.get("HARNESS", "").lower()
+    if harness:
+        return harness
+    # Check cliproxy availability
+    try:
+        import socket
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.settimeout(1)
+        result = sock.connect_ex(("localhost", 8317))
+        sock.close()
+        if result == 0:
+            return "cliproxy"
+    except:
+        pass
+    return "unknown"
 
 
 def _call_cliproxy(prompt: str, model: str = "MiniMax-M2.5-highspeed") -> AgentMetrics:
@@ -478,8 +498,14 @@ def run_minimax_benchmark(
     agent_count: int = 6,
     prompt: str = "Say hello and briefly explain what you can do",
     model: str = "MiniMax-M2.5-highspeed",
+    use_direct: bool = None,
 ) -> BenchmarkResult:
     """Run minimax concurrency benchmark via cliproxy."""
+    # Auto-detect harness if not specified
+    if use_direct is None:
+        harness = detect_harness()
+        use_direct = harness != "cliproxy"
+        print(f"Detected harness: {harness}, use_direct: {use_direct}")
     return asyncio.run(_run_concurrent_minimax(prompt, agent_count, model))
 
 

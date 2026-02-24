@@ -3,11 +3,10 @@
 use crate::domain::{Teammate, DelegationRequest, DelegationResult, HealthStatus};
 use crate::ports::{TeammateRegistryPort, DelegationPort, HealthCheckPort};
 use std::collections::HashMap;
-use std::sync::Arc;
-use tokio::sync::RwLock;
-use tracing::{debug, instrument};
+use std::sync::{Arc, RwLock};
+use tracing::debug;
 
-/// In-memory teammate registry
+/// In-memory teammate registry using std::sync::RwLock
 pub struct InMemoryTeammateRegistry {
     teammates: Arc<RwLock<HashMap<String, Teammate>>>,
 }
@@ -24,35 +23,34 @@ impl Default for InMemoryTeammateRegistry {
     fn default() -> Self { Self::new() }
 }
 
-#[instrument(skip(self))]
 impl TeammateRegistryPort for InMemoryTeammateRegistry {
-    async fn register(&self, teammate: Teammate) {
+    fn register(&self, teammate: Teammate) {
         debug!(id = %teammate.id, name = %teammate.name, "registering teammate");
-        let mut t = self.teammates.write().await;
-        t.insert(teammate.id.clone(), teammate);
+        if let Ok(mut t) = self.teammates.write() {
+            t.insert(teammate.id.clone(), teammate);
+        }
     }
 
-    async fn get(&self, id: &str) -> Option<Teammate> {
-        let t = self.teammates.read().await;
-        t.get(id).cloned()
+    fn get(&self, id: &str) -> Option<Teammate> {
+        self.teammates.read().ok()?.get(id).cloned()
     }
 
-    async fn list(&self) -> Vec<Teammate> {
-        let t = self.teammates.read().await;
-        t.values().cloned().collect()
+    fn list(&self) -> Vec<Teammate> {
+        self.teammates.read().ok()
+            .map(|t| t.values().cloned().collect())
+            .unwrap_or_default()
     }
 
-    async fn find_by_role(&self, role: &str) -> Vec<Teammate> {
-        let t = self.teammates.read().await;
-        t.values()
-            .filter(|tm| tm.role == role)
-            .cloned()
-            .collect()
+    fn find_by_role(&self, role: &str) -> Vec<Teammate> {
+        self.teammates.read().ok()
+            .map(|t| t.values().filter(|tm| tm.role == role).cloned().collect())
+            .unwrap_or_default()
     }
 
-    async fn unregister(&self, id: &str) -> bool {
-        let mut t = self.teammates.write().await;
-        t.remove(id).is_some()
+    fn unregister(&self, id: &str) -> bool {
+        self.teammates.write().ok()
+            .map(|mut t| t.remove(id).is_some())
+            .unwrap_or(false)
     }
 }
 
@@ -60,16 +58,24 @@ impl TeammateRegistryPort for InMemoryTeammateRegistry {
 pub struct SimpleDelegationAdapter;
 
 impl DelegationPort for SimpleDelegationAdapter {
-    async fn submit(&self, request: DelegationRequest) -> DelegationResult {
+    fn submit(&self, request: DelegationRequest) -> DelegationResult {
         debug!(teammate = %request.teammate_id, task = %request.task_description, "submitting delegation");
-        DelegationResult::success(&request.teammate_id, format!("Completed: {}", request.task_description))
+        DelegationResult {
+            delegation_id: uuid_v4(),
+            teammate_id: request.teammate_id.clone(),
+            status: crate::domain::DelegationStatus::Completed,
+            result: Some(format!("Completed: {}", request.task_description)),
+            error: None,
+            duration_ms: 0,
+            evidence: vec![],
+        }
     }
 
-    async fn status(&self, _delegation_id: &str) -> Option<DelegationResult> {
+    fn status(&self, _delegation_id: &str) -> Option<DelegationResult> {
         None
     }
 
-    async fn cancel(&self, _delegation_id: &str) -> bool {
+    fn cancel(&self, _delegation_id: &str) -> bool {
         false
     }
 }
@@ -85,14 +91,20 @@ impl HealthCheckAdapter {
     }
 }
 
-#[instrument(skip(self))]
 impl HealthCheckPort for HealthCheckAdapter {
-    async fn check_health(&self, _teammate_id: &str) -> HealthStatus {
+    fn check_health(&self, _teammate_id: &str) -> HealthStatus {
         HealthStatus::Healthy
     }
 
-    async fn healthy_teammates(&self) -> Vec<Teammate> {
-        let t = self.registry.read().await;
-        t.values().cloned().collect()
+    fn healthy_teammates(&self) -> Vec<Teammate> {
+        self.registry.read().ok()
+            .map(|t| t.values().cloned().collect())
+            .unwrap_or_default()
     }
+}
+
+fn uuid_v4() -> String {
+    use std::time::{SystemTime, UNIX_EPOCH};
+    let now = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
+    format!("{:032x}-{:016x}", now.as_nanos(), now.as_secs())
 }

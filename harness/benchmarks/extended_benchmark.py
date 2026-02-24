@@ -40,6 +40,26 @@ import statistics
 CLIPROXY_URL = os.environ.get("CLIPROXY_URL", "http://localhost:8317")
 MINIMAX_API_KEY = os.environ.get("MINIMAX_API_KEY", "")
 MINIMAX_BASE_URL = "https://api.minimax.chat/v1"
+DEFAULT_HARNESS = os.environ.get("HARNESS", "cliproxy")
+
+
+def detect_harness() -> str:
+    """Detect running harness type."""
+    harness = os.environ.get("HARNESS", "").lower()
+    if harness:
+        return harness
+    # Check cliproxy availability
+    try:
+        import socket
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.settimeout(1)
+        result = sock.connect_ex(("localhost", 8317))
+        sock.close()
+        if result == 0:
+            return "cliproxy"
+    except:
+        pass
+    return "unknown"
 
 
 def check_cliproxy_health(timeout: float = 5.0) -> bool:
@@ -283,9 +303,15 @@ async def run_extended_benchmark(
     num_agents: int = 1,
     prompt: str = "Solve this coding task: write a function to reverse a string",
     num_trials: int = 10,
-    use_direct: bool = False,
+    use_direct: bool = None,
 ) -> ExtendedBenchmarkResult:
     """Run extended benchmark with all metric dimensions."""
+    
+    # Auto-detect harness if not specified
+    if use_direct is None:
+        harness = detect_harness()
+        use_direct = harness != "cliproxy"
+        print(f"Detected harness: {harness}, use_direct: {use_direct}")
     
     result = ExtendedBenchmarkResult(
         name=f"minimax-{model}",

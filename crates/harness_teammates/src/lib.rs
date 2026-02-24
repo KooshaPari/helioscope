@@ -6,7 +6,7 @@ pub mod adapters;
 
 pub use domain::{Priority, DelegationStatus, HealthStatus, Teammate, DelegationRequest, DelegationResult};
 pub use ports::{TeammateRegistryPort, DelegationPort, HealthCheckPort};
-pub use adapters::{InMemoryRegistry, SimpleDelegationAdapter, HealthAdapter};
+pub use adapters::{InMemoryTeammateRegistry, SimpleDelegationAdapter, HealthCheckAdapter};
 
 use std::sync::RwLock;
 use std::collections::HashMap;
@@ -16,7 +16,7 @@ pub struct TeammateRegistry {
 }
 
 impl TeammateRegistry {
-    pub fn new() -> Self { Self { teammates: RwLock::new(HashMap::new()) }
+    pub fn new() -> Self { Self { teammates: RwLock::new(HashMap::new()) } }
     pub fn register(&self, t: Teammate) { if let Ok(mut m) = self.teammates.write() { m.insert(t.id.clone(), t); } }
     pub fn get(&self, id: &str) -> Option<Teammate> { self.teammates.read().ok()?.get(id).cloned() }
     pub fn list(&self) -> Vec<Teammate> { self.teammates.read().ok().map(|m| m.values().cloned().collect()).unwrap_or_default() }

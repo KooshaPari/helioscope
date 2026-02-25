@@ -1,0 +1,47 @@
+[workspace]
+resolver = "2"
+members = [
+    # Primary CLI (codex-rs fork)
+    "rust_core/cli",
+    "rust_core/core",
+    "rust_core/codex-client",
+    "rust_core/config",
+    "rust_core/exec",
+    "rust_core/backend-client",
+    "rust_core/tui",
+    
+    # Extensions from thegent
+    "crates/thegent-benchmark",
+    "crates/thegent-cache",
+    "crates/thegent-crypto",
+    "crates/thegent-discovery",
+    "crates/thegent-fs",
+    "crates/thegent-git",
+    "crates/thegent-hooks",
+    "crates/thegent-jsonl",
+    "crates/thegent-maif",
+    "crates/thegent-memory",
+    "crates/thegent-metrics",
+    "crates/thegent-parser",
+    "crates/thegent-path-resolve",
+    "crates/thegent-policy",
+    "crates/thegent-resources",
+    "crates/thegent-router",
+    "crates/thegent-runtime",
+    "crates/thegent-shims",
+    "crates/thegent-shm",
+    "crates/thegent-subprocess",
+    
+    # Native extensions
+    "crates/harness-native",
+]
+
+[workspace.package]
+name = "helios"
+version = "0.1.0"
+edition = "2021"
+authors = ["Koosha Pari <kooshapari@gmail.com>"]
+license = "MIT"
+
+[workspace.metadata]
+rustfmt.exclude = []

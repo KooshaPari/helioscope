@@ -1,225 +1,210 @@
-"""Bulkhead Pattern - Resource isolation for agent pools.
+"""Bulkhead pattern for resource isolation.
 
-Provides resource isolation between different agent pools to prevent
-resource contention and ensure fair scheduling.
+Provides thread pool and semaphore-based bulkheads to prevent cascade failures.
 """
 
-import asyncio
-import threading
 import time
+import threading
+from concurrent.futures import ThreadPoolExecutor, Future
 from dataclasses import dataclass, field
-from typing import Any, Callable, Optional
+from typing import Callable, Any, Optional, Dict
+from functools import wraps
 from enum import Enum
+import queue
 
 
 class BulkheadState(Enum):
-    """Bulkhead availability state."""
-    AVAILABLE = "available"
-    FULL = "full"
-    ISOLATED = "isolated"
-    DEGRADED = "degraded"
-
-
-@dataclass
-class BulkheadConfig:
-    """Configuration for a bulkhead."""
-    name: str
-    max_concurrent: int = 10
-    max_queue_size: int = 100
-    timeout_seconds: float = 60.0
-    isolation_enabled: bool = True
+    """Bulkhead states."""
+    HEALTHY = "healthy"
+    LOADED = "loaded"
+    REJECTED = "rejected"
 
 
 @dataclass
 class BulkheadMetrics:
-    """Metrics for a bulkhead."""
-    name: str
-    state: BulkheadState = BulkheadState.AVAILABLE
-    current_usage: int = 0
-    queue_size: int = 0
-    total_requests: int = 0
-    successful_requests: int = 0
-    rejected_requests: int = 0
-    timed_out_requests: int = 0
-    avg_wait_time_ms: float = 0.0
+    """Bulkhead metrics."""
+    total_calls: int = 0
+    successful_calls: int = 0
+    rejected_calls: int = 0
+    queued_calls: int = 0
+    avg_wait_time: float = 0.0
+    state: BulkheadState = BulkheadState.HEALTHY
 
 
-class Bulkhead:
-    """Bulkhead pattern implementation for resource isolation.
+class ThreadPoolBulkhead:
+    """Thread pool-based bulkhead for resource isolation."""
     
-    Usage:
-        bulkhead = Bulkhead(
-            name=\"coder-pool\",
-            max_concurrent=5,
-            max_queue_size=10
-        )
-        
-        async with bulkhead.acquire():
-            # Execute task
-            pass
-    """
+    def __init__(self, max_workers: int = 10, max_queue_size: int = 100):
+        self.max_workers = max_workers
+        self.max_queue_size = max_queue_size
+        self._executor = ThreadPoolExecutor(max_workers=max_workers)
+        self._metrics = BulkheadMetrics()
+        self._lock = threading.Lock()
     
-    def __init__(self, config: BulkheadConfig):
-        self._config = config
-        self._semaphore = asyncio.Semaphore(config.max_concurrent)
-        self._queue: asyncio.Queue = asyncio.Queue(maxsize=config.max_queue_size)
-        self._running = 0
-        self._lock = threading.Lock()  # Use threading lock for sync access
-        
-        # Metrics
-        self._total_requests = 0
-        self._successful = 0
-        self._rejected = 0
-        self._timeouts = 0
-        self._wait_times: list[float] = []
-    
-    @property
-    def name(self) -> str:
-        return self._config.name
-    
-    async def acquire(self, timeout: Optional[float] = None) -> '_BulkheadContext':
-        """Acquire a slot in the bulkhead."""
-        start = time.perf_counter()
-        
-        # Try to acquire semaphore
-        try:
-            await asyncio.wait_for(
-                self._semaphore.acquire(),
-                timeout=timeout or self._config.timeout_seconds
-            )
-        except asyncio.TimeoutError:
-            self._rejected += 1
-            self._timeouts += 1
-            raise BulkheadFullError(f"Bulkhead {self._config.name} is full")
-        
-        wait_time = (time.perf_counter() - start) * 1000
-        self._wait_times.append(wait_time)
-        
+    def submit(self, fn: Callable, *args, **kwargs) -> Future:
+        """Submit a task to the bulkhead."""
         with self._lock:
-            self._running += 1
-            self._total_requests += 1
+            self._metrics.total_calls += 1
+            
+            # Check queue capacity
+            qsize = self._executor._work_queue.qsize()
+            self._metrics.queued_calls = qsize
+            
+            if qsize >= self.max_queue_size:
+                self._metrics.rejected_calls += 1
+                self._metrics.state = BulkheadState.REJECTED
+                raise BulkheadRejected("Bulkhead at capacity")
+            
+            if qsize > self.max_workers * 2:
+                self._metrics.state = BulkheadState.LOADED
+            else:
+                self._metrics.state = BulkheadState.HEALTHY
         
-        return _BulkheadContext(self)
-    
-    def release(self) -> None:
-        """Release a slot in the bulkhead."""
-        self._semaphore.release()
+        start_time = time.time()
+        future = self._executor.submit(fn, *args, **kwargs)
         
-        with self._lock:
-            self._running -= 1
-            self._successful += 1
+        def callback(f: Future):
+            with self._lock:
+                self._metrics.successful_calls += 1
+                elapsed = time.time() - start_time
+                self._metrics.avg_wait_time = (
+                    (self._metrics.avg_wait_time * (self._metrics.successful_calls - 1) + elapsed) 
+                    / self._metrics.successful_calls
+                )
+        
+        future.add_done_callback(callback)
+        return future
     
-    def get_metrics(self) -> BulkheadMetrics:
+    def shutdown(self, wait: bool = True):
+        """Shutdown the bulkhead."""
+        self._executor.shutdown(wait=wait)
+    
+    def metrics(self) -> BulkheadMetrics:
         """Get bulkhead metrics."""
-        avg_wait = sum(self._wait_times) / len(self._wait_times) if self._wait_times else 0
-        
-        state = BulkheadState.AVAILABLE
-        if self._running >= self._config.max_concurrent:
-            state = BulkheadState.FULL
-        elif self._rejected > 0:
-            state = BulkheadState.DEGRADED
-        
-        return BulkheadMetrics(
-            name=self._config.name,
-            state=state,
-            current_usage=self._running,
-            queue_size=self._queue.qsize(),
-            total_requests=self._total_requests,
-            successful_requests=self._successful,
-            rejected_requests=self._rejected,
-            timed_out_requests=self._timeouts,
-            avg_wait_time_ms=avg_wait,
-        )
+        with self._lock:
+            return BulkheadMetrics(
+                total_calls=self._metrics.total_calls,
+                successful_calls=self._metrics.successful_calls,
+                rejected_calls=self._metrics.rejected_calls,
+                queued_calls=self._executor._work_queue.qsize(),
+                avg_wait_time=self._metrics.avg_wait_time,
+                state=self._metrics.state
+            )
 
 
-class _BulkheadContext:
-    """Context manager for bulkhead acquisition."""
-    
-    def __init__(self, bulkhead: Bulkhead):
-        self._bulkhead = bulkhead
-    
-    async def __aenter__(self):
-        return self
-    
-    async def __aexit__(self, exc_type, exc_val, exc_tb):
-        self._bulkhead.release()
-
-
-class BulkheadFullError(Exception):
-    """Raised when bulkhead is at capacity."""
+class BulkheadRejected(Exception):
+    """Exception raised when bulkhead rejects a call."""
     pass
 
 
-class BulkheadPool:
-    """Pool of bulkheads for different agent types.
+class SemaphoreBulkhead:
+    """Semaphore-based bulkhead for limiting concurrent access."""
     
-    Usage:
-        pool = BulkheadPool()
-        
-        # Register bulkheads
-        pool.register(BulkheadConfig(name=\"coders\", max_concurrent=5))
-        pool.register(BulkheadConfig(name=\"reviewers\", max_concurrent=3))
-        
-        # Get bulkhead
-        bulkhead = pool.get(\"coders\")
-        async with bulkhead.acquire():
-            pass
-    """
-    
-    _instance: Optional['BulkheadPool'] = None
-    
-    def __init__(self):
-        self._bulkheads: dict[str, Bulkhead] = {}
+    def __init__(self, max_concurrent: int = 10):
+        self.max_concurrent = max_concurrent
+        self._semaphore = threading.Semaphore(max_concurrent)
+        self._metrics = BulkheadMetrics()
         self._lock = threading.Lock()
     
-    @classmethod
-    def get_instance(cls) -> 'BulkheadPool':
-        if cls._instance is None:
-            cls._instance = cls()
-        return cls._instance
-    
-    def register(self, config: BulkheadConfig) -> Bulkhead:
-        """Register a new bulkhead."""
+    def acquire(self, timeout: Optional[float] = None) -> bool:
+        """Acquire the semaphore."""
+        acquired = self._semaphore.acquire(timeout=timeout)
+        
         with self._lock:
-            bulkhead = Bulkhead(config)
-            self._bulkheads[config.name] = bulkhead
-            return bulkhead
+            self._metrics.total_calls += 1
+            if not acquired:
+                self._metrics.rejected_calls += 1
+                self._metrics.state = BulkheadState.REJECTED
+            else:
+                self._metrics.successful_calls += 1
+                self._metrics.state = BulkheadState.HEALTHY
+        
+        return acquired
     
-    def get(self, name: str) -> Optional[Bulkhead]:
-        """Get bulkhead by name."""
-        return self._bulkheads.get(name)
+    def release(self):
+        """Release the semaphore."""
+        self._semaphore.release()
     
-    def get_all(self) -> list[Bulkhead]:
-        """Get all bulkheads."""
-        return list(self._bulkheads.values())
+    def __enter__(self):
+        """Context manager entry."""
+        if not self.acquire(timeout=0):
+            raise BulkheadRejected("Bulkhead at capacity")
+        return self
     
-    def get_all_metrics(self) -> dict[str, BulkheadMetrics]:
-        """Get metrics for all bulkheads."""
-        return {
-            name: bulkhead.get_metrics()
-            for name, bulkhead in self._bulkheads.items()
-        }
+    def __exit__(self, *args):
+        """Context manager exit."""
+        self.release()
+    
+    def metrics(self) -> BulkheadMetrics:
+        """Get bulkhead metrics."""
+        with self._lock:
+            return BulkheadMetrics(
+                total_calls=self._metrics.total_calls,
+                successful_calls=self._metrics.successful_calls,
+                rejected_calls=self._metrics.rejected_calls,
+                queued_calls=self.max_concurrent - self._semaphore._value,
+                state=self._metrics.state
+            )
 
 
-# Decorator for easy bulkhead usage
-def bulkhead(bulkhead_name: str, timeout: float = 60.0):
-    """Decorator to wrap function with bulkhead.
+def bulkhead(max_workers: int = 10, max_queue: int = 100):
+    """Decorator to apply bulkhead pattern to a function.
     
     Usage:
-        @bulkhead(\"coders\")
-        async def process_code(task):
-            pass
+        @bulkhead(max_workers=5, max_queue=10)
+        def my_function():
+            ...
     """
-    def decorator(func: Callable):
-        async def wrapper(*args, **kwargs):
-            pool = BulkheadPool.get_instance()
-            bulkhead = pool.get(bulkhead_name)
-            
-            if not bulkhead:
-                raise ValueError(f"Bulkhead not found: {bulkhead_name}")
-            
-            async with bulkhead.acquire(timeout=timeout):
-                return await func(*args, **kwargs)
+    _bulkhead = ThreadPoolBulkhead(max_workers, max_queue)
+    
+    def decorator(fn):
+        @wraps(fn)
+        def wrapper(*args, **kwargs):
+            return _bulkhead.submit(fn, *args, **kwargs)
         
+        wrapper.bulkhead = _bulkhead
         return wrapper
+    
     return decorator
+
+
+# Global bulkhead instances
+_bulkheads: Dict[str, ThreadPoolBulkhead] = {}
+
+
+def get_bulkhead(name: str, max_workers: int = 10, max_queue: int = 100) -> ThreadPoolBulkhead:
+    """Get or create a named bulkhead."""
+    if name not in _bulkheads:
+        _bulkheads[name] = ThreadPoolBulkhead(max_workers, max_queue)
+    return _bulkheads[name]
+
+
+# Example
+if __name__ == "__main__":
+    import random
+    
+    bh = ThreadPoolBulkhead(max_workers=2, max_queue=5)
+    
+    def slow_task(i):
+        time.sleep(random.uniform(0.1, 0.5))
+        return f"Task {i} done"
+    
+    # Submit tasks
+    futures = []
+    for i in range(10):
+        try:
+            f = bh.submit(slow_task, i)
+            futures.append(f)
+            print(f"Submitted task {i}")
+        except BulkheadRejected as e:
+            print(f"Rejected task {i}: {e}")
+    
+    # Wait for completion
+    for f in futures:
+        try:
+            print(f"Result: {f.result(timeout=2)")
+        except Exception as e:
+            print(f"Error: {e}")
+    
+    print(f"Metrics: {bh.metrics()}")
+    bh.shutdown()

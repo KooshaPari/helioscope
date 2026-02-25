@@ -1,0 +1,16 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'helios-harness'
+    static_configs:
+      - targets: ['helios-harness:8081']
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+
+  - job_name: 'helios-harness-health'
+    static_configs:
+      - targets: ['helios-harness:8081']
+    metrics_path: '/health'
+    scrape_interval: 30s

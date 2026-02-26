@@ -8,10 +8,11 @@ import json
 import os
 import threading
 import time
-import uuid
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Optional
+
+from .id_utils import new_id
 
 
 @dataclass
@@ -70,7 +71,7 @@ class SessionStore:
     
     def create(self, goal: str, metadata: Optional[dict] = None) -> SessionState:
         """Create a new session."""
-        session_id = str(uuid.uuid4())[:12]
+        session_id = new_id().replace("-", "")
         
         now = time.time()
         session = SessionState(
@@ -233,7 +234,7 @@ class SessionStore:
             if not session:
                 return None
             
-            checkpoint_id = str(uuid.uuid4())[:8]
+            checkpoint_id = new_id().replace("-", "")
             checkpoint_dir = self._base_dir / session_id / "checkpoints"
             checkpoint_dir.mkdir(parents=True, exist_ok=True)
             

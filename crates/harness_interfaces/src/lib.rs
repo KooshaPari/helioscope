@@ -1,6 +1,7 @@
 //! Interfaces module - Protocol definitions for heliosHarness
 
 use std::collections::HashMap;
+use uuid::Uuid;
 
 /// Request context
 #[derive(Debug, Clone)]
@@ -15,7 +16,7 @@ pub struct Request {
 impl Request {
     pub fn new(method: &str, path: &str) -> Self {
         Self {
-            id: uuid_v4(),
+            id: Uuid::new_v4().to_string(),
             method: method.to_string(),
             path: path.to_string(),
             headers: HashMap::new(),
@@ -73,12 +74,6 @@ impl Event {
 }
 
 /// Simple UUID v4 generator
-fn uuid_v4() -> String {
-    use std::time::{SystemTime, UNIX_EPOCH};
-    let now = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
-    format!("{:032x}-{:016x}", now.as_nanos(), now.as_secs())
-}
-
 /// Handler trait for request processing
 pub trait Handler: Send + Sync {
     fn handle(&self, request: Request) -> Response;

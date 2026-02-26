@@ -1,13 +1,13 @@
 //! Verification pipeline
 
-use crate::error::{VerifyError, Result};
+use crate::error::{Result};
 use crate::result::{VerificationResult, GateResult, GateDetail};
-use crate::runners::{run_cargo_test, run_pytest};
+use crate::runners::run_cargo_test;
 use harness_spec::models::{Specification, VerificationRule};
 
 /// Verification pipeline
 pub struct VerificationPipeline {
-    runners: PipelineRunners,
+    _runners: PipelineRunners,
 }
 
 impl Default for VerificationPipeline {
@@ -20,7 +20,7 @@ impl VerificationPipeline {
     /// Create new pipeline
     pub fn new() -> Self {
         Self {
-            runners: PipelineRunners::default(),
+            _runners: PipelineRunners::default(),
         }
     }
     

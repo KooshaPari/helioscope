@@ -7,10 +7,11 @@ dynamic plan updates.
 import json
 import threading
 import time
-import uuid
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Callable, Optional
+
+from .id_utils import new_id
 
 
 class PlanState(Enum):
@@ -92,7 +93,7 @@ class PlanExecutor:
         metadata: Optional[dict] = None,
     ) -> ExecutionPlan:
         """Create a new execution plan."""
-        plan_id = str(uuid.uuid4())[:8]
+        plan_id = new_id().replace("-", "")
         
         plan_steps = [
             PlanStep(

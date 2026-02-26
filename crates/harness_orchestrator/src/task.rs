@@ -3,6 +3,7 @@
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use chrono::{DateTime, Utc};
+use crate::id::{new_id, short_id};
 
 /// Task status
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
@@ -109,7 +110,7 @@ impl Task {
     /// Create new task
     pub fn new(spec_id: &str, name: &str, description: &str) -> Self {
         Self {
-            id: Uuid::new_v4(),
+            id: new_id(),
             spec_id: spec_id.to_string(),
             name: name.to_string(),
             description: description.to_string(),
@@ -123,6 +124,10 @@ impl Task {
             result: None,
             error: None,
         }
+    }
+
+    pub fn short_id(&self) -> String {
+        short_id(&self.id, "task", 12)
     }
     
     /// Add dependency

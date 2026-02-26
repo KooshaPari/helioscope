@@ -8,6 +8,7 @@ from time import sleep
 from typing import Iterable
 
 from .interfaces import CanonicalCommand
+from .id_utils import artifact_slug
 
 
 class RunnerConfig:
@@ -150,7 +151,7 @@ class Runner:
         )
 
     def _slug(self, command: str) -> str:
-        return str(abs(hash(command)) % 10_000_000)
+        return artifact_slug(command, length=12)
 
 
 class QualityProfile(str):

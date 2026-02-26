@@ -5,12 +5,13 @@ Provides async queue with priority levels and backpressure.
 
 import asyncio
 import time
-import uuid
 from dataclasses import dataclass, field
 from typing import Any, Optional, Callable, Dict
 from enum import Enum
 from collections import deque
 import heapq
+
+from .id_utils import new_id
 
 
 class Priority(Enum):
@@ -27,7 +28,7 @@ class QueuedRequest:
     """Queued request with priority."""
     priority: int
     timestamp: float = field(compare=True)
-    request_id: str = field(compare=False, default_factory=lambda: uuid.uuid4().hex)
+    request_id: str = field(compare=False, default_factory=lambda: new_id())
     payload: Any = field(compare=False, default=None)
     callback: Optional[Callable] = field(compare=False, default=None)
 

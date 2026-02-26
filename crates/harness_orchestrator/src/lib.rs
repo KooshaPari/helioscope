@@ -1,6 +1,8 @@
 //! Sub-Agent Orchestrator
-//! 
+//!
 //! Coordinates multiple sub-agents for parallel execution of complex specifications.
+
+mod id;
 
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -8,6 +10,8 @@ use chrono::{DateTime, Utc};
 use std::collections::VecDeque;
 use std::sync::Arc;
 use tokio::sync::RwLock;
+
+use crate::id::{new_id, short_id};
 
 /// Task status
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
@@ -41,7 +45,7 @@ pub struct Task {
 impl Task {
     pub fn new(spec_id: &str, name: &str, description: &str) -> Self {
         Self {
-            id: Uuid::new_v4(),
+            id: new_id(),
             spec_id: spec_id.to_string(),
             name: name.to_string(),
             description: description.to_string(),
@@ -58,6 +62,11 @@ impl Task {
     }
     
     pub fn depends_on(&mut self, task_id: Uuid) { self.dependencies.push(task_id); }
+
+    pub fn short_id(&self) -> String {
+        short_id(&self.id, "task", 12)
+    }
+
     pub fn is_ready(&self, completed: &[Uuid]) -> bool {
         self.status == TaskStatus::Pending && 
         self.dependencies.iter().all(|id| completed.contains(id))
@@ -106,7 +115,7 @@ pub struct Agent {
 impl Agent {
     pub fn new(name: &str, capabilities: Vec<AgentCapability>) -> Self {
         Self {
-            id: Uuid::new_v4(),
+            id: new_id(),
             name: name.to_string(),
             capabilities,
             status: AgentStatus::Idle,

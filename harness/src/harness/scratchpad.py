@@ -9,10 +9,11 @@ import os
 import shutil
 import tempfile
 import threading
-import uuid
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Optional
+
+from .id_utils import new_id
 
 
 @dataclass
@@ -63,7 +64,7 @@ class ScratchpadFileSystem:
         metadata: Optional[dict] = None,
     ) -> str:
         """Write content to scratchpad."""
-        entry_id = str(uuid.uuid4())[:8]
+        entry_id = new_id().replace("-", "")
         
         # Determine file extension
         if isinstance(content, bytes):

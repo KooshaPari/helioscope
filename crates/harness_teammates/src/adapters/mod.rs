@@ -5,6 +5,7 @@ use crate::ports::{TeammateRegistryPort, DelegationPort, HealthCheckPort};
 use std::collections::HashMap;
 use std::sync::{Arc, RwLock};
 use tracing::debug;
+use uuid::Uuid;
 
 /// In-memory teammate registry using std::sync::RwLock
 pub struct InMemoryTeammateRegistry {
@@ -61,7 +62,7 @@ impl DelegationPort for SimpleDelegationAdapter {
     fn submit(&self, request: DelegationRequest) -> DelegationResult {
         debug!(teammate = %request.teammate_id, task = %request.task_description, "submitting delegation");
         DelegationResult {
-            delegation_id: uuid_v4(),
+            delegation_id: Uuid::new_v4().to_string(),
             teammate_id: request.teammate_id.clone(),
             status: crate::domain::DelegationStatus::Completed,
             result: Some(format!("Completed: {}", request.task_description)),
@@ -101,10 +102,4 @@ impl HealthCheckPort for HealthCheckAdapter {
             .map(|t| t.values().cloned().collect())
             .unwrap_or_default()
     }
-}
-
-fn uuid_v4() -> String {
-    use std::time::{SystemTime, UNIX_EPOCH};
-    let now = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
-    format!("{:032x}-{:016x}", now.as_nanos(), now.as_secs())
 }

@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>User Stories: Teammate Subagent System + Dynamic Scaling | heliosHarness</title>
+    <meta name="description" content="Harness docs">
+    <meta name="generator" content="VitePress v1.6.4">
+    <link rel="preload stylesheet" href="/assets/style.NS9zY7oF.css" as="style">
+    <link rel="preload stylesheet" href="/vp-icons.css" as="style">
+    
+    <script type="module" src="/assets/app.CQJzkeAb.js"></script>
+    <link rel="preload" href="/assets/inter-roman-latin.Di8DUHzh.woff2" as="font" type="font/woff2" crossorigin="">
+    <link rel="modulepreload" href="/assets/chunks/theme.BNMHX2Hd.js">
+    <link rel="modulepreload" href="/assets/chunks/framework.Dn7Y7LSn.js">
+    <link rel="modulepreload" href="/assets/reference_USER_STORIES_TASK_TEAMMATE.md.BhnnFfKe.lean.js">
+    <script id="check-dark-mode">(()=>{const e=localStorage.getItem("vitepress-theme-appearance")||"auto",a=window.matchMedia("(prefers-color-scheme: dark)").matches;(!e||e==="auto"?a:e==="dark")&&document.documentElement.classList.add("dark")})();</script>
+    <script id="check-mac-os">document.documentElement.classList.toggle("mac",/Mac|iPhone|iPod|iPad/i.test(navigator.platform));</script>
+  </head>
+  <body>
+    <div id="app"><div class="Layout" data-v-d8b57b2d><!--[--><!--]--><!--[--><span tabindex="-1" data-v-fcbfc0e0></span><a href="#VPContent" class="VPSkipLink visually-hidden" data-v-fcbfc0e0>Skip to content</a><!--]--><!----><header class="VPNav" data-v-d8b57b2d data-v-7ad780c2><div class="VPNavBar" data-v-7ad780c2 data-v-9fd4d1dd><div class="wrapper" data-v-9fd4d1dd><div class="container" data-v-9fd4d1dd><div class="title" data-v-9fd4d1dd><div class="VPNavBarTitle" data-v-9fd4d1dd data-v-9f43907a><a class="title" href="/" data-v-9f43907a><!--[--><!--]--><!----><span data-v-9f43907a>heliosHarness</span><!--[--><!--]--></a></div></div><div class="content" data-v-9fd4d1dd><div class="content-body" data-v-9fd4d1dd><!--[--><!--]--><div class="VPNavBarSearch search" data-v-9fd4d1dd><!----></div><nav aria-labelledby="main-nav-aria-label" class="VPNavBarMenu menu" data-v-9fd4d1dd data-v-afb2845e><span id="main-nav-aria-label" class="visually-hidden" data-v-afb2845e> Main Navigation </span><!--[--><!--[--><a class="VPLink link VPNavBarMenuLink" href="/index.html" tabindex="0" data-v-afb2845e data-v-815115f5><!--[--><span data-v-815115f5>Start Here</span><!--]--></a><!--]--><!--[--><a class="VPLink link VPNavBarMenuLink" href="/tutorials/" tabindex="0" data-v-afb2845e data-v-815115f5><!--[--><span data-v-815115f5>Tutorials</span><!--]--></a><!--]--><!--[--><a class="VPLink link VPNavBarMenuLink" href="/how-to/" tabindex="0" data-v-afb2845e data-v-815115f5><!--[--><span data-v-815115f5>How-to</span><!--]--></a><!--]--><!--[--><a class="VPLink link VPNavBarMenuLink" href="/explanation/" tabindex="0" data-v-afb2845e data-v-815115f5><!--[--><span data-v-815115f5>Explanation</span><!--]--></a><!--]--><!--[--><a class="VPLink link VPNavBarMenuLink" href="/operations/" tabindex="0" data-v-afb2845e data-v-815115f5><!--[--><span data-v-815115f5>Operations</span><!--]--></a><!--]--><!--[--><a class="VPLink link VPNavBarMenuLink" href="/api/" tabindex="0" data-v-afb2845e data-v-815115f5><!--[--><span data-v-815115f5>API</span><!--]--></a><!--]--><!--[--><div class="VPFlyout VPNavBarMenuGroup" data-v-afb2845e data-v-bfe7971f><button type="button" class="button" aria-haspopup="true" aria-expanded="false" data-v-bfe7971f><span class="text" data-v-bfe7971f><!----><span data-v-bfe7971f>🌐 Language</span><span class="vpi-chevron-down text-icon" data-v-bfe7971f></span></span></button><div class="menu" data-v-bfe7971f><div class="VPMenu" data-v-bfe7971f data-v-20ed86d6><div class="items" data-v-20ed86d6><!--[--><!--[--><div class="VPMenuLink" data-v-20ed86d6 data-v-7eeeb2dc><a class="VPLink link" href="/" data-v-7eeeb2dc><!--[--><span data-v-7eeeb2dc>English</span><!--]--></a></div><!--]--><!--[--><div class="VPMenuLink" data-v-20ed86d6 data-v-7eeeb2dc><a class="VPLink link" href="/zh-CN/" data-v-7eeeb2dc><!--[--><span data-v-7eeeb2dc>简体中文</span><!--]--></a></div><!--]--><!--[--><div class="VPMenuLink" data-v-20ed86d6 data-v-7eeeb2dc><a class="VPLink link" href="/zh-TW/" data-v-7eeeb2dc><!--[--><span data-v-7eeeb2dc>繁體中文</span><!--]--></a></div><!--]--><!--[--><div class="VPMenuLink" data-v-20ed86d6 data-v-7eeeb2dc><a class="VPLink link" href="/fa/" data-v-7eeeb2dc><!--[--><span data-v-7eeeb2dc>فارسی</span><!--]--></a></div><!--]--><!--[--><div class="VPMenuLink" data-v-20ed86d6 data-v-7eeeb2dc><a class="VPLink link" href="/fa-Latn/" data-v-7eeeb2dc><!--[--><span data-v-7eeeb2dc>Pinglish</span><!--]--></a></div><!--]--><!--]--></div><!--[--><!--]--></div></div></div><!--]--><!--]--></nav><div class="VPFlyout VPNavBarTranslations translations" data-v-9fd4d1dd data-v-acee064b data-v-bfe7971f><button type="button" class="button" aria-haspopup="true" aria-expanded="false" aria-label="Change language" data-v-bfe7971f><span class="text" data-v-bfe7971f><span class="vpi-languages option-icon" data-v-bfe7971f></span><!----><span class="vpi-chevron-down text-icon" data-v-bfe7971f></span></span></button><div class="menu" data-v-bfe7971f><div class="VPMenu" data-v-bfe7971f data-v-20ed86d6><!----><!--[--><!--[--><div class="items" data-v-acee064b><p class="title" data-v-acee064b>English</p><!--[--><div class="VPMenuLink" data-v-acee064b data-v-7eeeb2dc><a class="VPLink link" href="/zh-CN/reference/USER_STORIES_TASK_TEAMMATE.html" data-v-7eeeb2dc><!--[--><span data-v-7eeeb2dc>简体中文</span><!--]--></a></div><div class="VPMenuLink" data-v-acee064b data-v-7eeeb2dc><a class="VPLink link" href="/zh-TW/reference/USER_STORIES_TASK_TEAMMATE.html" data-v-7eeeb2dc><!--[--><span data-v-7eeeb2dc>繁體中文</span><!--]--></a></div><div class="VPMenuLink" data-v-acee064b data-v-7eeeb2dc><a class="VPLink link" href="/fa/reference/USER_STORIES_TASK_TEAMMATE.html" data-v-7eeeb2dc><!--[--><span data-v-7eeeb2dc>فارسی</span><!--]--></a></div><div class="VPMenuLink" data-v-acee064b data-v-7eeeb2dc><a class="VPLink link" href="/fa-Latn/reference/USER_STORIES_TASK_TEAMMATE.html" data-v-7eeeb2dc><!--[--><span data-v-7eeeb2dc>Pinglish</span><!--]--></a></div><!--]--></div><!--]--><!--]--></div></div></div><div class="VPNavBarAppearance appearance" data-v-9fd4d1dd data-v-3f90c1a5><button class="VPSwitch VPSwitchAppearance" type="button" role="switch" title aria-checked="false" data-v-3f90c1a5 data-v-be9742d9 data-v-b4ccac88><span class="check" data-v-b4ccac88><span class="icon" data-v-b4ccac88><!--[--><span class="vpi-sun sun" data-v-be9742d9></span><span class="vpi-moon moon" data-v-be9742d9></span><!--]--></span></span></button></div><!----><div class="VPFlyout VPNavBarExtra extra" data-v-9fd4d1dd data-v-f953d92f data-v-bfe7971f><button type="button" class="button" aria-haspopup="true" aria-expanded="false" aria-label="extra navigation" data-v-bfe7971f><span class="vpi-more-horizontal icon" data-v-bfe7971f></span></button><div class="menu" data-v-bfe7971f><div class="VPMenu" data-v-bfe7971f data-v-20ed86d6><!----><!--[--><!--[--><div class="group translations" data-v-f953d92f><p class="trans-title" data-v-f953d92f>English</p><!--[--><div class="VPMenuLink" data-v-f953d92f data-v-7eeeb2dc><a class="VPLink link" href="/zh-CN/reference/USER_STORIES_TASK_TEAMMATE.html" data-v-7eeeb2dc><!--[--><span data-v-7eeeb2dc>简体中文</span><!--]--></a></div><div class="VPMenuLink" data-v-f953d92f data-v-7eeeb2dc><a class="VPLink link" href="/zh-TW/reference/USER_STORIES_TASK_TEAMMATE.html" data-v-7eeeb2dc><!--[--><span data-v-7eeeb2dc>繁體中文</span><!--]--></a></div><div class="VPMenuLink" data-v-f953d92f data-v-7eeeb2dc><a class="VPLink link" href="/fa/reference/USER_STORIES_TASK_TEAMMATE.html" data-v-7eeeb2dc><!--[--><span data-v-7eeeb2dc>فارسی</span><!--]--></a></div><div class="VPMenuLink" data-v-f953d92f data-v-7eeeb2dc><a class="VPLink link" href="/fa-Latn/reference/USER_STORIES_TASK_TEAMMATE.html" data-v-7eeeb2dc><!--[--><span data-v-7eeeb2dc>Pinglish</span><!--]--></a></div><!--]--></div><div class="group" data-v-f953d92f><div class="item appearance" data-v-f953d92f><p class="label" data-v-f953d92f>Appearance</p><div class="appearance-action" data-v-f953d92f><button class="VPSwitch VPSwitchAppearance" type="button" role="switch" title aria-checked="false" data-v-f953d92f data-v-be9742d9 data-v-b4ccac88><span class="check" data-v-b4ccac88><span class="icon" data-v-b4ccac88><!--[--><span class="vpi-sun sun" data-v-be9742d9></span><span class="vpi-moon moon" data-v-be9742d9></span><!--]--></span></span></button></div></div></div><!----><!--]--><!--]--></div></div></div><!--[--><!--]--><button type="button" class="VPNavBarHamburger hamburger" aria-label="mobile navigation" aria-expanded="false" aria-controls="VPNavScreen" data-v-9fd4d1dd data-v-6bee1efd><span class="container" data-v-6bee1efd><span class="top" data-v-6bee1efd></span><span class="middle" data-v-6bee1efd></span><span class="bottom" data-v-6bee1efd></span></span></button></div></div></div></div><div class="divider" data-v-9fd4d1dd><div class="divider-line" data-v-9fd4d1dd></div></div></div><!----></header><div class="VPLocalNav empty fixed" data-v-d8b57b2d data-v-2488c25a><div class="container" data-v-2488c25a><!----><div class="VPLocalNavOutlineDropdown" style="--vp-vh:0px;" data-v-2488c25a data-v-6b867909><button data-v-6b867909>Return to top</button><!----></div></div></div><!----><div class="VPContent" id="VPContent" data-v-d8b57b2d data-v-9a6c75ad><div class="VPDoc has-aside" data-v-9a6c75ad data-v-e6f2a212><!--[--><!--]--><div class="container" data-v-e6f2a212><div class="aside" data-v-e6f2a212><div class="aside-curtain" data-v-e6f2a212></div><div class="aside-container" data-v-e6f2a212><div class="aside-content" data-v-e6f2a212><div class="VPDocAside" data-v-e6f2a212 data-v-cb998dce><!--[--><!--]--><!--[--><!--]--><nav aria-labelledby="doc-outline-aria-label" class="VPDocAsideOutline" data-v-cb998dce data-v-f610f197><div class="content" data-v-f610f197><div class="outline-marker" data-v-f610f197></div><div aria-level="2" class="outline-title" id="doc-outline-aria-label" role="heading" data-v-f610f197>On this page</div><ul class="VPDocOutlineItem root" data-v-f610f197 data-v-53c99d69><!--[--><!--]--></ul></div></nav><!--[--><!--]--><div class="spacer" data-v-cb998dce></div><!--[--><!--]--><!----><!--[--><!--]--><!--[--><!--]--></div></div></div></div><div class="content" data-v-e6f2a212><div class="content-container" data-v-e6f2a212><!--[--><!--]--><main class="main" data-v-e6f2a212><div style="position:relative;" class="vp-doc _reference_USER_STORIES_TASK_TEAMMATE" data-v-e6f2a212><div><h1 id="user-stories-teammate-subagent-system-dynamic-scaling" tabindex="-1">User Stories: Teammate Subagent System + Dynamic Scaling <a class="header-anchor" href="#user-stories-teammate-subagent-system-dynamic-scaling" aria-label="Permalink to &quot;User Stories: Teammate Subagent System + Dynamic Scaling&quot;">​</a></h1><p><strong>Version</strong>: 1.0<br><strong>Date</strong>: 2026-02-23<br><strong>Project</strong>: heliosHarness</p><hr><h2 id="table-of-contents" tabindex="-1">Table of Contents <a class="header-anchor" href="#table-of-contents" aria-label="Permalink to &quot;Table of Contents&quot;">​</a></h2><ol><li><a href="#developer-stories">Developer Stories</a></li><li><a href="#operator-stories">Operator Stories</a></li><li><a href="#system-stories">System Stories</a></li></ol><hr><h2 id="developer-stories" tabindex="-1">Developer Stories <a class="header-anchor" href="#developer-stories" aria-label="Permalink to &quot;Developer Stories&quot;">​</a></h2><h3 id="us-101-discover-available-teammates" tabindex="-1">US-101: Discover Available Teammates <a class="header-anchor" href="#us-101-discover-available-teammates" aria-label="Permalink to &quot;US-101: Discover Available Teammates&quot;">​</a></h3><p><strong>As a</strong> developer<br><strong>I want to</strong> see all available teammate agents<br><strong>So that</strong> I know who I can delegate to</p><p><strong>Acceptance Criteria:</strong></p><ul><li>[ ] <code>harness teammates list</code> shows all teammates</li><li>[ ] Each teammate shows name, role, description</li><li>[ ] Teammates auto-discovered from <code>agents/</code> directory</li></ul><p><strong>Example:</strong></p><div class="language- vp-adaptive-theme"><button title="Copy Code" class="copy"></button><span class="lang"></span><pre class="shiki shiki-themes github-light github-dark vp-code" tabindex="0"><code><span class="line"><span>$ harness teammates list</span></span>
+<span class="line"><span>Available Teammates:</span></span>
+<span class="line"><span>  • code-reviewer: Reviews code for bugs and style</span></span>
+<span class="line"><span>  • test-writer: Writes unit and integration tests</span></span>
+<span class="line"><span>  • security-auditor: Checks for security vulnerabilities</span></span>
+<span class="line"><span>  • doc-generator: Generates documentation</span></span></code></pre></div><hr><h3 id="us-102-delegate-task-to-teammate" tabindex="-1">US-102: Delegate Task to Teammate <a class="header-anchor" href="#us-102-delegate-task-to-teammate" aria-label="Permalink to &quot;US-102: Delegate Task to Teammate&quot;">​</a></h3><p><strong>As a</strong> developer<br><strong>I want to</strong> delegate a subtask to a specialized teammate<br><strong>So that</strong> I can focus on high-level work while the teammate handles the details</p><p><strong>Acceptance Criteria:</strong></p><ul><li>[ ] <code>harness teammates delegate &lt;teammate&gt; &lt;task&gt;</code> creates delegation</li><li>[ ] Delegation returns immediately with delegation ID</li><li>[ ] Teammate executes in background</li><li>[ ] Result available when complete</li></ul><p><strong>Example:</strong></p><div class="language- vp-adaptive-theme"><button title="Copy Code" class="copy"></button><span class="lang"></span><pre class="shiki shiki-themes github-light github-dark vp-code" tabindex="0"><code><span class="line"><span>$ harness teammates delegate code-reviewer &quot;Review the auth module&quot;</span></span>
+<span class="line"><span>Delegation created: del-abc123</span></span>
+<span class="line"><span>Use &#39;harness teammates status del-abc123&#39; to check progress</span></span></code></pre></div><hr><h3 id="us-103-monitor-delegation-status" tabindex="-1">US-103: Monitor Delegation Status <a class="header-anchor" href="#us-103-monitor-delegation-status" aria-label="Permalink to &quot;US-103: Monitor Delegation Status&quot;">​</a></h3><p><strong>As a</strong> developer<br><strong>I want to</strong> check the status of my delegations<br><strong>So that</strong> I know what&#39;s running and what&#39;s done</p><p><strong>Acceptance Criteria:</strong></p><ul><li>[ ] <code>harness teammates status</code> shows all active delegations</li><li>[ ] Status shows: pending, running, completed, failed</li><li>[ ] Failed delegations show error message</li><li>[ ] Completed delegations show result summary</li></ul><p><strong>Example:</strong></p><div class="language- vp-adaptive-theme"><button title="Copy Code" class="copy"></button><span class="lang"></span><pre class="shiki shiki-themes github-light github-dark vp-code" tabindex="0"><code><span class="line"><span>$ harness teammates status</span></span>
+<span class="line"><span>Active Delegations:</span></span>
+<span class="line"><span>  del-abc123: code-reviewer - RUNNING (2m 34s)</span></span>
+<span class="line"><span>  del-def456: test-writer - COMPLETED ✓</span></span>
+<span class="line"><span>  del-ghi789: security-auditor - FAILED ✗ (timeout)</span></span></code></pre></div><hr><h3 id="us-104-pass-context-to-teammate" tabindex="-1">US-104: Pass Context to Teammate <a class="header-anchor" href="#us-104-pass-context-to-teammate" aria-label="Permalink to &quot;US-104: Pass Context to Teammate&quot;">​</a></h3><p><strong>As a</strong> developer<br><strong>I want to</strong> provide context files to the teammate<br><strong>So that</strong> the teammate has relevant information</p><p><strong>Acceptance Criteria:</strong></p><ul><li>[ ] <code>-c/--context</code> flag accepts files or directories</li><li>[ ] Context copied to teammate&#39;s work directory</li><li>[ ] Multiple context sources supported</li></ul><p><strong>Example:</strong></p><div class="language- vp-adaptive-theme"><button title="Copy Code" class="copy"></button><span class="lang"></span><pre class="shiki shiki-themes github-light github-dark vp-code" tabindex="0"><code><span class="line"><span>$ harness teammates delegate code-reviewer &quot;Review auth&quot; -c src/auth/ -c docs/api.md</span></span></code></pre></div><hr><h3 id="us-105-set-timeout-for-delegation" tabindex="-1">US-105: Set Timeout for Delegation <a class="header-anchor" href="#us-105-set-timeout-for-delegation" aria-label="Permalink to &quot;US-105: Set Timeout for Delegation&quot;">​</a></h3><p><strong>As a</strong> developer<br> I want to set a maximum time for a delegation<br> So that long-running tasks don&#39;t block indefinitely</p><p><strong>Acceptance Criteria:</strong></p><ul><li>[ ] <code>-t/--timeout</code> flag accepts duration (seconds or &quot;5m&quot;)</li><li>[ ] Delegation fails with timeout error if exceeded</li><li>[ ] Default timeout: 30 minutes</li></ul><p><strong>Example:</strong></p><div class="language- vp-adaptive-theme"><button title="Copy Code" class="copy"></button><span class="lang"></span><pre class="shiki shiki-themes github-light github-dark vp-code" tabindex="0"><code><span class="line"><span>$ harness teammates delegate test-writer &quot;Write tests&quot; -t 10m</span></span></code></pre></div><hr><h2 id="operator-stories" tabindex="-1">Operator Stories <a class="header-anchor" href="#operator-stories" aria-label="Permalink to &quot;Operator Stories&quot;">​</a></h2><h3 id="us-201-view-dynamic-scaling-status" tabindex="-1">US-201: View Dynamic Scaling Status <a class="header-anchor" href="#us-201-view-dynamic-scaling-status" aria-label="Permalink to &quot;US-201: View Dynamic Scaling Status&quot;">​</a></h3><p><strong>As an</strong> operator<br><strong>I want to</strong> see the current concurrency limits and why<br><strong>So that</strong> I understand system behavior</p><p><strong>Acceptance Criteria:</strong></p><ul><li>[ ] <code>harness scaling info</code> shows current limit</li><li>[ ] Shows resource utilization (CPU, memory, FD, load)</li><li>[ ] Shows whether scaling is constrained</li><li>[ ] Shows hysteresis state</li></ul><p><strong>Example:</strong></p><div class="language- vp-adaptive-theme"><button title="Copy Code" class="copy"></button><span class="lang"></span><pre class="shiki shiki-themes github-light github-dark vp-code" tabindex="0"><code><span class="line"><span>$ harness scaling info</span></span>
+<span class="line"><span>Dynamic Concurrency Limit: 12</span></span>
+<span class="line"><span>  CPU: 45% (threshold: 80%)</span></span>
+<span class="line"><span>  Memory: 62% (threshold: 85%)</span></span>
+<span class="line"><span>  FD: 234/1024 (threshold: 80%)</span></span>
+<span class="line"><span>  Load: 2.3 (threshold: 8.0)</span></span>
+<span class="line"><span>Hysteresis: STABLE (last change: 5m ago)</span></span></code></pre></div><hr><h3 id="us-202-monitor-queue-health" tabindex="-1">US-202: Monitor Queue Health <a class="header-anchor" href="#us-202-monitor-queue-health" aria-label="Permalink to &quot;US-202: Monitor Queue Health&quot;">​</a></h3><p><strong>As an</strong> operator<br><strong>I want to</strong> see queue depth and backpressure status<br><strong>So that</strong> I know if system is overloaded</p><p><strong>Acceptance Criteria:</strong></p><ul><li>[ ] <code>harness queue status</code> shows queue metrics</li><li>[ ] Shows current size, capacity, load %</li><li>[ ] Shows if backpressure is active</li><li>[ ] Shows priority distribution</li></ul><p><strong>Example:</strong></p><div class="language- vp-adaptive-theme"><button title="Copy Code" class="copy"></button><span class="lang"></span><pre class="shiki shiki-themes github-light github-dark vp-code" tabindex="0"><code><span class="line"><span>$ harness queue status</span></span>
+<span class="line"><span>Queue Status: BACKPRESSURE ACTIVE</span></span>
+<span class="line"><span>  Size: 85/100 (85% capacity)</span></span>
+<span class="line"><span>  HIGH priority: 12</span></span>
+<span class="line"><span>  NORMAL priority: 65</span></span>
+<span class="line"><span>  LOW priority: 8</span></span>
+<span class="line"><span>Backpressure: Rejecting LOW priority tasks</span></span></code></pre></div><hr><h3 id="us-203-view-circuit-breaker-status" tabindex="-1">US-203: View Circuit Breaker Status <a class="header-anchor" href="#us-203-view-circuit-breaker-status" aria-label="Permalink to &quot;US-203: View Circuit Breaker Status&quot;">​</a></h3><p><strong>As an</strong> operator<br><strong>I want to</strong> see circuit breaker state per teammate type<br><strong>So that</strong> I know if teammates are failing</p><p><strong>Acceptance Criteria:</strong></p><ul><li>[ ] <code>harness breakers status</code> shows all breakers</li><li>[ ] Shows state: CLOSED, OPEN, HALF_OPEN</li><li>[ ] Shows failure count</li><li>[ ] Shows time until retry</li></ul><p><strong>Example:</strong> $ harness breakers status Circuit Breakers: code-reviewer: CLOSED (2 failures, last: 2h ago) test-writer: OPEN (threshold: 5, retry in: 45s) security-auditor: HALF_OPEN (testing recovery)</p><div class="language- vp-adaptive-theme"><button title="Copy Code" class="copy"></button><span class="lang"></span><pre class="shiki shiki-themes github-light github-dark vp-code" tabindex="0"><code><span class="line"><span></span></span>
+<span class="line"><span>---</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>### US-204: View Agent Health</span></span>
+<span class="line"><span>**As an** operator  </span></span>
+<span class="line"><span>**I want to** see health status of all running agents  </span></span>
+<span class="line"><span>**So that** I can detect issues early</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>**Acceptance Criteria:**</span></span>
+<span class="line"><span>- [ ] `harness health` shows all agents</span></span>
+<span class="line"><span>- [ ] Shows: healthy, slow, unhealthy, crashed</span></span>
+<span class="line"><span>- [ ] Shows response time</span></span>
+<span class="line"><span>- [ ] Shows error count</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>**Example:**</span></span></code></pre></div><p>$ harness health Agent Health: agent-001: HEALTHY (resp: 120ms, errors: 0) agent-002: SLOW (resp: 2.3s, errors: 2) agent-003: UNHEALTHY (resp: timeout, errors: 5) agent-004: CRASHED (last: 10m ago)</p><div class="language- vp-adaptive-theme"><button title="Copy Code" class="copy"></button><span class="lang"></span><pre class="shiki shiki-themes github-light github-dark vp-code" tabindex="0"><code><span class="line"><span></span></span>
+<span class="line"><span>---</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>## System Stories</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>### US-301: Auto-Scale Based on Resources</span></span>
+<span class="line"><span>**As the** system  </span></span>
+<span class="line"><span>**I want to** automatically adjust concurrency limits based on available resources  </span></span>
+<span class="line"><span>**So that** I maximize utilization without overloading</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>**Acceptance Criteria:**</span></span>
+<span class="line"><span>- [ ] Limits increase when resources available</span></span>
+<span class="line"><span>- [ ] Limits decrease when resources constrained</span></span>
+<span class="line"><span>- [ ] Hysteresis prevents rapid oscillation</span></span>
+<span class="line"><span>- [ ] Minimum buffer (5%) always maintained</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>---</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>### US-302: Circuit Breaker Protection</span></span>
+<span class="line"><span>**As the** system  </span></span>
+<span class="line"><span>**I want to** stop sending tasks to failing teammates  </span></span>
+<span class="line"><span>**So that** failures don&#39;t cascade</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>**Acceptance Criteria:**</span></span>
+<span class="line"><span>- [ ] After 5 failures, circuit opens</span></span>
+<span class="line"><span>- [ ] Requests fail fast in OPEN state</span></span>
+<span class="line"><span>- [ ] After timeout, circuit half-opens</span></span>
+<span class="line"><span>- [ ] After 3 successes, circuit closes</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>---</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>### US-303: Bulkhead Isolation</span></span>
+<span class="line"><span>**As the** system  </span></span>
+<span class="line"><span>**I want to** isolate resource consumption per task type  </span></span>
+<span class="line"><span>**So that** one task type doesn&#39;t affect others</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>**Acceptance Criteria:**</span></span>
+<span class="line"><span>- [ ] CPU tasks limited to CPU pool size</span></span>
+<span class="line"><span>- [ ] I/O tasks limited to I/O pool size</span></span>
+<span class="line"><span>- [ ] DB tasks limited to DB pool size</span></span>
+<span class="line"><span>- [ ] Exhaustion in one pool doesn&#39;t affect others</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>---</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>### US-304: Graceful Degradation</span></span>
+<span class="line"><span>**As the** system  </span></span>
+<span class="line"><span>**I want to** reduce functionality instead of failing completely  </span></span>
+<span class="line"><span>**So that** critical operations always work</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>**Acceptance Criteria:**</span></span>
+<span class="line"><span>- [ ] When queue &gt; 75%, reject LOW priority</span></span>
+<span class="line"><span>- [ ] When queue &gt; 90%, reject NORMAL priority</span></span>
+<span class="line"><span>- [ ] CRITICAL always accepted if capacity exists</span></span>
+<span class="line"><span>- [ ] Users receive appropriate error messages</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>---</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>## Resource Management Stories</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>### US-501: View Resource Status</span></span>
+<span class="line"><span>**As an** operator  </span></span>
+<span class="line"><span>**I want to** see current resource usage (CPU, memory, FD)  </span></span>
+<span class="line"><span>**So that** I know if the system is healthy</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>**Acceptance Criteria:**</span></span>
+<span class="line"><span>- [ ] `harness resources` shows CPU, memory, FD usage</span></span>
+<span class="line"><span>- [ ] Shows per-agent breakdown</span></span>
+<span class="line"><span>- [ ] Shows trends (up/down/stable)</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>**Example:**</span></span></code></pre></div><p>$ harness resources CPU: 45% | Memory: 5.4GB/8GB (68%) | FD: 234/1024 (23%)</p><div class="language- vp-adaptive-theme"><button title="Copy Code" class="copy"></button><span class="lang"></span><pre class="shiki shiki-themes github-light github-dark vp-code" tabindex="0"><code><span class="line"><span></span></span>
+<span class="line"><span>### US-502: FD Leak Detection</span></span>
+<span class="line"><span>**As an** operator  </span></span>
+<span class="line"><span>**I want to** be alerted if file descriptors are leaking  </span></span>
+<span class="line"><span>**So that** I can prevent system exhaustion</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>**Acceptance Criteria:**</span></span>
+<span class="line"><span>- [ ] Automatic detection of FD leaks</span></span>
+<span class="line"><span>- [ ] Alert at 80% of limit</span></span>
+<span class="line"><span>- [ ] Auto-cleanup of leaked FDs</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>### US-503: Memory Pressure Response</span></span>
+<span class="line"><span>**As an** operator  </span></span>
+<span class="line"><span>**I want the system to** automatically scale down when memory is high  </span></span>
+<span class="line"><span>**So that** the system doesn&#39;t crash</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>**Acceptance Criteria:**</span></span>
+<span class="line"><span>- [ ] At 75% memory: warn and slow new work</span></span>
+<span class="line"><span>- [ ] At 90% memory: stop new work, cleanup idle agents</span></span>
+<span class="line"><span>- [ ] At 95% memory: force kill lowest priority agents</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>### US-504: Zombie Process Prevention</span></span>
+<span class="line"><span>**As an** operator  </span></span>
+<span class="line"><span>**I want** zombie processes to be automatically reaped  </span></span>
+<span class="line"><span>**So that** resources are freed promptly</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>**Acceptance Criteria:**</span></span>
+<span class="line"><span>- [ ] Detect zombie processes within 5s</span></span>
+<span class="line"><span>- [ ] Automatic reaping</span></span>
+<span class="line"><span>- [ ] Alert on repeated zombie creation</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>### US-505: Agent Process Health</span></span>
+<span class="line"><span>**As an** operator  </span></span>
+<span class="line"><span>**I want to** see health status of each agent process  </span></span>
+<span class="line"><span>**So that** I know which agents are problematic</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>**Acceptance Criteria:**</span></span>
+<span class="line"><span>- [ ] Show: HEALTHY, WARNING, CRITICAL per agent</span></span>
+<span class="line"><span>- [ ] Show: memory growth trend</span></span>
+<span class="line"><span>- [ ] Show: FD count per agent</span></span>
+<span class="line"><span>- [ ] Auto-restart of CRITICAL agents</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>---</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>## Polish &amp; QoL Stories</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>## Resource Management Stories</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>### US-401: Batch Delegation</span></span>
+<span class="line"><span>**As a** developer  </span></span>
+<span class="line"><span>**I want to** delegate the same task to multiple teammates simultaneously  </span></span>
+<span class="line"><span>**So that** I can get parallel reviews/feedback</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>**Acceptance Criteria:**</span></span>
+<span class="line"><span>- [ ] `--all` flag delegates to all teammates of a role</span></span>
+<span class="line"><span>- [ ] Results aggregated in combined report</span></span>
+<span class="line"><span>- [ ] Individual failures don&#39;t block others</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>**Example:**</span></span></code></pre></div><p>$ harness teammates delegate --all reviewers &quot;Review the auth module&quot;</p><div class="language- vp-adaptive-theme"><button title="Copy Code" class="copy"></button><span class="lang"></span><pre class="shiki shiki-themes github-light github-dark vp-code" tabindex="0"><code><span class="line"><span></span></span>
+<span class="line"><span>### US-402: Delegation Templates</span></span>
+<span class="line"><span>**As a** developer  </span></span>
+<span class="line"><span>**I want to** save and reuse delegation patterns  </span></span>
+<span class="line"><span>**So that** I don&#39;t repeat myself for common tasks</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>**Acceptance Criteria:**</span></span>
+<span class="line"><span>- [ ] `teammates template save &lt;name&gt; &lt;template&gt;` saves delegation</span></span>
+<span class="line"><span>- [ ] `teammates template list` shows saved templates</span></span>
+<span class="line"><span>- [ ] `teammates template run &lt;name&gt;` executes saved delegation</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>**Example:**</span></span></code></pre></div><p>$ harness teammates template save code-review &quot;Review PR {pr}&quot; --teammate code-reviewer $ harness teammates template run code-review --var pr=123</p><div class="language- vp-adaptive-theme"><button title="Copy Code" class="copy"></button><span class="lang"></span><pre class="shiki shiki-themes github-light github-dark vp-code" tabindex="0"><code><span class="line"><span></span></span>
+<span class="line"><span>### US-403: Cascading Cancellation</span></span>
+<span class="line"><span>**As a** developer  </span></span>
+<span class="line"><span>**I want to** cancel a parent delegation and have all children cancelled  </span></span>
+<span class="line"><span>**So that** I don&#39;t waste resources on unwanted work</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>**Acceptance Criteria:**</span></span>
+<span class="line"><span>- [ ] `teammates cancel &lt;id&gt;` cancels delegation and children</span></span>
+<span class="line"><span>- [ ] Confirmation shown before cancellation</span></span>
+<span class="line"><span>- [ ] Partial results preserved for review</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>### US-404: Smart Retry</span></span>
+<span class="line"><span>**As a** developer  </span></span>
+<span class="line"><span>**I want to** have automatic retry with backoff for failed delegations  </span></span>
+<span class="line"><span>**So that** transient failures don&#39;t require manual retry</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>**Acceptance Criteria:**</span></span>
+<span class="line"><span>- [ ] Automatic retry on transient failures (timeout, rate limit)</span></span>
+<span class="line"><span>- [ ] Exponential backoff (1s, 2s, 4s, 8s...)</span></span>
+<span class="line"><span>- [ ] Max retries configurable (default: 3)</span></span>
+<span class="line"><span>- [ ] `--no-retry` flag to disable</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>### US-405: Rich Progress Output</span></span>
+<span class="line"><span>**As a** developer  </span></span>
+<span class="line"><span>**I want to** see visual progress for long-running delegations  </span></span>
+<span class="line"><span>**So that** I know something is happening</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>**Acceptance Criteria:**</span></span>
+<span class="line"><span>- [ ] Spinner/progress bar during execution</span></span>
+<span class="line"><span>- [ ] ETA calculation when possible</span></span>
+<span class="line"><span>- [ ] Color-coded status (green=success, red=fail, yellow=running)</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>### US-406: Interactive Confirmation</span></span>
+<span class="line"><span>**As a** developer  </span></span>
+<span class="line"><span>**I want to** confirm before destructive operations  </span></span>
+<span class="line"><span>**So that** I don&#39;t accidentally cancel important work</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>**Acceptance Criteria:**</span></span>
+<span class="line"><span>- [ ] Confirmation prompt for cancel operations</span></span>
+<span class="line"><span>- [ ] `--force` flag to skip confirmation</span></span>
+<span class="line"><span>- [ ] `--yes` flag for automated scripts</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>### US-407: Auto-complete Teammate Names</span></span>
+<span class="line"><span>**As a** developer  </span></span>
+<span class="line"><span>**I want to** have tab-completion for teammate names  </span></span>
+<span class="line"><span>**So that** I don&#39;t have to type full names</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>**Acceptance Criteria:**</span></span>
+<span class="line"><span>- [ ] Shell completion for teammate IDs</span></span>
+<span class="line"><span>- [ ] Fuzzy matching (e.g., &quot;cod&quot; → &quot;code-reviewer&quot;)</span></span>
+<span class="line"><span>- [ ] Shows alternatives if ambiguous</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>---</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>## Caching &amp; Pre-warming Stories</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>### US-601: Multi-Level Cache</span></span>
+<span class="line"><span>**As a** developer  </span></span>
+<span class="line"><span>**I want** frequently accessed data to be cached  </span></span>
+<span class="line"><span>**So that** subsequent requests are faster</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>**Acceptance Criteria:**</span></span>
+<span class="line"><span>- [ ] L1 in-memory cache (TTLCache)</span></span>
+<span class="line"><span>- [ ] L2 disk cache (diskcache)</span></span>
+<span class="line"><span>- [ ] Automatic promotion L2 → L1 on hit</span></span>
+<span class="line"><span>- [ ] Write-through to both levels</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>### US-602: Predictive Pre-warming</span></span>
+<span class="line"><span>**As an** operator  </span></span>
+<span class="line"><span>**I want** the system to pre-load likely-needed data  </span></span>
+<span class="line"><span>**So that** first requests don&#39;t suffer cache misses</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>**Acceptance Criteria:**</span></span>
+<span class="line"><span>- [ ] Configurable warming strategies</span></span>
+<span class="line"><span>- [ ] Background daemon mode</span></span>
+<span class="line"><span>- [ ] Predicts based on usage patterns</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>### US-603: Request Coalescing</span></span>
+<span class="line"><span>**As a** developer  </span></span>
+<span class="line"><span>**I want** simultaneous requests for the same resource to be coalesced  </span></span>
+<span class="line"><span>**So that** we don&#39;t make duplicate calls</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>**Acceptance Criteria:**</span></span>
+<span class="line"><span>- [ ] Multiple requests for same key wait for single fetch</span></span>
+<span class="line"><span>- [ ] All waiters receive same result</span></span>
+<span class="line"><span>- [ ] Timeout prevents indefinite wait</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>---</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>## Workflow &amp; Integration Stories</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>### US-701: NATS Event Bus</span></span>
+<span class="line"><span>**As a** architect  </span></span>
+<span class="line"><span>**I want** agents to communicate via NATS  </span></span>
+<span class="line"><span>**So that** we have reliable message delivery</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>**Acceptance Criteria:**</span></span>
+<span class="line"><span>- [ ] NATS connection configured</span></span>
+<span class="line"><span>- [ ] Publish/subscribe working</span></span>
+<span class="line"><span>- [ ] JetStream for persistence</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>### US-702: Durable Task Execution</span></span>
+<span class="line"><span>**As a** developer  </span></span>
+<span class="line"><span>**I want** long-running tasks to survive process restarts  </span></span>
+<span class="line"><span>**So that** I don&#39;t lose work</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>**Acceptance Criteria:**</span></span>
+<span class="line"><span>- [ ] Integration with Temporal or similar</span></span>
+<span class="line"><span>- [ ] Automatic retry with backoff</span></span>
+<span class="line"><span>- [ ] Task state persisted</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>### US-703: Connection Pooling</span></span>
+<span class="line"><span>**As an** operator  </span></span>
+<span class="line"><span>**I want** HTTP connections to be reused  </span></span>
+<span class="line"><span>**So that** we don&#39;t exhaust connection limits</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>**Acceptance Criteria:**</span></span>
+<span class="line"><span>- [ ] Connection pool with limits</span></span>
+<span class="line"><span>- [ ] HTTP/2 multiplexing enabled</span></span>
+<span class="line"><span>- [ ] Graceful cleanup on shutdown</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>---</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>**Document Version**: 1.2  </span></span>
+<span class="line"><span>**Status**: Ready for Implementation</span></span></code></pre></div></div></div></main><footer class="VPDocFooter" data-v-e6f2a212 data-v-1bcd8184><!--[--><!--]--><!----><!----></footer><!--[--><!--]--></div></div></div><!--[--><!--]--></div></div><!----><!--[--><!--]--></div></div>
+    <script>window.__VP_HASH_MAP__=JSON.parse("{\"api_index.md\":\"CBbrdgPE\",\"changelog.md\":\"-vpJITfP\",\"changes_readme.md\":\"x355H2Bu\",\"checklists_release_checklist.md\":\"DIwNHMI8\",\"explanation_index.md\":\"Da_YdgBu\",\"fragemented_artifacts_index.md\":\"CHe7DCWF\",\"fragemented_artifacts_merged.md\":\"D5lPJOlr\",\"fragemented_artifacts_phase-1-closeout.md\":\"Crk6sCv_\",\"fragemented_artifacts_phase-2-closeout.md\":\"B-JdqiRy\",\"fragemented_artifacts_phase-2_index.md\":\"Cnjm_jsh\",\"fragemented_artifacts_phase-2_lane-d_index.md\":\"BktdVbmv\",\"fragemented_artifacts_phase-2_lane-d_integration-matrix.md\":\"Cr7YaeVa\",\"fragemented_artifacts_phase-2_lane-d_merged.md\":\"Bl62iTSj\",\"fragemented_artifacts_phase-2_lane-d_readme.md\":\"cv3ao1Lq\",\"fragemented_artifacts_phase-2_merged.md\":\"iywgfQ2R\",\"fragemented_artifacts_phase-2_readme.md\":\"3wK1CmXc\",\"fragemented_artifacts_readme.md\":\"CXRT6_6X\",\"fragemented_commands_clone-playbook.md\":\"BlwaEZzh\",\"fragemented_commands_index.md\":\"DSzSzmA9\",\"fragemented_commands_merged.md\":\"Q86hwxhB\",\"fragemented_commands_readme.md\":\"DcId8u1M\",\"fragemented_index.md\":\"jS1kKokN\",\"fragemented_merged.md\":\"DLJSdrdu\",\"fragemented_readme.md\":\"CSZ2SETg\",\"fragemented_wbs_index.md\":\"BzHMbxY6\",\"fragemented_wbs_merged.md\":\"C8n7eZda\",\"fragemented_wbs_phase-1-reports_a1.md\":\"CIReulxj\",\"fragemented_wbs_phase-1-reports_a10.md\":\"zhD_LGtA\",\"fragemented_wbs_phase-1-reports_a2.md\":\"CmHjNwyq\",\"fragemented_wbs_phase-1-reports_a3.md\":\"C87Mb03X\",\"fragemented_wbs_phase-1-reports_a4.md\":\"Bmrf8NDD\",\"fragemented_wbs_phase-1-reports_a5.md\":\"C0mc1BbV\",\"fragemented_wbs_phase-1-reports_a6.md\":\"RTaCzXMx\",\"fragemented_wbs_phase-1-reports_a7.md\":\"BJf1MMxO\",\"fragemented_wbs_phase-1-reports_a8.md\":\"CZFHbBbF\",\"fragemented_wbs_phase-1-reports_a9.md\":\"CdzR3cDf\",\"fragemented_wbs_phase-1-reports_b1.md\":\"CerIxAgu\",\"fragemented_wbs_phase-1-reports_b10.md\":\"D-k7EFNN\",\"fragemented_wbs_phase-1-reports_b2.md\":\"DmH8_RlY\",\"fragemented_wbs_phase-1-reports_b3.md\":\"BQkpKg5d\",\"fragemented_wbs_phase-1-reports_b4.md\":\"Blkv1yU7\",\"fragemented_wbs_phase-1-reports_b5.md\":\"CRxdD4U5\",\"fragemented_wbs_phase-1-reports_b6.md\":\"qB5jboWG\",\"fragemented_wbs_phase-1-reports_b7.md\":\"DKgE2jW_\",\"fragemented_wbs_phase-1-reports_b8.md\":\"CEQtTUDo\",\"fragemented_wbs_phase-1-reports_b9.md\":\"Dum2aE9i\",\"fragemented_wbs_phase-1-reports_c1.md\":\"CmAsdM23\",\"fragemented_wbs_phase-1-reports_c10.md\":\"Cjr5ACbD\",\"fragemented_wbs_phase-1-reports_c2.md\":\"B59028jI\",\"fragemented_wbs_phase-1-reports_c3.md\":\"C4pZucYY\",\"fragemented_wbs_phase-1-reports_c4.md\":\"CT6jNSfQ\",\"fragemented_wbs_phase-1-reports_c5.md\":\"Q_FGEGyC\",\"fragemented_wbs_phase-1-reports_c6.md\":\"Sbin4kaW\",\"fragemented_wbs_phase-1-reports_c7.md\":\"BXb53fF6\",\"fragemented_wbs_phase-1-reports_c8.md\":\"W34Lyj_f\",\"fragemented_wbs_phase-1-reports_c9.md\":\"CYmdgccy\",\"fragemented_wbs_phase-1-reports_codex-api-matrix.md\":\"C2QNKQGT\",\"fragemented_wbs_phase-1-reports_codex-dist-matrix.md\":\"B471PTfc\",\"fragemented_wbs_phase-1-reports_codex-quality.md\":\"aAVYNCpA\",\"fragemented_wbs_phase-1-reports_codex-readiness-score.md\":\"PjhBzDy_\",\"fragemented_wbs_phase-1-reports_codex-repo-status.md\":\"Lzp8-ssT\",\"fragemented_wbs_phase-1-reports_codex-sdk-matrix.md\":\"BxbFKZ0Z\",\"fragemented_wbs_phase-1-reports_codex-toolchain.md\":\"5MuM-w1k\",\"fragemented_wbs_phase-1-reports_d1.md\":\"BnDYetC-\",\"fragemented_wbs_phase-1-reports_d10.md\":\"CMSElw22\",\"fragemented_wbs_phase-1-reports_d2.md\":\"vOxjVPuT\",\"fragemented_wbs_phase-1-reports_d3.md\":\"BYvT8wKH\",\"fragemented_wbs_phase-1-reports_d4.md\":\"x5ODWCVi\",\"fragemented_wbs_phase-1-reports_d5.md\":\"Dl5fY5B6\",\"fragemented_wbs_phase-1-reports_d6.md\":\"lsjBusab\",\"fragemented_wbs_phase-1-reports_d7.md\":\"Cn7ZTXE1\",\"fragemented_wbs_phase-1-reports_d8.md\":\"BIhTGv_z\",\"fragemented_wbs_phase-1-reports_d9.md\":\"CpuQji-h\",\"fragemented_wbs_phase-1-reports_e1.md\":\"D15hpFag\",\"fragemented_wbs_phase-1-reports_e10.md\":\"DSLk8FWE\",\"fragemented_wbs_phase-1-reports_e2.md\":\"CrjPuLNy\",\"fragemented_wbs_phase-1-reports_e3.md\":\"Cs7-BDWq\",\"fragemented_wbs_phase-1-reports_e4.md\":\"CgorbZC3\",\"fragemented_wbs_phase-1-reports_e5.md\":\"Bb3VYAZc\",\"fragemented_wbs_phase-1-reports_e6.md\":\"C8LM_yzR\",\"fragemented_wbs_phase-1-reports_e7.md\":\"BEEjcn-P\",\"fragemented_wbs_phase-1-reports_e8.md\":\"Drzay2jP\",\"fragemented_wbs_phase-1-reports_e9.md\":\"C65e3wnw\",\"fragemented_wbs_phase-1-reports_f1.md\":\"BYkG61Ps\",\"fragemented_wbs_phase-1-reports_f10.md\":\"CWlNpnKU\",\"fragemented_wbs_phase-1-reports_f2.md\":\"CJElZkEq\",\"fragemented_wbs_phase-1-reports_f3.md\":\"Dw0AyFN5\",\"fragemented_wbs_phase-1-reports_f4.md\":\"DxTB7a2A\",\"fragemented_wbs_phase-1-reports_f5.md\":\"BK70iHpF\",\"fragemented_wbs_phase-1-reports_f6.md\":\"-IrqGeoY\",\"fragemented_wbs_phase-1-reports_f7.md\":\"CNKtBjcb\",\"fragemented_wbs_phase-1-reports_f8.md\":\"6lFuJwBJ\",\"fragemented_wbs_phase-1-reports_f9.md\":\"BuspM8A9\",\"fragemented_wbs_phase-1-reports_g1.md\":\"D4R1H-f5\",\"fragemented_wbs_phase-1-reports_g10.md\":\"BWQ0RO39\",\"fragemented_wbs_phase-1-reports_g2.md\":\"CD0ORl6i\",\"fragemented_wbs_phase-1-reports_g3.md\":\"C3EjspIz\",\"fragemented_wbs_phase-1-reports_g4.md\":\"BRAggooA\",\"fragemented_wbs_phase-1-reports_g5.md\":\"yqFxmffz\",\"fragemented_wbs_phase-1-reports_g6.md\":\"MFxzTprr\",\"fragemented_wbs_phase-1-reports_g7.md\":\"DRGj6Mp-\",\"fragemented_wbs_phase-1-reports_g8.md\":\"CLv1JWjp\",\"fragemented_wbs_phase-1-reports_g9.md\":\"Dq2hBQJW\",\"fragemented_wbs_phase-1-reports_goose-config-model.md\":\"B3EAD2du\",\"fragemented_wbs_phase-1-reports_goose-install-matrix.md\":\"DCroXHJf\",\"fragemented_wbs_phase-1-reports_goose-mcp-api.md\":\"CzjlFod4\",\"fragemented_wbs_phase-1-reports_goose-quality.md\":\"_FvuWnL2\",\"fragemented_wbs_phase-1-reports_goose-readiness-score.md\":\"8x7p7Hpp\",\"fragemented_wbs_phase-1-reports_goose-repo-status.md\":\"YETbC_Da\",\"fragemented_wbs_phase-1-reports_goose-runtime-profile.md\":\"BQW4BipQ\",\"fragemented_wbs_phase-1-reports_goose-toolchain.md\":\"BrUtL9Z4\",\"fragemented_wbs_phase-1-reports_governance-mapping.md\":\"BQky2Xqk\",\"fragemented_wbs_phase-1-reports_governance-risks.md\":\"B3Af2AI_\",\"fragemented_wbs_phase-1-reports_governance-rubric.md\":\"Do5Bx7mK\",\"fragemented_wbs_phase-1-reports_harness-governance-rules.md\":\"nEAB1lS_\",\"fragemented_wbs_phase-1-reports_index.md\":\"CgyeGw_u\",\"fragemented_wbs_phase-1-reports_kilo-api-matrix.md\":\"Cl1OXB0Z\",\"fragemented_wbs_phase-1-reports_kilo-config-model.md\":\"CsbQ0uyJ\",\"fragemented_wbs_phase-1-reports_kilo-extensions-matrix.md\":\"DtJZrHiQ\",\"fragemented_wbs_phase-1-reports_kilo-quality.md\":\"DdDRDYsX\",\"fragemented_wbs_phase-1-reports_kilo-readiness-score.md\":\"cKAlvYCm\",\"fragemented_wbs_phase-1-reports_kilo-repo-status.md\":\"RXNAAhH8\",\"fragemented_wbs_phase-1-reports_kilo-runtime-profile.md\":\"Bwi3btAQ\",\"fragemented_wbs_phase-1-reports_kilo-toolchain.md\":\"CC2EdR2K\",\"fragemented_wbs_phase-1-reports_merged.md\":\"C6tzuIS0\",\"fragemented_wbs_phase-1-reports_opencode-api-matrix.md\":\"CEa1PPz_\",\"fragemented_wbs_phase-1-reports_opencode-auth.md\":\"DhxhZY6n\",\"fragemented_wbs_phase-1-reports_opencode-plugin-matrix.md\":\"-iYL5vkb\",\"fragemented_wbs_phase-1-reports_opencode-quality.md\":\"DV0AONNb\",\"fragemented_wbs_phase-1-reports_opencode-readiness-score.md\":\"D0I-cEW4\",\"fragemented_wbs_phase-1-reports_opencode-repo-status.md\":\"DdzkXklE\",\"fragemented_wbs_phase-1-reports_opencode-runtime-profile.md\":\"IEBmHeOf\",\"fragemented_wbs_phase-1-reports_opencode-toolchain.md\":\"ChetWlXf\",\"fragemented_wbs_phase-1-reports_oss-cli-constraints.md\":\"CSCZibUE\",\"fragemented_wbs_phase-1-reports_oss-cli-discovery.md\":\"DOdbwLTy\",\"fragemented_wbs_phase-1-reports_oss-cli-feasibility.md\":\"BvPIxPAG\",\"fragemented_wbs_phase-1-reports_oss-cli-shortlist.md\":\"DU-RBl4d\",\"fragemented_wbs_phase-1-reports_oss-cli-web-candidates.md\":\"CxoV0hvK\",\"fragemented_wbs_phase-1-reports_phase-1-synthesis.md\":\"BKQlSs3h\",\"fragemented_wbs_phase-1-reports_readme.md\":\"ksvlaBqV\",\"fragemented_wbs_phase-1-synthesis-prep.md\":\"DYFCnw52\",\"fragemented_wbs_phase-2-synthesis-prep.md\":\"CNO3a0A_\",\"fragemented_wbs_readme.md\":\"DfGMFkRB\",\"guides_changelog_process.md\":\"Vf0pPMug\",\"guides_quick-start_readme.md\":\"CvIm0LOw\",\"how-to_index.md\":\"Ccy1HNrz\",\"index.md\":\"VIZqPT07\",\"operations_index.md\":\"dnwdhikV\",\"plans_pm_spec_task_teammate.md\":\"DYAXYm18\",\"plans_task_teammate_prd_v2.md\":\"DDrUNcdf\",\"plans_task_teammate_wbs.md\":\"C-elxORF\",\"prd.md\":\"BN6x3-R8\",\"reference_adr-001-teammate-system.md\":\"BiCCfugm\",\"reference_adr-002-dynamic-limit-system.md\":\"B6FIYwMn\",\"reference_adr-003-multi-agent-coordination.md\":\"D19iT_kl\",\"reference_adr-004-caching-optimization.md\":\"CW4HYwS7\",\"reference_adr_status.md\":\"wzQqbOfo\",\"reference_changelog_entry_template.md\":\"D8hw8QAO\",\"reference_code_entity_map.md\":\"0koAtXJ1\",\"reference_fr_tracker.md\":\"QKyZOnvT\",\"reference_functional_requirements_task_teammate.md\":\"CI_u6Ok0\",\"reference_index.md\":\"C5qyfUWM\",\"reference_journey_validation.md\":\"DPTAJDtw\",\"reference_plan_status.md\":\"DOmJ-bdP\",\"reference_prd_tracker.md\":\"D97y58pN\",\"reference_technical_design_dynamic_scaling.md\":\"06Guvd1h\",\"reference_technical_spec_caching_optimization.md\":\"pHRCmqpG\",\"reference_user_stories_task_teammate.md\":\"BhnnFfKe\",\"reports_status_report.md\":\"BJ-RrcoM\",\"research_research_index.md\":\"DVE8XteW\",\"research_task_teammate_dynamic_scaling_research.md\":\"HdMf8zHb\",\"spec.md\":\"BuyUJfJ6\",\"tutorials_index.md\":\"B5Fhb6b3\",\"worklog.md\":\"DwFft3nE\"}");window.__VP_SITE_DATA__=JSON.parse("{\"lang\":\"en-US\",\"dir\":\"ltr\",\"title\":\"heliosHarness\",\"description\":\"Harness docs\",\"base\":\"/\",\"head\":[],\"router\":{\"prefetchLinks\":true},\"appearance\":true,\"themeConfig\":{\"nav\":[{\"text\":\"Start Here\",\"link\":\"/index\"},{\"text\":\"Tutorials\",\"link\":\"/tutorials/\"},{\"text\":\"How-to\",\"link\":\"/how-to/\"},{\"text\":\"Explanation\",\"link\":\"/explanation/\"},{\"text\":\"Operations\",\"link\":\"/operations/\"},{\"text\":\"API\",\"link\":\"/api/\"},{\"text\":\"🌐 Language\",\"items\":[{\"text\":\"English\",\"link\":\"/\"},{\"text\":\"简体中文\",\"link\":\"/zh-CN/\"},{\"text\":\"繁體中文\",\"link\":\"/zh-TW/\"},{\"text\":\"فارسی\",\"link\":\"/fa/\"},{\"text\":\"Pinglish\",\"link\":\"/fa-Latn/\"}]}]},\"locales\":{\"root\":{\"label\":\"English\",\"lang\":\"en\",\"title\":\"heliosHarness\",\"description\":\"Harness docs\"},\"zh-CN\":{\"label\":\"简体中文\",\"lang\":\"zh-CN\",\"title\":\"heliosHarness\",\"description\":\"Harness 文档\"},\"zh-TW\":{\"label\":\"繁體中文\",\"lang\":\"zh-TW\",\"title\":\"heliosHarness\",\"description\":\"Harness 文檔\"},\"fa\":{\"label\":\"فارسی\",\"lang\":\"fa\",\"title\":\"heliosHarness\",\"description\":\"مستندات Harness\"},\"fa-Latn\":{\"label\":\"Pinglish\",\"lang\":\"fa-Latn\",\"title\":\"heliosHarness\",\"description\":\"Harness docs (Latin)\"}},\"scrollOffset\":134,\"cleanUrls\":false}");</script>
+    
+  </body>
+</html>

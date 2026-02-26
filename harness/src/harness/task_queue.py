@@ -6,11 +6,12 @@ Provides priority queue with backpressure, persistence, and rate limiting.
 import asyncio
 import threading
 import time
-import uuid
 from dataclasses import dataclass, field
 from enum import Enum
 from heapq import heappush, heappop
 from typing import Any, Callable, Optional
+
+from .id_utils import new_id
 
 
 class TaskPriority(Enum):
@@ -105,7 +106,7 @@ class TaskQueue:
                 raise RateLimitError("Rate limit exceeded")
             
             task = Task(
-                id=str(uuid.uuid4()),
+                id=new_id(),
                 agent_name=agent_name,
                 payload=payload,
                 priority=priority,

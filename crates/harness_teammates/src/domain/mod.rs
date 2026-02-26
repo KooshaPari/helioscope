@@ -1,6 +1,7 @@
 //! Domain layer - Core entities for teammates
 
 use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 
 /// Priority levels for tasks
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -145,7 +146,7 @@ pub struct DelegationResult {
 impl DelegationResult {
     pub fn success(teammate_id: &str, result: String) -> Self {
         Self {
-            delegation_id: uuid_v4(),
+            delegation_id: Uuid::new_v4().to_string(),
             teammate_id: teammate_id.to_string(),
             status: DelegationStatus::Completed,
             result: Some(result),
@@ -157,7 +158,7 @@ impl DelegationResult {
 
     pub fn failure(teammate_id: &str, error: String) -> Self {
         Self {
-            delegation_id: uuid_v4(),
+            delegation_id: Uuid::new_v4().to_string(),
             teammate_id: teammate_id.to_string(),
             status: DelegationStatus::Failed,
             result: None,
@@ -166,11 +167,4 @@ impl DelegationResult {
             evidence: Vec::new(),
         }
     }
-}
-
-/// Generate UUID v4
-fn uuid_v4() -> String {
-    use std::time::{SystemTime, UNIX_EPOCH};
-    let now = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
-    format!("{:032x}-{:016x}", now.as_nanos(), now.as_secs())
 }

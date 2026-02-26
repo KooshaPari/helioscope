@@ -7,10 +7,11 @@ timeout handling, and escalation paths.
 import asyncio
 import threading
 import time
-import uuid
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Callable, Optional
+
+from .id_utils import new_id
 
 
 class DelegationState(Enum):
@@ -106,7 +107,7 @@ class DelegationProtocol:
     ) -> DelegationRequest:
         """Delegate a task to another agent."""
         request = DelegationRequest(
-            id=str(uuid.uuid4()),
+            id=new_id(),
             from_agent=from_agent,
             to_agent=to_agent,
             task=task,

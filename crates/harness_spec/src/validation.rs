@@ -90,7 +90,7 @@ fn validate_verification_rule(rule: &VerificationRule) -> Result<()> {
                 });
             }
         }
-        VerificationRule::Custom { command, expected_exit_code } => {
+        VerificationRule::Custom { command, expected_exit_code: _expected_exit_code } => {
             if command.is_empty() {
                 return Err(SpecError::InvalidValue {
                     field: "verification.custom.command".to_string(),

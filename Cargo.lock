@@ -647,6 +647,9 @@ dependencies = [
 [[package]]
 name = "harness_interfaces"
 version = "0.1.0"
+dependencies = [
+ "uuid",
+]
 
 [[package]]
 name = "harness_normalizer"
@@ -740,6 +743,7 @@ dependencies = [
  "thiserror 2.0.18",
  "tokio",
  "tracing",
+ "uuid",
 ]
 
 [[package]]

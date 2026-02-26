@@ -3,13 +3,14 @@
 Provides middleware for generating and propagating trace IDs across service calls.
 """
 
-import uuid
 import time
 from contextvars import ContextVar
 from dataclasses import dataclass, field
 from typing import Optional, Dict, Any, Callable
 from functools import wraps
 from enum import Enum
+
+from .id_utils import new_id
 
 
 class TraceContext:
@@ -23,7 +24,7 @@ class TraceContext:
     @classmethod
     def generate_id(cls) -> str:
         """Generate a unique ID."""
-        return uuid.uuid4().hex[:16]
+        return new_id().replace("-", "")
     
     @classmethod
     def start_trace(cls, parent_span: Optional[str] = None) -> Dict[str, str]:

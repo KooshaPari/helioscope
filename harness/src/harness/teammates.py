@@ -12,13 +12,11 @@ import logging
 import os
 import subprocess
 import tempfile
-import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
 from pathlib import Path
 from typing import Any, Callable
-from uuid import UUID
 
 # Lazy psutil - only load when needed for process monitoring
 _psutil = None
@@ -32,6 +30,8 @@ def _get_psutil():
 
 import yaml
 from pydantic import BaseModel, ConfigDict
+
+from .id_utils import new_id
 
 logger = logging.getLogger(__name__)
 
@@ -184,7 +184,7 @@ class DelegationProtocol:
         executor: "CodexExecutor",
     ) -> DelegationResult:
         """Execute delegation with timeout and retry."""
-        delegation_id = str(uuid.uuid4())[:8]
+        delegation_id = new_id().replace("-", "")
 
         # Create delegation record
         self._delegations[delegation_id] = request

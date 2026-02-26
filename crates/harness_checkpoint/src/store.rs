@@ -3,7 +3,6 @@
 use crate::checkpoint::Checkpoint;
 use crate::error::{CheckpointError, Result};
 use std::collections::HashMap;
-use std::path::Path;
 use std::sync::Arc;
 use tokio::sync::RwLock;
 

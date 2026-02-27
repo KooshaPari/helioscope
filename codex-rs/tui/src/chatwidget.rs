@@ -3281,6 +3281,28 @@ impl ChatWidget {
                 self.quit_shortcut_expires_at = None;
                 self.quit_shortcut_key = None;
             }
+            // Cmd+Shift+V: verbatim paste (bypass large-paste placeholder).
+            KeyEvent {
+                code: KeyCode::Char(c),
+                modifiers,
+                kind: KeyEventKind::Press,
+                ..
+            } if modifiers.contains(KeyModifiers::SUPER)
+                && modifiers.contains(KeyModifiers::SHIFT)
+                && !modifiers.intersects(KeyModifiers::CONTROL | KeyModifiers::ALT)
+                && c.eq_ignore_ascii_case(&'v') =>
+            {
+                match crate::clipboard_paste::paste_text() {
+                    Ok(text) => self.bottom_pane.handle_verbatim_paste(text),
+                    Err(err) => {
+                        tracing::warn!("failed to paste text: {err}");
+                        self.add_to_history(history_cell::new_error_event(format!(
+                            "Failed to paste text: {err}",
+                        )));
+                    }
+                }
+                return;
+            }
             KeyEvent {
                 code: KeyCode::Char(c),
                 modifiers,

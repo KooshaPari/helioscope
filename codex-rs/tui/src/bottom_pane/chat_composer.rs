@@ -783,6 +783,18 @@ impl ChatComposer {
         true
     }
 
+    /// Integrate pasted text as literal text, without creating large-paste placeholders.
+    ///
+    /// This powers the Cmd+Shift+V shortcut so users can intentionally paste large blocks while
+    /// keeping the full text visible/editable in the textarea.
+    pub(crate) fn handle_verbatim_paste(&mut self, pasted: String) -> bool {
+        let pasted = pasted.replace("\r\n", "\n").replace('\r', "\n");
+        self.textarea.insert_str(&pasted);
+        self.paste_burst.clear_after_explicit_paste();
+        self.sync_popups();
+        true
+    }
+
     pub fn handle_paste_image_path(&mut self, pasted: String) -> bool {
         let Some(path_buf) = normalize_pasted_path(&pasted) else {
             return false;

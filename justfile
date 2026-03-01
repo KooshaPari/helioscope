@@ -94,3 +94,16 @@ feature-matrix:
 # Tail logs from the state SQLite database
 log *args:
     if [ "${1:-}" = "--" ]; then shift; fi; cargo run -p codex-state --bin logs_client -- "$@"
+
+# Standardized task-surface wrapper recipes.
+surface-lint:
+    bash ../scripts/task_surface.sh lint
+
+surface-test:
+    bash ../scripts/task_surface.sh test
+
+surface-fmt:
+    bash ../scripts/task_surface.sh fmt
+
+surface-quality:
+    bash ../scripts/task_surface.sh quality

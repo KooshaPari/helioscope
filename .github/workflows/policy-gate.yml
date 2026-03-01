@@ -10,17 +10,5 @@ permissions:
 
 jobs:
   policy-gate:
-    name: policy-gate
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Enforce layered fix PR policy
-        uses: ./.github/actions/policy-gate
-        with:
-          head-ref: ${{ github.head_ref }}
-          base-ref: ${{ github.base_ref }}
-          pr-labels: ${{ toJson(github.event.pull_request.labels.*.name) }}
+    uses: KooshaPari/phenotypeActions/.github/workflows/policy-gate.yml@c7e43facecdef5942f591ee72cb204b076ba23fd # v0
+    secrets: inherit

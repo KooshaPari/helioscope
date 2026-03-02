@@ -196,7 +196,7 @@ crossterm = { git = "https://github.com/nornagon/crossterm", branch = "nornagon/
    - No-std support opens embedded deployment options
 2. **Evaluate nornagon fork patches** for upstream contribution
    - Color-query capability detection useful for terminal negotiation
-   - Consider PRing enhancements back to main ratatui
+   - Consider PR-ing enhancements back to main ratatui
 3. **WezTerm Integration** – Lua plugin hooks for shell agent features
 4. **Zellij Compatibility** – WASM plugin for multiplexer integration
 

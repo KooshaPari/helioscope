@@ -110,7 +110,7 @@ jobs:
         run: |
           set -euo pipefail
           if ! cargo metadata --locked --format-version=1 >/dev/null; then
-            echo "::error::Lockfile drift detected. Regenerate lockfile changes with `cargo update` and commit updated `Cargo.lock`."
+            echo "::error::Lockfile drift detected. Regenerate lockfile changes with cargo update -w and commit updated Cargo.lock."
             exit 1
           fi
 
@@ -121,14 +121,25 @@ jobs:
 
       - name: Run feature-matrix guard for feature-sensitive changes
         if: ${{ needs.changed.outputs.feature_drift == 'true' }}
-        run: just feature-matrix
+        shell: bash
+        run: |
+          set -euo pipefail
+          if command -v apt-get >/dev/null 2>&1; then
+            sudo apt-get update -y
+            sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends pkg-config libcap-dev
+          fi
+          cargo check -p codex-tui --no-default-features
+          cargo check -p codex-tui --no-default-features --features debug-logs
+          cargo check -p codex-cloud-tasks-client --no-default-features
+          cargo check -p codex-cloud-tasks-client --no-default-features --features mock
+          cargo check -p codex-otel --features disable-default-metrics-exporter
 
       - name: Enforce no rust_core edits
         if: ${{ needs.changed.outputs.rust_core == 'true' }}
         shell: bash
         run: |
-          echo "::error::Legacy `rust_core` path was edited."
-          echo "::error::This fork is de-mirrored. Use `codex-rs` as the active Rust workspace."
+          echo "::error::Legacy rust_core path was edited."
+          echo "::error::This fork is de-mirrored. Use codex-rs as the active Rust workspace."
           exit 1
 
   # --- CI that doesn't need specific targets ---------------------------------

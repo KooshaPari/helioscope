@@ -152,7 +152,7 @@ gh api -X DELETE repos/KooshaPari/colab/git/refs/heads/helios-phase4
 
 ## Cross-Repo Summary
 
-| Repo | Active Branches | Open PRs | Unmerged Value | Upstream Opps |
+| Repo | Active Branches | Open PRs | Unmerged Value | Upstream Ops |
 |------|----------------|----------|----------------|---------------|
 | agentapi-plusplus | 1 (SDK scaffold) | 1 (#288) | Low (stacked work merged) | HIGH (7 fixes to contribute back + 3 cherry-picks) |
 | CLIProxyAPI | 0 (deprecated) | 9 (dependabot) | None | N/A (deprecated) |

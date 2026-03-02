@@ -481,6 +481,58 @@ dependencies = [
 ]
 
 [[package]]
+name = "askama"
+version = "0.15.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "08e1676b346cadfec169374f949d7490fd80a24193d37d2afce0c047cf695e57"
+dependencies = [
+ "askama_macros",
+ "itoa",
+ "percent-encoding",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "askama_derive"
+version = "0.15.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7661ff56517787343f376f75db037426facd7c8d3049cef8911f1e75016f3a37"
+dependencies = [
+ "askama_parser",
+ "basic-toml",
+ "memchr",
+ "proc-macro2",
+ "quote",
+ "rustc-hash 2.1.1",
+ "serde",
+ "serde_derive",
+ "syn 2.0.114",
+]
+
+[[package]]
+name = "askama_macros"
+version = "0.15.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "713ee4dbfd1eb719c2dab859465b01fa1d21cb566684614a713a6b7a99a4e47b"
+dependencies = [
+ "askama_derive",
+]
+
+[[package]]
+name = "askama_parser"
+version = "0.15.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1d62d674238a526418b30c0def480d5beadb9d8964e7f38d635b03bf639c704c"
+dependencies = [
+ "rustc-hash 2.1.1",
+ "serde",
+ "serde_derive",
+ "unicode-ident",
+ "winnow",
+]
+
+[[package]]
 name = "asn1-rs"
 version = "0.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1551,6 +1603,7 @@ dependencies = [
  "codex-protocol",
  "codex-responses-api-proxy",
  "codex-rmcp-client",
+ "codex-state",
  "codex-stdio-to-uds",
  "codex-tui",
  "codex-utils-cargo-bin",
@@ -1562,6 +1615,7 @@ dependencies = [
  "pretty_assertions",
  "regex-lite",
  "serde_json",
+ "sqlx",
  "supports-color 3.0.2",
  "tempfile",
  "tokio",
@@ -1688,6 +1742,7 @@ version = "0.0.0"
 dependencies = [
  "anyhow",
  "arc-swap",
+ "askama",
  "assert_cmd",
  "assert_matches",
  "async-channel",
@@ -1718,18 +1773,19 @@ dependencies = [
  "codex-shell-escalation",
  "codex-skills",
  "codex-state",
+ "codex-test-macros",
  "codex-utils-absolute-path",
  "codex-utils-cargo-bin",
  "codex-utils-home-dir",
  "codex-utils-pty",
  "codex-utils-readiness",
+ "codex-utils-stream-parser",
  "codex-utils-string",
  "codex-windows-sandbox",
  "core-foundation 0.9.4",
  "core_test_support",
  "csv",
  "ctor 0.6.3",
- "dashmap",
  "dirs",
  "dunce",
  "encoding_rs",
@@ -1737,6 +1793,7 @@ dependencies = [
  "eventsource-stream",
  "futures",
  "http 1.4.0",
+ "iana-time-zone",
  "image",
  "indexmap 2.13.0",
  "insta",
@@ -1845,6 +1902,7 @@ version = "0.0.0"
 dependencies = [
  "anyhow",
  "clap",
+ "codex-utils-absolute-path",
  "multimap",
  "pretty_assertions",
  "serde",
@@ -2042,6 +2100,7 @@ version = "0.0.0"
 dependencies = [
  "anyhow",
  "async-trait",
+ "chrono",
  "clap",
  "codex-utils-absolute-path",
  "codex-utils-home-dir",
@@ -2094,6 +2153,7 @@ dependencies = [
  "codex-utils-absolute-path",
  "codex-utils-string",
  "eventsource-stream",
+ "gethostname",
  "http 1.4.0",
  "opentelemetry",
  "opentelemetry-appender-tracing",
@@ -2243,6 +2303,7 @@ dependencies = [
  "anyhow",
  "async-trait",
  "clap",
+ "codex-protocol",
  "codex-utils-absolute-path",
  "libc",
  "pretty_assertions",
@@ -2300,6 +2361,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "codex-test-macros"
+version = "0.0.0"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.114",
+]
+
+[[package]]
 name = "codex-tui"
 version = "0.0.0"
 dependencies = [
@@ -2334,6 +2404,7 @@ dependencies = [
  "codex-utils-pty",
  "codex-utils-sandbox-summary",
  "codex-utils-sleep-inhibitor",
+ "codex-utils-string",
  "codex-windows-sandbox",
  "color-eyre",
  "cpal",
@@ -2536,6 +2607,13 @@ dependencies = [
  "libc",
  "tracing",
  "windows-sys 0.61.2",
+]
+
+[[package]]
+name = "codex-utils-stream-parser"
+version = "0.0.0"
+dependencies = [
+ "pretty_assertions",
 ]
 
 [[package]]
@@ -3117,20 +3195,6 @@ dependencies = [
  "darling_core 0.23.0",
  "quote",
  "syn 2.0.114",
-]
-
-[[package]]
-name = "dashmap"
-version = "6.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5041cc499144891f3790297212f32a74fb938e5136a14943f338ef9e0ae276cf"
-dependencies = [
- "cfg-if",
- "crossbeam-utils",
- "hashbrown 0.14.5",
- "lock_api",
- "once_cell",
- "parking_lot_core",
 ]
 
 [[package]]

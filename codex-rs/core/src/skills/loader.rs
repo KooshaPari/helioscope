@@ -17,6 +17,7 @@ use crate::skills::system::system_cache_root_dir;
 use codex_app_server_protocol::ConfigLayerSource;
 use codex_protocol::models::PermissionProfile;
 use codex_protocol::protocol::SkillScope;
+use codex_utils_absolute_path::AbsolutePathBufGuard;
 use dirs::home_dir;
 use dunce::canonicalize as canonicalize_path;
 use serde::Deserialize;
@@ -455,13 +456,6 @@ fn discover_skills_under_root(root: &Path, scope: SkillScope, outcome: &mut Skil
                     continue;
                 }
 
-                if metadata.is_file()
-                    && (file_name == SKILLS_FILENAME
-                        || file_name.eq_ignore_ascii_case(SKILLS_FILENAME))
-                {
-                    record_skill_from_path(&path, scope, outcome);
-                }
-
                 continue;
             }
 
@@ -479,11 +473,20 @@ fn discover_skills_under_root(root: &Path, scope: SkillScope, outcome: &mut Skil
                 continue;
             }
 
-            if file_type.is_file()
-                && (file_name == SKILLS_FILENAME
-                    || file_name.eq_ignore_ascii_case(SKILLS_FILENAME))
-            {
-                record_skill_from_path(&path, scope, outcome);
+            if file_type.is_file() && file_name == SKILLS_FILENAME {
+                match parse_skill_file(&path, scope) {
+                    Ok(skill) => {
+                        outcome.skills.push(skill);
+                    }
+                    Err(err) => {
+                        if scope != SkillScope::System {
+                            outcome.errors.push(SkillError {
+                                path,
+                                message: err.to_string(),
+                            });
+                        }
+                    }
+                }
             }
         }
     }
@@ -494,22 +497,6 @@ fn discover_skills_under_root(root: &Path, scope: SkillScope, outcome: &mut Skil
             MAX_SKILLS_DIRS_PER_ROOT,
             root.display()
         );
-    }
-}
-
-fn record_skill_from_path(path: &Path, scope: SkillScope, outcome: &mut SkillLoadOutcome) {
-    match parse_skill_file(path, scope) {
-        Ok(skill) => {
-            outcome.skills.push(skill);
-        }
-        Err(err) => {
-            if scope != SkillScope::System {
-                outcome.errors.push(SkillError {
-                    path: path.to_path_buf(),
-                    message: err.to_string(),
-                });
-            }
-        }
     }
 }
 
@@ -587,15 +574,18 @@ fn load_skill_metadata(skill_path: &Path) -> LoadedSkillMetadata {
         }
     };
 
-    let parsed: SkillMetadataFile = match serde_yaml::from_str(&contents) {
-        Ok(parsed) => parsed,
-        Err(error) => {
-            tracing::warn!(
-                "ignoring {path}: invalid {label}: {error}",
-                path = metadata_path.display(),
-                label = SKILLS_METADATA_FILENAME
-            );
-            return LoadedSkillMetadata::default();
+    let parsed: SkillMetadataFile = {
+        let _guard = AbsolutePathBufGuard::new(skill_dir);
+        match serde_yaml::from_str(&contents) {
+            Ok(parsed) => parsed,
+            Err(error) => {
+                tracing::warn!(
+                    "ignoring {path}: invalid {label}: {error}",
+                    path = metadata_path.display(),
+                    label = SKILLS_METADATA_FILENAME
+                );
+                return LoadedSkillMetadata::default();
+            }
         }
     };
 
@@ -1390,8 +1380,14 @@ permissions:
             Some(PermissionProfile {
                 network: Some(true),
                 file_system: Some(FileSystemPermissions {
-                    read: Some(vec![PathBuf::from("./data")]),
-                    write: Some(vec![PathBuf::from("./output")]),
+                    read: Some(vec![
+                        AbsolutePathBuf::try_from(normalized(skill_dir.join("data").as_path()))
+                            .expect("absolute data path"),
+                    ]),
+                    write: Some(vec![
+                        AbsolutePathBuf::try_from(normalized(skill_dir.join("output").as_path()))
+                            .expect("absolute output path"),
+                    ]),
                 }),
                 macos: None,
             })
@@ -1823,13 +1819,12 @@ permissions:
 
     #[tokio::test]
     #[cfg(unix)]
-    async fn loads_symlinked_skill_file_for_user_scope() {
+    async fn ignores_symlinked_skill_file_for_user_scope() {
         let codex_home = tempfile::tempdir().expect("tempdir");
         let shared = tempfile::tempdir().expect("tempdir");
 
         let shared_skill_path =
             write_skill_at(shared.path(), "demo", "linked-file-skill", "from link");
-        let normalized_shared_skill_path = normalized(&shared_skill_path);
 
         let skill_dir = codex_home.path().join("skills/demo");
         fs::create_dir_all(&skill_dir).unwrap();
@@ -1843,17 +1838,7 @@ permissions:
             "unexpected errors: {:?}",
             outcome.errors
         );
-        assert_eq!(
-            outcome.skills,
-            vec![SkillMetadata {
-                name: "linked-file-skill".to_string(),
-                description: "from link".to_string(),
-                short_description: None,
-                interface: None,
-                path: normalized_shared_skill_path,
-                scope: SkillScope::User,
-            }]
-        );
+        assert_eq!(outcome.skills, Vec::new());
     }
 
     #[tokio::test]

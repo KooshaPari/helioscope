@@ -97,7 +97,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Format check (Rust)
         if: needs.detect-stage.outputs.lang == 'rust'
-        run: cargo fmt --check --manifest-path codex-rs/Cargo.toml
+        run: cargo fmt --all --check --manifest-path codex-rs/Cargo.toml
       - name: Format check (Go)
         if: needs.detect-stage.outputs.lang == 'go'
         run: test -z "$(gofmt -l .)"
@@ -114,6 +114,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Install Linux build dependencies (Rust)
+        if: needs.detect-stage.outputs.lang == 'rust'
+        run: |
+          sudo apt-get update -y
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends pkg-config libcap-dev
       - name: Lint (Rust)
         if: needs.detect-stage.outputs.lang == 'rust'
         run: cargo clippy --manifest-path codex-rs/Cargo.toml -- -D warnings
@@ -145,6 +150,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Install Linux build dependencies (Rust)
+        if: needs.detect-stage.outputs.lang == 'rust'
+        run: |
+          sudo apt-get update -y
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends pkg-config libcap-dev
       - name: Unit tests (Rust)
         if: needs.detect-stage.outputs.lang == 'rust'
         run: cargo test --lib --manifest-path codex-rs/Cargo.toml
@@ -164,6 +174,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Install Linux build dependencies (Rust)
+        if: needs.detect-stage.outputs.lang == 'rust'
+        run: |
+          sudo apt-get update -y
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends pkg-config libcap-dev
       - name: Integration tests (Rust)
         if: needs.detect-stage.outputs.lang == 'rust'
         run: cargo test --test '*' --manifest-path codex-rs/Cargo.toml
@@ -183,6 +198,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Install Linux build dependencies (Rust)
+        if: needs.detect-stage.outputs.lang == 'rust'
+        run: |
+          sudo apt-get update -y
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends pkg-config libcap-dev
       - name: Determine coverage floor
         id: floor
         run: |
@@ -254,7 +274,7 @@ jobs:
 
   license-check:
     needs: detect-stage
-    if: contains(needs.detect-stage.outputs.gates, 'license')
+    if: contains(needs.detect-stage.outputs.gates, 'license') && secrets.FOSSA_API_KEY != ''
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

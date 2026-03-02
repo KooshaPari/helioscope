@@ -95,7 +95,8 @@ def codex_rust_crate(
         "BAZEL_PACKAGE": native.package_name(),
     } | rustc_env
 
-    binaries = DEP_DATA.get(native.package_name())["binaries"]
+    dep_data = DEP_DATA.get(native.package_name())
+    binaries = dep_data["binaries"] if dep_data else {}
 
     lib_srcs = crate_srcs or native.glob(["src/**/*.rs"], exclude = binaries.values(), allow_empty = True)
 

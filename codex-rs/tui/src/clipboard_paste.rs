@@ -22,6 +22,7 @@ impl std::fmt::Display for PasteImageError {
 }
 impl std::error::Error for PasteImageError {}
 
+#[allow(dead_code)]
 #[derive(Debug, Clone)]
 pub enum PasteTextError {
     ClipboardUnavailable(String),
@@ -253,6 +254,7 @@ pub fn paste_image_to_temp_png() -> Result<(PathBuf, PastedImageInfo), PasteImag
     ))
 }
 
+#[allow(dead_code)]
 #[cfg(not(target_os = "android"))]
 pub fn paste_text() -> Result<String, PasteTextError> {
     let mut cb = arboard::Clipboard::new()
@@ -262,6 +264,7 @@ pub fn paste_text() -> Result<String, PasteTextError> {
         .map_err(|e| PasteTextError::NoText(e.to_string()))
 }
 
+#[allow(dead_code)]
 #[cfg(target_os = "android")]
 pub fn paste_text() -> Result<String, PasteTextError> {
     Err(PasteTextError::ClipboardUnavailable(
@@ -303,17 +306,21 @@ pub fn normalize_pasted_path(pasted: &str) -> Option<PathBuf> {
     // shell-escaped single path → unescaped
     let parts: Vec<String> = shlex::Shlex::new(pasted).collect();
     if parts.len() == 1 {
-        let mut part = parts.into_iter().next()?;
+        let part = parts.into_iter().next()?;
         if let Some(path) = normalize_windows_path(&part) {
             return Some(path);
         }
 
-        #[cfg(not(windows))]
+        #[cfg(windows)]
         {
-            part = fixup_unix_root_relative_path(part);
+            return Some(PathBuf::from(part));
         }
 
-        return Some(PathBuf::from(part));
+        #[cfg(not(windows))]
+        {
+            let part = fixup_unix_root_relative_path(part);
+            return Some(PathBuf::from(part));
+        }
     }
 
     None

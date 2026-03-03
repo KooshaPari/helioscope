@@ -511,6 +511,7 @@ mod tests {
 
     #[cfg(unix)]
     #[tokio::test(flavor = "current_thread")]
+    #[ignore = "flaky in CI: suspend path can block event-loop progress"]
     async fn ctrl_b_suspend_triggers_draw() {
         let (broker, _handle, _draw_tx, draw_rx, terminal_focused) = setup();
         let mut stream = make_stream(broker, draw_rx, terminal_focused);

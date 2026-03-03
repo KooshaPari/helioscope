@@ -13,14 +13,22 @@ use tokio::fs;
 use tracing::warn;
 
 #[derive(Template)]
-#[template(path = "memories/consolidation.md", escape = "none")]
+#[template(
+    source = include_str!("../../templates/memories/consolidation.md"),
+    ext = "md",
+    escape = "none"
+)]
 struct ConsolidationPromptTemplate<'a> {
     memory_root: &'a str,
     phase2_input_selection: &'a str,
 }
 
 #[derive(Template)]
-#[template(path = "memories/stage_one_input.md", escape = "none")]
+#[template(
+    source = include_str!("../../templates/memories/stage_one_input.md"),
+    ext = "md",
+    escape = "none"
+)]
 struct StageOneInputTemplate<'a> {
     rollout_path: &'a str,
     rollout_cwd: &'a str,
@@ -28,7 +36,11 @@ struct StageOneInputTemplate<'a> {
 }
 
 #[derive(Template)]
-#[template(path = "memories/read_path.md", escape = "none")]
+#[template(
+    source = include_str!("../../templates/memories/read_path.md"),
+    ext = "md",
+    escape = "none"
+)]
 struct MemoryToolDeveloperInstructionsTemplate<'a> {
     base_path: &'a str,
     memory_summary: &'a str,

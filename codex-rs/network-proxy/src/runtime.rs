@@ -834,7 +834,7 @@ mod tests {
         });
 
         assert_eq!(
-            state.host_blocked("example.com", 80).await.unwrap(),
+            state.host_blocked("example.com", 80).await.expect("host_blocked should return a decision"),
             HostBlockDecision::Blocked(HostBlockReason::Denied)
         );
     }
@@ -847,13 +847,13 @@ mod tests {
         });
 
         assert_eq!(
-            state.host_blocked("example.com", 80).await.unwrap(),
+            state.host_blocked("example.com", 80).await.expect("host_blocked should return a decision"),
             HostBlockDecision::Allowed
         );
         assert_eq!(
             // Use a public IP literal to avoid relying on ambient DNS behavior (some networks
             // resolve unknown hostnames to private IPs, which would trigger `not_allowed_local`).
-            state.host_blocked("8.8.8.8", 80).await.unwrap(),
+            state.host_blocked("8.8.8.8", 80).await.expect("host_blocked should return a decision"),
             HostBlockDecision::Blocked(HostBlockReason::NotAllowed)
         );
     }
@@ -871,7 +871,7 @@ mod tests {
         assert_eq!(allowed, vec!["example.com".to_string()]);
         assert!(denied.is_empty());
         assert_eq!(
-            state.host_blocked("example.com", 80).await.unwrap(),
+            state.host_blocked("example.com", 80).await.expect("host_blocked should return a decision"),
             HostBlockDecision::Allowed
         );
     }
@@ -889,7 +889,7 @@ mod tests {
         assert!(allowed.is_empty());
         assert_eq!(denied, vec!["example.com".to_string()]);
         assert_eq!(
-            state.host_blocked("example.com", 80).await.unwrap(),
+            state.host_blocked("example.com", 80).await.expect("host_blocked should return a decision"),
             HostBlockDecision::Blocked(HostBlockReason::Denied)
         );
     }

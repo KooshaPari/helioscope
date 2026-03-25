@@ -14,6 +14,12 @@ pub enum Priority {
     Low,
 }
 
+impl Default for Priority {
+    fn default() -> Self {
+        Priority::Normal
+    }
+}
+
 impl Priority {
     pub fn as_str(&self) -> &'static str {
         match self {
@@ -46,6 +52,12 @@ pub enum HealthStatus {
     Crashed,
     #[default]
     Unknown,
+}
+
+impl Default for HealthStatus {
+    fn default() -> Self {
+        HealthStatus::Unknown
+    }
 }
 
 /// Teammate definition

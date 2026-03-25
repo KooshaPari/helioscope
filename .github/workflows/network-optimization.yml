@@ -20,13 +20,14 @@ jobs:
       - name: Test Circuit Breaker
         run: |
           python -c "
-          import sys
-          import time
-          sys.path.insert(0, 'harness/src')
-          from harness.circuit_breaker import CircuitBreaker, CircuitState, CircuitOpenError
+import sys
+import time
+sys.path.insert(0, 'harness/src')
+from harness.circuit_breaker import CircuitBreaker, CircuitBreakerConfig, CircuitState, CircuitBreakerError
 
-          print('=== Circuit Breaker Test ===')
-          cb = CircuitBreaker('test', failure_threshold=3, timeout=1)
+print('=== Circuit Breaker Test ===')
+config = CircuitBreakerConfig(failure_threshold=3, timeout=1)
+cb = CircuitBreaker(config=config)
 
           # Test normal operation
           def succeed():

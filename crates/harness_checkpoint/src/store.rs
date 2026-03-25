@@ -18,6 +18,7 @@ impl Default for CheckpointStore {
     }
 }
 
+impl CheckpointStore {
     /// Create new store
     pub fn new() -> Self {
         Self {

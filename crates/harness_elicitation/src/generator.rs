@@ -1,12 +1,12 @@
 //! Specification generator
 
-use crate::error::{Result, ElicitationError};
 use crate::classifier::IntentClassifier;
-use crate::intent::{ClassifiedIntent, Intent, Entity};
-use harness_spec::models::{
-    Specification, SpecContent, VerificationRule, RollbackConfig, SuccessCriterion, BehaviorSpec
-};
+use crate::error::{ElicitationError, Result};
+use crate::intent::{ClassifiedIntent, Entity, Intent};
 use chrono::Utc;
+use harness_spec::models::{
+    BehaviorSpec, RollbackConfig, SpecContent, Specification, SuccessCriterion, VerificationRule,
+};
 
 /// Specification generator
 pub struct SpecGenerator;
@@ -22,21 +22,21 @@ impl SpecGenerator {
     pub fn new() -> Self {
         Self
     }
-    
+
     /// Generate specification from classified intent
     pub fn generate(&self, intent: &ClassifiedIntent) -> Result<Specification> {
         // Generate spec name
         let name = self.generate_name(intent);
-        
+
         // Generate verification rules
         let verification = self.generate_verification(intent);
-        
+
         // Generate success criteria
         let success_criteria = self.generate_success_criteria(intent);
-        
+
         // Generate behavior (BDD-style)
         let behavior = self.generate_behavior(intent);
-        
+
         let spec = Specification {
             spec: SpecContent {
                 name,
@@ -50,10 +50,10 @@ impl SpecGenerator {
                 metadata: self.generate_metadata(intent),
             },
         };
-        
+
         Ok(spec)
     }
-    
+
     /// Generate spec name
     fn generate_name(&self, intent: &ClassifiedIntent) -> String {
         let action = match intent.intent {
@@ -69,18 +69,22 @@ impl SpecGenerator {
             Intent::Optimize => "optimize",
             Intent::Unknown => "unknown",
         };
-        
+
         // Try to extract key entity
-        let entity = intent.entities.first()
+        let entity = intent
+            .entities
+            .first()
             .map(|e| e.value.clone())
             .unwrap_or_else(|| " unspecified".to_string());
-        
+
         format!("{}-{}", action, entity.replace(['/', '.'], "_"))
     }
-    
+
     /// Generate verification rules
     fn generate_verification(&self, intent: &ClassifiedIntent) -> Vec<VerificationRule> {
-        intent.intent.default_verification()
+        intent
+            .intent
+            .default_verification()
             .iter()
             .map(|v| match *v {
                 "test" => VerificationRule::Test {
@@ -110,18 +114,16 @@ impl SpecGenerator {
             })
             .collect()
     }
-    
+
     /// Generate success criteria
     fn generate_success_criteria(&self, intent: &ClassifiedIntent) -> Vec<SuccessCriterion> {
         match intent.intent {
-            Intent::Fix => vec![
-                SuccessCriterion {
-                    metric: "tests_pass".to_string(),
-                    threshold: Some("true".to_string()),
-                    minimum: None,
-                    maximum: None,
-                },
-            ],
+            Intent::Fix => vec![SuccessCriterion {
+                metric: "tests_pass".to_string(),
+                threshold: Some("true".to_string()),
+                minimum: None,
+                maximum: None,
+            }],
             Intent::Feature => vec![
                 SuccessCriterion {
                     metric: "tests_pass".to_string(),
@@ -136,32 +138,33 @@ impl SpecGenerator {
                     maximum: None,
                 },
             ],
-            Intent::Optimize => vec![
-                SuccessCriterion {
-                    metric: "performance_improvement".to_string(),
-                    threshold: None,
-                    minimum: Some(10.0),
-                    maximum: None,
-                },
-            ],
-            _ => vec![
-                SuccessCriterion {
-                    metric: "tests_pass".to_string(),
-                    threshold: Some("true".to_string()),
-                    minimum: None,
-                    maximum: None,
-                },
-            ],
+            Intent::Optimize => vec![SuccessCriterion {
+                metric: "performance_improvement".to_string(),
+                threshold: None,
+                minimum: Some(10.0),
+                maximum: None,
+            }],
+            _ => vec![SuccessCriterion {
+                metric: "tests_pass".to_string(),
+                threshold: Some("true".to_string()),
+                minimum: None,
+                maximum: None,
+            }],
         }
     }
-    
+
     /// Generate behavior spec (BDD-style)
     fn generate_behavior(&self, intent: &ClassifiedIntent) -> BehaviorSpec {
         let (given, when, then): (String, &str, &str) = match intent.intent {
             Intent::Fix => (
-                format!("system has a bug in {}", intent.entities.first()
-                    .map(|e| e.value.as_str())
-                    .unwrap_or("unknown component")),
+                format!(
+                    "system has a bug in {}",
+                    intent
+                        .entities
+                        .first()
+                        .map(|e| e.value.as_str())
+                        .unwrap_or("unknown component")
+                ),
                 "agent executes fix",
                 "bug is resolved and tests pass",
             ),
@@ -186,7 +189,7 @@ impl SpecGenerator {
                 "task completes successfully",
             ),
         };
-        
+
         BehaviorSpec {
             given,
             when: when.to_string(),
@@ -194,16 +197,19 @@ impl SpecGenerator {
             and: vec![],
         }
     }
-    
+
     /// Generate metadata
-    fn generate_metadata(&self, intent: &ClassifiedIntent) -> std::collections::HashMap<String, String> {
+    fn generate_metadata(
+        &self,
+        intent: &ClassifiedIntent,
+    ) -> std::collections::HashMap<String, String> {
         let mut metadata = std::collections::HashMap::new();
-        
+
         metadata.insert("elicited_at".to_string(), Utc::now().to_rfc3339());
         metadata.insert("original_input".to_string(), intent.original_input.clone());
         metadata.insert("intent_type".to_string(), format!("{:?}", intent.intent));
         metadata.insert("confidence".to_string(), intent.confidence.to_string());
-        
+
         metadata
     }
 }
@@ -228,25 +234,26 @@ impl ElicitationHandler {
             generator: SpecGenerator::new(),
         }
     }
-    
+
     /// Process user input and generate specification
     pub fn process(&self, input: &str) -> Result<Specification> {
         // Classify intent
         let intent = self.classifier.classify(input)?;
-        
+
         // Check confidence threshold
         if intent.confidence < 0.1 {
-            return Err(ElicitationError::AmbiguousError(
-                format!("Input '{}' is ambiguous (confidence: {:.2})", input, intent.confidence)
-            ));
+            return Err(ElicitationError::AmbiguousError(format!(
+                "Input '{}' is ambiguous (confidence: {:.2})",
+                input, intent.confidence
+            )));
         }
-        
+
         // Generate specification
         let spec = self.generator.generate(&intent)?;
-        
+
         Ok(spec)
     }
-    
+
     /// Just classify without generating spec
     pub fn classify(&self, input: &str) -> Result<ClassifiedIntent> {
         self.classifier.classify(input)
@@ -256,29 +263,29 @@ impl ElicitationHandler {
 #[cfg(test)]
 mod tests {
     use super::*;
-    
+
     #[test]
     fn test_generate_fix_spec() {
         let handler = ElicitationHandler::new();
         let spec = handler.process("Fix the login bug in auth.rs").unwrap();
-        
+
         assert!(spec.spec.name.contains("fix"));
         assert!(!spec.spec.verification.is_empty());
     }
-    
+
     #[test]
     fn test_generate_feature_spec() {
         let handler = ElicitationHandler::new();
         let spec = handler.process("Add OAuth login").unwrap();
-        
+
         assert!(spec.spec.name.contains("feature"));
     }
-    
+
     #[test]
     fn test_behavior_generation() {
         let handler = ElicitationHandler::new();
         let spec = handler.process("Fix the bug").unwrap();
-        
+
         assert!(spec.spec.behavior.is_some());
     }
 }

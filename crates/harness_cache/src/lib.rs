@@ -80,10 +80,13 @@ impl Cache {
             if store.len() >= self.max_capacity as usize {
                 store.retain(|_, v| v.expires_at > Instant::now());
             }
-            store.insert(key, Entry {
-                value,
-                expires_at: Instant::now() + self.ttl,
-            });
+            store.insert(
+                key,
+                Entry {
+                    value,
+                    expires_at: Instant::now() + self.ttl,
+                },
+            );
         }
     }
 
@@ -111,7 +114,9 @@ impl Cache {
 }
 
 impl Default for Cache {
-    fn default() -> Self { Self::with_defaults() }
+    fn default() -> Self {
+        Self::with_defaults()
+    }
 }
 
 /// Cache statistics
@@ -125,7 +130,11 @@ pub struct CacheStats {
 impl CacheStats {
     pub fn hit_rate(&self) -> f64 {
         let total = self.hits + self.misses;
-        if total == 0 { 0.0 } else { self.hits as f64 / total as f64 }
+        if total == 0 {
+            0.0
+        } else {
+            self.hits as f64 / total as f64
+        }
     }
 }
 

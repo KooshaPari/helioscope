@@ -4,12 +4,12 @@
 
 mod id;
 
-use serde::{Deserialize, Serialize};
-use uuid::Uuid;
 use chrono::{DateTime, Utc};
+use serde::{Deserialize, Serialize};
 use std::collections::VecDeque;
 use std::sync::Arc;
 use tokio::sync::RwLock;
+use uuid::Uuid;
 
 use crate::id::{new_id, short_id};
 
@@ -17,12 +17,22 @@ use crate::id::{new_id, short_id};
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "snake_case")]
 pub enum TaskStatus {
-    Pending, Queued, Running, Completed, Failed, Blocked,
+    Pending,
+    Queued,
+    Running,
+    Completed,
+    Failed,
+    Blocked,
 }
 
 /// Task priority
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
-pub enum TaskPriority { Critical = 0, High = 1, Normal = 2, Low = 3, }
+pub enum TaskPriority {
+    Critical = 0,
+    High = 1,
+    Normal = 2,
+    Low = 3,
+}
 
 /// Task
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -60,16 +70,18 @@ impl Task {
             error: None,
         }
     }
-    
-    pub fn depends_on(&mut self, task_id: Uuid) { self.dependencies.push(task_id); }
+
+    pub fn depends_on(&mut self, task_id: Uuid) {
+        self.dependencies.push(task_id);
+    }
 
     pub fn short_id(&self) -> String {
         short_id(&self.id, "task", 12)
     }
 
     pub fn is_ready(&self, completed: &[Uuid]) -> bool {
-        self.status == TaskStatus::Pending && 
-        self.dependencies.iter().all(|id| completed.contains(id))
+        self.status == TaskStatus::Pending
+            && self.dependencies.iter().all(|id| completed.contains(id))
     }
     pub fn start(&mut self, agent_id: Uuid) {
         self.status = TaskStatus::Running;
@@ -91,12 +103,24 @@ impl Task {
 /// Agent status
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "snake_case")]
-pub enum AgentStatus { Idle, Busy, Offline }
+pub enum AgentStatus {
+    Idle,
+    Busy,
+    Offline,
+}
 
 /// Agent capability
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-pub enum AgentCapability { CodeGen, Testing, Research, Documentation, Review, Deployment, General }
+pub enum AgentCapability {
+    CodeGen,
+    Testing,
+    Research,
+    Documentation,
+    Review,
+    Deployment,
+    General,
+}
 
 /// Agent
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -126,7 +150,9 @@ impl Agent {
             last_active_at: None,
         }
     }
-    pub fn is_available(&self) -> bool { self.status == AgentStatus::Idle }
+    pub fn is_available(&self) -> bool {
+        self.status == AgentStatus::Idle
+    }
     pub fn assign(&mut self, task_id: Uuid) {
         self.status = AgentStatus::Busy;
         self.current_task_id = Some(task_id);
@@ -136,7 +162,11 @@ impl Agent {
         self.status = AgentStatus::Idle;
         self.current_task_id = None;
         self.last_active_at = Some(Utc::now());
-        if success { self.tasks_completed += 1; } else { self.tasks_failed += 1; }
+        if success {
+            self.tasks_completed += 1;
+        } else {
+            self.tasks_failed += 1;
+        }
     }
 }
 
@@ -155,85 +185,100 @@ impl RootManager {
             completed: Arc::new(RwLock::new(Vec::new())),
         }
     }
-    
+
     pub async fn register_agent(&self, name: &str, caps: Vec<AgentCapability>) -> Uuid {
         let agent = Agent::new(name, caps);
         let id = agent.id;
         self.agents.write().await.push(agent);
         id
     }
-    
+
     pub async fn decompose(&self, spec_name: &str) -> Vec<Task> {
         let mut tasks = Vec::new();
-        
+
         let mut main = Task::new(spec_name, spec_name, &format!("Execute: {}", spec_name));
         main.priority = TaskPriority::Critical;
         tasks.push(main);
-        
-        let verify = Task::new(&format!("{}-verify", spec_name), "verify", "Run verification");
+
+        let verify = Task::new(
+            &format!("{}-verify", spec_name),
+            "verify",
+            "Run verification",
+        );
         tasks.push(verify);
-        
+
         self.tasks.write().await.extend(tasks.clone());
         tasks
     }
-    
+
     pub async fn execute(&self) -> Vec<String> {
         let mut results = Vec::new();
-        
+
         while let Some(mut task) = self.tasks.write().await.pop_front() {
             // Check ready
             let ready = {
                 let completed = self.completed.read().await;
                 task.is_ready(&completed)
             };
-            
-            if !ready { continue; }
-            
+
+            if !ready {
+                continue;
+            }
+
             // Get agent
             let agent_id = {
                 let agents = self.agents.read().await;
                 agents.iter().find(|a| a.is_available()).map(|a| a.id)
             };
-            
-            let Some(agent_id) = agent_id else { continue; };
-            
+
+            let Some(agent_id) = agent_id else {
+                continue;
+            };
+
             // Execute
             task.start(agent_id);
             results.push(format!("Task {} executed by agent {}", task.name, agent_id));
-            
+
             // Complete
             task.complete("success");
             self.completed.write().await.push(task.id);
-            
+
             // Release agent
-            self.agents.write().await.iter_mut()
+            self.agents
+                .write()
+                .await
+                .iter_mut()
                 .find(|a| a.id == agent_id)
                 .map(|a| a.release(true));
         }
-        
+
         results
     }
-    
+
     pub async fn list_agents(&self) -> Vec<Agent> {
         self.agents.read().await.clone()
     }
 }
 
 impl Default for RootManager {
-    fn default() -> Self { Self::new() }
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    
+
     #[tokio::test]
     async fn test_register() {
         let manager = RootManager::new();
-        let id = manager.register_agent("agent1", vec![AgentCapability::General]).await;
+        let id = manager
+            .register_agent("agent1", vec![AgentCapability::General])
+            .await;
         assert!(!id.is_nil());
     }
-    
+
     #[tokio::test]
     async fn test_decompose() {
         let manager = RootManager::new();

@@ -7,10 +7,10 @@ use thiserror::Error;
 pub enum UtilsError {
     #[error("Parse error: {0}")]
     Parse(String),
-    
+
     #[error("Invalid input: {0}")]
     InvalidInput(String),
-    
+
     #[error("Overflow: {0}")]
     Overflow(String),
 }

@@ -1,5 +1,5 @@
 //! Schema validation module for heliosHarness
-//! 
+//!
 //! Provides types and validation for configuration schemas.
 //!
 //! # Example
@@ -39,9 +39,9 @@ pub struct Command {
 
 impl Schema {
     /// Validates the schema
-    /// 
+    ///
     /// # Errors
-    /// 
+    ///
     /// Returns an error if the schema name is empty
     pub fn validate(&self) -> Result<(), String> {
         if self.name.is_empty() {

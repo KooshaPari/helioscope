@@ -137,10 +137,8 @@ impl VerificationPipeline {
             let details: Vec<GateDetail> = results
                 .iter()
                 .map(|r| {
-                    let check_passed = match r.status {
-                        crate::result::VerificationStatus::Passed => true,
-                        _ => false,
-                    };
+                    let check_passed =
+                        matches!(r.status, crate::result::VerificationStatus::Passed);
                     GateDetail {
                         check: format!("{:?}", r.verification_type),
                         passed: check_passed,

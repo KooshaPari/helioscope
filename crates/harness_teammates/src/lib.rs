@@ -17,6 +17,12 @@ pub struct TeammateRegistry {
     teammates: RwLock<HashMap<String, Teammate>>,
 }
 
+impl Default for TeammateRegistry {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl TeammateRegistry {
     pub fn new() -> Self {
         Self {

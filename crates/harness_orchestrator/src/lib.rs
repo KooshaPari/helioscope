@@ -248,8 +248,16 @@ impl RootManager {
                 .write()
                 .await
                 .iter_mut()
+                .find(|a| a.id == agent_id);
+            if let Some(a) = self
+                .agents
+                .write()
+                .await
+                .iter_mut()
                 .find(|a| a.id == agent_id)
-                .map(|a| a.release(true));
+            {
+                a.release(true);
+            }
         }
 
         results

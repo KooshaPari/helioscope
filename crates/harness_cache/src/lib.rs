@@ -42,7 +42,7 @@ pub struct Cache {
     store: RwLock<HashMap<String, Entry>>,
     ttl: Duration,
     max_capacity: u64,
-    name: String,
+    _name: String,
 }
 
 impl Cache {
@@ -51,7 +51,7 @@ impl Cache {
             store: RwLock::new(HashMap::new()),
             ttl: Duration::from_secs(config.ttl_secs),
             max_capacity: config.max_capacity,
-            name: config.name.clone(),
+            _name: config.name.clone(),
         }
     }
 

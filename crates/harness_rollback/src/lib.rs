@@ -70,6 +70,12 @@ pub struct RollbackEngine {
     checkpoints: Vec<(String, String)>,
 }
 
+impl Default for RollbackEngine {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl RollbackEngine {
     pub fn new() -> Self {
         Self {

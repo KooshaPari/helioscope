@@ -4,19 +4,14 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 /// Priority levels for tasks
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum Priority {
     Critical,
     High,
+    #[default]
     Normal,
     Low,
-}
-
-impl Default for Priority {
-    fn default() -> Self {
-        Priority::Normal
-    }
 }
 
 impl Priority {
@@ -42,20 +37,15 @@ pub enum DelegationStatus {
 }
 
 /// Health status of a teammate
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum HealthStatus {
     Healthy,
     Slow,
     Unhealthy,
     Crashed,
+    #[default]
     Unknown,
-}
-
-impl Default for HealthStatus {
-    fn default() -> Self {
-        HealthStatus::Unknown
-    }
 }
 
 /// Teammate definition

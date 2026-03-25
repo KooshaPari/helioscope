@@ -1,6 +1,6 @@
 //! Intent classifier
 
-use crate::error::{ElicitationError, Result};
+use crate::error::Result;
 use crate::intent::{ClassifiedIntent, Entity, EntityType, Intent};
 use regex::Regex;
 use std::collections::HashMap;

@@ -267,7 +267,7 @@ mod tests {
     #[test]
     fn test_generate_fix_spec() {
         let handler = ElicitationHandler::new();
-        let spec = handler.process("Fix the login bug in auth.rs").unwrap();
+        let spec = handler.process("Fix the login bug in auth.rs").expect("process failed");
 
         assert!(spec.spec.name.contains("fix"));
         assert!(!spec.spec.verification.is_empty());
@@ -276,7 +276,7 @@ mod tests {
     #[test]
     fn test_generate_feature_spec() {
         let handler = ElicitationHandler::new();
-        let spec = handler.process("Add OAuth login").unwrap();
+        let spec = handler.process("Add OAuth login").expect("process failed");
 
         assert!(spec.spec.name.contains("feature"));
     }
@@ -284,7 +284,7 @@ mod tests {
     #[test]
     fn test_behavior_generation() {
         let handler = ElicitationHandler::new();
-        let spec = handler.process("Fix the bug").unwrap();
+        let spec = handler.process("Fix the bug").expect("process failed");
 
         assert!(spec.spec.behavior.is_some());
     }

@@ -1,82 +1,27 @@
 //! Benchmark tests for harness_cache
 
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use harness_cache::{Cache, CacheConfig, MokaCache};
+use harness_cache::Cache;
 
 fn bench_cache_get(c: &mut Criterion) {
     let cache = Cache::with_defaults();
-    rt.block_on(async {
-        cache.set("key", vec![1, 2, 3]).await;
-    });
+    cache.set("key".to_string(), vec![1, 2, 3]);
 
     c.bench_function("cache_get", |b| {
         b.iter(|| {
-            let _ = rt.block_on(async { cache.get("key").await });
-        });
-    });
-}
-
-fn bench_moka_cache(c: &mut Criterion) {
-    // Benchmark Moka sync cache
-    c.bench_function("moka_sync_get", |b| {
-        let cache = MokaCache::with_lean_defaults();
-        cache.set("key", vec![1, 2, 3]);
-
-        b.iter(|| cache.get(black_box("key")));
-    });
-
-    c.bench_function("moka_sync_set", |b| {
-        let cache = MokaCache::with_lean_defaults();
-
-        b.iter(|| {
-            cache.set(black_box("key"), black_box(vec![1, 2, 3]));
+            let _ = black_box(cache.get("key"));
         });
     });
 }
 
 fn bench_cache_set(c: &mut Criterion) {
-    let key = "benchmark_key";
-
+    let cache = Cache::with_defaults();
     c.bench_function("cache_set", |b| {
         b.iter(|| {
-            let cache = Cache::with_defaults();
-            cache.set(black_box(key.to_string()), black_box(vec![1, 2, 3]));
+            cache.set(black_box("key".to_string()), black_box(vec![1, 2, 3]));
         });
     });
 }
 
-fn bench_cache_with_config(c: &mut Criterion) {
-    c.bench_function("cache_new_default_config", |b| {
-        b.iter(|| Cache::new(&CacheConfig::default()));
-    });
-}
-
-fn bench_hash(c: &mut Criterion) {
-    use std::collections::hash_map::DefaultHasher;
-    use std::hash::{Hash, Hasher};
-
-    c.bench_function("fxhash", |b| {
-        let data = "benchmark_string_for_hashing";
-        b.iter(|| {
-            let mut hasher = DefaultHasher::new();
-            data.hash(&mut hasher);
-            hasher.finish()
-        });
-    });
-}
-
-fn bench_lean_config(c: &mut Criterion) {
-    c.bench_function("lean_cache_new", |b| {
-        b.iter(|| MokaCache::new(CacheConfig::lean()));
-    });
-}
-
-criterion_group!(
-    benches,
-    bench_cache_get,
-    bench_cache_set,
-    bench_moka_cache,
-    bench_hash,
-    bench_lean_config
-);
+criterion_group!(benches, bench_cache_get, bench_cache_set);
 criterion_main!(benches);

@@ -1,5 +1,22 @@
 # Claude AI Agent Guide - heliosCLI
 
+**This project is managed through AgilePlus.**
+
+## AgilePlus Mandate
+
+All work MUST be tracked in AgilePlus:
+- Reference: `/Users/kooshapari/CodeProjects/Phenotype/repos/AgilePlus`
+- CLI: `cd /Users/kooshapari/CodeProjects/Phenotype/repos/AgilePlus && agileplus <command>`
+
+## Work Requirements
+
+1. **Check for AgilePlus spec before implementing**
+2. **Create spec for new work**: `agileplus specify --title "<feature>" --description "<desc>"`
+3. **Update work package status**: `agileplus status <feature-id> --wp <wp-id> --state <state>`
+4. **No code without corresponding AgilePlus spec**
+
+---
+
 heliosCLI is a multi-runtime AI coding CLI (Codex, Claude, Gemini, Cursor, Copilot) built with a Bazel monorepo, Rust core (`codex-rs`), and TypeScript CLI (`codex-cli`). It integrates with `thegent` for agent orchestration.
 
 **Authority and Scope**

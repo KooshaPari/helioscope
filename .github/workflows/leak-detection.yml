@@ -1,13 +1,7 @@
 name: Leak Detection
 
 on:
-  push:
-    branches: [main, feature/performance-optimization]
-  pull_request:
-    branches: [main]
-  schedule:
-    # Run daily at 3am
-    - cron: '0 3 * * *'
+  workflow_dispatch:
 
 jobs:
   memory-leak-detect:

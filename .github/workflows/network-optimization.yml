@@ -1,10 +1,7 @@
 name: Network Optimization
 
 on:
-  push:
-    branches: [feature/network-optimization]
-  pull_request:
-    branches: [main]
+  workflow_dispatch:
 
 jobs:
   circuit-breaker:

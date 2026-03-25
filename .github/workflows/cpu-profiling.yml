@@ -1,10 +1,7 @@
 name: CPU Profiling
 
 on:
-  push:
-    branches: [feature/cpu-optimization]
-  pull_request:
-    branches: [main]
+  workflow_dispatch:
 
 jobs:
   cpu-sampling:

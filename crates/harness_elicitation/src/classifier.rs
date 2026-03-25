@@ -1,7 +1,7 @@
 //! Intent classifier
 //! Intent classifier
 
-use crate::error::{ElicitationError, Result};
+use crate::error::Result;
 use crate::intent::{ClassifiedIntent, Entity, EntityType, Intent};
 use once_cell::sync::Lazy;
 use regex::Regex;

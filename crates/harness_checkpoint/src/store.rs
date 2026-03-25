@@ -132,12 +132,21 @@ mod tests {
             metadata: std::collections::HashMap::new(),
         };
 
-        store.save(checkpoint.clone()).await.expect("save checkpoint should succeed");
+        store
+            .save(checkpoint.clone())
+            .await
+            .expect("save checkpoint should succeed");
 
-        let retrieved = store.get(&checkpoint.id.to_string()).await.expect("get checkpoint returned none");
+        let retrieved = store
+            .get(&checkpoint.id.to_string())
+            .await
+            .expect("get checkpoint returned none");
         assert_eq!(retrieved.spec_id, "test-spec");
 
-        let by_spec = store.get_by_spec("test-spec").await.expect("get_by_spec failed");
+        let by_spec = store
+            .get_by_spec("test-spec")
+            .await
+            .expect("get_by_spec failed");
         assert_eq!(by_spec.len(), 1);
     }
 }

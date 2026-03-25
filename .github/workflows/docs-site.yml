@@ -1,15 +1,7 @@
 name: Docs Site
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'docs/**'
-      - '.github/workflows/docs-site.yml'
-  pull_request:
-    paths:
-      - 'docs/**'
-      - '.github/workflows/docs-site.yml'
+  workflow_dispatch:
 
 jobs:
   docs-build:

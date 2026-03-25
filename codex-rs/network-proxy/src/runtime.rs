@@ -789,7 +789,8 @@ pub(crate) fn network_proxy_state_for_policy(
     network.enabled = true;
     network.mode = NetworkMode::Full;
     let config = NetworkProxyConfig { network };
-    let state = build_config_state(config, NetworkProxyConstraints::default()).unwrap();
+        let state = build_config_state(config, NetworkProxyConstraints::default())
+            .expect("failed to build initial network proxy config state");
 
     NetworkProxyState::with_reloader(state, Arc::new(NoopReloader))
 }

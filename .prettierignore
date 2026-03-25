@@ -1,0 +1,26 @@
+/codex-cli/dist
+/codex-cli/node_modules
+pnpm-lock.yaml
+
+prompt.md
+*_prompt.md
+*_instructions.md
+
+# Audit and research artifacts intentionally kept in source format.
+AGENTS.md
+AUDIT_AGENTAPI_CLIPROXY_COLAB.md
+CHANGELOG.md
+CODEX_FORKS_RESEARCH.md
+CODEX_PR_ANALYSIS.md
+CODEX_PR_LINKS.md
+HELIOSCLI_README.md
+README_CODEX_ANALYSIS.md
+RESEARCH_SUMMARY.md
+UPSTREAM_MINING_REPORT.md
+ascii.md
+asciibak.md
+asciibak2.md
+docs/perf-local-benchmark.md
+.github/workflows/alert-sync-issues.yml
+codex-cli/bin/codex.js
+codex-rs/core/src/tools/js_repl/meriyah.umd.min.js

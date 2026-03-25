@@ -1,0 +1,423 @@
+name: Stage Gates
+
+on:
+  pull_request:
+    branches: ["**"]
+
+permissions:
+  contents: read
+  pull-requests: write
+  security-events: write
+
+env:
+  STAGE: ""
+  GATES: ""
+
+jobs:
+  detect-stage:
+    runs-on: ubuntu-latest
+    outputs:
+      stage: ${{ steps.detect.outputs.stage }}
+      gates: ${{ steps.detect.outputs.gates }}
+      lang: ${{ steps.detect-lang.outputs.lang }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Detect stage from branch
+        id: detect
+        run: |
+          BRANCH="${{ github.head_ref }}"
+          case "$BRANCH" in
+            spike/*)
+              echo "stage=SP" >> "$GITHUB_OUTPUT"
+              echo "gates=" >> "$GITHUB_OUTPUT"
+              ;;
+            poc/*)
+              echo "stage=POC" >> "$GITHUB_OUTPUT"
+              echo "gates=format" >> "$GITHUB_OUTPUT"
+              ;;
+            preview/*)
+              echo "stage=IP" >> "$GITHUB_OUTPUT"
+              echo "gates=format,lint,unit,secrets" >> "$GITHUB_OUTPUT"
+              ;;
+            alpha/*)
+              echo "stage=A" >> "$GITHUB_OUTPUT"
+              echo "gates=format,lint,unit,integration,sast,secrets" >> "$GITHUB_OUTPUT"
+              ;;
+            feature-preview/*)
+              echo "stage=FP" >> "$GITHUB_OUTPUT"
+              echo "gates=format,lint,unit,integration,sast,secrets,coverage-60,e2e-smoke,perf-baseline" >> "$GITHUB_OUTPUT"
+              ;;
+            beta/*|release/beta-*)
+              echo "stage=B" >> "$GITHUB_OUTPUT"
+              echo "gates=format,lint,unit,integration,sast,secrets,coverage-70,e2e-smoke,dep-audit,license,coderabbit" >> "$GITHUB_OUTPUT"
+              ;;
+            release/ep-*)
+              echo "stage=EP" >> "$GITHUB_OUTPUT"
+              echo "gates=format,lint,unit,integration,sast,secrets,coverage-75,e2e-smoke,dep-audit,license,coderabbit,gca-review,manual-security" >> "$GITHUB_OUTPUT"
+              ;;
+            release/canary-*)
+              echo "stage=CN" >> "$GITHUB_OUTPUT"
+              echo "gates=format,lint,unit,integration,sast,secrets,coverage-80,e2e-smoke,dep-audit,license,coderabbit,gca-review,manual-security,sla-validation,perf" >> "$GITHUB_OUTPUT"
+              ;;
+            release/*-rc.*)
+              echo "stage=RC" >> "$GITHUB_OUTPUT"
+              echo "gates=format,lint,unit,integration,sast,secrets,coverage-85,e2e-full,dep-audit,license,coderabbit,gca-review,manual-security,sla-validation,perf,sbom" >> "$GITHUB_OUTPUT"
+              ;;
+            hotfix/*)
+              echo "stage=HF" >> "$GITHUB_OUTPUT"
+              echo "gates=format,lint,unit,targeted-regression" >> "$GITHUB_OUTPUT"
+              ;;
+            *)
+              echo "stage=GA" >> "$GITHUB_OUTPUT"
+              echo "gates=format,lint,unit,integration,sast,secrets,coverage-85,e2e-full,dep-audit,license,coderabbit,gca-review,manual-security,sla-validation,perf,sbom,artifact-checksum" >> "$GITHUB_OUTPUT"
+              ;;
+          esac
+
+      - name: Detect language
+        id: detect-lang
+        run: |
+          if [ -f Cargo.toml ] || [ -f codex-rs/Cargo.toml ]; then
+            echo "lang=rust" >> "$GITHUB_OUTPUT"
+          elif [ -f go.mod ]; then
+            echo "lang=go" >> "$GITHUB_OUTPUT"
+          elif [ -f pyproject.toml ] || [ -f setup.py ]; then
+            echo "lang=python" >> "$GITHUB_OUTPUT"
+          elif [ -f package.json ]; then
+            echo "lang=node" >> "$GITHUB_OUTPUT"
+          else
+            echo "lang=unknown" >> "$GITHUB_OUTPUT"
+          fi
+
+  format-check:
+    needs: detect-stage
+    if: contains(needs.detect-stage.outputs.gates, 'format')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Format check (Rust)
+        if: needs.detect-stage.outputs.lang == 'rust'
+        run: cargo fmt --all --check --manifest-path codex-rs/Cargo.toml
+      - name: Format check (Go)
+        if: needs.detect-stage.outputs.lang == 'go'
+        run: test -z "$(gofmt -l .)"
+      - name: Format check (Python)
+        if: needs.detect-stage.outputs.lang == 'python'
+        run: pip install ruff && ruff format --check .
+      - name: Format check (Node)
+        if: needs.detect-stage.outputs.lang == 'node'
+        run: npx prettier --check .
+
+  lint:
+    needs: detect-stage
+    if: contains(needs.detect-stage.outputs.gates, 'lint')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Linux build dependencies (Rust)
+        if: needs.detect-stage.outputs.lang == 'rust'
+        run: |
+          sudo apt-get update -y
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends pkg-config libcap-dev
+      - name: Lint (Rust)
+        if: needs.detect-stage.outputs.lang == 'rust'
+        run: cargo clippy --manifest-path codex-rs/Cargo.toml -- -D warnings
+      - name: Lint (Go)
+        if: needs.detect-stage.outputs.lang == 'go'
+        uses: golangci/golangci-lint-action@v4
+      - name: Lint (Python)
+        if: needs.detect-stage.outputs.lang == 'python'
+        run: pip install ruff && ruff check .
+      - name: Lint (Node)
+        if: needs.detect-stage.outputs.lang == 'node'
+        run: npx eslint .
+
+  secret-scan:
+    needs: detect-stage
+    if: contains(needs.detect-stage.outputs.gates, 'secrets')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  unit-tests:
+    needs: detect-stage
+    if: contains(needs.detect-stage.outputs.gates, 'unit')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Linux build dependencies (Rust)
+        if: needs.detect-stage.outputs.lang == 'rust'
+        run: |
+          sudo apt-get update -y
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends pkg-config libcap-dev
+      - name: Unit tests (Rust)
+        if: needs.detect-stage.outputs.lang == 'rust'
+        run: cargo test --lib --manifest-path codex-rs/Cargo.toml
+      - name: Unit tests (Go)
+        if: needs.detect-stage.outputs.lang == 'go'
+        run: go test ./...
+      - name: Unit tests (Python)
+        if: needs.detect-stage.outputs.lang == 'python'
+        run: pip install -e ".[test]" && pytest -x
+      - name: Unit tests (Node)
+        if: needs.detect-stage.outputs.lang == 'node'
+        run: npm ci && npm test
+
+  integration-tests:
+    needs: detect-stage
+    if: contains(needs.detect-stage.outputs.gates, 'integration')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Linux build dependencies (Rust)
+        if: needs.detect-stage.outputs.lang == 'rust'
+        run: |
+          sudo apt-get update -y
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends pkg-config libcap-dev
+      - name: Integration tests (Rust)
+        if: needs.detect-stage.outputs.lang == 'rust'
+        run: cargo test --test '*' --manifest-path codex-rs/Cargo.toml
+      - name: Integration tests (Go)
+        if: needs.detect-stage.outputs.lang == 'go'
+        run: go test -tags=integration ./...
+      - name: Integration tests (Python)
+        if: needs.detect-stage.outputs.lang == 'python'
+        run: pip install -e ".[test]" && pytest -m integration
+      - name: Integration tests (Node)
+        if: needs.detect-stage.outputs.lang == 'node'
+        run: npm ci && npm run test:integration
+
+  coverage-check:
+    needs: detect-stage
+    if: contains(needs.detect-stage.outputs.gates, 'coverage-')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Linux build dependencies (Rust)
+        if: needs.detect-stage.outputs.lang == 'rust'
+        run: |
+          sudo apt-get update -y
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends pkg-config libcap-dev
+      - name: Determine coverage floor
+        id: floor
+        run: |
+          GATES="${{ needs.detect-stage.outputs.gates }}"
+          FLOOR=$(echo "$GATES" | grep -oP 'coverage-\K\d+' | tail -1)
+          echo "floor=${FLOOR:-0}" >> "$GITHUB_OUTPUT"
+      - name: Coverage (Rust)
+        if: needs.detect-stage.outputs.lang == 'rust'
+        run: |
+          cargo install cargo-tarpaulin
+          cargo tarpaulin --manifest-path codex-rs/Cargo.toml --fail-under ${{ steps.floor.outputs.floor }}
+      - name: Coverage (Go)
+        if: needs.detect-stage.outputs.lang == 'go'
+        run: |
+          go test -coverprofile=coverage.out ./...
+          COVERAGE=$(go tool cover -func=coverage.out | grep total | awk '{print int($3)}')
+          if [ "$COVERAGE" -lt "${{ steps.floor.outputs.floor }}" ]; then
+            echo "Coverage ${COVERAGE}% below floor ${{ steps.floor.outputs.floor }}%"
+            exit 1
+          fi
+      - name: Coverage (Python)
+        if: needs.detect-stage.outputs.lang == 'python'
+        run: |
+          pip install -e ".[test]"
+          pytest --cov --cov-fail-under=${{ steps.floor.outputs.floor }}
+      - name: Coverage (Node)
+        if: needs.detect-stage.outputs.lang == 'node'
+        run: |
+          npm ci
+          npx jest --coverage --coverageThreshold='{"global":{"lines":${{ steps.floor.outputs.floor }}}}'
+
+  sast-scan:
+    needs: detect-stage
+    if: contains(needs.detect-stage.outputs.gates, 'sast')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: SAST (Rust)
+        if: needs.detect-stage.outputs.lang == 'rust'
+        run: cargo install cargo-audit && cargo audit --file codex-rs/Cargo.lock
+      - name: SAST (Go)
+        if: needs.detect-stage.outputs.lang == 'go'
+        run: go install golang.org/x/vuln/cmd/govulncheck@latest && govulncheck ./...
+      - name: SAST (Python)
+        if: needs.detect-stage.outputs.lang == 'python'
+        run: pip install bandit && bandit -r . -x ./tests
+      - name: SAST (Node)
+        if: needs.detect-stage.outputs.lang == 'node'
+        run: npx njsscan .
+
+  dependency-audit:
+    needs: detect-stage
+    if: contains(needs.detect-stage.outputs.gates, 'dep-audit')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Dep audit (Rust)
+        if: needs.detect-stage.outputs.lang == 'rust'
+        run: cargo install cargo-deny && cargo deny --manifest-path codex-rs/Cargo.toml check
+      - name: Dep audit (Go)
+        if: needs.detect-stage.outputs.lang == 'go'
+        run: go install golang.org/x/vuln/cmd/govulncheck@latest && govulncheck ./...
+      - name: Dep audit (Python)
+        if: needs.detect-stage.outputs.lang == 'python'
+        run: pip install pip-audit && pip-audit
+      - name: Dep audit (Node)
+        if: needs.detect-stage.outputs.lang == 'node'
+        run: npm audit --audit-level=moderate
+
+  license-check:
+    needs: detect-stage
+    if: contains(needs.detect-stage.outputs.gates, 'license') && secrets.FOSSA_API_KEY != ''
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: License scan
+        uses: fossas/fossa-action@main
+        with:
+          api-key: ${{ secrets.FOSSA_API_KEY }}
+
+  e2e-smoke:
+    needs: detect-stage
+    if: contains(needs.detect-stage.outputs.gates, 'e2e-smoke')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run smoke E2E tests
+        run: |
+          if [ -f Makefile ] && grep -q 'e2e-smoke' Makefile; then
+            make e2e-smoke
+          else
+            echo "No e2e-smoke target found; skipping"
+          fi
+
+  e2e-full:
+    needs: detect-stage
+    if: contains(needs.detect-stage.outputs.gates, 'e2e-full')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run full E2E tests
+        run: |
+          if [ -f Makefile ] && grep -q 'e2e-full' Makefile; then
+            make e2e-full
+          else
+            echo "No e2e-full target found; skipping"
+          fi
+
+  perf-benchmark:
+    needs: detect-stage
+    if: contains(needs.detect-stage.outputs.gates, 'perf')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run performance benchmarks
+        run: |
+          if [ -f Makefile ] && grep -q 'bench' Makefile; then
+            make bench
+          else
+            echo "No bench target found; skipping"
+          fi
+
+  sla-validation:
+    needs: detect-stage
+    if: contains(needs.detect-stage.outputs.gates, 'sla-validation')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate SLA compliance
+        run: |
+          if [ -f Makefile ] && grep -q 'sla-check' Makefile; then
+            make sla-check
+          else
+            echo "No sla-check target found; skipping"
+          fi
+
+  coderabbit:
+    needs: detect-stage
+    if: contains(needs.detect-stage.outputs.gates, 'coderabbit')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Trigger CodeRabbit review
+        run: |
+          echo "CodeRabbit review triggered for stage ${{ needs.detect-stage.outputs.stage }}"
+          # CodeRabbit auto-reviews PRs via its GitHub App integration.
+          # This job acts as a gate marker; the .coderabbit.yaml config
+          # controls review depth per stage.
+
+  gca-review:
+    needs: detect-stage
+    if: contains(needs.detect-stage.outputs.gates, 'gca-review')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: GCA review gate
+        run: echo "GCA review required for stage ${{ needs.detect-stage.outputs.stage }}. Ensure GCA sign-off before merge."
+
+  manual-security:
+    needs: detect-stage
+    if: contains(needs.detect-stage.outputs.gates, 'manual-security')
+    runs-on: ubuntu-latest
+    environment: security-review
+    steps:
+      - name: Manual security review gate
+        run: echo "Manual security review required. This job requires environment approval."
+
+  sbom:
+    needs: detect-stage
+    if: contains(needs.detect-stage.outputs.gates, 'sbom')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generate SBOM
+        uses: anchore/sbom-action@v0
+        with:
+          artifact-name: sbom.spdx.json
+
+  artifact-checksum:
+    needs: detect-stage
+    if: contains(needs.detect-stage.outputs.gates, 'artifact-checksum')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and checksum artifacts
+        run: |
+          if [ -f Makefile ] && grep -q 'build' Makefile; then
+            make build
+            find dist/ -type f -exec sha256sum {} \; > checksums.sha256 2>/dev/null || true
+          else
+            echo "No build target; skipping artifact checksum"
+          fi
+      - name: Upload checksums
+        if: hashFiles('checksums.sha256') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: checksums
+          path: checksums.sha256
+
+  targeted-regression:
+    needs: detect-stage
+    if: contains(needs.detect-stage.outputs.gates, 'targeted-regression')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run targeted regression tests
+        run: |
+          if [ -f Makefile ] && grep -q 'regression' Makefile; then
+            make regression
+          else
+            echo "No regression target found; running full unit tests as fallback"
+            case "${{ needs.detect-stage.outputs.lang }}" in
+              rust) cargo test --lib --manifest-path codex-rs/Cargo.toml ;;
+              go) go test ./... ;;
+              python) pip install -e ".[test]" && pytest -x ;;
+              node) npm ci && npm test ;;
+            esac
+          fi

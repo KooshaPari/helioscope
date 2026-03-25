@@ -1,1 +1,41 @@
-import{_ as t,o as a,c as r,j as e,a as n}from"./chunks/framework.Dn7Y7LSn.js";const m=JSON.parse('{"title":"How-to","description":"","frontmatter":{},"headers":[],"relativePath":"how-to/index.md","filePath":"how-to/index.md"}'),s={name:"how-to/index.md"};function d(i,o,c,l,p,f){return a(),r("div",null,[...o[0]||(o[0]=[e("h1",{id:"how-to",tabindex:"-1"},[n("How-to "),e("a",{class:"header-anchor",href:"#how-to","aria-label":'Permalink to "How-to"'},"​")],-1),e("p",null,"Task-focused instructions for operators.",-1)])])}const x=t(s,[["render",d]]);export{m as __pageData,x as default};
+import {
+  _ as t,
+  o as a,
+  c as r,
+  j as e,
+  a as n,
+} from "./chunks/framework.Dn7Y7LSn.js";
+const m = JSON.parse(
+    '{"title":"How-to","description":"","frontmatter":{},"headers":[],"relativePath":"how-to/index.md","filePath":"how-to/index.md"}',
+  ),
+  s = { name: "how-to/index.md" };
+function d(i, o, c, l, p, f) {
+  return (
+    a(),
+    r("div", null, [
+      ...(o[0] ||
+        (o[0] = [
+          e(
+            "h1",
+            { id: "how-to", tabindex: "-1" },
+            [
+              n("How-to "),
+              e(
+                "a",
+                {
+                  "class": "header-anchor",
+                  "href": "#how-to",
+                  "aria-label": 'Permalink to "How-to"',
+                },
+                "​",
+              ),
+            ],
+            -1,
+          ),
+          e("p", null, "Task-focused instructions for operators.", -1),
+        ])),
+    ])
+  );
+}
+const x = t(s, [["render", d]]);
+export { m as __pageData, x as default };

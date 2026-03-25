@@ -1,0 +1,10 @@
+load("//:defs.bzl", "multiplatform_binaries")
+
+alias(
+    name = "helios",
+    actual = "//codex-rs/cli:codex",
+)
+
+multiplatform_binaries(
+    name = "helios",
+)

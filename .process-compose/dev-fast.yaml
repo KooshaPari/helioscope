@@ -1,0 +1,14 @@
+version: "0.5"
+
+processes:
+  typescript_hmr_watch:
+    command: "pnpm --dir sdk/typescript build:watch"
+    working_dir: "."
+    availability:
+      restart: "on_failure"
+
+  rust_incremental_run:
+    command: "watchexec --project-origin . --watch codex-rs --exts rs,toml,lock --restart -- cargo run -p codex-cli --bin codex -- --help"
+    working_dir: "."
+    availability:
+      restart: "on_failure"

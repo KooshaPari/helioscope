@@ -1,1 +1,46 @@
-import{_ as r,o as s,c as t,j as e,a as n}from"./chunks/framework.Dn7Y7LSn.js";const _=JSON.parse('{"title":"Research Index","description":"","frontmatter":{},"headers":[],"relativePath":"research/RESEARCH_INDEX.md","filePath":"research/RESEARCH_INDEX.md"}'),c={name:"research/RESEARCH_INDEX.md"};function o(d,a,i,l,h,p){return s(),t("div",null,[...a[0]||(a[0]=[e("h1",{id:"research-index",tabindex:"-1"},[n("Research Index "),e("a",{class:"header-anchor",href:"#research-index","aria-label":'Permalink to "Research Index"'},"​")],-1),e("p",null,"Track research artifacts, links, and conclusions used to inform project decisions.",-1)])])}const f=r(c,[["render",o]]);export{_ as __pageData,f as default};
+import {
+  _ as r,
+  o as s,
+  c as t,
+  j as e,
+  a as n,
+} from "./chunks/framework.Dn7Y7LSn.js";
+const _ = JSON.parse(
+    '{"title":"Research Index","description":"","frontmatter":{},"headers":[],"relativePath":"research/RESEARCH_INDEX.md","filePath":"research/RESEARCH_INDEX.md"}',
+  ),
+  c = { name: "research/RESEARCH_INDEX.md" };
+function o(d, a, i, l, h, p) {
+  return (
+    s(),
+    t("div", null, [
+      ...(a[0] ||
+        (a[0] = [
+          e(
+            "h1",
+            { id: "research-index", tabindex: "-1" },
+            [
+              n("Research Index "),
+              e(
+                "a",
+                {
+                  "class": "header-anchor",
+                  "href": "#research-index",
+                  "aria-label": 'Permalink to "Research Index"',
+                },
+                "​",
+              ),
+            ],
+            -1,
+          ),
+          e(
+            "p",
+            null,
+            "Track research artifacts, links, and conclusions used to inform project decisions.",
+            -1,
+          ),
+        ])),
+    ])
+  );
+}
+const f = r(c, [["render", o]]);
+export { _ as __pageData, f as default };

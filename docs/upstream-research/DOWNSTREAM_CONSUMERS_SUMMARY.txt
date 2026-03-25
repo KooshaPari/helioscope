@@ -1,0 +1,307 @@
+================================================================================
+DOWNSTREAM CONSUMERS & INTEGRATIONS OF CLI AI AGENTS (helios-cli/codex)
+Research Summary — February 28, 2026
+================================================================================
+
+OVERVIEW
+The AI coding agent ecosystem has matured with helios-cli/codex serving as a
+foundation layer for IDE integrations, CI/CD pipelines, developer platforms,
+code review bots, and multi-agent orchestration systems.
+
+================================================================================
+ECOSYSTEM BREAKDOWN (6 MAJOR CATEGORIES)
+================================================================================
+
+1. IDE INTEGRATIONS (20+ projects)
+   ├─ VS Code / Cursor / Windsurf
+   │  └─ Pattern: TypeScript SDK, LSP, MCP server mode
+   │  └─ Status: ✓ SDK exists; need MCP server mode
+   │
+   ├─ Neovim / Vim (Copilot.vim, ChatGPT.nvim)
+   │  └─ Pattern: stdin/stdout JSONL, subprocess mode
+   │  └─ Status: ✓ Works; need stable protocol guarantee
+   │
+   └─ JetBrains IDEs (IntelliJ, PyCharm, WebStorm, etc. — 40% of developers)
+      └─ Pattern: LSP server, plugin API
+      └─ Status: ✗ Missing; would need JetBrains plugin SDK
+
+   CRITICAL FEATURE: MCP Server Mode (`helios --mcp`)
+   EFFORT: 2-3 weeks | IMPACT: HIGH (unlocks 3+ IDE platforms)
+
+────────────────────────────────────────────────────────────────────────────
+
+2. CI/CD AGENTS (5+ platforms)
+   ├─ GitHub Agentic Workflows (Technical Preview, Feb 2026)
+   │  └─ Pattern: Spawn subprocess in GitHub Actions
+   │  └─ Status: ✓ Works via subprocess; optimize for Actions environment
+   │
+   ├─ GitLab Duo Agent Platform (GA, thousands of instances)
+   │  └─ Pattern: Integration with MR/issue workflows
+   │  └─ Status: ? Needs GitLab-specific tooling
+   │
+   └─ Jenkins, CircleCI, other CI/CD (via OpenAPI, MCP)
+      └─ Pattern: Tool invocation via standard interfaces
+      └─ Status: ✓ Possible; needs OpenAPI spec export
+
+   CRITICAL FEATURE: OpenAPI Schema Export (`helios --export-openapi`)
+   EFFORT: 1-2 weeks | IMPACT: HIGH (enables 10+ CI/CD platforms)
+
+────────────────────────────────────────────────────────────────────────────
+
+3. MULTI-AGENT ORCHESTRATORS (10K+ developers)
+   ├─ LangGraph (1K+ GitHub stars, enterprise adoption)
+   │  └─ Pattern: Tool registry via OpenAPI schema
+   │  └─ Status: ? Needs tool catalog export
+   │
+   ├─ CrewAI (10K+ stars, growing rapidly)
+   │  └─ Pattern: Custom agent tool wrapping helios-cli
+   │  └─ Status: ✓ Possible via subprocess; needs JSON output
+   │
+   └─ AutoGen / Microsoft (5K+ stars)
+      └─ Pattern: Conversational orchestration
+      └─ Status: ✓ Works via subprocess
+
+   CRITICAL FEATURE: Structured Tool Export & Error Output
+   EFFORT: 1-2 weeks | IMPACT: HIGH (enables 3 major frameworks)
+
+────────────────────────────────────────────────────────────────────────────
+
+4. DEVELOPER PLATFORMS (50M+ users total)
+   ├─ Replit (20M+ monthly active users)
+   │  └─ Pattern: Agent as alternative backend
+   │  └─ Status: ? Needs file system, sandbox integration
+   │
+   ├─ GitHub Codespaces (hundreds of thousands)
+   │  └─ Pattern: CLI in devcontainer
+   │  └─ Status: ✓ Works; needs lightweight installation
+   │
+   ├─ Coder (self-hosted, enterprise)
+   │  └─ Pattern: Local agent, air-gap deployment
+   │  └─ Status: ✓ Ideal fit; needs resource limits config
+   │
+   └─ Ona / Gitpod (100K+ users, AI-first)
+      └─ Pattern: Specialized task delegation
+      └─ Status: ? Needs Ona integration API
+
+   CRITICAL FEATURE: Daemon Mode (`helios daemon start --port 9000`)
+   EFFORT: 2-3 weeks | IMPACT: HIGH (performance 10-100x for IDE/voice)
+
+────────────────────────────────────────────────────────────────────────────
+
+5. CODE REVIEW BOTS (5K+ organizations)
+   ├─ Qodo / CodiumAI (Gartner Magic Quadrant 2025 — Visionary)
+   │  └─ Architecture: Multi-repo intelligence engine (NOT wrapping CLI agents)
+   │  └─ Potential: Could invoke helios-cli for specialized analysis
+   │  └─ Status: ? Integration would require repository context API
+   │
+   └─ CodeRabbit (1K+ organizations)
+      └─ Architecture: Diff-based analysis (NOT wrapping CLI agents)
+      └─ Potential: Could use helios-cli for complex reasoning
+      └─ Status: ? Would need structured output, repository context
+
+   LEARNING: These bots need multi-repo context, incremental analysis,
+   and governance features beyond what single-file agents provide.
+
+   FEATURE OPPORTUNITY: Repository-Level Context API
+   EFFORT: 3-4 weeks | IMPACT: MEDIUM (enables code review bot integration)
+
+────────────────────────────────────────────────────────────────────────────
+
+6. VOICE & ACCESSIBILITY LAYERS (Emerging 2025+)
+   ├─ Voice Input (OpenAI Realtime API GA 2025)
+   │  └─ Pattern: Audio→Text, Text→Speech wrapper
+   │  └─ Status: ✓ Streaming output ready; needs audio-friendly formatting
+   │
+   ├─ Screen Readers (JAWS, NVDA, VoiceOver, TalkBack)
+   │  └─ Pattern: Plain-text output, semantic structure
+   │  └─ Status: ✗ Missing accessibility mode
+   │
+   └─ Speech-to-Code (emerging, 2026+)
+      └─ Pattern: Voice commands for agent actions
+      └─ Status: ? Future opportunity
+
+   CRITICAL FEATURE: Accessibility Mode (`--accessibility-mode`)
+   EFFORT: 1-2 weeks | IMPACT: MEDIUM (low adoption now, growing)
+
+================================================================================
+KEY TECHNICAL REQUIREMENTS SUMMARY
+================================================================================
+
+AUTHENTICATION & SECRETS
+├─ ✓ API key support (OPENAI_API_KEY, CODEX_API_KEY)
+├─ ✓ ChatGPT sign-in support
+├─ ? OAuth2 / PKCE support (needed for multi-tenant platforms)
+└─ ? API key rotation handling (needed for long-running services)
+
+SUBPROCESS INTERFACE
+├─ ✓ stdin/stdout JSONL event streaming
+├─ ✓ Image input support (--image)
+├─ ? Config file + CLI override support (--config key=value)
+└─ ? Clear exit code semantics (needed for automation)
+
+SANDBOXING & SECURITY
+├─ ✓ Sandbox workspace writes (optional)
+├─ ? File ACL support (--allowed-paths)
+├─ ? Network firewall config (--allowed-urls)
+└─ ? Audit logging (JSON audit trail output)
+
+PERFORMANCE & OBSERVABILITY
+├─ ? Daemon mode for persistent agent
+├─ ? Response caching
+├─ ? Token counting API
+├─ ? Latency metrics output
+├─ ? Structured error format (code, message, context, suggestions)
+└─ ? Integration with OpenTelemetry, Datadog, etc.
+
+CONFIGURATION & DEPLOYMENT
+├─ ✓ config.toml support
+├─ ? Config templates (github-actions, ide-plugin, voice-mode)
+├─ ? Schema validation (helios config validate)
+├─ ? Schema export (helios config export-schema --format json)
+└─ ? Environment-based config (dev/staging/prod)
+
+================================================================================
+PRIORITY ROADMAP: TOP 5 FEATURES FOR DOWNSTREAM ADOPTION
+================================================================================
+
+TIER 1 (CRITICAL) — 4-5 weeks total
+
+  [2-3w] MCP Server Mode
+         └─ Enables: IDE plugins (Cursor, Windsurf, Neovim), multi-agent
+            frameworks, browser integration
+         └─ Effort: Implement MCP protocol handling, expose tools as MCP
+         └─ Adoption unlock: 1M+ developers across 5+ platforms
+
+  [1-2w] OpenAPI Schema Export
+         └─ Enables: LangGraph, AutoGen, Qodo, CI/CD tool integration
+         └─ Effort: Reflect helios-cli tools as OpenAPI spec, export as JSON
+         └─ Adoption unlock: 10+ CI/CD platforms, 3 major orchestrators
+
+  [1w] Structured Error Output
+       └─ Enables: Reliable automation, multi-agent workflows
+       └─ Effort: Standardize error JSON format across all error paths
+       └─ Adoption unlock: All downstream systems
+
+  [2-3w] Daemon Mode
+         └─ Enables: IDE plugins (10-100x faster), voice workflows, real-time
+         └─ Effort: Implement persistent process, HTTP/Unix socket server
+         └─ Adoption unlock: IDE adoption, voice/accessibility support
+
+  [1-2w] Config Templates
+         └─ Enables: One-click setup for specific use cases
+         └─ Effort: Create template configs, add `--template` flag
+         └─ Adoption unlock: Developer platforms, CI/CD systems
+
+TIER 2 (HIGH VALUE) — 5-7 weeks
+
+  [3-4w] JetBrains Plugin (official)
+  [1-2w] GitHub Action Integration
+  [2-3w] Voice I/O Wrapper
+  [1-2w] Audit Logging
+  [2-3w] Incremental Analysis
+
+TIER 3 (STRATEGIC) — 4+ weeks
+
+  [2-3w] Internationalization (i18n)
+  [1-2w] Screen Reader Accessibility
+  [4-6w] Local Model Support
+  [4+ w] Custom Tool Marketplace
+
+================================================================================
+COMPETITIVE LANDSCAPE
+================================================================================
+
+INCUMBENT: GitHub Copilot
+├─ Adoption: Industry standard (millions of users)
+├─ Weakness: Limited to autocomplete, not full task automation
+└─ helios-cli advantage: Full CLI agent with file I/O, bash execution
+
+EMERGING COMPETITORS: Cursor, Windsurf, Aider
+├─ Position: IDE-first, full-file reasoning
+├─ Strength: Integrated UX, repository context
+└─ helios-cli advantage: Language-agnostic CLI, composable with other tools
+
+CODE REVIEW BOTS: Qodo, CodeRabbit
+├─ Position: PR-focused, architecture-aware
+├─ Strength: Multi-repo context, governance
+└─ helios-cli opportunity: Could power their specialized analysis layer
+
+ORCHESTRATORS: LangGraph, CrewAI, AutoGen
+├─ Position: Coordinate multiple agents/tools
+├─ Strength: Flexible, language-agnostic
+└─ helios-cli opportunity: Be the default "coding agent" tool in these systems
+
+================================================================================
+INTEGRATION CHECKLIST FOR DOWNSTREAM DEVELOPERS
+================================================================================
+
+BEFORE INTEGRATION
+  [ ] Review helios-cli architecture (Rust backend, TypeScript SDK)
+  [ ] Decide: spawn CLI, use TypeScript SDK, or wrap MCP server?
+  [ ] Understand auth model (API key vs. ChatGPT sign-in)
+  [ ] Review JSONL event format for streaming
+  [ ] Plan error handling (exit codes, structured errors)
+
+DURING INTEGRATION
+  [ ] Implement JSONL event parser
+  [ ] Handle subprocess lifecycle (startup, cancel, cleanup)
+  [ ] Add config injection (env vars, --config flags)
+  [ ] Implement retry logic with exponential backoff
+  [ ] Add observability (logging, metrics, error tracking)
+  [ ] Test in target environment
+
+AFTER INTEGRATION
+  [ ] Document integration pattern
+  [ ] Provide example workflows/configs
+  [ ] Monitor error rates and user feedback
+  [ ] Track adoption metrics
+  [ ] Contribute improvements upstream
+
+================================================================================
+REFERENCES
+================================================================================
+
+Model Context Protocol
+  https://modelcontextprotocol.io/specification/2025-11-25
+
+GitHub Agentic Workflows
+  https://github.blog/2026-02-17-github-previews-agentic-workflows/
+
+GitLab Duo Agent Platform
+  https://about.gitlab.com/platform/
+
+LangGraph Documentation
+  https://langchain-ai.github.io/langgraph/
+
+CrewAI Framework
+  https://www.crewai.com
+
+Qodo (Code Review Bot)
+  https://qodo.ai
+
+Replit Agent
+  https://replit.com
+
+Cursor IDE
+  https://cursor.com
+
+OpenAI Realtime API
+  https://platform.openai.com/docs/guides/realtime
+
+================================================================================
+DOCUMENT INFO
+================================================================================
+
+Generated:  February 28, 2026
+Scope:      Downstream consumers of CLI AI agents (helios-cli/codex)
+Method:     Web research + local codebase analysis
+Status:     COMPLETE — Ready for implementation planning
+
+Next Steps:
+  1. Prioritize features based on business impact
+  2. Identify most valuable integration target (recommend: MCP + GitHub Actions)
+  3. Plan 8-12 week roadmap
+  4. Engage with IDE plugin developers, CI/CD platform teams
+  5. Contribute open-source integrations
+
+================================================================================

@@ -1,1 +1,10 @@
-import{_ as e,o as r,c as s}from"./chunks/framework.Dn7Y7LSn.js";const f=JSON.parse('{"title":"","description":"","frontmatter":{},"headers":[],"relativePath":"fragemented/wbs/phase-1-reports/governance-risks.md","filePath":"fragemented/wbs/phase-1-reports/governance-risks.md"}'),t={name:"fragemented/wbs/phase-1-reports/governance-risks.md"};function a(n,o,c,p,i,d){return r(),s("div")}const _=e(t,[["render",a]]);export{f as __pageData,_ as default};
+import { _ as e, o as r, c as s } from "./chunks/framework.Dn7Y7LSn.js";
+const f = JSON.parse(
+    '{"title":"","description":"","frontmatter":{},"headers":[],"relativePath":"fragemented/wbs/phase-1-reports/governance-risks.md","filePath":"fragemented/wbs/phase-1-reports/governance-risks.md"}',
+  ),
+  t = { name: "fragemented/wbs/phase-1-reports/governance-risks.md" };
+function a(n, o, c, p, i, d) {
+  return r(), s("div");
+}
+const _ = e(t, [["render", a]]);
+export { f as __pageData, _ as default };

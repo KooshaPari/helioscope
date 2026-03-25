@@ -1,3 +1,5 @@
 # API
 
-Document internal and external API surfaces.
+<CategorySwitcher />
+
+API references and SDK documentation index.

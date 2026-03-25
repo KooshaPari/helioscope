@@ -12,10 +12,10 @@ Product requirements for **heliosHarness**.
 
 ## Milestones
 
-| Milestone | Target | Status |
-|-----------|--------|--------|
-| v1.0 | TBD | 🔴 Pending |
+| Milestone | Target | Status     |
+| --------- | ------ | ---------- |
+| v1.0      | TBD    | 🔴 Pending |
 
 ---
 
-*Last updated: 2026-02-23*
+_Last updated: 2026-02-23_

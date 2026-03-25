@@ -130,13 +130,13 @@ Hannes
 
 Role icon, Roo Code Dev — 12/17/25, 10:09 AM
 Roo Code 3.36.10 Release Updates
-@everyone Gemini 3 Flash  is HEREEEEEEEEEEE!!!! Also DeepSeek v3.2 actually works in Roo now!! 
+@everyone Gemini 3 Flash is HEREEEEEEEEEEE!!!! Also DeepSeek v3.2 actually works in Roo now!!
 
 Gemini 3 Flash preview model
 The gemini-3-flash-preview model is now available in the Roo Code Cloud provider, Google Gemini, GCP Vertex AI, Requesty, and OpenRouter providers. It’s the latest model from Google, released this morning (thanks contributors!).
 
 DeepSeek reasoner: interleaved thinking during tool use
-The DeepSeek provider’s deepseek-reasoner model now supports “interleaved thinking” and native tool calling. In our internal evals, tool calling succeeded 100% of the time, and the extended-run score improved to 93.4% (thanks zbww_!).
+The DeepSeek provider’s deepseek-reasoner model now supports “interleaved thinking” and native tool calling. In our internal evals, tool calling succeeded 100% of the time, and the extended-run score improved to 93.4% (thanks zbww\_!).
 
 Bug Fixes
 Context truncation token display: Fixes an issue where the context truncation UI could show incorrect before/after token totals, especially in tool-heavy conversations
@@ -154,7 +154,7 @@ Role icon, Roo Code Dev — 12/17/25, 3:13 PM
 Roo Code 3.36.11 Release Updates
 https://github.com/RooCodeInc/Roo-Code/releases/download/v3.36.11/roo-cline-3.36.11.vsix
 
-download manually as the vscode marketplace is not updating. 
+download manually as the vscode marketplace is not updating.
 
 @everyone SQUASH!! + Native tool calling now enabled by default for more providers!
 
@@ -169,7 +169,7 @@ Roo Code Cloud Model Refresh: Fixes an issue where authentication-required model
 AWS GovCloud and China Region Support: Fixes an issue where users in AWS GovCloud and China regions couldn't use custom ARNs with the Bedrock provider (thanks
 wisestmumbler!)
 
-See full release notes v3.36.11 
+See full release notes v3.36.11
 Roo Code 3.36.11 Release Notes (2025-12-17) | Roo Code Documentation
 Native tool calling now enabled by default for Claude Code, Z.ai, and OpenAI Compatible providers, plus several Bedrock and MCP compatibility fixes.
 Roo Code 3.36.11 Release Notes (2025-12-17) | Roo Code Documentation
@@ -177,7 +177,7 @@ Hannes
 
 Role icon, Roo Code Dev — 12/18/25, 8:49 PM
 Roo Code 3.36.12-3.36.14 Release Updates
-@everyone Native tool calling becomes the default across all providers with improved file editing and better error handling. 
+@everyone Native tool calling becomes the default across all providers with improved file editing and better error handling.
 
 Native Tool Calling Improvements
 Native Protocol is Now Default: Models that support native tool calling now use it by default instead of XML. The XML protocol is still available in provider settings.
@@ -239,7 +239,7 @@ Hannes
 
 Role icon, Roo Code Dev — 12/23/25, 12:24 AM
 Roo Code 3.37 Release Updates
-@everyone GLM 4.7, MM2.1, experimental custom tools, and MOOOOOOREEE!!! 
+@everyone GLM 4.7, MM2.1, experimental custom tools, and MOOOOOOREEE!!!
 
 New models
 Z.ai GLM-4.7 (thinking mode)
@@ -280,7 +280,7 @@ Hannes
 
 Role icon, Roo Code Dev — 12/23/25, 7:18 PM
 Roo Code 3.37.1 Release Updates
-@everyone BUG FIXES on tool-calling and chat reliability issues!! Sorry about 3.37.0!!! 😮 
+@everyone BUG FIXES on tool-calling and chat reliability issues!! Sorry about 3.37.0!!! 😮
 
 QOL Improvements
 Improves tool-calling reliability for Roo Code Cloud by preventing tool-result metadata (like environment_details) from interrupting tool call sequences
@@ -306,7 +306,7 @@ Role icon, Roo Code Dev — 12/24/25, 9:23 PM
 
 https://blog.roocode.com/p/sorry-we-didnt-listen-sooner-native
 
-Thanks you @NaccOll for your belief and persistence on Native Tool Calling. 
+Thanks you @NaccOll for your belief and persistence on Native Tool Calling.
 
 Oh yeah and Merry Xmas community!!
 Sorry we didn’t listen sooner: Native Tool Calling
@@ -355,13 +355,13 @@ Enforces the maxConcurrentFileReads limit for read_file, returning a clear error
 Improves the error shown when read_file is run on a directory by explicitly explaining the issue and suggesting list_files instead
 Fixes an issue where the "open source" link on roocode.com could point to a non-existent GitHub organization, so it reliably opens the correct repository (thanks jishnuteegala!)
 
-See full release notes v3.38.1 
+See full release notes v3.38.1
 Image
 Hannes
 
 Role icon, Roo Code Dev — 12/31/25, 5:27 PM
 Roo Code 3.38.2 Release Updates
-@everyone This release improves Agent Skills compatibility, clarifies rate-limit status, and few other tweaks and fixes. 
+@everyone This release improves Agent Skills compatibility, clarifies rate-limit status, and few other tweaks and fixes.
 
 QOL Improvements
 Agent Skills load more reliably across environments by aligning skill metadata validation and discovery with the Agent Skills specification.
@@ -392,7 +392,7 @@ Sticky provider profiles
 Tasks now remember the provider profile (API configuration) they started with, so switching profiles elsewhere doesn’t affect running tasks or resumed tasks (thanks hannesrudolph!).
 
 YOLO → BRRRRRRRRRR
-The auto-approve mode label has been renamed from “YOLO” to “BRRRRRRRRRR” across the UI. THANKS @SLOPTIMUS PRIME 
+The auto-approve mode label has been renamed from “YOLO” to “BRRRRRRRRRR” across the UI. THANKS @SLOPTIMUS PRIME
 
 QOL Improvements
 The @ file picker now respects .rooignore, reducing noise in large workspaces and helping you avoid accidentally attaching ignored/generated files (thanks app/roomote, jerrill-johnson-bitwerx!)
@@ -418,7 +418,7 @@ Provider/model list updates and compatibility improvements across multiple provi
 Misc Improvements
 CLI improvements: simpler install/upgrade workflow plus early-stage CLI support used by eval tooling.
 
-See full release notes v3.39.0 | v3.39.1 
+See full release notes v3.39.0 | v3.39.1
 Image
 Hannes
 
@@ -573,7 +573,7 @@ Removes the deprecated Claude Code provider from the provider list.
 Enables prompt caching for the Cerebras zai-glm-4.7 model to reduce latency and repeat costs on repeated prompts.
 Adds the Kimi K2 thinking model to the Vertex AI provider.
 
-See full release notes v3.42.0 
+See full release notes v3.42.0
 Roo Code 3.42.0 Release Notes (2026-01-22) | Roo Code Documentation
 This release adds ChatGPT usage tracking for the OpenAI Codex provider, refreshes provider options and model selection UX, and improves reliability for prompts, exporting, and editing safety.
 Roo Code 3.42.0 Release Notes (2026-01-22) | Roo Code Documentation
@@ -634,7 +634,7 @@ Bug Fixes
 Fixes an issue where context condensing could accidentally pull in content that was already condensed earlier, which could reduce the effectiveness of long-conversation summaries.
 Fixes an issue where automatic context condensing could silently fail for VS Code LM API users when token counting returned 0 outside active requests, which could lead to unexpected context-limit errors. (thanks srulyt!)
 Fixes an issue where Roo didn’t record a successful truncation fallback when condensation failed, which could make Rewind restores unreliable after a condensing error.
-Fixes an issue where MCP tools with hyphens in their names could fail to resolve in native tool calling (for example when a provider/model rewrites “-” as “_”). (thanks hori-so!)
+Fixes an issue where MCP tools with hyphens in their names could fail to resolve in native tool calling (for example when a provider/model rewrites “-” as “\_”). (thanks hori-so!)
 Fixes an issue where tool calls could fail validation through AWS Bedrock when the tool call ID exceeded Bedrock’s 64-character limit, improving reliability for longer tool-heavy sessions.
 Fixes an issue where Settings section headers could look transparent while scrolling, restoring an opaque background so the UI stays legible.
 Fixes a Fireworks provider type mismatch by removing unsupported model tool fields, keeping provider model metadata consistent and preventing breakage from schema changes.
@@ -737,7 +737,7 @@ You get the same 400K context window and 128K max output as 5.2-Codex, but the j
 Claude Opus 4.6 - 1M CONTEXT IS HERE!!!
 Opus 4.6 is available in Roo Code across Anthropic, AWS Bedrock, Vertex AI, OpenRouter, Roo Code Router, and Vercel AI Gateway. This is the first Opus-class model with a 1M token context window (beta)—enough to feed an entire large codebase into a single conversation. And it actually uses all that context: on the MRCR v2 needle-in-a-haystack benchmark it scores 76%, versus just 18.5% for Sonnet 4.5, which means the "context rot" problem—where earlier models fell apart as conversations grew—is largely solved.
 
-Opus 4.6 also leads all frontier models on Terminal-Bench 2.0 (agentic coding), Humanity's Last Exam (multi-discipline reasoning), and GDPval-AA (knowledge work across finance and legal). It plans better, stays on task longer, and catches its own mistakes. (thanks @Peter Dave Hello  )
+Opus 4.6 also leads all frontier models on Terminal-Bench 2.0 (agentic coding), Humanity's Last Exam (multi-discipline reasoning), and GDPval-AA (knowledge work across finance and legal). It plans better, stays on task longer, and catches its own mistakes. (thanks @Peter Dave Hello )
 
 QOL Improvements
 Multi-mode Skills targeting: Skills can now target multiple modes at once using a modeSlugs frontmatter array, replacing the single mode field (which remains backward compatible). A new gear-icon modal in the Skills settings lets you pick which modes a skill applies to. The Slash Commands settings panel has also been redesigned for visual consistency.
@@ -754,7 +754,7 @@ Kimi K2.5 added to Fireworks: Adds Moonshot AI's Kimi K2.5 model to the Firework
 Misc Improvements
 Roo Code CLI v0.0.50 released: See the full release notes for details.
 
-See full release notes v3.47.0 
+See full release notes v3.47.0
 Roo Code 3.47.0 Release Notes (2026-02-05) | Roo Code Documentation
 Roo Code 3.47.0 adds Claude Opus 4.6 across all providers, GPT-5.3-Codex for the OpenAI Codex provider, multi-mode Skills targeting, AGENTS.local.md personal overrides, and CLI improvements.
 Roo Code 3.47.0 Release Notes (2026-02-05) | Roo Code Documentation

@@ -3,6 +3,7 @@
 ## 1. Build Speed Optimizations
 
 ### Cargo Config
+
 ```toml
 # .cargo/config.toml
 [build]
@@ -24,12 +25,13 @@ opt-level = 3
 ```
 
 ### Key Optimizations
-| Tool | Speedup | Status |
-|------|---------|--------|
-| mold linker | 30-70% | RECOMMEND |
-| sccache | 50%+ | RECOMMEND |
-| cargo-check | 3x faster | ALREADY USE |
-| cargo-nextest | 2-3x | CONFIG READY |
+
+| Tool          | Speedup   | Status       |
+| ------------- | --------- | ------------ |
+| mold linker   | 30-70%    | RECOMMEND    |
+| sccache       | 50%+      | RECOMMEND    |
+| cargo-check   | 3x faster | ALREADY USE  |
+| cargo-nextest | 2-3x      | CONFIG READY |
 
 ---
 
@@ -48,6 +50,7 @@ opt-level = 3
 ```
 
 ### VSCode Extensions
+
 - rust-analyzer
 - rustfmt
 - rust syntax
@@ -69,25 +72,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Install mold linker
         run: sudo apt-get install mold
-        
+
       - name: Cache cargo
         uses: Swatinem/rust-cache@v2
-        
+
       - name: Cache sccache
         uses: mozilla-actions/sccache-action@v0.0.6
-        
+
       - name: Check
         run: cargo check --all-targets
-        
+
       - name: Clippy
         run: cargo clippy --all-targets -- -D warnings
-        
+
       - name: Test
         run: cargo test --all
-        
+
       - name: Build
         run: cargo build --release
 ```
@@ -97,6 +100,7 @@ jobs:
 ## 4. QOL Improvements
 
 ### Git Hooks (pre-commit)
+
 ```bash
 #!/bin/bash
 set -e
@@ -107,6 +111,7 @@ cargo fmt --check
 ```
 
 ### Aliases
+
 ```bash
 # ~/.cargo/config.toml
 [alias]
@@ -121,6 +126,7 @@ fa = "fmt --all"
 ```
 
 ### Makefile
+
 ```makefile
 check:
 	cargo check --all-targets
@@ -147,6 +153,7 @@ build:
 ## 5. Code Quality
 
 ### Clippy Lints
+
 ```toml
 # clippy.toml
 cognitive-complexity-threshold = 30
@@ -155,6 +162,7 @@ type-complexity-threshold = 500
 ```
 
 ### Miri (undefined behavior)
+
 ```bash
 cargo +nightly miri test
 ```
@@ -178,21 +186,21 @@ cargo bench
 
 ## Implementation Priority
 
-| Priority | Item | Impact |
-|----------|------|--------|
-| 1 | Add cargo config | High |
-| 2 | Add aliases | High |
-| 3 | Add CI with sccache | High |
-| 4 | Add Makefile | Medium |
-| 5 | VSCode settings | Medium |
-| 6 | Clippy config | Low |
+| Priority | Item                | Impact |
+| -------- | ------------------- | ------ |
+| 1        | Add cargo config    | High   |
+| 2        | Add aliases         | High   |
+| 3        | Add CI with sccache | High   |
+| 4        | Add Makefile        | Medium |
+| 5        | VSCode settings     | Medium |
+| 6        | Clippy config       | Low    |
 
 ---
 
 ## Scripts to Create
 
 1. `.cargo/config.toml` - Build optimizations
-2. `.cargo/aliases` - Shell shortcuts  
+2. `.cargo/aliases` - Shell shortcuts
 3. `Makefile` - Common tasks
 4. `.github/workflows/ci.yml` - CI pipeline
 5. `.vscode/settings.json` - Editor config

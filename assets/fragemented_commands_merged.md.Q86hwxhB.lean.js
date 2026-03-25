@@ -1,1 +1,15 @@
-import{_ as a,o as i,c as e,ae as n}from"./chunks/framework.Dn7Y7LSn.js";const c=JSON.parse('{"title":"Merged Fragmented Markdown","description":"","frontmatter":{},"headers":[],"relativePath":"fragemented/commands/merged.md","filePath":"fragemented/commands/merged.md"}'),l={name:"fragemented/commands/merged.md"};function t(h,s,p,o,r,k){return i(),e("div",null,[...s[0]||(s[0]=[n("",28)])])}const F=a(l,[["render",t]]);export{c as __pageData,F as default};
+import {
+  _ as a,
+  o as i,
+  c as e,
+  ae as n,
+} from "./chunks/framework.Dn7Y7LSn.js";
+const c = JSON.parse(
+    '{"title":"Merged Fragmented Markdown","description":"","frontmatter":{},"headers":[],"relativePath":"fragemented/commands/merged.md","filePath":"fragemented/commands/merged.md"}',
+  ),
+  l = { name: "fragemented/commands/merged.md" };
+function t(h, s, p, o, r, k) {
+  return i(), e("div", null, [...(s[0] || (s[0] = [n("", 28)]))]);
+}
+const F = a(l, [["render", t]]);
+export { c as __pageData, F as default };

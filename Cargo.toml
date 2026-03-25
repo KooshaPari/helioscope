@@ -1,26 +1,17 @@
 [workspace]
+resolver = "2"
 members = [
-    "crates/harness_spec",
-    "crates/harness_checkpoint",
-    "crates/harness_verify",
-    "crates/harness_elicitation",
-    "crates/harness_orchestrator",
-    "crates/harness_rollback",
-    "crates/harness_cache",
-    "crates/harness_runner", 
-    "crates/harness_scaling",
-    "crates/harness_schema",
-    "crates/harness_discoverer",
-    "crates/harness_utils",
-    "crates/harness_normalizer",
-    "crates/harness_interfaces",
-    "crates/harness_queue",
-    "crates/harness_teammates",
+    # Native extensions (these can be built)
+    "crates/harness-native",
+    "crates/harness_zig",
 ]
 
 [workspace.package]
+name = "helios"
 version = "0.1.0"
 edition = "2021"
+authors = ["Koosha Pari <kooshapari@gmail.com>"]
+license = "MIT"
 
 [workspace.metadata]
-rustfmt.exclude = ["crates/harness_zig"]
+rustfmt.exclude = []

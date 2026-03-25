@@ -1,1 +1,53 @@
-import{_ as t,o as r,c as s,j as e,a as n}from"./chunks/framework.Dn7Y7LSn.js";const u=JSON.parse('{"title":"Phase-1 Artifact: D2","description":"","frontmatter":{},"headers":[],"relativePath":"fragemented/wbs/phase-1-reports/D2.md","filePath":"fragemented/wbs/phase-1-reports/D2.md"}'),o={name:"fragemented/wbs/phase-1-reports/D2.md"};function i(c,a,d,l,p,f){return r(),s("div",null,[...a[0]||(a[0]=[e("h1",{id:"phase-1-artifact-d2",tabindex:"-1"},[n("Phase-1 Artifact: D2 "),e("a",{class:"header-anchor",href:"#phase-1-artifact-d2","aria-label":'Permalink to "Phase-1 Artifact: D2"'},"​")],-1),e("p",null,"Source evidence:",-1),e("ul",null,[e("li",null,"research/phase-1-reports/agent-d-kilo.md")],-1),e("p",null,"This task was completed using research output in the source artifact above. The source contains lane-level evidence and findings required for task D2.",-1)])])}const m=t(o,[["render",i]]);export{u as __pageData,m as default};
+import {
+  _ as t,
+  o as r,
+  c as s,
+  j as e,
+  a as n,
+} from "./chunks/framework.Dn7Y7LSn.js";
+const u = JSON.parse(
+    '{"title":"Phase-1 Artifact: D2","description":"","frontmatter":{},"headers":[],"relativePath":"fragemented/wbs/phase-1-reports/D2.md","filePath":"fragemented/wbs/phase-1-reports/D2.md"}',
+  ),
+  o = { name: "fragemented/wbs/phase-1-reports/D2.md" };
+function i(c, a, d, l, p, f) {
+  return (
+    r(),
+    s("div", null, [
+      ...(a[0] ||
+        (a[0] = [
+          e(
+            "h1",
+            { id: "phase-1-artifact-d2", tabindex: "-1" },
+            [
+              n("Phase-1 Artifact: D2 "),
+              e(
+                "a",
+                {
+                  "class": "header-anchor",
+                  "href": "#phase-1-artifact-d2",
+                  "aria-label": 'Permalink to "Phase-1 Artifact: D2"',
+                },
+                "​",
+              ),
+            ],
+            -1,
+          ),
+          e("p", null, "Source evidence:", -1),
+          e(
+            "ul",
+            null,
+            [e("li", null, "research/phase-1-reports/agent-d-kilo.md")],
+            -1,
+          ),
+          e(
+            "p",
+            null,
+            "This task was completed using research output in the source artifact above. The source contains lane-level evidence and findings required for task D2.",
+            -1,
+          ),
+        ])),
+    ])
+  );
+}
+const m = t(o, [["render", i]]);
+export { u as __pageData, m as default };

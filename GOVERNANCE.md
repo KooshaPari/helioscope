@@ -11,10 +11,11 @@ Like `kush/` - heliosHarness serves as a **project shelf** for organizing depend
 ## Module Categories
 
 ### 1. Clones (forked external projects)
+
 ```
 clones/
 ├── codex/          # Forked Codex CLI research
-├── goose/           # Forked Goose research  
+├── goose/           # Forked Goose research
 ├── cline/           # Forked Cline research
 ├── aider/           # Forked Aider research
 ├── opencode/         # Forked OpenCode research
@@ -22,6 +23,7 @@ clones/
 ```
 
 ### 2. Extensions (plugin systems)
+
 ```
 extensions/
 ├── codex-plugins/      # Codex CLI extensibility
@@ -31,6 +33,7 @@ extensions/
 ```
 
 ### 3. Plugins (modular extension system)
+
 ```
 plugins/
 ├── protocol/        # Plugin protocol definitions
@@ -40,6 +43,7 @@ plugins/
 ```
 
 ### 4. Submodules (component definitions)
+
 ```
 modules/
 ├── harness_core/    # Core harness interfaces
@@ -49,6 +53,7 @@ modules/
 ```
 
 ### 5. Research & Analysis
+
 ```
 research/
 ├── [domain]-analysis/   # Research documents
@@ -59,18 +64,20 @@ research/
 ## Extension Pattern
 
 ### Plugin Contract
+
 ```python
 # plugins/protocol/base.py
 class Plugin(Protocol):
     name: str
     version: str
-    
+
     def initialize(self, config: dict) -> None: ...
     def execute(self, ctx: Context) -> Result: ...
     def shutdown(self) -> None: ...
 ```
 
 ### Extension Points
+
 - **codex extensions** → Extend heliosCLI
 - **harbor plugins** → Harbor framework integration
 - **portage modules** → Portage package system
@@ -94,7 +101,7 @@ heliosHarness/
 ├── modules/          # Component interfaces
 ├── research/         # Analysis documents
 ├── prototypes/       # Experimental code
-├── specs/            # Specification documents  
+├── specs/            # Specification documents
 └── artifacts/        # Generated artifacts
 ```
 
@@ -107,8 +114,8 @@ plugins:
     type: helioscli-extension
     source: clones/codex
     path: extensions/codex-plugins/
-    
-  - name: harbor-adapter  
+
+  - name: harbor-adapter
     type: harbor-plugin
     source: portage/harbor
     path: extensions/harbor-plugins/

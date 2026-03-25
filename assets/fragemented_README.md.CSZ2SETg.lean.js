@@ -1,1 +1,59 @@
-import{_ as o,o as t,c as n,j as e,a as r}from"./chunks/framework.Dn7Y7LSn.js";const u=JSON.parse('{"title":"Fragmented Markdown Consolidation","description":"","frontmatter":{},"headers":[],"relativePath":"fragemented/README.md","filePath":"fragemented/README.md"}'),d={name:"fragemented/README.md"};function i(s,a,l,c,m,f){return t(),n("div",null,[...a[0]||(a[0]=[e("h1",{id:"fragmented-markdown-consolidation",tabindex:"-1"},[r("Fragmented Markdown Consolidation "),e("a",{class:"header-anchor",href:"#fragmented-markdown-consolidation","aria-label":'Permalink to "Fragmented Markdown Consolidation"'},"​")],-1),e("p",null,"Canonicalized backup location for fragmented Markdown documents.",-1),e("p",null,"Source files retained from docs by date filter: 147",-1),e("p",null,"Usage: source docs are authoritative; this directory keeps a deterministic subset for consolidation/merge operations.",-1)])])}const g=o(d,[["render",i]]);export{u as __pageData,g as default};
+import {
+  _ as o,
+  o as t,
+  c as n,
+  j as e,
+  a as r,
+} from "./chunks/framework.Dn7Y7LSn.js";
+const u = JSON.parse(
+    '{"title":"Fragmented Markdown Consolidation","description":"","frontmatter":{},"headers":[],"relativePath":"fragemented/README.md","filePath":"fragemented/README.md"}',
+  ),
+  d = { name: "fragemented/README.md" };
+function i(s, a, l, c, m, f) {
+  return (
+    t(),
+    n("div", null, [
+      ...(a[0] ||
+        (a[0] = [
+          e(
+            "h1",
+            { id: "fragmented-markdown-consolidation", tabindex: "-1" },
+            [
+              r("Fragmented Markdown Consolidation "),
+              e(
+                "a",
+                {
+                  "class": "header-anchor",
+                  "href": "#fragmented-markdown-consolidation",
+                  "aria-label":
+                    'Permalink to "Fragmented Markdown Consolidation"',
+                },
+                "​",
+              ),
+            ],
+            -1,
+          ),
+          e(
+            "p",
+            null,
+            "Canonicalized backup location for fragmented Markdown documents.",
+            -1,
+          ),
+          e(
+            "p",
+            null,
+            "Source files retained from docs by date filter: 147",
+            -1,
+          ),
+          e(
+            "p",
+            null,
+            "Usage: source docs are authoritative; this directory keeps a deterministic subset for consolidation/merge operations.",
+            -1,
+          ),
+        ])),
+    ])
+  );
+}
+const g = o(d, [["render", i]]);
+export { u as __pageData, g as default };

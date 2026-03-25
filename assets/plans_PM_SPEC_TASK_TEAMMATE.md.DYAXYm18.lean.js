@@ -1,1 +1,15 @@
-import{_ as e,o as a,c as i,ae as r}from"./chunks/framework.Dn7Y7LSn.js";const m=JSON.parse('{"title":"PM Spec & Planning: Teammate Subagent System + Dynamic Scaling","description":"","frontmatter":{},"headers":[],"relativePath":"plans/PM_SPEC_TASK_TEAMMATE.md","filePath":"plans/PM_SPEC_TASK_TEAMMATE.md"}'),d={name:"plans/PM_SPEC_TASK_TEAMMATE.md"};function n(o,t,l,s,c,h){return a(),i("div",null,[...t[0]||(t[0]=[r("",80)])])}const p=e(d,[["render",n]]);export{m as __pageData,p as default};
+import {
+  _ as e,
+  o as a,
+  c as i,
+  ae as r,
+} from "./chunks/framework.Dn7Y7LSn.js";
+const m = JSON.parse(
+    '{"title":"PM Spec & Planning: Teammate Subagent System + Dynamic Scaling","description":"","frontmatter":{},"headers":[],"relativePath":"plans/PM_SPEC_TASK_TEAMMATE.md","filePath":"plans/PM_SPEC_TASK_TEAMMATE.md"}',
+  ),
+  d = { name: "plans/PM_SPEC_TASK_TEAMMATE.md" };
+function n(o, t, l, s, c, h) {
+  return a(), i("div", null, [...(t[0] || (t[0] = [r("", 80)]))]);
+}
+const p = e(d, [["render", n]]);
+export { m as __pageData, p as default };

@@ -3,6 +3,7 @@
 heliosCLI is a multi-runtime AI coding CLI (Codex, Claude, Gemini, Cursor, Copilot) built with a Bazel monorepo, Rust core (`codex-rs`), and TypeScript CLI (`codex-cli`). It integrates with `thegent` for agent orchestration.
 
 **Authority and Scope**
+
 - This file is the canonical contract for all agent behavior in this repository.
 - Act autonomously; only pause when blocked by missing secrets, external access, or truly destructive actions.
 
@@ -31,6 +32,7 @@ bazel run //codex-cli:codex -- --help
 ### Autonomous Operation
 
 **Proceed without asking:**
+
 - Implementation details and technical approach
 - Adding new CLI flags, commands, or agent integrations
 - Refactoring and optimization within existing patterns
@@ -38,6 +40,7 @@ bazel run //codex-cli:codex -- --help
 - Documentation updates
 
 **Only ask when blocked by:**
+
 - Missing API keys or secrets
 - External service access permissions
 - Genuine product ambiguity
@@ -157,13 +160,13 @@ pnpm --filter codex-cli lint
 
 Key workflows in `.github/workflows/`:
 
-| Workflow | Purpose |
-|----------|---------|
+| Workflow          | Purpose                                  |
+| ----------------- | ---------------------------------------- |
 | `policy-gate.yml` | PR policy enforcement (composite action) |
-| `rust-ci.yml` | Rust lint, test, build |
-| `bazel.yml` | Bazel build and test |
-| `stage-gates.yml` | Stage-based release gates |
-| `ci.yml` | Main CI pipeline |
+| `rust-ci.yml`     | Rust lint, test, build                   |
+| `bazel.yml`       | Bazel build and test                     |
+| `stage-gates.yml` | Stage-based release gates                |
+| `ci.yml`          | Main CI pipeline                         |
 
 **Do not inline policy logic in workflows.** Use `KooshaPari/phenotypeActions/actions/policy-gate@main`.
 
@@ -173,14 +176,14 @@ Key workflows in `.github/workflows/`:
 
 Follow `AGENTS.md` for file placement:
 
-| Pattern | Location |
-|---------|----------|
-| `*QUICK_START*.md` | `docs/guides/quick-start/` |
-| `*GUIDE*.md` | `docs/guides/` |
-| `*SUMMARY*.md`, `*REPORT*.md`, `PHASE_*.md` | `docs/reports/` |
-| `*INDEX*.md`, `*RESEARCH*.md` | `docs/research/` |
-| `*CHECKLIST*.md` | `docs/checklists/` |
-| `*QUICK_REFERENCE*.md` | `docs/reference/` |
+| Pattern                                     | Location                   |
+| ------------------------------------------- | -------------------------- |
+| `*QUICK_START*.md`                          | `docs/guides/quick-start/` |
+| `*GUIDE*.md`                                | `docs/guides/`             |
+| `*SUMMARY*.md`, `*REPORT*.md`, `PHASE_*.md` | `docs/reports/`            |
+| `*INDEX*.md`, `*RESEARCH*.md`               | `docs/research/`           |
+| `*CHECKLIST*.md`                            | `docs/checklists/`         |
+| `*QUICK_REFERENCE*.md`                      | `docs/reference/`          |
 
 Root-level markdown: only `README.md`, `CHANGELOG.md`, `AGENTS.md`, `CLAUDE.md`.
 
@@ -196,10 +199,23 @@ Root-level markdown: only `README.md`, `CHANGELOG.md`, `AGENTS.md`, `CLAUDE.md`.
 
 ## Quick Reference
 
-| Command | Purpose |
-|---------|---------|
-| `bazel build //...` | Build all Bazel targets |
-| `bazel test //...` | Test all Bazel targets |
-| `cargo test --workspace` | Run all Rust tests |
-| `cargo clippy --workspace` | Rust linting |
-| `pnpm --filter codex-cli test` | TypeScript CLI tests |
+| Command                        | Purpose                 |
+| ------------------------------ | ----------------------- |
+| `bazel build //...`            | Build all Bazel targets |
+| `bazel test //...`             | Test all Bazel targets  |
+| `cargo test --workspace`       | Run all Rust tests      |
+| `cargo clippy --workspace`     | Rust linting            |
+| `pnpm --filter codex-cli test` | TypeScript CLI tests    |
+
+## Child-Agent and Delegation Policy
+
+- Use child agents liberally for scoped discovery, audits, multi-repo scans, and implementation planning before direct parent-agent edits.
+- Prefer delegating high-context or high-churn tasks to subagents, and keep parent-agent changes focused on integration and finalization.
+- Reserve parent-agent direct writes for the narrowest, final decision layer.
+
+## Child Agent Usage
+
+- Use child agents liberally for discovery-heavy, migration-heavy, and high-context work.
+- Delegate broad scans, decomposition, and implementation waves to subagents before final parent-agent integration.
+- Keep the parent lane focused on deterministic integration and finalization.
+- Preserve explicit handoffs and cross-agent context in session notes and audits.

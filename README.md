@@ -1,205 +1,60 @@
-# Helios Router UI
+<p align="center"><code>npm i -g @openai/codex</code><br />or <code>brew install --cask codex</code></p>
+<p align="center"><strong>Codex CLI</strong> is a coding agent from OpenAI that runs locally on your computer.
+<p align="center">
+  <img src="https://github.com/openai/codex/blob/main/.github/codex-cli-splash.png" alt="Codex CLI splash" width="80%" />
+</p>
+</br>
+If you want Codex in your code editor (VS Code, Cursor, Windsurf), <a href="https://developers.openai.com/codex/ide">install in your IDE.</a>
+</br>If you want the desktop app experience, run <code>codex app</code> or visit <a href="https://chatgpt.com/codex?app-landing-page=true">the Codex App page</a>.
+</br>If you are looking for the <em>cloud-based agent</em> from OpenAI, <strong>Codex Web</strong>, go to <a href="https://chatgpt.com/codex">chatgpt.com/codex</a>.</p>
 
-Interactive Pareto analysis dashboard for LLM provider selection and ledger management.
+---
 
-## Features
+## Quickstart
 
-- **Pareto Analysis** - Compute optimal provider/model combinations based on cost, latency, and quality
-- **Provider Ledger** - Track and visualize token usage across multiple providers
-- **Streamlit UI** - Interactive dashboard with data editors, weight sliders, and metrics
-- **NATS Integration** - Real-time event streaming and KV caching
-- **Export** - Export to Excel/spreadsheet formats
+### Installing and running Codex CLI
 
-## Quick Start
+Install globally with your preferred package manager:
 
-```bash
-# Install dependencies
-task install
-
-# Start Streamlit dev server
-task dev
-
-# Or use make
-make dev
+```shell
+# Install using npm
+npm install -g @openai/codex
 ```
 
-## Installation
-
-### Requirements
-
-- Python 3.12+
-- [uv](https://github.com/astral-sh/uv) package manager
-- NATS server (optional, for event streaming)
-
-### Install NATS
-
-```bash
-# macOS
-brew install nats-server
-
-# Linux
-go install github.com/nats-io/nats-server/v2@latest
+```shell
+# Install using Homebrew
+brew install --cask codex
 ```
 
-## Usage
+Then simply run `codex` to get started.
 
-### Development
+<details>
+<summary>You can also go to the <a href="https://github.com/openai/codex/releases/latest">latest GitHub Release</a> and download the appropriate binary for your platform.</summary>
 
-```bash
-# Start Streamlit with hot reload
-task dev
+Each GitHub Release contains many executables, but in practice, you likely want one of these:
 
-# Run with custom port
-STREAMIT_PORT=8502 task dev
-```
+- macOS
+  - Apple Silicon/arm64: `codex-aarch64-apple-darwin.tar.gz`
+  - x86_64 (older Mac hardware): `codex-x86_64-apple-darwin.tar.gz`
+- Linux
+  - x86_64: `codex-x86_64-unknown-linux-musl.tar.gz`
+  - arm64: `codex-aarch64-unknown-linux-musl.tar.gz`
 
-### Database
+Each archive contains a single entry with the platform baked into the name (e.g., `codex-x86_64-unknown-linux-musl`), so you likely want to rename it to `codex` after extracting it.
 
-```bash
-# Initialize database
-task db-migrate
+</details>
 
-# Load sample data
-task sample-data
+### Using Codex with your ChatGPT plan
 
-# Reset database
-task db-reset
-```
+Run `codex` and select **Sign in with ChatGPT**. We recommend signing into your ChatGPT account to use Codex as part of your Plus, Pro, Team, Edu, or Enterprise plan. [Learn more about what's included in your ChatGPT plan](https://help.openai.com/en/articles/11369540-codex-in-chatgpt).
 
-### Testing
+You can also use Codex with an API key, but this requires [additional setup](https://developers.openai.com/codex/auth#sign-in-with-an-api-key).
 
-```bash
-# Run tests
-task test
+## Docs
 
-# With coverage
-task test-cov
-```
+- [**Codex Documentation**](https://developers.openai.com/codex)
+- [**Contributing**](./docs/contributing.md)
+- [**Installing & building**](./docs/install.md)
+- [**Open source fund**](./docs/open-source-fund.md)
 
-### Code Quality
-
-```bash
-# Lint
-task lint
-
-# Format
-task format
-
-# Type check
-task typecheck
-
-# All checks
-task check
-```
-
-## Service Management
-
-### Makefile
-
-```bash
-make dev          # Start all services
-make dev-tui      # Start with log tailing
-make status       # Check status
-make stop         # Stop all
-make restart      # Restart
-make health       # Health check
-```
-
-### Shell Script
-
-```bash
-source scripts/services.sh
-start          # Start all
-stop           # Stop all  
-status         # Status
-logs           # Tail logs
-```
-
-### Process Compose
-
-```bash
-# If you have process-compose installed
-process-compose up -f process-compose.yaml
-```
-
-## Architecture
-
-```
-helios_router_data/
-├── app.py                    # Main Streamlit application
-├── sample_data.py            # Sample data loader
-├── helios.db                # SQLite database
-├── src/helios_router_ui/
-│   ├── __init__.py
-│   ├── db/
-│   │   └── schema.py        # Database layer
-│   ├── pareto/
-│   │   └── engine.py       # Pareto computation engine
-│   ├── ui/
-│   │   └── components.py    # Streamlit UI components
-│   └── nats_client.py       # NATS JetStream client
-└── migrations/             # Database migrations
-```
-
-## Services
-
-| Service | Port | Description |
-|---------|------|-------------|
-| NATS | 4222 | Event bus + KV cache |
-| Streamlit | 8501 | Dashboard UI |
-| NATS Monitor | 8222 | Optional monitoring |
-
-## NATS KV Stores
-
-- `provider_cache` - Provider status (5min TTL)
-- `model_cache` - Model data (1hr TTL)
-- `pareto_cache` - Computed frontiers (1min TTL)
-- `price_cache` - Real-time pricing (1min TTL)
-
-## Configuration
-
-Copy `.env.example` to `.env` and configure:
-
-```bash
-cp .env.example .env
-```
-
-## Dependencies
-
-### Core
-
-- streamlit >= 1.40
-- pandas >= 2.0
-- numpy >= 1.24
-- openpyxl >= 3.1
-
-### Optional
-
-- nats >= 0.24 (for NATS integration)
-- asyncio-mqtt >= 0.16 (for MQTT bridge)
-
-### Dev
-
-- ruff >= 0.3
-- mypy >= 1.19
-- pytest >= 8.0
-- pytest-cov >= 6.0
-
-## Available Tasks
-
-Run `task --list` to see all available tasks:
-
-```
-task install          Install dependencies with uv
-task dev             Start Streamlit dev server
-task lint             Run ruff linter
-task format           Format code with ruff
-task typecheck        Run mypy type checker
-task test             Run pytest
-task check            Run all checks (lint, typecheck, test)
-task clean            Clean up cache files
-```
-
-## License
-
-MIT
+This repository is licensed under the [Apache-2.0 License](LICENSE).

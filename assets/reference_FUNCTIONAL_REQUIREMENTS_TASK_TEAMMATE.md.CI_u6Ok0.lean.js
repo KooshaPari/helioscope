@@ -1,1 +1,15 @@
-import{_ as e,o as d,c as a,ae as r}from"./chunks/framework.Dn7Y7LSn.js";const u=JSON.parse('{"title":"Functional Requirements: Teammate Subagent System + Dynamic Scaling","description":"","frontmatter":{},"headers":[],"relativePath":"reference/FUNCTIONAL_REQUIREMENTS_TASK_TEAMMATE.md","filePath":"reference/FUNCTIONAL_REQUIREMENTS_TASK_TEAMMATE.md"}'),i={name:"reference/FUNCTIONAL_REQUIREMENTS_TASK_TEAMMATE.md"};function o(n,t,s,l,h,c){return d(),a("div",null,[...t[0]||(t[0]=[r("",63)])])}const b=e(i,[["render",o]]);export{u as __pageData,b as default};
+import {
+  _ as e,
+  o as d,
+  c as a,
+  ae as r,
+} from "./chunks/framework.Dn7Y7LSn.js";
+const u = JSON.parse(
+    '{"title":"Functional Requirements: Teammate Subagent System + Dynamic Scaling","description":"","frontmatter":{},"headers":[],"relativePath":"reference/FUNCTIONAL_REQUIREMENTS_TASK_TEAMMATE.md","filePath":"reference/FUNCTIONAL_REQUIREMENTS_TASK_TEAMMATE.md"}',
+  ),
+  i = { name: "reference/FUNCTIONAL_REQUIREMENTS_TASK_TEAMMATE.md" };
+function o(n, t, s, l, h, c) {
+  return d(), a("div", null, [...(t[0] || (t[0] = [r("", 63)]))]);
+}
+const b = e(i, [["render", o]]);
+export { u as __pageData, b as default };

@@ -71,27 +71,27 @@ The Dynamic Thread Limit System replaces fixed concurrency limits with resource-
 @dataclass
 class ResourceSnapshot:
     """Current system resource usage."""
-    
+
     # CPU
     cpu_percent: float  # 0.0 - 100.0
-    
-    # Memory  
+
+    # Memory
     memory_percent: float  # 0.0 - 100.0
     memory_available_mb: float
-    
+
     # File Descriptors
     fd_used: int
     fd_limit: int
     fd_percent: float  # 0.0 - 100.0
-    
+
     # Load Average (1min, 5min, 15min)
     load_avg_1m: float
     load_avg_5m: float
     load_avg_15m: float
-    
+
     # Computed
     timestamp: float
-    
+
     @property
     def load_normalized(self) -> float:
         """Normalize load to 0-1 based on CPU cores."""
@@ -105,20 +105,20 @@ class ResourceSnapshot:
 @dataclass
 class LimitGateConfig:
     """Configuration for dynamic limits."""
-    
+
     # Buffer thresholds
     min_buffer: float = 0.05  # 5% hard limit
     discretionary_buffer: float = 0.15  # 15% soft limit
-    
+
     # Resource thresholds (0.0-1.0)
     cpu_threshold: float = 0.80
     memory_threshold: float = 0.85
     fd_threshold: float = 0.80
     load_threshold: float = 0.80
-    
+
     # Sampling
     sampling_interval_seconds: float = 2.0
-    
+
     @classmethod
     def from_dict(cls, d: dict) -> "LimitGateConfig":
         """Build from dict (e.g. settings)."""
@@ -139,14 +139,14 @@ class LimitGateConfig:
 @dataclass
 class HysteresisState:
     """Current hysteresis state."""
-    
+
     state: Literal["stable", "scaling_up", "scaling_down"] = "stable"
     last_change_time: float = 0.0
     consecutive_same_direction: int = 0
-    
+
 class HysteresisController:
     """Prevents thrashing by using upper/lower thresholds."""
-    
+
     def __init__(
         self,
         upper_threshold: float = 0.80,
@@ -157,7 +157,7 @@ class HysteresisController:
         self.lower_threshold = lower_threshold
         self.dwell_time_seconds = dwell_time_seconds
         self._state = HysteresisState()
-    
+
     def get_limit(
         self,
         current_limit: int,
@@ -165,10 +165,10 @@ class HysteresisController:
         target_limit: int,
     ) -> int:
         """Apply hysteresis to determine the new limit."""
-        
+
         now = time.time()
         time_since_change = now - self._state.last_change_time
-        
+
         # Determine direction
         if target_limit > current_limit:
             desired_direction = "up"
@@ -176,7 +176,7 @@ class HysteresisController:
             desired_direction = "down"
         else:
             return current_limit
-        
+
         # Check if we should change
         if desired_direction == "up":
             # Can always scale up after dwell time
@@ -191,12 +191,12 @@ class HysteresisController:
             # Scale down only if we're above target and dwell passed
             if running_count < target_limit and time_since_change >= self.dwell_time_seconds:
                 self._state = HysteresisState(
-                    state="stable", 
+                    state="stable",
                     last_change_time=now,
                     consecutive_same_direction=0,
                 )
                 return target_limit
-        
+
         # Hold current limit
         return current_limit
 ```
@@ -210,21 +210,21 @@ class HysteresisController:
 ```python
 class ResourceSampler:
     """Sample system resources cross-platform."""
-    
+
     def __init__(self, use_native: bool = False):
         self.use_native = use_native
-        
+
     def sample(self) -> ResourceSnapshot:
         """Sample all resources."""
-        
+
         # CPU
         cpu_percent = psutil.cpu_percent(interval=0.1)
-        
+
         # Memory
         mem = psutil.virtual_memory()
         memory_percent = mem.percent
         memory_available_mb = mem.available / (1024 * 1024)
-        
+
         # File Descriptors (Unix)
         try:
             fd_used = len(os.listdir('/proc/self/fd'))
@@ -242,13 +242,13 @@ class ResourceSampler:
                 fd_used = 0
                 fd_limit = 1024
                 fd_percent = 0.0
-        
+
         # Load Average
         try:
             load_avg_1m, load_avg_5m, load_avg_15m = os.getloadavg()
         except NotImplementedError:
             load_avg_1m = load_avg_5m = load_avg_15m = 0.0
-        
+
         return ResourceSnapshot(
             cpu_percent=cpu_percent,
             memory_percent=memory_percent,
@@ -277,47 +277,47 @@ def compute_dynamic_limit(
 ) -> tuple[int, dict]:
     """
     Compute max concurrent slots from resource gates.
-    
+
     Returns (effective_limit, gate_details).
     """
-    
+
     # Normalize each resource to 0-1
     cpu_util = snapshot.cpu_percent / 100.0
     mem_util = snapshot.memory_percent / 100.0
     fd_util = snapshot.fd_percent
-    
+
     # Normalize load to 0-1
     load_util = snapshot.load_normalized
-    
+
     # Calculate available headroom for each resource
     # Headroom = 1.0 - utilization (so 1.0 = fully available)
     cpu_headroom = max(0.0, 1.0 - cpu_util)
     mem_headroom = max(0.0, 1.0 - mem_util)
     fd_headroom = max(0.0, 1.0 - fd_util)
     load_headroom = max(0.0, 1.0 - load_util)
-    
+
     # Minimum headroom across all resources
     min_headroom = min(cpu_headroom, mem_headroom, fd_headroom, load_headroom)
-    
+
     # Calculate limits at different buffer levels
     # Base: assume max 100 concurrent as baseline
     max_baseline = 100
-    
+
     # Hard limit: use min_buffer (5%)
     hard_limit = int(max_baseline * (1.0 - config.min_buffer))
-    
+
     # Soft limit: use discretionary_buffer (15%)
     soft_limit = int(max_baseline * (1.0 - config.discretionary_buffer))
-    
+
     # Dynamic limit: scale with headroom
     dynamic_limit = int(max_baseline * min_headroom)
-    
+
     # Effective limit: most restrictive
     effective_limit = min(hard_limit, soft_limit, dynamic_limit)
-    
+
     # Ensure minimum of 1
     effective_limit = max(1, effective_limit)
-    
+
     # Gate details for logging/metrics
     gate_details = {
         "cpu_util": cpu_util,
@@ -331,7 +331,7 @@ def compute_dynamic_limit(
         "effective_limit": effective_limit,
         "running_count": running_count,
     }
-    
+
     return effective_limit, gate_details
 ```
 
@@ -344,7 +344,7 @@ def compute_dynamic_limit(
 ```python
 class DynamicLimitController:
     """Main controller for dynamic limits."""
-    
+
     def __init__(
         self,
         config: LimitGateConfig | None = None,
@@ -358,27 +358,27 @@ class DynamicLimitController:
             lower_threshold=0.60,
             dwell_time_seconds=30,
         )
-    
+
     async def run(self):
         """Main loop - sample and adjust."""
         while True:
             # Sample resources
             snapshot = self.sampler.sample()
-            
+
             # Compute dynamic limit
             target_limit, details = compute_dynamic_limit(
                 snapshot,
                 self.config,
                 self._running_count,
             )
-            
+
             # Apply hysteresis
             self.current_limit = self.hysteresis.get_limit(
                 current_limit=self.current_limit,
                 running_count=self._running_count,
                 target_limit=target_limit,
             )
-            
+
             # Log details
             logger.info(
                 "dynamic_limit_update",
@@ -387,7 +387,7 @@ class DynamicLimitController:
                 running=self._running_count,
                 **details,
             )
-            
+
             # Wait for next sample
             await asyncio.sleep(self.config.sampling_interval_seconds)
 ```
@@ -401,7 +401,7 @@ class DynamicLimitController:
 ```python
 class BackpressureQueue:
     """Priority queue with backpressure."""
-    
+
     def __init__(
         self,
         max_size: int = 100,
@@ -413,16 +413,16 @@ class BackpressureQueue:
             maxsize=max_size
         )
         self._priority_counts = defaultdict(int)
-    
+
     async def enqueue(
         self,
         item: Any,
         priority: int = 2,  # 0=CRITICAL, 1=HIGH, 2=NORMAL, 3=LOW
     ) -> bool:
         """Try to enqueue item. Returns False if rejected."""
-        
+
         load_percent = self._queue.qsize() / self.max_size
-        
+
         # Check backpressure based on priority
         if priority == 0:  # CRITICAL
             can_accept = self._queue.qsize() < self.max_size
@@ -432,7 +432,7 @@ class BackpressureQueue:
             can_accept = load_percent < 0.75
         else:  # LOW
             can_accept = load_percent < 0.50
-        
+
         if not can_accept:
             logger.warning(
                 "backpressure_reject",
@@ -441,11 +441,11 @@ class BackpressureQueue:
                 max_size=self.max_size,
             )
             return False
-        
+
         await self._queue.put((priority, item))
         self._priority_counts[priority] += 1
         return True
-    
+
     async def dequeue(self) -> Any:
         """Dequeue highest priority item."""
         priority, item = await self._queue.get()
@@ -463,18 +463,18 @@ class BackpressureQueue:
 # heliosharness.yaml
 scaling:
   # Buffer thresholds
-  min_buffer: 0.05        # 5% - hard limit
-  discretionary_buffer: 0.15  # 15% - soft limit
-  
+  min_buffer: 0.05 # 5% - hard limit
+  discretionary_buffer: 0.15 # 15% - soft limit
+
   # Resource thresholds
   cpu_threshold: 0.80
   memory_threshold: 0.85
   fd_threshold: 0.80
   load_threshold: 0.80
-  
+
   # Sampling
   sampling_interval_seconds: 2.0
-  
+
   # Hysteresis
   hysteresis:
     upper_threshold: 0.80
@@ -485,7 +485,7 @@ scaling:
 queue:
   max_size: 100
   backpressure_threshold: 0.75
-  
+
   # Priority levels
   priority_levels:
     CRITICAL: 0

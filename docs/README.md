@@ -38,33 +38,33 @@ docs/
 
 ## Quick Links
 
-| Document | Purpose |
-|----------|---------|
-| EPIC-AUTO-001 | Master epic with full scope |
-| US-AUTO-001 | Spec-driven execution story |
-| US-AUTO-002 | Checkpoint system story |
-| FR-SPEC-001 | Specification parser FR |
-| ADR-AUTO-001 | Format decision (YAML) |
-| ADR-AUTO-002 | Checkpoint strategy |
-| RESEARCH_FACTORY_DROIDS | Factory pattern research |
+| Document                | Purpose                     |
+| ----------------------- | --------------------------- |
+| EPIC-AUTO-001           | Master epic with full scope |
+| US-AUTO-001             | Spec-driven execution story |
+| US-AUTO-002             | Checkpoint system story     |
+| FR-SPEC-001             | Specification parser FR     |
+| ADR-AUTO-001            | Format decision (YAML)      |
+| ADR-AUTO-002            | Checkpoint strategy         |
+| RESEARCH_FACTORY_DROIDS | Factory pattern research    |
 
 ---
 
 ## Key Decisions
 
-| ADR | Decision | Status |
-|-----|----------|--------|
-| ADR-AUTO-001 | YAML + JSON Schema for specs | Accepted |
-| ADR-AUTO-002 | Multi-layer checkpoints | Accepted |
+| ADR          | Decision                       | Status   |
+| ------------ | ------------------------------ | -------- |
+| ADR-AUTO-001 | YAML + JSON Schema for specs   | Accepted |
+| ADR-AUTO-002 | Multi-layer checkpoints        | Accepted |
 | ADR-AUTO-003 | Level 3 autonomy (notify only) | Proposed |
 
 ---
 
 ## Progress
 
-| Epic | Stories | Points | Progress |
-|------|---------|--------|----------|
-| EPIC-AUTO-001 | 8 | 76 | 27.6% |
+| Epic          | Stories | Points | Progress |
+| ------------- | ------- | ------ | -------- |
+| EPIC-AUTO-001 | 8       | 76     | 27.6%    |
 
 ---
 

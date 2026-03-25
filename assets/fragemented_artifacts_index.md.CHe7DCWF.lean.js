@@ -1,1 +1,15 @@
-import{_ as a,o as t,c as i,ae as d}from"./chunks/framework.Dn7Y7LSn.js";const h=JSON.parse('{"title":"Consolidated Index","description":"","frontmatter":{},"headers":[],"relativePath":"fragemented/artifacts/index.md","filePath":"fragemented/artifacts/index.md"}'),o={name:"fragemented/artifacts/index.md"};function r(s,e,l,n,c,u){return t(),i("div",null,[...e[0]||(e[0]=[d("",5)])])}const f=a(o,[["render",r]]);export{h as __pageData,f as default};
+import {
+  _ as a,
+  o as t,
+  c as i,
+  ae as d,
+} from "./chunks/framework.Dn7Y7LSn.js";
+const h = JSON.parse(
+    '{"title":"Consolidated Index","description":"","frontmatter":{},"headers":[],"relativePath":"fragemented/artifacts/index.md","filePath":"fragemented/artifacts/index.md"}',
+  ),
+  o = { name: "fragemented/artifacts/index.md" };
+function r(s, e, l, n, c, u) {
+  return t(), i("div", null, [...(e[0] || (e[0] = [d("", 5)]))]);
+}
+const f = a(o, [["render", r]]);
+export { h as __pageData, f as default };

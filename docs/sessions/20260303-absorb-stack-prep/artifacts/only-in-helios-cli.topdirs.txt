@@ -1,0 +1,25 @@
+2595 codex-rs
+2567 rust_core
+ 478 perf-results
+  29 docs
+  28 sdk
+  22 crates
+  16 shell-tool-mcp
+  13 codex-cli
+   6 scripts
+   4 patches
+   2 third_party
+   2 helios-rs
+   1 transport
+   1 rbe.bzl
+   1 python
+   1 pnpm-workspace.yaml
+   1 pnpm-lock.yaml
+   1 package.json
+   1 justfile
+   1 flake.nix
+   1 flake.lock
+   1 defs.bzl
+   1 cliff.toml
+   1 Cargo.toml
+   1 announcement_tip.toml

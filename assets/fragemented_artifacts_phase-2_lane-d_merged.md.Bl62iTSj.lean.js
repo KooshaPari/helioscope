@@ -1,1 +1,15 @@
-import{_ as d,o as a,c as e,ae as r}from"./chunks/framework.Dn7Y7LSn.js";const g=JSON.parse('{"title":"Merged Fragmented Markdown","description":"","frontmatter":{},"headers":[],"relativePath":"fragemented/artifacts/phase-2/lane-d/merged.md","filePath":"fragemented/artifacts/phase-2/lane-d/merged.md"}'),n={name:"fragemented/artifacts/phase-2/lane-d/merged.md"};function o(i,t,s,m,h,l){return a(),e("div",null,[...t[0]||(t[0]=[r("",8)])])}const u=d(n,[["render",o]]);export{g as __pageData,u as default};
+import {
+  _ as d,
+  o as a,
+  c as e,
+  ae as r,
+} from "./chunks/framework.Dn7Y7LSn.js";
+const g = JSON.parse(
+    '{"title":"Merged Fragmented Markdown","description":"","frontmatter":{},"headers":[],"relativePath":"fragemented/artifacts/phase-2/lane-d/merged.md","filePath":"fragemented/artifacts/phase-2/lane-d/merged.md"}',
+  ),
+  n = { name: "fragemented/artifacts/phase-2/lane-d/merged.md" };
+function o(i, t, s, m, h, l) {
+  return a(), e("div", null, [...(t[0] || (t[0] = [r("", 8)]))]);
+}
+const u = d(n, [["render", o]]);
+export { g as __pageData, u as default };

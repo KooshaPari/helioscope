@@ -6,10 +6,10 @@ Active work tracking for **heliosHarness** project.
 
 ## Current Sprint
 
-| Item | Status |
-|------|--------|
+| Item                  | Status         |
+| --------------------- | -------------- |
 | Documentation updates | 🟡 In Progress |
 
 ---
 
-*Last updated: 2026-02-23*
+_Last updated: 2026-02-23_

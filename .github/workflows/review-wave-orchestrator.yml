@@ -1,0 +1,15 @@
+name: Review Wave Orchestrator
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  review-wave:
+    uses: KooshaPari/phenotypeActions/.github/workflows/review-wave-orchestrator.yml@c7e43facecdef5942f591ee72cb204b076ba23fd # v0
+    secrets: inherit

@@ -1,1 +1,15 @@
-import{_ as i,o as a,c as t,ae as n}from"./chunks/framework.Dn7Y7LSn.js";const g=JSON.parse('{"title":"Research Backing: Teammate Subagent System + Dynamic Thread Scaling (EXPANDED)","description":"","frontmatter":{},"headers":[],"relativePath":"research/TASK_TEAMMATE_DYNAMIC_SCALING_RESEARCH.md","filePath":"research/TASK_TEAMMATE_DYNAMIC_SCALING_RESEARCH.md"}'),e={name:"research/TASK_TEAMMATE_DYNAMIC_SCALING_RESEARCH.md"};function l(h,s,p,r,k,o){return a(),t("div",null,[...s[0]||(s[0]=[n("",283)])])}const c=i(e,[["render",l]]);export{g as __pageData,c as default};
+import {
+  _ as i,
+  o as a,
+  c as t,
+  ae as n,
+} from "./chunks/framework.Dn7Y7LSn.js";
+const g = JSON.parse(
+    '{"title":"Research Backing: Teammate Subagent System + Dynamic Thread Scaling (EXPANDED)","description":"","frontmatter":{},"headers":[],"relativePath":"research/TASK_TEAMMATE_DYNAMIC_SCALING_RESEARCH.md","filePath":"research/TASK_TEAMMATE_DYNAMIC_SCALING_RESEARCH.md"}',
+  ),
+  e = { name: "research/TASK_TEAMMATE_DYNAMIC_SCALING_RESEARCH.md" };
+function l(h, s, p, r, k, o) {
+  return a(), t("div", null, [...(s[0] || (s[0] = [n("", 283)]))]);
+}
+const c = i(e, [["render", l]]);
+export { g as __pageData, c as default };

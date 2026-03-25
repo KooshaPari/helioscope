@@ -1,1 +1,15 @@
-import{_ as a,o as t,c as i,ae as s}from"./chunks/framework.Dn7Y7LSn.js";const p=JSON.parse('{"title":"ADR-002: Dynamic Thread Limit System","description":"","frontmatter":{},"headers":[],"relativePath":"reference/ADR-002-DYNAMIC-LIMIT-SYSTEM.md","filePath":"reference/ADR-002-DYNAMIC-LIMIT-SYSTEM.md"}'),n={name:"reference/ADR-002-DYNAMIC-LIMIT-SYSTEM.md"};function r(l,e,o,d,c,h){return t(),i("div",null,[...e[0]||(e[0]=[s("",27)])])}const m=a(n,[["render",r]]);export{p as __pageData,m as default};
+import {
+  _ as a,
+  o as t,
+  c as i,
+  ae as s,
+} from "./chunks/framework.Dn7Y7LSn.js";
+const p = JSON.parse(
+    '{"title":"ADR-002: Dynamic Thread Limit System","description":"","frontmatter":{},"headers":[],"relativePath":"reference/ADR-002-DYNAMIC-LIMIT-SYSTEM.md","filePath":"reference/ADR-002-DYNAMIC-LIMIT-SYSTEM.md"}',
+  ),
+  n = { name: "reference/ADR-002-DYNAMIC-LIMIT-SYSTEM.md" };
+function r(l, e, o, d, c, h) {
+  return t(), i("div", null, [...(e[0] || (e[0] = [s("", 27)]))]);
+}
+const m = a(n, [["render", r]]);
+export { p as __pageData, m as default };

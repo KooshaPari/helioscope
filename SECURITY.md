@@ -1,16 +1,13 @@
 # Security Policy
 
-## Supported Versions
+Thank you for helping us keep Codex secure!
 
-The default branch is the supported release line.
+## Reporting Security Issues
 
-## Reporting a Vulnerability
+The security is essential to OpenAI's mission. We appreciate the work of security researchers acting in good faith to identify and responsibly report potential vulnerabilities, helping us maintain strong privacy and security standards for our users and technology.
 
-Please report vulnerabilities privately through GitHub Security Advisories or direct maintainer contact.
-Do not post sensitive details in public issues.
+Our security program is managed through Bugcrowd, and we ask that any validated vulnerabilities be reported via the [Bugcrowd program](https://bugcrowd.com/engagements/openai).
 
-## Response Targets
+## Vulnerability Disclosure Program
 
-- Acknowledge: within 2 business days
-- Triage: within 5 business days
-- Mitigation plan: as soon as reproducibility is confirmed
+Our Vulnerability Program Guidelines are defined on our [Bugcrowd program page](https://bugcrowd.com/engagements/openai).

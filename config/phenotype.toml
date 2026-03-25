@@ -1,0 +1,10 @@
+[phenotype]
+repo = "heliosCLI"
+version = "0.1.0-codex.105.0"
+stage = "Beta"
+upstream = "openai/codex"
+upstream_version = "rust-v0.105.0"
+
+[flags]
+
+[config]

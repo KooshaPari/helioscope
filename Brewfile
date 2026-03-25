@@ -1,0 +1,12 @@
+tap "homebrew/cask"
+
+brew "just"
+brew "rustup-init"
+brew "bazelisk"
+brew "node"
+brew "pnpm"
+brew "python@3.12"
+brew "ripgrep"
+brew "jq"
+brew "jaq"
+brew "bun"

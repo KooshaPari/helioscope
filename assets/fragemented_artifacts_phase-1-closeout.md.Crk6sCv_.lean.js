@@ -1,1 +1,10 @@
-import{_ as a,o,c as s,ae as i}from"./chunks/framework.Dn7Y7LSn.js";const u=JSON.parse('{"title":"Phase-1 Closeout: CLI/API/SDK Harness Research","description":"","frontmatter":{},"headers":[],"relativePath":"fragemented/artifacts/phase-1-closeout.md","filePath":"fragemented/artifacts/phase-1-closeout.md"}'),t={name:"fragemented/artifacts/phase-1-closeout.md"};function r(l,e,c,d,n,h){return o(),s("div",null,[...e[0]||(e[0]=[i("",11)])])}const m=a(t,[["render",r]]);export{u as __pageData,m as default};
+import { _ as a, o, c as s, ae as i } from "./chunks/framework.Dn7Y7LSn.js";
+const u = JSON.parse(
+    '{"title":"Phase-1 Closeout: CLI/API/SDK Harness Research","description":"","frontmatter":{},"headers":[],"relativePath":"fragemented/artifacts/phase-1-closeout.md","filePath":"fragemented/artifacts/phase-1-closeout.md"}',
+  ),
+  t = { name: "fragemented/artifacts/phase-1-closeout.md" };
+function r(l, e, c, d, n, h) {
+  return o(), s("div", null, [...(e[0] || (e[0] = [i("", 11)]))]);
+}
+const m = a(t, [["render", r]]);
+export { u as __pageData, m as default };

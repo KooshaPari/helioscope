@@ -1,1 +1,46 @@
-import{_ as a,o as t,c as d,j as e,a as n}from"./chunks/framework.Dn7Y7LSn.js";const p=JSON.parse('{"title":"Merged Fragmented Markdown","description":"","frontmatter":{},"headers":[],"relativePath":"fragemented/merged.md","filePath":"fragemented/merged.md"}'),o={name:"fragemented/merged.md"};function m(s,r,c,i,g,l){return t(),d("div",null,[...r[0]||(r[0]=[e("h1",{id:"merged-fragmented-markdown",tabindex:"-1"},[n("Merged Fragmented Markdown "),e("a",{class:"header-anchor",href:"#merged-fragmented-markdown","aria-label":'Permalink to "Merged Fragmented Markdown"'},"​")],-1),e("p",null,"No local source files; this directory may only contain nested grouped directories.",-1)])])}const _=a(o,[["render",m]]);export{p as __pageData,_ as default};
+import {
+  _ as a,
+  o as t,
+  c as d,
+  j as e,
+  a as n,
+} from "./chunks/framework.Dn7Y7LSn.js";
+const p = JSON.parse(
+    '{"title":"Merged Fragmented Markdown","description":"","frontmatter":{},"headers":[],"relativePath":"fragemented/merged.md","filePath":"fragemented/merged.md"}',
+  ),
+  o = { name: "fragemented/merged.md" };
+function m(s, r, c, i, g, l) {
+  return (
+    t(),
+    d("div", null, [
+      ...(r[0] ||
+        (r[0] = [
+          e(
+            "h1",
+            { id: "merged-fragmented-markdown", tabindex: "-1" },
+            [
+              n("Merged Fragmented Markdown "),
+              e(
+                "a",
+                {
+                  "class": "header-anchor",
+                  "href": "#merged-fragmented-markdown",
+                  "aria-label": 'Permalink to "Merged Fragmented Markdown"',
+                },
+                "​",
+              ),
+            ],
+            -1,
+          ),
+          e(
+            "p",
+            null,
+            "No local source files; this directory may only contain nested grouped directories.",
+            -1,
+          ),
+        ])),
+    ])
+  );
+}
+const _ = a(o, [["render", m]]);
+export { p as __pageData, _ as default };

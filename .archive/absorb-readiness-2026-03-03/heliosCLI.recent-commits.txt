@@ -1,0 +1,5 @@
+c8ead6aca7 (HEAD -> chore/normalize-dirty-20260303-heliosCLI) chore: normalize dirty worktree snapshot (2026-03-03)
+2b1941ef9b (agentops/policy-federation-onboard) chore: add shared pheno devops task surface
+383f312c3b (upstream/agentops/policy-federation-onboard, origin/agentops/policy-federation-onboard) chore(agentops): onboard policy federation artifacts
+8a2a8d8667 (upstream/main, upstream/HEAD, origin/main, main) sync: full upstream codex refresh (stabilized) (#317)
+9292e0ecf5 chore: add CLAUDE.md governance file (#336)

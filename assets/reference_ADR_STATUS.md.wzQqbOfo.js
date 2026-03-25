@@ -1,1 +1,26 @@
-import{_ as e,o as a,c as r,ae as d}from"./chunks/framework.Dn7Y7LSn.js";const l=JSON.parse('{"title":"ADR STATUS","description":"","frontmatter":{},"headers":[],"relativePath":"reference/ADR_STATUS.md","filePath":"reference/ADR_STATUS.md"}'),s={name:"reference/ADR_STATUS.md"};function o(n,t,_,S,T,c){return a(),r("div",null,[...t[0]||(t[0]=[d('<h1 id="adr-status" tabindex="-1">ADR STATUS <a class="header-anchor" href="#adr-status" aria-label="Permalink to &quot;ADR STATUS&quot;">​</a></h1><table tabindex="0"><thead><tr><th>Item</th><th>Status</th><th>Notes</th></tr></thead><tbody><tr><td>baseline</td><td>in-progress</td><td>Scaffolded</td></tr></tbody></table>',2)])])}const A=e(s,[["render",o]]);export{l as __pageData,A as default};
+import {
+  _ as e,
+  o as a,
+  c as r,
+  ae as d,
+} from "./chunks/framework.Dn7Y7LSn.js";
+const l = JSON.parse(
+    '{"title":"ADR STATUS","description":"","frontmatter":{},"headers":[],"relativePath":"reference/ADR_STATUS.md","filePath":"reference/ADR_STATUS.md"}',
+  ),
+  s = { name: "reference/ADR_STATUS.md" };
+function o(n, t, _, S, T, c) {
+  return (
+    a(),
+    r("div", null, [
+      ...(t[0] ||
+        (t[0] = [
+          d(
+            '<h1 id="adr-status" tabindex="-1">ADR STATUS <a class="header-anchor" href="#adr-status" aria-label="Permalink to &quot;ADR STATUS&quot;">​</a></h1><table tabindex="0"><thead><tr><th>Item</th><th>Status</th><th>Notes</th></tr></thead><tbody><tr><td>baseline</td><td>in-progress</td><td>Scaffolded</td></tr></tbody></table>',
+            2,
+          ),
+        ])),
+    ])
+  );
+}
+const A = e(s, [["render", o]]);
+export { l as __pageData, A as default };

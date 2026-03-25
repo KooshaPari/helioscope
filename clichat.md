@@ -12,7 +12,7 @@ Deep Planning: New /deep-planning slash command transforms Cline into an archite
 Deep dive on the Focus Chain: https://cline.bot/blog/focus-attention-isnt-enough
 Read the full details: https://cline.bot/blog/cline-v3-25
 Announcement videos: https://x.com/cline/status/1956382811558142018
-Changelog: https://github.com/cline/cline/blob/main/CHANGELOG.md 
+Changelog: https://github.com/cline/cline/blob/main/CHANGELOG.md
 Image
 Nick BaumannRole icon, Cline — 8/19/25, 9:19 PM
 v3.26 @everyone
@@ -31,15 +31,15 @@ Changelog: https://github.com/cline/cline/blob/main/CHANGELOG.md
 If you have a chance to leave us a review in the VS Code Marketplace, it'd be greatly appreciated! ❤️
 Image
 Nick BaumannRole icon, Cline — 8/20/25, 5:25 PM
-We’ve partnered with Groq to celebrate prompt caching  on the fastest provider of Kimi-k2 by giving away free credits! @everyone
+We’ve partnered with Groq to celebrate prompt caching on the fastest provider of Kimi-k2 by giving away free credits! @everyone
 
 The first 500 people to use the promo code PROMPTCACHE20 will get $20 in Groq credits to use in Cline.
 
 👉 Redeem here: console.groq.com/settings/billing/promo
 
-Docs on creating your account and using Groq in Cline: docs.cline.bot/provider-config/groq 
+Docs on creating your account and using Groq in Cline: docs.cline.bot/provider-config/groq
 Saoud RizwanRole icon, Cline — 8/28/25, 12:36 PM
-v3.26.6 @everyone 
+v3.26.6 @everyone
 
 Grok Code Fast 1 is live in Cline and free through Tuesday!
 The latest coding model from xAI, formerly known as "Sonic", is built for coding and is a contender for the best value LLM on the market.
@@ -48,7 +48,7 @@ It's priced at $.20/$1.50 per M input/output tokens ($0.02 cached tokens) via BY
 More about our experience with this model: https://cline.bot/blog/grok-code-fast
 xAI's announcement: https://x.ai/news/grok-code-fast-1
 
-We've also been working with LM Studio to improve our support for local models. 
+We've also been working with LM Studio to improve our support for local models.
 We recommend using Qwen3-Coder-30B in Cline via LM Studio, and using our new "Compact Prompt" option, which is a condensed (by 90%) version of our standard system prompt -- this dramatically improves the performance of local models!
 
 Read more about our improved local model support here: https://cline.bot/blog/local-models
@@ -57,7 +57,7 @@ Saoud RizwanRole icon, Cline — 9/3/25, 9:33 AM
 
 This has been the #1 most requested feature on our GitHub, and we're so excited to finally get it in your hands for testing 🚀
 
-We need your help!  Please download the alpha, test it out, and open GitHub issues for any problems you find. Your testing and feedback are crucial for making this rock-solid before we roll it out to everyone.
+We need your help! Please download the alpha, test it out, and open GitHub issues for any problems you find. Your testing and feedback are crucial for making this rock-solid before we roll it out to everyone.
 Please keep in mind this is an alpha release and may have some rough edges, but it's essentially a port of our VS Code extension and should function exactly the same way. If you like what you see, we'd love it if you left a review!
 
 Get Cline on the JetBrains Marketplace now: https://plugins.jetbrains.com/plugin/28247-cline/versions/eap
@@ -100,7 +100,7 @@ Update now via VS Code Marketplace!
 Read the full details
 Changelog
 
-If you have a chance to support us by leaving a review, we'd greatly appreciate it. Thank you! 
+If you have a chance to support us by leaving a review, we'd greatly appreciate it. Thank you!
 Saoud RizwanRole icon, Cline — 9/17/25, 2:56 PM
 @everyone Cline for JetBrains is GA! 🎉
 JetBrains has been #1 most requested feature, and we're so excited to finally have it live for everyone, officially! 🚀
@@ -147,7 +147,7 @@ Changelog: https://github.com/cline/cline/blob/main/CHANGELOG.md
 
 If you have a chance to support us by leaving a review, we'd greatly appreciate it. Thank you!
 Nick BaumannRole icon, Cline — 9/26/25, 12:42 PM
-Stealth model drop 🥷 @everyone 
+Stealth model drop 🥷 @everyone
 
 code-supernova now with 1 million token context:
 
@@ -178,7 +178,7 @@ Read the full details: https://cline.bot/blog/claude-sonnet-4-5
 If you have a chance to support us by leaving a review, we'd greatly appreciate it. Thank you!
 Image
 Saoud RizwanRole icon, Cline — 10/16/25, 10:02 AM
-@everyone  v3.33.0 brings Cline CLI and Subagents! 🚀
+@everyone v3.33.0 brings Cline CLI and Subagents! 🚀
 
 We're releasing the primitives for AI coding -- Cline as scriptable infrastructure you can build on!
 You can now run Cline anywhere: in your terminal, in parallel across tasks, piped through your toolchain, or embedded in your own apps via our open gRPC API.
@@ -191,26 +191,26 @@ What's possible:
 • Build Slack bots, GitHub Actions, or mobile apps on top
 • Start tasks in terminal, continue in your IDE with same state
 
-+ this even allows Cline in VS Code or Jetbrains to call the Cline CLI tool as a subagent, to do subtasks and keep the main context window from getting polluted. For example if Cline needs to explore a directory for information, he can spawn a sub Cline CLI instance to do it instead of reading files and grep'ing needless tokens into its own context window.
+- this even allows Cline in VS Code or Jetbrains to call the Cline CLI tool as a subagent, to do subtasks and keep the main context window from getting polluted. For example if Cline needs to explore a directory for information, he can spawn a sub Cline CLI instance to do it instead of reading files and grep'ing needless tokens into its own context window.
 
-Cline CLI and Subagents are in preview release and experimental! We need your help testing and would love to see what you do with it. Jump into ⁠unknown  to let us know how you're using these new features (we may share it on our socials!)
+Cline CLI and Subagents are in preview release and experimental! We need your help testing and would love to see what you do with it. Jump into ⁠unknown to let us know how you're using these new features (we may share it on our socials!)
 
 Demo of subagents: https://x.com/sdrzn/status/1979014975743005101
 Get started: https://docs.cline.bot/cline-cli/overview
 Deep dive from @Andrei Eternal : https://cline.bot/blog/cline-cli-my-undying-love-of-cline-core
 Report issues: https://github.com/cline/cline/issues
 
-(P.S. You can even run man cline to explore all the capabilities!) 
+(P.S. You can even run man cline to explore all the capabilities!)
 Nick BaumannRole icon, Cline — 10/23/25, 10:13 AM
 v3.34 @everyone
 
 Two big updates today!
 
-Cline for Teams is now FREE through 2025: Unlimited users, JetBrains support, RBAC, centralized billing and more.  https://cline.bot/pricing
+Cline for Teams is now FREE through 2025: Unlimited users, JetBrains support, RBAC, centralized billing and more. https://cline.bot/pricing
 
 Better open source models with :exacto routing: You can now use ":exacto" versions of open-source models like GLM-4.6, Kimi-K2, and Qwen3-Coder in the Cline provider. These filtered endpoints deliver the best balance of cost, speed, accuracy and tool-calling reliability.
 
-The :exacto integration is part of our commitment to making open source models truly production-ready in Cline. Provider quality matters as much as model weights - bad endpoints were breaking good models. Watch in the attached demo how the vanilla version of GLM-4.6 puts a tool call in the thinking tags, resulting in a failed tool call. 
+The :exacto integration is part of our commitment to making open source models truly production-ready in Cline. Provider quality matters as much as model weights - bad endpoints were breaking good models. Watch in the attached demo how the vanilla version of GLM-4.6 puts a tool call in the thinking tags, resulting in a failed tool call.
 
 Read @kevin@cline's deep dive on how we're closing the gap: https://cline.bot/blog/cline-our-commitment-to-open-source-zai-glm-4-6
 Juan Pa 💖
@@ -239,12 +239,12 @@ Native Tool Calling: Migrated to native APIs for Claude 4+, Gemini 2.5, Grok 4/c
 
 Auto-Approve Menu: Redesigned from popup to expanding inline menu that doesn't block your view. Shows consolidated actions (e.g., "Read (all)" instead of both "Read" and "Read (all)"). Always-on by default.
 
-MiniMax M2: Free until November 7 with newly added support for  interleaved thinking - multiple thinking blocks throughout each request instead of just at the start. Try MiniMax M2 again if you did a couple days ago, the added support for interleaved thinking improves its performance in Cline.
+MiniMax M2: Free until November 7 with newly added support for interleaved thinking - multiple thinking blocks throughout each request instead of just at the start. Try MiniMax M2 again if you did a couple days ago, the added support for interleaved thinking improves its performance in Cline.
 
 Update now wherever you use Cline!
 
 Read the full details: https://cline.bot/blog/cline-v3-35
-Changelog: https://github.com/cline/cline/blob/main/CHANGELOG.md 
+Changelog: https://github.com/cline/cline/blob/main/CHANGELOG.md
 Nick BaumannRole icon, Cline — 11/6/25, 11:52 AM
 v3.36 @everyone
 
@@ -260,11 +260,11 @@ Improved performance for open-source models, including a refined GLM-4.6 system 
 Update now wherever you use Cline!
 
 Read the full details: https://cline.bot/blog/cline-v3-36-hooks
-See more improvements and bug fixes in the changelog: https://github.com/cline/cline/blob/main/CHANGELOG.md 
+See more improvements and bug fixes in the changelog: https://github.com/cline/cline/blob/main/CHANGELOG.md
 Juan Pa 💖
 
 Role icon, Cline — 11/13/25, 2:21 PM
-@everyone  CLine v3.37 is live with some big updates:
+@everyone CLine v3.37 is live with some big updates:
 
 GPT-5.1 Support
 OpenAI's latest model is now available with optimized prompts. Handles complex refactors and multi-file edits significantly better than previous models. Enable Native Tool Calling for best results.
@@ -290,7 +290,7 @@ Also: better context window handling, improved checkpoint reliability, and Linux
 
 Full details on GPT 5.1: https://cline.bot/blog/openais-gpt-5-1
 
-— Juan 🫡 
+— Juan 🫡
 Cline
 Cline
 2,855 Online
@@ -312,7 +312,7 @@ Juan Pa 💖
 
 Role icon, Cline — 11/19/25, 12:12 PM
 Cline 3.38.0 is out now!
- Gemini 3 Pro Preview: Support for Google's new flagship model. It offers better structure retention and frontend capabilities that rival other models.
+Gemini 3 Pro Preview: Support for Google's new flagship model. It offers better structure retention and frontend capabilities that rival other models.
 
 Voice Coding with AquaVoice Avalon: Integrated a new voice model tuned specifically for developer terminology ("Vercel config", "gpt-5.1") in our dictation feature, achieving 97.4% accuracy on coding jargon.
 
@@ -413,12 +413,12 @@ Full blog: https://cline.bot/blog/cline-v3-41-adds-gpt-5-2-devstral-2-ergonomic-
 
 Changelog: https://github.com/cline/cline/blob/main/CHANGELOG.md
 
--Nick 🫡 
+-Nick 🫡
 Juan Pa 💖
 
 Role icon, Cline — 1/9/26, 6:20 PM
 Cline 3.48.0 is out
-Hey @everyone, this release adds Skills compatibility and websearch tooling. 
+Hey @everyone, this release adds Skills compatibility and websearch tooling.
 
 Added
 • Skills compatibility - Package domain expertise into modular instructions that Cline loads only when relevant
@@ -446,7 +446,6 @@ Cline
 Cline 3.48.0: Skills and websearch make Cline smarter - Cline Blog
 Cline 3.48.0 adds Skills compatibility. If you've already built Skills, you can now use them in Cline. This release also adds websearch tooling through the Cline provider, giving Cline access to real-time information when you need it.
 
-
 Skills
 
 Think about how you'd onboard a new team member. You wouldn't dump every document on them at once. Yo...
@@ -455,22 +454,22 @@ Juan Pa 💖
 
 Role icon, Cline — 1/28/26, 12:29 PM
 Cline 3.55.0 Release
-Hey @everyone :PikachuHi: ! 
+Hey @everyone :PikachuHi: !
 A few updates on Cline 3.55.0. Open models are catching up to closed-source options. This release adds two worth trying: a free US-built model and an open-source benchmark leader.
 
-Arcee Trinity Large is free, 
+Arcee Trinity Large is free,
 US-built, and Apache 2.0 licensed. It's a 400B parameter MoE model (13B active at inference) with 128K context. Benchmarks: MMLU Pro 82, GPQA Diamonds 75. Good for general coding, refactoring, and working with large codebases without worrying about API costs.
 
-:youtube:  https://www.youtube.com/watch?v=bIhxLegqqcw
+:youtube: https://www.youtube.com/watch?v=bIhxLegqqcw
 
-Kimi K2.5 
+Kimi K2.5
 Open source and competitive with closed-source options. 1T parameter MoE, 256K context. Scores 76.8% on SWE-bench and beats Opus 4.5 on Humanity's Last Exam (50.2%). Particularly strong for visual coding: drop a screenshot and get working UI code with layout, animations, and interactions. It can also inspect its own output and self-correct.
 
 Also a reminder in this release: ChatGPT Plus/Pro subscribers can use GPT-5 models in Cline via OAuth (no API key needed and no per-token costs related). Grok Code Fast 1 and Devstral free promotions have ended :ClineSad: .
 
 See you around!
 
-Full details: https://cline.bot/blog/cline-3-55-0-arcee-trinity-and-kimi-k2-5-now-in-cline 
+Full details: https://cline.bot/blog/cline-3-55-0-arcee-trinity-and-kimi-k2-5-now-in-cline
 YouTube
 Arcee AI
 Code Reviews at Scale: Trinity Large Preview + Cline + OpenRouter
@@ -483,7 +482,7 @@ Juan Pa 💖
 
 Role icon, Cline — 2/3/26, 11:28 AM
 CLI 2.0 is out!
-Hey @everyone  👋
+Hey @everyone 👋
 The team has been working hard on Cline CLI and we're excited to share some updates:
 
 Redesigned UI: We rebuilt the CLI from the ground up to make it look and feel like the Cline you're used to in VS Code, making it easier to transition from the IDE to the terminal. Plan/Act modes, easy Auto-approve toggle, and powerful slash commands.
@@ -496,7 +495,7 @@ Free Kimi K2.5 Access (and more to come…) We added support for Kimi K2.5, Moon
 
 Let us know what you think!
 
-Check our our blog for more on our latest release. If you want to hop right in,  npm install -g cline
+Check our our blog for more on our latest release. If you want to hop right in, npm install -g cline
 Juan Pa 💖
 
 Role icon, Cline — 2/5/26, 4:39 PM
@@ -531,7 +530,7 @@ How to use it
 Select claude-opus-4-6 from the model picker.
 Works in your terminal, JetBrains, VS Code, Zed, Neovim, and Emacs.
 
-Let us know how it goes. Drop your feedback in ⁠ai-models . 
+Let us know how it goes. Drop your feedback in ⁠ai-models .
 Image
 Juan Pa 💖
 
@@ -540,7 +539,7 @@ Cline v3.58.0: native subagents, GLM-5 support, and hands-off task completion
 Hey @everyone
 The team has been working hard on a few new features, models and fixes for Cline. Here is what's new:
 
- Native Subagents (experimental)
+Native Subagents (experimental)
 Cline can now spin up parallel sub-tasks that run independently with their own context. Currently subagents can read files, search codebases, and use skills. Multiple agents exploring your project at the same time instead of going one task at a time. Available in VSCode and the CLI.
 
 GLM-5 support
@@ -577,7 +576,7 @@ Hey @everyone!
 Anthropic just shipped their best Sonnet model and it's live in Cline right now. Update to v3.64.0 to access it. Here's what stood out in early testing:
 
 🔹 Speed: noticeably faster
-🔹 Transparency:  gives you good context on what it's working on as it goes
+🔹 Transparency: gives you good context on what it's working on as it goes
 🔹 Library integration: pulls in the right libraries and actually integrates them properly into your project
 🔹 Subagents: fast, precise, and at Sonnet pricing it makes parallel workflows way more practical
 
@@ -589,6 +588,5 @@ Try it out and drop your impressions
 
 📋 Usability study: We're looking for volunteers for a quick interview on the CLI and subagents. $50 USD in credits for anyone who participates. Schedule a call here: https://calendar.app.google/91ReAvjDkHa3VVBw8
 
--- Juan Pa 🫡 
+-- Juan Pa 🫡
 Image
-

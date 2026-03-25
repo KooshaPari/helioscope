@@ -1,0 +1,8 @@
+M	.github/workflows/issue-deduplicator.yml
+M	.github/workflows/issue-labeler.yml
+M	.github/workflows/policy-gate.yml
+M	.github/workflows/rust-ci.yml
+M	AGENTS.md
+M	HELIOSCLI_README.md
+M	README.md
+M	docs/merged.md

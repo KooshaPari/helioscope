@@ -1,18 +1,21 @@
 repos:
-  - repo: https://github.com/doublify/pre-commit-rust
-    rev: v1.0
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
     hooks:
-      - id: fmt
-      - id: clippy
-      - id: cargo
-        stages: [pre-commit]
-        args: ["check"]
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+        args: ["--maxkb=500"]
+      - id: detect-private-key
 
+
+# Local security and fast gate hooks for pre-commit and pre-push stages
   - repo: local
     hooks:
-      - id: cargo-test
-        name: cargo test
-        entry: cargo test --all
-        language: system
+      - id: security-guard-pre-commit-pre-push
+        name: security-guard pre-commit/pre-push
+        entry: .github/scripts/security-guard.sh
+        language: script
         pass_filenames: false
-        always_run: true
+        stages: [pre-commit, pre-push]

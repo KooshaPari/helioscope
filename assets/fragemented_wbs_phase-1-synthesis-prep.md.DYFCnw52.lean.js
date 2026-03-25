@@ -1,1 +1,15 @@
-import{_ as a,o as t,c as s,ae as o}from"./chunks/framework.Dn7Y7LSn.js";const u=JSON.parse('{"title":"Phase 1 Synthesis Prep (Tasks G1-G5)","description":"","frontmatter":{},"headers":[],"relativePath":"fragemented/wbs/phase-1-synthesis-prep.md","filePath":"fragemented/wbs/phase-1-synthesis-prep.md"}'),r={name:"fragemented/wbs/phase-1-synthesis-prep.md"};function n(l,e,i,p,d,h){return t(),s("div",null,[...e[0]||(e[0]=[o("",8)])])}const m=a(r,[["render",n]]);export{u as __pageData,m as default};
+import {
+  _ as a,
+  o as t,
+  c as s,
+  ae as o,
+} from "./chunks/framework.Dn7Y7LSn.js";
+const u = JSON.parse(
+    '{"title":"Phase 1 Synthesis Prep (Tasks G1-G5)","description":"","frontmatter":{},"headers":[],"relativePath":"fragemented/wbs/phase-1-synthesis-prep.md","filePath":"fragemented/wbs/phase-1-synthesis-prep.md"}',
+  ),
+  r = { name: "fragemented/wbs/phase-1-synthesis-prep.md" };
+function n(l, e, i, p, d, h) {
+  return t(), s("div", null, [...(e[0] || (e[0] = [o("", 8)]))]);
+}
+const m = a(r, [["render", n]]);
+export { u as __pageData, m as default };

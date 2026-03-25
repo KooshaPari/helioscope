@@ -1,0 +1,428 @@
+================================================================================
+COMPLETE LISTING: 43 FORKS OF router-for-me/CLIProxyAPI AHEAD OF UPSTREAM MAIN
+================================================================================
+
+Research Date: 2026-02-28
+Methodology: Scanned 294 recently-active forks (last pushed Jan 1, 2026+)
+Total available forks: 1,956 (14.5% of recently-active scanned, 0.21% of total)
+
+================================================================================
+FORKS RANKED BY COMMITS AHEAD
+================================================================================
+
+1. jiaqiwang969/CLIProxyAPI
+   Ahead: 25 | Behind: 78
+   Primary branch: main
+   Additional branches: entire/checkpoints/v1
+   Recent work:
+     - WebMCP console integration
+     - WebMCPAdapter for tool and workflow definitions
+     - WebMCPHandler with REST API endpoints
+
+2. niudakok-kok/CLIProxyAPI
+   Ahead: 22 | Behind: 8 ★ MOST CURRENT
+   Primary branch: main
+   Additional branches: amp, dev, feature/ampcode-alias, legacy
+   Recent work:
+     - Auth hook integration (OnResult handler)
+     - Recently merged upstream changes
+     - Multiple feature branches active
+
+3. pedrospota/CLIProxyAPI
+   Ahead: 15 | Behind: 22
+   Primary branch: main
+   Recent work:
+     - Enable usage statistics
+     - Railway deployment fixes (printf vs heredoc)
+     - Merged upstream main
+
+4. xiaojiou176/CLIProxyAPI
+   Ahead: 15 | Behind: 78
+   Primary branch: main
+   Additional branches: chore/ignore-mutation-tmp-artifacts, 
+                       chore/push-20260226-env-hardening,
+                       codex/coverage-gate-20260227
+   Recent work:
+     - Test matrix expectations sync with provider effort mapping
+     - Route and visibility assertions for current server
+     - Auth suite alignment with runtime
+
+5. sofs2005/CLIProxyAPI
+   Ahead: 14 | Behind: 8 ★ MOST CURRENT
+   Primary branch: main
+   Recent work:
+     - Merged upstream main
+     - Auth hook integration (OnResult handler)
+     - Merged PR #1734 from huangusaki
+
+6. nothing-7011/CLIProxyAPI
+   Ahead: 11 | Behind: 58
+   Primary branch: main
+   Additional branches: dev
+   Recent work:
+     - Development branch merges
+     - Upstream dev branch tracking
+
+7. matchch/CLIProxyAPI
+   Ahead: 9 | Behind: 8 ★ WELL-TRACKED
+   Primary branch: main
+   Additional branches: 17 branches active including:
+     - claude/sub-pr-7
+     - codex/add-cache-user-id-switch
+     - codex/add-token-refresh-rate-parameter
+     - codex/fix-actions-sync-issue
+     - codex/fix-user-id-cache-issue
+   Recent work:
+     - External URL handling with image conversion
+     - Data URL parsing robustness
+     - Translator improvements for image content
+
+8. alanbulan/CLIProxyAPI
+   Ahead: 7 | Behind: 16
+   Primary branch: main
+   Additional branches: amp, dev, feat/desktop-app,
+                       feat/desktop-icon-packaging-and-release,
+                       feature/ampcode-alias
+   Recent work:
+     - Desktop updater failure resolution
+     - Desktop GUI launch path handling
+     - Wails integration for packaged releases
+
+9. suminhthanh/CLIProxyAPI
+   Ahead: 5 | Behind: 8 ★ WELL-TRACKED
+   Primary branch: main
+   Additional branches: amp, dev, feature/ampcode-alias, legacy
+   Recent work:
+     - Merged upstream main
+     - Auth hook integration
+     - Merged PR #1734 from huangusaki
+
+10. Pawpaw-Technology/CLIProxyAPI
+    Ahead: 5 | Behind: 126
+    Primary branch: main
+    Recent work:
+      - Claude partner endpoint routing
+      - Vertex Claude endpoint fixing
+      - Model exposure for OAuth routing
+
+11. LTaiQin/CLIProxyAPI
+    Ahead: 4 | Behind: 22
+    Primary branch: main
+    Recent work:
+      - Dockerfile updates
+      - Configuration examples
+
+12. Boy-II/CLIProxyAPI
+    Ahead: 4 | Behind: 57
+    Primary branch: main
+    Recent work:
+      - Config symlink creation before checking
+      - Config.yaml relocation to /config directory
+
+13. CassiopeiaCode/CLIProxyAPI
+    Ahead: 4 | Behind: 57
+    Primary branch: main
+    Additional branches: doc/clarify-pprof-server, pr/codex-request-only
+    Recent work:
+      - GHCR image name case handling
+      - Codex output null content alignment
+      - Repository variable usage in CI
+
+14. q2d5Z3By/CPA-TTL
+    Ahead: 3 | Behind: 57
+    Primary branch: main
+    Recent work:
+      - Docker image workflow updates
+      - CI/CD improvements
+
+15. kknd0/CLIProxyAPI
+    Ahead: 3 | Behind: 67
+    Primary branch: main
+    Additional branches: amp, dev, feat/sticky-round-robin,
+                        feature/ampcode-alias, legacy
+    Recent work:
+      - Sticky round-robin load balancing
+      - X-Session-Key header handling
+      - Fall-back to fill-first strategy
+
+16. Tennki182/CLIProxyAPI
+    Ahead: 3 | Behind: 32
+    Primary branch: main
+    Recent work:
+      - Merged upstream main
+      - Codex device-code login flow
+      - Usage statistics integration
+
+17. mvmik/CLIProxyAPI
+    Ahead: 3 | Behind: 114
+    Primary branch: main
+    Recent work:
+      - Translator: merge assistant content with tool calls
+      - Config: add default_reasoning_effort for OpenAI compat
+      - OpenAI compatibility model extensions
+
+18. kslr/CLIProxyAPI
+    Ahead: 3 | Behind: 9 ★ WELL-TRACKED
+    Primary branch: main
+    Recent work:
+      - Merged upstream main
+      - Merged PR #1734 from huangusaki
+      - Gemini 3.1 Flash Image support
+
+19. yanhaoluo0/CLIProxyAPI
+    Ahead: 3 | Behind: 119
+    Primary branch: main
+    Recent work:
+      - Chinese logging for debugging
+      - claude-cli user-agent specific handling
+      - Allowed user-agent prefix configuration
+
+20. thoitiettxl-cyber/CLIProxyAPI
+    Ahead: 3 | Behind: 126
+    Primary branch: main
+    Additional branches: amp, dev, feature/ampcode-alias, legacy
+    Recent work:
+      - Android nightly release publishing
+      - Android-specific implementation
+
+21. MohamedKamran/CLIProxyAPI
+    Ahead: 3 | Behind: 126
+    Primary branch: main
+    Recent work:
+      - Cloudflare tunnel support
+      - Automatic tunnel configuration
+      - Project initialization
+
+22. learner-wqm/CLIProxyAPI
+    Ahead: 2 | Behind: 8 ★ WELL-TRACKED
+    Primary branch: main
+    Additional branches: feature/my-new-feature
+    Recent work:
+      - README Chinese translation update
+      - Workflow trigger testing
+
+23. jt-ai-tools/CLIProxyAPI
+    Ahead: 2 | Behind: 9 ★ WELL-TRACKED
+    Primary branch: main
+    Recent work:
+      - Codex architecture analysis documents
+      - Documentation additions (overview, components)
+
+24. garetneda-gif/CLIProxyAPI
+    Ahead: 2 | Behind: 67
+    Primary branch: main
+    Additional branches: amp, dev, feature/ampcode-alias,
+                        fix/responses-json-corruption, legacy
+    Recent work:
+      - JSON schema scoping to tools section
+      - Response payload JSON field cleanup
+
+25. vincent-kk/CLIProxyAPI
+    Ahead: 2 | Behind: 57
+    Primary branch: main
+    Recent work:
+      - fetch-panel command for control panel updates
+      - Compile-time asset embedding
+
+26. Zxc1679762411/CLIProxyAPI
+    Ahead: 2 | Behind: 86
+    Primary branch: main
+    Recent work:
+      - Config file naming (config.yaml ↔ config.example.yaml)
+      - OmniRoute documentation
+
+27. pixia1234/CLIProxyAPI
+    Ahead: 2 | Behind: 87
+    Primary branch: main
+    Additional branches: pr/codex-spark-pro-only
+    Recent work:
+      - Spark model special-casing for pro only
+      - Spark default hide for OAuth (enable for pro)
+
+28. yinqf/CLIProxyAPI
+    Ahead: 2 | Behind: 22
+    Primary branch: main
+    Recent work:
+      - Antigravity prompt optimization
+      - Responses compaction compatibility
+
+29. qingwo1991-debug/CLIProxyAPI
+    Ahead: 2 | Behind: 126
+    Primary branch: main
+    Recent work:
+      - Docker image workflow updates
+      - Codex client and GPT-5.3 mode updates
+
+30. lisa111120/CLIProxyAPI
+    Ahead: 2 | Behind: 126
+    Primary branch: main
+    Recent work:
+      - Configuration addition
+      - Codex runtime and registry updates
+
+31. xoxgladxox-max/CLIProxyAPI
+    Ahead: 1 | Behind: 8 ★ WELL-TRACKED
+    Primary branch: main
+    Recent work:
+      - Dockerfile updates
+      - Auth hook integration
+
+32. 136906a/CLIProxyAPI
+    Ahead: 1 | Behind: 8 ★ WELL-TRACKED
+    Primary branch: main
+    Recent work:
+      - Quota management (disable credential on exceeded)
+      - Auth hook integration
+
+33. digitalPartty/CLIProxyAPI
+    Ahead: 1 | Behind: 57
+    Primary branch: main
+    Recent work:
+      - Railway deployment placeholder config
+      - Gemini 3.1 Pro High and Image models
+
+34. LuoH-AN/CLIProxyAPI
+    Ahead: 1 | Behind: 57
+    Primary branch: main
+    Recent work:
+      - Docker workflow environment updates
+      - Gemini 3.1 Pro model definitions
+
+35. jaychou11177/CLIProxyAPI
+    Ahead: 1 | Behind: 67
+    Primary branch: main
+    Additional branches: amp, dev, feature/ampcode-alias, legacy
+    Recent work:
+      - CC package release updates
+      - Cache user-ID toggle feature
+
+36. 15515151/CLIProxyAPI
+    Ahead: 1 | Behind: 67
+    Primary branch: main
+    Recent work:
+      - Cache user-ID toggle feature
+      - Upstream merge tracking
+
+37. zhengjr9/CLIProxyAPI
+    Ahead: 1 | Behind: 78
+    Primary branch: main
+    Recent work:
+      - tool_call_id length fix
+      - Passthrough headers testing
+
+38. yzsnstotz/CLIProxyAPI
+    Ahead: 1 | Behind: 86
+    Primary branch: main
+    Recent work:
+      - CLIProxyAPI skill 502 error fix
+      - Model ID validation and caching
+      - Chinese documentation
+
+39. anonym-uz/CLIProxyAPI
+    Ahead: 1 | Behind: 114
+    Primary branch: main
+    Additional branches: add-qwen-3.5, amp, dev, feature/ampcode-alias,
+                        kimi-fix, qwen-ultra, qwen-turbo
+    Recent work:
+      - Claude Sonnet 4.6 model definition (200K context)
+      - Qwen 3.5 model support
+
+40. benjaminkitt/CLIProxyAPI
+    Ahead: 1 | Behind: 114
+    Primary branch: main
+    Additional branches: add-qwen-3.5, amp, dev, feature/ampcode-alias,
+                        kimi-fix, qwen-ultra, qwen-turbo
+    Recent work:
+      - Claude 4.6 Sonnet model with thinking support
+      - Antigravity model config for sonnet variants
+      - Qwen 3.5 model support
+
+41. xkonjin/CLIProxyAPI
+    Ahead: 1 | Behind: 117
+    Primary branch: main
+    Additional branches: 11 branches including docs/readme-rewrite,
+                        feat/wildcard-api-key-auth, others
+    Recent work:
+      - README documentation rewrite
+      - Qwen 3.5 Plus model definitions
+      - Wildcard API key authentication
+      - Qwen executor user agent updates
+
+42. Catfish872/CLIProxyAPI
+    Ahead: 1 | Behind: 126
+    Primary branch: main
+    Recent work:
+      - Codex OpenAI request updates
+      - GPT-5.3 and Codex runtime updates
+
+43. lisa111121/CLIProxyAPI
+    Ahead: 1 | Behind: 126
+    Primary branch: main
+    Recent work:
+      - Configuration file creation
+      - Codex runtime and registry updates
+
+================================================================================
+SUMMARY STATISTICS
+================================================================================
+
+Total forks ahead: 43 out of 294 scanned (14.6%)
+Total commits ahead (aggregate): 287 commits
+Average commits ahead per fork: 6.7 commits
+Median commits ahead: 2 commits
+
+Well-tracked forks (behind < 10):
+  - niudakok-kok: 22 ahead, 8 behind
+  - learner-wqm: 2 ahead, 8 behind
+  - suminhthanh: 5 ahead, 8 behind
+  - xoxgladxox-max: 1 ahead, 8 behind
+  - 136906a: 1 ahead, 8 behind
+  - sofs2005: 14 ahead, 8 behind ★
+  - matchch: 9 ahead, 8 behind ★
+  - kslr: 3 ahead, 9 behind
+  - jt-ai-tools: 2 ahead, 9 behind
+
+Most diverged (behind > 100):
+  - Pawpaw-Technology: 5 ahead, 126 behind
+  - mvmik: 3 ahead, 114 behind
+  - yanhaoluo0: 3 ahead, 119 behind
+  - anonym-uz: 1 ahead, 114 behind
+  - benjaminkitt: 1 ahead, 114 behind
+  - xkonjin: 1 ahead, 117 behind
+  - thoitiettxl-cyber: 3 ahead, 126 behind
+  - MohamedKamran: 3 ahead, 126 behind
+  - qingwo1991-debug: 2 ahead, 126 behind
+  - lisa111120: 2 ahead, 126 behind
+  - lisa111121: 1 ahead, 126 behind
+  - Catfish872: 1 ahead, 126 behind
+
+================================================================================
+KEY WORK CATEGORIES
+================================================================================
+
+Auth/Security (7 forks):
+  niudakok-kok, sofs2005, suminhthanh, xoxgladxox-max, 136906a, kslr,
+  xkonjin
+
+Desktop/GUI (1 fork):
+  alanbulan
+
+Model Support (4 forks):
+  anonym-uz, benjaminkitt, xkonjin, pixia1234
+
+Regional/Language (2 forks):
+  yanhaoluo0, yzsnstotz
+
+CI/CD/DevOps (5 forks):
+  pedrospota, CassiopeiaCode, q2d5Z3By, vincent-kk, MohamedKamran
+
+Load Balancing (1 fork):
+  kknd0
+
+WebMCP (1 fork):
+  jiaqiwang969
+
+Documentation (2 forks):
+  jt-ai-tools, xkonjin
+
+================================================================================

@@ -1,1 +1,15 @@
-import{_ as i,o as a,c as e,ae as n}from"./chunks/framework.Dn7Y7LSn.js";const d=JSON.parse('{"title":"Helios Harness Clone Playbook (Phase-1)","description":"","frontmatter":{},"headers":[],"relativePath":"fragemented/commands/clone-playbook.md","filePath":"fragemented/commands/clone-playbook.md"}'),l={name:"fragemented/commands/clone-playbook.md"};function t(h,s,p,o,r,k){return a(),e("div",null,[...s[0]||(s[0]=[n("",25)])])}const F=i(l,[["render",t]]);export{d as __pageData,F as default};
+import {
+  _ as i,
+  o as a,
+  c as e,
+  ae as n,
+} from "./chunks/framework.Dn7Y7LSn.js";
+const d = JSON.parse(
+    '{"title":"Helios Harness Clone Playbook (Phase-1)","description":"","frontmatter":{},"headers":[],"relativePath":"fragemented/commands/clone-playbook.md","filePath":"fragemented/commands/clone-playbook.md"}',
+  ),
+  l = { name: "fragemented/commands/clone-playbook.md" };
+function t(h, s, p, o, r, k) {
+  return a(), e("div", null, [...(s[0] || (s[0] = [n("", 25)]))]);
+}
+const F = i(l, [["render", t]]);
+export { d as __pageData, F as default };

@@ -1,0 +1,51 @@
+name: PR Babysit Watch
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+    inputs:
+      repo:
+        description: "Repository in owner/repo format"
+        required: false
+        default: ""
+      no_ping:
+        description: "Do not send CodeRabbit re-review comments"
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  sweep-open-prs:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      checks: read
+      issues: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run open PR babysit sweep
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          script_args=(
+            --repo "${{ github.repository }}"
+            --once
+            --sleep 120
+            --gh-timeout 30
+          )
+
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" && "${{ inputs.no_ping }}" == "true" ]]; then
+            script_args+=(--no-ping)
+          fi
+
+          if [[ -n "${{ inputs.repo }}" ]]; then
+            script_args=(--repo "${{ inputs.repo }}" --once --sleep 120 --gh-timeout 30)
+            if [[ "${{ github.event_name }}" == "workflow_dispatch" && "${{ inputs.no_ping }}" == "true" ]]; then
+              script_args+=(--no-ping)
+            fi
+          fi
+
+          ./scripts/babysit-open-prs.sh "${script_args[@]}"

@@ -1,1 +1,10 @@
-import{_ as e,o as r,c as s}from"./chunks/framework.Dn7Y7LSn.js";const h=JSON.parse('{"title":"","description":"","frontmatter":{},"headers":[],"relativePath":"fragemented/wbs/phase-1-reports/harness-governance-rules.md","filePath":"fragemented/wbs/phase-1-reports/harness-governance-rules.md"}'),a={name:"fragemented/wbs/phase-1-reports/harness-governance-rules.md"};function t(n,o,c,p,d,m){return r(),s("div")}const l=e(a,[["render",t]]);export{h as __pageData,l as default};
+import { _ as e, o as r, c as s } from "./chunks/framework.Dn7Y7LSn.js";
+const h = JSON.parse(
+    '{"title":"","description":"","frontmatter":{},"headers":[],"relativePath":"fragemented/wbs/phase-1-reports/harness-governance-rules.md","filePath":"fragemented/wbs/phase-1-reports/harness-governance-rules.md"}',
+  ),
+  a = { name: "fragemented/wbs/phase-1-reports/harness-governance-rules.md" };
+function t(n, o, c, p, d, m) {
+  return r(), s("div");
+}
+const l = e(a, [["render", t]]);
+export { h as __pageData, l as default };

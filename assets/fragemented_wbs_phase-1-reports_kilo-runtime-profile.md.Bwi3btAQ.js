@@ -1,1 +1,10 @@
-import{_ as e,o as t,c as r}from"./chunks/framework.Dn7Y7LSn.js";const l=JSON.parse('{"title":"","description":"","frontmatter":{},"headers":[],"relativePath":"fragemented/wbs/phase-1-reports/kilo-runtime-profile.md","filePath":"fragemented/wbs/phase-1-reports/kilo-runtime-profile.md"}'),o={name:"fragemented/wbs/phase-1-reports/kilo-runtime-profile.md"};function a(s,i,n,p,m,c){return t(),r("div")}const d=e(o,[["render",a]]);export{l as __pageData,d as default};
+import { _ as e, o as t, c as r } from "./chunks/framework.Dn7Y7LSn.js";
+const l = JSON.parse(
+    '{"title":"","description":"","frontmatter":{},"headers":[],"relativePath":"fragemented/wbs/phase-1-reports/kilo-runtime-profile.md","filePath":"fragemented/wbs/phase-1-reports/kilo-runtime-profile.md"}',
+  ),
+  o = { name: "fragemented/wbs/phase-1-reports/kilo-runtime-profile.md" };
+function a(s, i, n, p, m, c) {
+  return t(), r("div");
+}
+const d = e(o, [["render", a]]);
+export { l as __pageData, d as default };

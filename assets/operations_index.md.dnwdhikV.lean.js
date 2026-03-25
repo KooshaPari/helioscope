@@ -1,1 +1,41 @@
-import{_ as t,o,c as n,j as e,a as r}from"./chunks/framework.Dn7Y7LSn.js";const x=JSON.parse('{"title":"Operations","description":"","frontmatter":{},"headers":[],"relativePath":"operations/index.md","filePath":"operations/index.md"}'),s={name:"operations/index.md"};function i(d,a,p,c,l,m){return o(),n("div",null,[...a[0]||(a[0]=[e("h1",{id:"operations",tabindex:"-1"},[r("Operations "),e("a",{class:"header-anchor",href:"#operations","aria-label":'Permalink to "Operations"'},"​")],-1),e("p",null,"Runbooks, release, and incident operations.",-1)])])}const _=t(s,[["render",i]]);export{x as __pageData,_ as default};
+import {
+  _ as t,
+  o,
+  c as n,
+  j as e,
+  a as r,
+} from "./chunks/framework.Dn7Y7LSn.js";
+const x = JSON.parse(
+    '{"title":"Operations","description":"","frontmatter":{},"headers":[],"relativePath":"operations/index.md","filePath":"operations/index.md"}',
+  ),
+  s = { name: "operations/index.md" };
+function i(d, a, p, c, l, m) {
+  return (
+    o(),
+    n("div", null, [
+      ...(a[0] ||
+        (a[0] = [
+          e(
+            "h1",
+            { id: "operations", tabindex: "-1" },
+            [
+              r("Operations "),
+              e(
+                "a",
+                {
+                  "class": "header-anchor",
+                  "href": "#operations",
+                  "aria-label": 'Permalink to "Operations"',
+                },
+                "​",
+              ),
+            ],
+            -1,
+          ),
+          e("p", null, "Runbooks, release, and incident operations.", -1),
+        ])),
+    ])
+  );
+}
+const _ = t(s, [["render", i]]);
+export { x as __pageData, _ as default };

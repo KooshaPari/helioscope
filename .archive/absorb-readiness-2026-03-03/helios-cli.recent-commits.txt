@@ -1,0 +1,5 @@
+2d9665b254 (HEAD -> chore/normalize-dirty-20260303-helios-cli) chore: normalize dirty worktree snapshot (2026-03-03)
+0c7818ec70 (main) chore(artifacts): remove stale AI tooling artifacts
+31f31f594a chore: remove tracked AI artifact files
+39d811a200 PR: fix/windows-eol-apply-patch-4003 (#251)
+0ff414d544 Basic handling of env variable snapshots that contain newlines and quotes (#246)

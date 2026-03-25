@@ -1,0 +1,7 @@
+evidence_id,source_id,claim,claim_type,confidence,notes
+E-001,SRC-EXT-001,"octorus uses layered caching and viewport-restricted rendering to keep large diff interaction responsive",external-observation,high,"From DEV article summary"
+E-002,SRC-EXT-003,"ratatui Terminal compares current and previous buffers and writes only diffs",external-fact,high,"Direct API documentation behavior"
+E-003,SRC-INT-001,"App::run funnels AppEvent, protocol event, and TuiEvent streams in one select loop",internal-architecture,high,"app.rs line references"
+E-004,SRC-INT-002,"ChatWidget centralizes state mutation before render and key handling",internal-architecture,high,"chatwidget.rs line references"
+E-005,SRC-EXT-005,"bounded tokio mpsc channels provide backpressure under load",external-fact,high,"tokio docs"
+E-006,SRC-EXT-007,"rope-based text storage offers O(log N) operations for large texts",external-fact,medium,"ropey docs"

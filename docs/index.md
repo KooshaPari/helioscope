@@ -1,11 +1,13 @@
-# harbor-local
+# Documentation
 
-Local registry and deployment system.
+<CategorySwitcher />
 
-## Overview
+Welcome to the unified docs surface.
 
-Harbor-local provides local container registry and deployment capabilities.
+## Super Categories
 
-## Project Links
-
-- [GitHub](https://github.com/kooshapari/harbor-local)
+- [Wiki (User Guides)](/wiki/)
+- [Development Guide](/development/)
+- [Document Index](/index/)
+- [API](/api/)
+- [Roadmap](/roadmap/)

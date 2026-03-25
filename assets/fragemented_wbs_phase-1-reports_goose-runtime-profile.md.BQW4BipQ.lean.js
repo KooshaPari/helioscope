@@ -1,1 +1,10 @@
-import{_ as e,o as t,c as r}from"./chunks/framework.Dn7Y7LSn.js";const d=JSON.parse('{"title":"","description":"","frontmatter":{},"headers":[],"relativePath":"fragemented/wbs/phase-1-reports/goose-runtime-profile.md","filePath":"fragemented/wbs/phase-1-reports/goose-runtime-profile.md"}'),o={name:"fragemented/wbs/phase-1-reports/goose-runtime-profile.md"};function s(a,n,p,i,m,c){return t(),r("div")}const l=e(o,[["render",s]]);export{d as __pageData,l as default};
+import { _ as e, o as t, c as r } from "./chunks/framework.Dn7Y7LSn.js";
+const d = JSON.parse(
+    '{"title":"","description":"","frontmatter":{},"headers":[],"relativePath":"fragemented/wbs/phase-1-reports/goose-runtime-profile.md","filePath":"fragemented/wbs/phase-1-reports/goose-runtime-profile.md"}',
+  ),
+  o = { name: "fragemented/wbs/phase-1-reports/goose-runtime-profile.md" };
+function s(a, n, p, i, m, c) {
+  return t(), r("div");
+}
+const l = e(o, [["render", s]]);
+export { d as __pageData, l as default };

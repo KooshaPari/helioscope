@@ -1,1 +1,15 @@
-import{_ as a,o as s,c as n,ae as t}from"./chunks/framework.Dn7Y7LSn.js";const h=JSON.parse('{"title":"ADR-001: Teammate System Architecture","description":"","frontmatter":{},"headers":[],"relativePath":"reference/ADR-001-TEAMMATE-SYSTEM.md","filePath":"reference/ADR-001-TEAMMATE-SYSTEM.md"}'),i={name:"reference/ADR-001-TEAMMATE-SYSTEM.md"};function l(r,e,o,c,p,d){return s(),n("div",null,[...e[0]||(e[0]=[t("",19)])])}const m=a(i,[["render",l]]);export{h as __pageData,m as default};
+import {
+  _ as a,
+  o as s,
+  c as n,
+  ae as t,
+} from "./chunks/framework.Dn7Y7LSn.js";
+const h = JSON.parse(
+    '{"title":"ADR-001: Teammate System Architecture","description":"","frontmatter":{},"headers":[],"relativePath":"reference/ADR-001-TEAMMATE-SYSTEM.md","filePath":"reference/ADR-001-TEAMMATE-SYSTEM.md"}',
+  ),
+  i = { name: "reference/ADR-001-TEAMMATE-SYSTEM.md" };
+function l(r, e, o, c, p, d) {
+  return s(), n("div", null, [...(e[0] || (e[0] = [t("", 19)]))]);
+}
+const m = a(i, [["render", l]]);
+export { h as __pageData, m as default };

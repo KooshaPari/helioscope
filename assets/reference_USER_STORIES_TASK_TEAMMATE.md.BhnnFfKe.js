@@ -1,4 +1,21 @@
-import{_ as a,o as n,c as e,ae as p}from"./chunks/framework.Dn7Y7LSn.js";const h=JSON.parse('{"title":"User Stories: Teammate Subagent System + Dynamic Scaling","description":"","frontmatter":{},"headers":[],"relativePath":"reference/USER_STORIES_TASK_TEAMMATE.md","filePath":"reference/USER_STORIES_TASK_TEAMMATE.md"}'),t={name:"reference/USER_STORIES_TASK_TEAMMATE.md"};function l(i,s,o,r,c,d){return n(),e("div",null,[...s[0]||(s[0]=[p(`<h1 id="user-stories-teammate-subagent-system-dynamic-scaling" tabindex="-1">User Stories: Teammate Subagent System + Dynamic Scaling <a class="header-anchor" href="#user-stories-teammate-subagent-system-dynamic-scaling" aria-label="Permalink to &quot;User Stories: Teammate Subagent System + Dynamic Scaling&quot;">​</a></h1><p><strong>Version</strong>: 1.0<br><strong>Date</strong>: 2026-02-23<br><strong>Project</strong>: heliosHarness</p><hr><h2 id="table-of-contents" tabindex="-1">Table of Contents <a class="header-anchor" href="#table-of-contents" aria-label="Permalink to &quot;Table of Contents&quot;">​</a></h2><ol><li><a href="#developer-stories">Developer Stories</a></li><li><a href="#operator-stories">Operator Stories</a></li><li><a href="#system-stories">System Stories</a></li></ol><hr><h2 id="developer-stories" tabindex="-1">Developer Stories <a class="header-anchor" href="#developer-stories" aria-label="Permalink to &quot;Developer Stories&quot;">​</a></h2><h3 id="us-101-discover-available-teammates" tabindex="-1">US-101: Discover Available Teammates <a class="header-anchor" href="#us-101-discover-available-teammates" aria-label="Permalink to &quot;US-101: Discover Available Teammates&quot;">​</a></h3><p><strong>As a</strong> developer<br><strong>I want to</strong> see all available teammate agents<br><strong>So that</strong> I know who I can delegate to</p><p><strong>Acceptance Criteria:</strong></p><ul><li>[ ] <code>harness teammates list</code> shows all teammates</li><li>[ ] Each teammate shows name, role, description</li><li>[ ] Teammates auto-discovered from <code>agents/</code> directory</li></ul><p><strong>Example:</strong></p><div class="language- vp-adaptive-theme"><button title="Copy Code" class="copy"></button><span class="lang"></span><pre class="shiki shiki-themes github-light github-dark vp-code" tabindex="0"><code><span class="line"><span>$ harness teammates list</span></span>
+import {
+  _ as a,
+  o as n,
+  c as e,
+  ae as p,
+} from "./chunks/framework.Dn7Y7LSn.js";
+const h = JSON.parse(
+    '{"title":"User Stories: Teammate Subagent System + Dynamic Scaling","description":"","frontmatter":{},"headers":[],"relativePath":"reference/USER_STORIES_TASK_TEAMMATE.md","filePath":"reference/USER_STORIES_TASK_TEAMMATE.md"}',
+  ),
+  t = { name: "reference/USER_STORIES_TASK_TEAMMATE.md" };
+function l(i, s, o, r, c, d) {
+  return (
+    n(),
+    e("div", null, [
+      ...(s[0] ||
+        (s[0] = [
+          p(
+            `<h1 id="user-stories-teammate-subagent-system-dynamic-scaling" tabindex="-1">User Stories: Teammate Subagent System + Dynamic Scaling <a class="header-anchor" href="#user-stories-teammate-subagent-system-dynamic-scaling" aria-label="Permalink to &quot;User Stories: Teammate Subagent System + Dynamic Scaling&quot;">​</a></h1><p><strong>Version</strong>: 1.0<br><strong>Date</strong>: 2026-02-23<br><strong>Project</strong>: heliosHarness</p><hr><h2 id="table-of-contents" tabindex="-1">Table of Contents <a class="header-anchor" href="#table-of-contents" aria-label="Permalink to &quot;Table of Contents&quot;">​</a></h2><ol><li><a href="#developer-stories">Developer Stories</a></li><li><a href="#operator-stories">Operator Stories</a></li><li><a href="#system-stories">System Stories</a></li></ol><hr><h2 id="developer-stories" tabindex="-1">Developer Stories <a class="header-anchor" href="#developer-stories" aria-label="Permalink to &quot;Developer Stories&quot;">​</a></h2><h3 id="us-101-discover-available-teammates" tabindex="-1">US-101: Discover Available Teammates <a class="header-anchor" href="#us-101-discover-available-teammates" aria-label="Permalink to &quot;US-101: Discover Available Teammates&quot;">​</a></h3><p><strong>As a</strong> developer<br><strong>I want to</strong> see all available teammate agents<br><strong>So that</strong> I know who I can delegate to</p><p><strong>Acceptance Criteria:</strong></p><ul><li>[ ] <code>harness teammates list</code> shows all teammates</li><li>[ ] Each teammate shows name, role, description</li><li>[ ] Teammates auto-discovered from <code>agents/</code> directory</li></ul><p><strong>Example:</strong></p><div class="language- vp-adaptive-theme"><button title="Copy Code" class="copy"></button><span class="lang"></span><pre class="shiki shiki-themes github-light github-dark vp-code" tabindex="0"><code><span class="line"><span>$ harness teammates list</span></span>
 <span class="line"><span>Available Teammates:</span></span>
 <span class="line"><span>  • code-reviewer: Reviews code for bugs and style</span></span>
 <span class="line"><span>  • test-writer: Writes unit and integration tests</span></span>
@@ -297,4 +314,12 @@ import{_ as a,o as n,c as e,ae as p}from"./chunks/framework.Dn7Y7LSn.js";const h
 <span class="line"><span>---</span></span>
 <span class="line"><span></span></span>
 <span class="line"><span>**Document Version**: 1.2  </span></span>
-<span class="line"><span>**Status**: Ready for Implementation</span></span></code></pre></div>`,71)])])}const m=a(t,[["render",l]]);export{h as __pageData,m as default};
+<span class="line"><span>**Status**: Ready for Implementation</span></span></code></pre></div>`,
+            71,
+          ),
+        ])),
+    ])
+  );
+}
+const m = a(t, [["render", l]]);
+export { h as __pageData, m as default };

@@ -1,1 +1,10 @@
-import{_ as e,o as s,c as t}from"./chunks/framework.Dn7Y7LSn.js";const m=JSON.parse('{"title":"","description":"","frontmatter":{},"headers":[],"relativePath":"fragemented/wbs/phase-1-reports/phase-1-synthesis.md","filePath":"fragemented/wbs/phase-1-reports/phase-1-synthesis.md"}'),a={name:"fragemented/wbs/phase-1-reports/phase-1-synthesis.md"};function r(n,p,o,c,h,i){return s(),t("div")}const f=e(a,[["render",r]]);export{m as __pageData,f as default};
+import { _ as e, o as s, c as t } from "./chunks/framework.Dn7Y7LSn.js";
+const m = JSON.parse(
+    '{"title":"","description":"","frontmatter":{},"headers":[],"relativePath":"fragemented/wbs/phase-1-reports/phase-1-synthesis.md","filePath":"fragemented/wbs/phase-1-reports/phase-1-synthesis.md"}',
+  ),
+  a = { name: "fragemented/wbs/phase-1-reports/phase-1-synthesis.md" };
+function r(n, p, o, c, h, i) {
+  return s(), t("div");
+}
+const f = e(a, [["render", r]]);
+export { m as __pageData, f as default };

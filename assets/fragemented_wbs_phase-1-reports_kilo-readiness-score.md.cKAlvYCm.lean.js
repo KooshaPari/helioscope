@@ -1,1 +1,10 @@
-import{_ as e,o as s,c as r}from"./chunks/framework.Dn7Y7LSn.js";const f=JSON.parse('{"title":"","description":"","frontmatter":{},"headers":[],"relativePath":"fragemented/wbs/phase-1-reports/kilo-readiness-score.md","filePath":"fragemented/wbs/phase-1-reports/kilo-readiness-score.md"}'),t={name:"fragemented/wbs/phase-1-reports/kilo-readiness-score.md"};function a(o,n,c,i,d,p){return s(),r("div")}const l=e(t,[["render",a]]);export{f as __pageData,l as default};
+import { _ as e, o as s, c as r } from "./chunks/framework.Dn7Y7LSn.js";
+const f = JSON.parse(
+    '{"title":"","description":"","frontmatter":{},"headers":[],"relativePath":"fragemented/wbs/phase-1-reports/kilo-readiness-score.md","filePath":"fragemented/wbs/phase-1-reports/kilo-readiness-score.md"}',
+  ),
+  t = { name: "fragemented/wbs/phase-1-reports/kilo-readiness-score.md" };
+function a(o, n, c, i, d, p) {
+  return s(), r("div");
+}
+const l = e(t, [["render", a]]);
+export { f as __pageData, l as default };

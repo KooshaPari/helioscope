@@ -3,8 +3,8 @@
 
 use std::process::Stdio;
 use std::time::{Duration, Instant};
-use tokio::process::Command;
 use tokio::io::AsyncWriteExt;
+use tokio::process::Command;
 use tracing::instrument;
 
 /// Runner configuration
@@ -67,7 +67,7 @@ impl Runner {
     #[instrument(name = "runner_run", skip(self, args))]
     pub async fn run(&self, cmd: &str, args: &[&str]) -> Result<RunResult, RunError> {
         let start = Instant::now();
-        
+
         let mut cmd = if self.config.shell {
             let mut c = Command::new("sh");
             c.arg("-c").arg(format!("{} {}", cmd, args.join(" ")));
@@ -77,18 +77,18 @@ impl Runner {
             c.args(args);
             c
         };
-        
+
         if let Some(ref dir) = self.config.working_dir {
             cmd.current_dir(dir);
         }
-        
+
         for (k, v) in &self.config.env {
             cmd.env(k, v);
         }
-        
+
         cmd.stdout(Stdio::piped());
         cmd.stderr(Stdio::piped());
-        
+
         let output = match self.config.timeout_secs {
             Some(timeout) => {
                 match tokio::time::timeout(Duration::from_secs(timeout), cmd.output()).await {
@@ -97,11 +97,14 @@ impl Runner {
                     Err(_) => return Err(RunError::Timeout(timeout)),
                 }
             }
-            None => cmd.output().await.map_err(|e| RunError::IoError(e.to_string()))?,
+            None => cmd
+                .output()
+                .await
+                .map_err(|e| RunError::IoError(e.to_string()))?,
         };
-        
+
         let duration = start.elapsed();
-        
+
         Ok(RunResult {
             success: output.status.success(),
             exit_code: output.status.code(),
@@ -112,7 +115,12 @@ impl Runner {
     }
 
     /// Run with stdin input
-    pub async fn run_with_input(&self, cmd: &str, args: &[&str], input: &str) -> Result<RunResult, RunError> {
+    pub async fn run_with_input(
+        &self,
+        cmd: &str,
+        args: &[&str],
+        input: &str,
+    ) -> Result<RunResult, RunError> {
         let mut cmd = if self.config.shell {
             let mut c = Command::new("sh");
             c.arg("-c").arg(format!("{} {}", cmd, args.join(" ")));
@@ -122,27 +130,33 @@ impl Runner {
             c.args(args);
             c
         };
-        
+
         if let Some(ref dir) = self.config.working_dir {
             cmd.current_dir(dir);
         }
-        
+
         for (k, v) in &self.config.env {
             cmd.env(k, v);
         }
-        
+
         cmd.stdin(Stdio::piped());
         cmd.stdout(Stdio::piped());
         cmd.stderr(Stdio::piped());
-        
+
         let mut child = cmd.spawn().map_err(|e| RunError::IoError(e.to_string()))?;
-        
+
         if let Some(ref mut stdin) = child.stdin {
-            stdin.write_all(input.as_bytes()).await.map_err(|e| RunError::IoError(e.to_string()))?;
+            stdin
+                .write_all(input.as_bytes())
+                .await
+                .map_err(|e| RunError::IoError(e.to_string()))?;
         }
-        
-        let output = child.wait_with_output().await.map_err(|e| RunError::IoError(e.to_string()))?;
-        
+
+        let output = child
+            .wait_with_output()
+            .await
+            .map_err(|e| RunError::IoError(e.to_string()))?;
+
         Ok(RunResult {
             success: output.status.success(),
             exit_code: output.status.code(),
@@ -154,7 +168,9 @@ impl Runner {
 }
 
 impl Default for Runner {
-    fn default() -> Self { Self::new() }
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 /// Run result with metadata
@@ -169,9 +185,13 @@ pub struct RunResult {
 
 impl RunResult {
     pub fn output(&self) -> String {
-        if self.stdout.is_empty() { self.stderr.clone() } else { self.stdout.clone() }
+        if self.stdout.is_empty() {
+            self.stderr.clone()
+        } else {
+            self.stdout.clone()
+        }
     }
-    
+
     pub fn output_lines(&self) -> Vec<String> {
         self.output().lines().map(|s| s.to_string()).collect()
     }

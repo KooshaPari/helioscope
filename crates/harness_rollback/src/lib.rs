@@ -1,11 +1,17 @@
 //! Rollback Engine - Simple version
 
+use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
-use chrono::{DateTime, Utc};
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
-pub enum RollbackStatus { Pending, Started, Completed, Failed, Partial }
+pub enum RollbackStatus {
+    Pending,
+    Started,
+    Completed,
+    Failed,
+    Partial,
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RollbackRecord {
@@ -34,12 +40,22 @@ impl RollbackRecord {
             error: None,
         }
     }
-    
-    pub fn start(&mut self) { self.status = RollbackStatus::Started; }
-    pub fn add_restored(&mut self, item: &str) { self.restored_items.push(item.to_string()); }
-    pub fn add_failed(&mut self, item: &str) { self.failed_items.push(item.to_string()); }
+
+    pub fn start(&mut self) {
+        self.status = RollbackStatus::Started;
+    }
+    pub fn add_restored(&mut self, item: &str) {
+        self.restored_items.push(item.to_string());
+    }
+    pub fn add_failed(&mut self, item: &str) {
+        self.failed_items.push(item.to_string());
+    }
     pub fn complete(&mut self) {
-        self.status = if self.failed_items.is_empty() { RollbackStatus::Completed } else { RollbackStatus::Partial };
+        self.status = if self.failed_items.is_empty() {
+            RollbackStatus::Completed
+        } else {
+            RollbackStatus::Partial
+        };
         self.completed_at = Some(Utc::now());
     }
     pub fn fail(&mut self, err: &str) {
@@ -54,15 +70,27 @@ pub struct RollbackEngine {
     checkpoints: Vec<(String, String)>,
 }
 
+impl Default for RollbackEngine {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl RollbackEngine {
-    pub fn new() -> Self { Self { records: vec![], checkpoints: vec![] } }
-    
+    pub fn new() -> Self {
+        Self {
+            records: vec![],
+            checkpoints: vec![],
+        }
+    }
+
     pub fn register(&mut self, checkpoint_id: &str, spec_id: &str) -> Uuid {
         let id = Uuid::new_v4();
-        self.checkpoints.push((checkpoint_id.to_string(), spec_id.to_string()));
+        self.checkpoints
+            .push((checkpoint_id.to_string(), spec_id.to_string()));
         id
     }
-    
+
     pub fn rollback(&mut self, checkpoint_id: &str) -> Option<RollbackRecord> {
         let mut record = RollbackRecord::new(checkpoint_id, "spec");
         record.start();
@@ -71,18 +99,20 @@ impl RollbackEngine {
         self.records.push(record.clone());
         Some(record)
     }
-    
+
     pub fn verify(&self, record: &RollbackRecord) -> bool {
         matches!(record.status, RollbackStatus::Completed)
     }
-    
-    pub fn history(&self) -> &[RollbackRecord] { &self.records }
+
+    pub fn history(&self) -> &[RollbackRecord] {
+        &self.records
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    
+
     #[test]
     fn test_rollback() {
         let mut engine = RollbackEngine::new();

@@ -16,12 +16,15 @@ from typing import Any
 # Lazy psutil - only load when sampling is needed
 _psutil = None
 
+
 def _get_psutil():
     global _psutil
     if _psutil is None:
         import psutil
+
         _psutil = psutil
     return _psutil
+
 
 # Try to import Rust extension for 10-50x performance
 # Add src dir to path for .so file
@@ -31,6 +34,7 @@ if str(_rust_path) not in sys.path:
 
 try:
     from helios_harness_rs import ResourceSampler as RustResourceSampler
+
     RUST_AVAILABLE = True
 except ImportError:
     RUST_AVAILABLE = False
@@ -118,9 +122,7 @@ class ResourceSampler:
         # File descriptors - use psutil
         try:
             proc = _get_psutil().Process()
-            fd_count = (
-                proc.num_fds() if hasattr(proc, "num_fds") else len(proc.open_files())
-            )
+            fd_count = proc.num_fds() if hasattr(proc, "num_fds") else len(proc.open_files())
             try:
                 import resource
 
@@ -208,10 +210,7 @@ class DynamicLimitController:
                 self._state = "scaling_up"
         elif target < self.current_limit:
             # Scale down
-            if (
-                running_count < target
-                and now - self._last_change_time >= self.config.hysteresis_dwell
-            ):
+            if running_count < target and now - self._last_change_time >= self.config.hysteresis_dwell:
                 self.current_limit = target
                 self._last_change_time = now
                 self._state = "scaling_down"

@@ -4,7 +4,7 @@ from harness.interfaces import RunResult
 
 def test_quality_infer_schema():
     q = QualityNormalizer().normalize([], [])
-    assert q.inferred_profile == 'strict-full'
+    assert q.inferred_profile == "strict-full"
 
 
 def test_quality_normalizer_detects_blockers_from_executed_markers():

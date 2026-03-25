@@ -289,14 +289,14 @@ def validate_artifacts(schema: str, file: str) -> None:
 
 def cmd_teammates_list(agents_dir: str) -> None:
     from harness import TeammateRegistry
-    
+
     registry = TeammateRegistry(agents_dir=Path(agents_dir))
     teammates = registry.discover()
-    
+
     if not teammates:
         print("No teammates found")
         return
-    
+
     print(f"Found {len(teammates)} teammates:\n")
     for t in teammates.values():
         print(f"  {t.id}: {t.name} ({t.role})")
@@ -306,28 +306,25 @@ def cmd_teammates_list(agents_dir: str) -> None:
 def cmd_teammates_delegate(teammate_id: str, task: str, timeout: int, profile: str) -> None:
     import asyncio
     from harness import TeammateRegistry, DelegationRequest, DelegationProtocol, CodexExecutor, Priority
-    
+
     async def run():
         registry = TeammateRegistry()
         registry.discover()
-        
+
         teammate = registry.get(teammate_id)
         if not teammate:
             print(f"Teammate not found: {teammate_id}")
             return
-        
+
         protocol = DelegationProtocol()
         executor = CodexExecutor(profile=profile)
-        
+
         request = DelegationRequest(
-            teammate_id=teammate_id,
-            task_description=task,
-            priority=Priority.NORMAL,
-            timeout_seconds=timeout
+            teammate_id=teammate_id, task_description=task, priority=Priority.NORMAL, timeout_seconds=timeout
         )
-        
+
         result = await protocol.delegate(request, executor)
-        
+
         print(f"Delegation: {result.delegation_id}")
         print(f"Status: {result.status}")
         print(f"Duration: {result.duration_ms}ms")
@@ -335,16 +332,16 @@ def cmd_teammates_delegate(teammate_id: str, task: str, timeout: int, profile: s
             print(f"Result: {result.result[:200]}...")
         if result.error:
             print(f"Error: {result.error}")
-    
+
     asyncio.run(run())
 
 
 def cmd_teammates_status(delegation_id: str) -> None:
     from harness import DelegationProtocol
-    
+
     protocol = DelegationProtocol()
     result = protocol.get_status(delegation_id)
-    
+
     if result:
         print(f"Delegation: {result.delegation_id}")
         print(f"Status: {result.status}")
@@ -360,12 +357,12 @@ def cmd_teammates_status(delegation_id: str) -> None:
 
 def cmd_scaling_status() -> None:
     from harness import ScalingConfig, DynamicLimitController, ResourceSampler
-    
+
     sampler = ResourceSampler()
     controller = DynamicLimitController()
-    
+
     snapshot = sampler.sample()
-    
+
     print("Resource Status:")
     print(f"  CPU: {snapshot.cpu_percent:.1f}%")
     print(f"  Memory: {snapshot.memory_percent:.1f}% ({snapshot.memory_available_mb:.0f}MB available)")
@@ -382,10 +379,10 @@ def cmd_scaling_status() -> None:
 
 def cmd_cache_stats() -> None:
     from harness import L1Cache
-    
+
     cache = L1Cache()
     stats = cache.stats
-    
+
     print("L1 Cache Stats:")
     print(f"  Hits: {stats.hits}")
     print(f"  Misses: {stats.misses}")
@@ -394,14 +391,14 @@ def cmd_cache_stats() -> None:
 
 def cmd_cache_clear() -> None:
     from harness import L1Cache, L2Cache
-    
+
     l1 = L1Cache()
     l2 = L2Cache()
-    
+
     # Clear L1 (recreate)
     l1._cache.clear()
     print("L1 cache cleared")
-    
+
     # Clear L2
     l2.clear()
     print("L2 cache cleared")
@@ -440,29 +437,29 @@ def main() -> None:
     # Teammates commands
     t = sp.add_parser("teammates")
     t_sp = t.add_subparsers(dest="teammates_cmd")
-    
+
     t_list = t_sp.add_parser("list")
     t_list.add_argument("--agents-dir", default="agents")
-    
+
     t_delegate = t_sp.add_parser("delegate")
     t_delegate.add_argument("--teammate", required=True)
     t_delegate.add_argument("--task", required=True)
     t_delegate.add_argument("--timeout", type=int, default=300)
     t_delegate.add_argument("--profile", default="default")
-    
+
     t_status = t_sp.add_parser("status")
     t_status.add_argument("--delegation-id", required=True)
 
     # Scaling commands
     s = sp.add_parser("scaling")
     s_sp = s.add_subparsers(dest="scaling_cmd")
-    
+
     s_status = s_sp.add_parser("status")
 
     # Cache commands
     c = sp.add_parser("cache")
     c_sp = c.add_subparsers(dest="cache_cmd")
-    
+
     c_stats = c_sp.add_parser("stats")
     c_clear = c_sp.add_parser("clear")
 

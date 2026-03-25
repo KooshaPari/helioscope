@@ -14,7 +14,9 @@ pub enum Priority {
 }
 
 impl Default for Priority {
-    fn default() -> Self { Priority::Normal }
+    fn default() -> Self {
+        Priority::Normal
+    }
 }
 
 impl Priority {
@@ -51,7 +53,9 @@ pub enum HealthStatus {
 }
 
 impl Default for HealthStatus {
-    fn default() -> Self { HealthStatus::Unknown }
+    fn default() -> Self {
+        HealthStatus::Unknown
+    }
 }
 
 /// Teammate definition
@@ -71,8 +75,12 @@ pub struct Teammate {
     pub timeout_seconds: u64,
 }
 
-fn default_max_concurrent() -> usize { 1 }
-fn default_timeout() -> u64 { 300 }
+fn default_max_concurrent() -> usize {
+    1
+}
+fn default_timeout() -> u64 {
+    300
+}
 
 impl Teammate {
     pub fn new(id: &str, name: &str, role: &str, description: &str) -> Self {

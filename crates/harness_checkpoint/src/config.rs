@@ -1,31 +1,29 @@
 //! Configuration snapshot
 
-use crate::error::{CheckpointError, Result};
 use crate::checkpoint::ConfigSnapshot;
+use crate::error::{CheckpointError, Result};
 use chrono::Utc;
 use std::collections::HashMap;
 use std::fs;
 use std::path::Path;
 
 /// Snapshot configuration files
-pub fn snapshot_config(
-    config_paths: &[&str],
-) -> Result<ConfigSnapshot> {
+pub fn snapshot_config(config_paths: &[&str]) -> Result<ConfigSnapshot> {
     let mut files = Vec::new();
     let mut env_vars = HashMap::new();
-    
+
     // Read specified config files
     for path_str in config_paths {
         let path = Path::new(path_str);
-        
+
         if path.exists() {
             let content = fs::read_to_string(path)
                 .map_err(|e| CheckpointError::StorageError(e.to_string()))?;
-            
+
             let content_hash = format!("{:x}", md5_hash(&content));
-            let metadata = fs::metadata(path)
-                .map_err(|e| CheckpointError::StorageError(e.to_string()))?;
-            
+            let metadata =
+                fs::metadata(path).map_err(|e| CheckpointError::StorageError(e.to_string()))?;
+
             files.push(crate::checkpoint::FileSnapshot {
                 path: path_str.to_string(),
                 content_hash,
@@ -33,19 +31,20 @@ pub fn snapshot_config(
             });
         }
     }
-    
+
     // Capture environment variables (filter sensitive ones)
     let sensitive_patterns = ["PASSWORD", "SECRET", "KEY", "TOKEN", "API_KEY"];
-    
+
     for (key, value) in std::env::vars() {
-        let is_sensitive = sensitive_patterns.iter()
+        let is_sensitive = sensitive_patterns
+            .iter()
             .any(|p| key.to_uppercase().contains(p));
-        
+
         if !is_sensitive {
             env_vars.insert(key, value);
         }
     }
-    
+
     Ok(ConfigSnapshot {
         files,
         env_vars,
@@ -91,7 +90,7 @@ fn get_memory_usage() -> u64 {
         }
         0
     }
-    
+
     #[cfg(not(target_os = "macos"))]
     {
         0

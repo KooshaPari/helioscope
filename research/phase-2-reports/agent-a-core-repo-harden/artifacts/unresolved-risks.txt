@@ -1,0 +1,5 @@
+# Unresolved Risks / Partial Execution Notes
+- goose clone in this workspace remains incomplete (no checked-out tree), so lockfile and strictness checks for `goose` are partial and command outputs indicate missing Cargo.toml + no lockfile generation.
+- kilocode lockfile parity and strictness checks hit environment-dependent failures (`returncode=137/143` after timed dependency/install phase).
+- cliproxyapi-plusplus strictness checks fail at compile-time on `copilot_cli_executor_test.go` due formatting/import-order lint in project tests, not harness infra.
+- opencode strictness checks have an observed failing test (`TestLsTool_Run/handles_empty_path_parameter`) requiring config fixture setup.

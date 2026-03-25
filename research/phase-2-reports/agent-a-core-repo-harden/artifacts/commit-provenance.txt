@@ -1,0 +1,28 @@
+== codex ==
+local: 55fc075 Send events to realtime api (#12423)
+status: ## main...origin/main
+
+== opencode ==
+local: 73ee493 docs(readme): update archive note
+status: ## main...origin/main
+
+== kilocode ==
+local: 1440d1986d Merge pull request #4300 from Kilo-Org/codingelves-update-kilo-naming
+status: ## main...origin/main
+
+== goose ==
+local: 66d075050ed blog: typo fixes (#5896)
+status: ## main...origin/main
+ M AGENTS.md
+ D documentation/AGENTS.md
+?? CLAUDE.md
+?? WARP.md
+
+== cliproxyapi-plusplus ==
+local: f80eed6 docs: Add CLIProxyAPI Phase 7.2 modifications audit report
+status: ## main...origin/main [ahead 6, behind 62]
+ D AUDIT_AND_FIXES_REPORT.md
+ D AUGGIE_CLI_COMMAND_REFERENCE.md
+ D AUGGIE_CURSOR_STREAMING_ANALYSIS.md
+ D AUGGIE_EXECUTOR_IMPLEMENTATION_COMPLETE.md
+

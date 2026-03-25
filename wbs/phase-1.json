@@ -1,0 +1,757 @@
+{
+  "phase": 1,
+  "name": "helios_harness_research_v1",
+  "strategy": "research-only, non-blocking DAG where possible",
+  "summary": "Discover, evaluate, and normalize OSS CLI candidates for cli/api/sdk harness design, including repo coverage and strictness alignment.",
+  "lanes": {
+    "A": "Codex Project Scope",
+    "B": "Opencode Project Scope",
+    "C": "Goose Project Scope",
+    "D": "Kilo Project Scope",
+    "E": "Additional OSS CLI Discovery",
+    "F": "Governance/Task Quality Mapping",
+    "G": "Synthesis + Spec Assembly"
+  },
+  "tasks": [
+    {
+      "id": "A1",
+      "lane": "A",
+      "title": "Validate codex working tree and commit lineage",
+      "status": "done",
+      "depends_on": [],
+      "evidence": "wbs/phase-1-reports/codex-repo-status.md"
+    },
+    {
+      "id": "A2",
+      "lane": "A",
+      "title": "Extract codex toolchain constraints",
+      "status": "done",
+      "depends_on": [
+        "A1"
+      ],
+      "evidence": "wbs/phase-1-reports/codex-toolchain.md"
+    },
+    {
+      "id": "A3",
+      "lane": "A",
+      "title": "Map codex install/build/test commands",
+      "status": "done",
+      "depends_on": [
+        "A1"
+      ],
+      "evidence": "wbs/phase-1-reports/codex-toolchain.md"
+    },
+    {
+      "id": "A4",
+      "lane": "A",
+      "title": "Find codex CLI task quality / lint commands",
+      "status": "done",
+      "depends_on": [
+        "A1"
+      ],
+      "evidence": "wbs/phase-1-reports/codex-quality.md"
+    },
+    {
+      "id": "A5",
+      "lane": "A",
+      "title": "Locate codex governance and contribution checklists",
+      "status": "done",
+      "depends_on": [
+        "A1"
+      ],
+      "evidence": "wbs/phase-1-reports/codex-quality.md"
+    },
+    {
+      "id": "A6",
+      "lane": "A",
+      "title": "Summarize codex API surfaces for harness hooks",
+      "status": "done",
+      "depends_on": [
+        "A3"
+      ],
+      "evidence": "wbs/phase-1-reports/codex-api-matrix.md"
+    },
+    {
+      "id": "A7",
+      "lane": "A",
+      "title": "Catalog codex SDK entry points and invocation model",
+      "status": "done",
+      "depends_on": [
+        "A6"
+      ],
+      "evidence": "wbs/phase-1-reports/codex-sdk-matrix.md"
+    },
+    {
+      "id": "A8",
+      "lane": "A",
+      "title": "Capture codex release/test packaging assets",
+      "status": "done",
+      "depends_on": [
+        "A3"
+      ],
+      "evidence": "wbs/phase-1-reports/codex-dist-matrix.md"
+    },
+    {
+      "id": "A9",
+      "lane": "A",
+      "title": "Score codex readiness against harness criteria",
+      "status": "done",
+      "depends_on": [
+        "A1",
+        "A2",
+        "A3",
+        "A4",
+        "A5",
+        "A6",
+        "A7",
+        "A8"
+      ],
+      "evidence": "wbs/phase-1-reports/codex-readiness-score.md"
+    },
+    {
+      "id": "A10",
+      "lane": "A",
+      "title": "Cross-link codex findings to WBS/traceability matrix",
+      "status": "done",
+      "depends_on": [
+        "A9"
+      ],
+      "evidence": "wbs/phase-1-reports/codex-readiness-score.md"
+    },
+    {
+      "id": "B1",
+      "lane": "B",
+      "title": "Validate opencode working tree and commit lineage",
+      "status": "done",
+      "depends_on": [],
+      "evidence": "wbs/phase-1-reports/opencode-repo-status.md"
+    },
+    {
+      "id": "B2",
+      "lane": "B",
+      "title": "Extract opencode toolchain constraints",
+      "status": "done",
+      "depends_on": [
+        "B1"
+      ],
+      "evidence": "wbs/phase-1-reports/opencode-toolchain.md"
+    },
+    {
+      "id": "B3",
+      "lane": "B",
+      "title": "Map opencode build/test/packaging commands",
+      "status": "done",
+      "depends_on": [
+        "B1"
+      ],
+      "evidence": "wbs/phase-1-reports/opencode-toolchain.md"
+    },
+    {
+      "id": "B4",
+      "lane": "B",
+      "title": "Find opencode strictness and quality tasks",
+      "status": "done",
+      "depends_on": [
+        "B1"
+      ],
+      "evidence": "wbs/phase-1-reports/opencode-quality.md"
+    },
+    {
+      "id": "B5",
+      "lane": "B",
+      "title": "Verify opencode plugin/extensibility model",
+      "status": "done",
+      "depends_on": [
+        "B1"
+      ],
+      "evidence": "wbs/phase-1-reports/opencode-plugin-matrix.md"
+    },
+    {
+      "id": "B6",
+      "lane": "B",
+      "title": "Summarize opencode API/SDK/transport points",
+      "status": "done",
+      "depends_on": [
+        "B3"
+      ],
+      "evidence": "wbs/phase-1-reports/opencode-api-matrix.md"
+    },
+    {
+      "id": "B7",
+      "lane": "B",
+      "title": "Assess authentication and config behavior",
+      "status": "done",
+      "depends_on": [
+        "B3"
+      ],
+      "evidence": "wbs/phase-1-reports/opencode-auth.md"
+    },
+    {
+      "id": "B8",
+      "lane": "B",
+      "title": "Identify runtime constraints for harness execution",
+      "status": "done",
+      "depends_on": [
+        "B2",
+        "B3",
+        "B4"
+      ],
+      "evidence": "wbs/phase-1-reports/opencode-runtime-profile.md"
+    },
+    {
+      "id": "B9",
+      "lane": "B",
+      "title": "Score opencode readiness against harness criteria",
+      "status": "done",
+      "depends_on": [
+        "B1",
+        "B2",
+        "B3",
+        "B4",
+        "B5",
+        "B6",
+        "B7",
+        "B8"
+      ],
+      "evidence": "wbs/phase-1-reports/opencode-readiness-score.md"
+    },
+    {
+      "id": "B10",
+      "lane": "B",
+      "title": "Cross-link opencode findings to WBS/traceability matrix",
+      "status": "done",
+      "depends_on": [
+        "B9"
+      ],
+      "evidence": "wbs/phase-1-reports/opencode-readiness-score.md"
+    },
+    {
+      "id": "C1",
+      "lane": "C",
+      "title": "Validate goose working tree and commit lineage",
+      "status": "done",
+      "depends_on": [],
+      "evidence": "wbs/phase-1-reports/goose-repo-status.md"
+    },
+    {
+      "id": "C2",
+      "lane": "C",
+      "title": "Extract goose toolchain constraints",
+      "status": "done",
+      "depends_on": [
+        "C1"
+      ],
+      "evidence": "wbs/phase-1-reports/goose-toolchain.md"
+    },
+    {
+      "id": "C3",
+      "lane": "C",
+      "title": "Map goose build/test commands and CI",
+      "status": "done",
+      "depends_on": [
+        "C1"
+      ],
+      "evidence": "wbs/phase-1-reports/goose-toolchain.md"
+    },
+    {
+      "id": "C4",
+      "lane": "C",
+      "title": "Collect goose quality strictness + lint profile",
+      "status": "done",
+      "depends_on": [
+        "C1"
+      ],
+      "evidence": "wbs/phase-1-reports/goose-quality.md"
+    },
+    {
+      "id": "C5",
+      "lane": "C",
+      "title": "Trace goose MCP/API surfaces and plugin system",
+      "status": "done",
+      "depends_on": [
+        "C3"
+      ],
+      "evidence": "wbs/phase-1-reports/goose-mcp-api.md"
+    },
+    {
+      "id": "C6",
+      "lane": "C",
+      "title": "Map command/install experience",
+      "status": "done",
+      "depends_on": [
+        "C3"
+      ],
+      "evidence": "wbs/phase-1-reports/goose-install-matrix.md"
+    },
+    {
+      "id": "C7",
+      "lane": "C",
+      "title": "Track configuration and secret handling model",
+      "status": "done",
+      "depends_on": [
+        "C5"
+      ],
+      "evidence": "wbs/phase-1-reports/goose-config-model.md"
+    },
+    {
+      "id": "C8",
+      "lane": "C",
+      "title": "Identify local-first constraints for CI/harness",
+      "status": "done",
+      "depends_on": [
+        "C2",
+        "C3"
+      ],
+      "evidence": "wbs/phase-1-reports/goose-runtime-profile.md"
+    },
+    {
+      "id": "C9",
+      "lane": "C",
+      "title": "Score goose readiness against harness criteria",
+      "status": "done",
+      "depends_on": [
+        "C1",
+        "C2",
+        "C3",
+        "C4",
+        "C5",
+        "C6",
+        "C7",
+        "C8"
+      ],
+      "evidence": "wbs/phase-1-reports/goose-readiness-score.md"
+    },
+    {
+      "id": "C10",
+      "lane": "C",
+      "title": "Cross-link goose findings to WBS/traceability matrix",
+      "status": "done",
+      "depends_on": [
+        "C9"
+      ],
+      "evidence": "wbs/phase-1-reports/goose-readiness-score.md"
+    },
+    {
+      "id": "D1",
+      "lane": "D",
+      "title": "Validate kilocode working tree and commit lineage",
+      "status": "done",
+      "depends_on": [],
+      "evidence": "wbs/phase-1-reports/kilo-repo-status.md"
+    },
+    {
+      "id": "D2",
+      "lane": "D",
+      "title": "Extract kilo toolchain constraints",
+      "status": "done",
+      "depends_on": [
+        "D1"
+      ],
+      "evidence": "wbs/phase-1-reports/kilo-toolchain.md"
+    },
+    {
+      "id": "D3",
+      "lane": "D",
+      "title": "Map kilo build/test/packaging commands",
+      "status": "done",
+      "depends_on": [
+        "D1"
+      ],
+      "evidence": "wbs/phase-1-reports/kilo-toolchain.md"
+    },
+    {
+      "id": "D4",
+      "lane": "D",
+      "title": "Collect kilo quality gates and lint profile",
+      "status": "done",
+      "depends_on": [
+        "D1"
+      ],
+      "evidence": "wbs/phase-1-reports/kilo-quality.md"
+    },
+    {
+      "id": "D5",
+      "lane": "D",
+      "title": "Record SDK/API extension architecture",
+      "status": "done",
+      "depends_on": [
+        "D3"
+      ],
+      "evidence": "wbs/phase-1-reports/kilo-api-matrix.md"
+    },
+    {
+      "id": "D6",
+      "lane": "D",
+      "title": "Capture runtime and auth config model",
+      "status": "done",
+      "depends_on": [
+        "D2",
+        "D3"
+      ],
+      "evidence": "wbs/phase-1-reports/kilo-config-model.md"
+    },
+    {
+      "id": "D7",
+      "lane": "D",
+      "title": "Summarize plugin ecosystem and third-party integrations",
+      "status": "done",
+      "depends_on": [
+        "D5"
+      ],
+      "evidence": "wbs/phase-1-reports/kilo-extensions-matrix.md"
+    },
+    {
+      "id": "D8",
+      "lane": "D",
+      "title": "Assess local/offline constraints for harness usage",
+      "status": "done",
+      "depends_on": [
+        "D2",
+        "D3"
+      ],
+      "evidence": "wbs/phase-1-reports/kilo-runtime-profile.md"
+    },
+    {
+      "id": "D9",
+      "lane": "D",
+      "title": "Score kilo readiness against harness criteria",
+      "status": "done",
+      "depends_on": [
+        "D1",
+        "D2",
+        "D3",
+        "D4",
+        "D5",
+        "D6",
+        "D7",
+        "D8"
+      ],
+      "evidence": "wbs/phase-1-reports/kilo-readiness-score.md"
+    },
+    {
+      "id": "D10",
+      "lane": "D",
+      "title": "Cross-link kilo findings to WBS/traceability matrix",
+      "status": "done",
+      "depends_on": [
+        "D9"
+      ],
+      "evidence": "wbs/phase-1-reports/kilo-readiness-score.md"
+    },
+    {
+      "id": "E1",
+      "lane": "E",
+      "title": "Scan local temp-PRODVERCEL for CLI repos beyond core 4",
+      "status": "done",
+      "depends_on": [],
+      "evidence": "wbs/phase-1-reports/oss-cli-discovery.md"
+    },
+    {
+      "id": "E2",
+      "lane": "E",
+      "title": "Pull 5+ mature OSS CLI candidates from web registry",
+      "status": "done",
+      "depends_on": [
+        "E1"
+      ],
+      "evidence": "wbs/phase-1-reports/oss-cli-web-candidates.md"
+    },
+    {
+      "id": "E3",
+      "lane": "E",
+      "title": "Filter candidates by stack language diversity",
+      "status": "done",
+      "depends_on": [
+        "E2"
+      ],
+      "evidence": "wbs/phase-1-reports/oss-cli-web-candidates.md"
+    },
+    {
+      "id": "E4",
+      "lane": "E",
+      "title": "Create candidate feasibility matrix (install + run)",
+      "status": "done",
+      "depends_on": [
+        "E2",
+        "E3"
+      ],
+      "evidence": "wbs/phase-1-reports/oss-cli-feasibility.md"
+    },
+    {
+      "id": "E5",
+      "lane": "E",
+      "title": "Mark candidates with API/SDK presence",
+      "status": "done",
+      "depends_on": [
+        "E4"
+      ],
+      "evidence": "wbs/phase-1-reports/oss-cli-feasibility.md"
+    },
+    {
+      "id": "E6",
+      "lane": "E",
+      "title": "Check candidate licensing and commercial constraints",
+      "status": "done",
+      "depends_on": [
+        "E4"
+      ],
+      "evidence": "wbs/phase-1-reports/oss-cli-constraints.md"
+    },
+    {
+      "id": "E7",
+      "lane": "E",
+      "title": "Add candidate list to harness comparison table",
+      "status": "done",
+      "depends_on": [
+        "E4",
+        "E5",
+        "E6"
+      ],
+      "evidence": "wbs/phase-1-reports/oss-cli-feasibility.md"
+    },
+    {
+      "id": "E8",
+      "lane": "E",
+      "title": "Rank top 4-6 candidates for deep follow-up",
+      "status": "done",
+      "depends_on": [
+        "E7"
+      ],
+      "evidence": "wbs/phase-1-reports/oss-cli-shortlist.md"
+    },
+    {
+      "id": "E9",
+      "lane": "E",
+      "title": "Map top candidates to repo-level research requirements",
+      "status": "done",
+      "depends_on": [
+        "E8"
+      ],
+      "evidence": "wbs/phase-1-reports/oss-cli-shortlist.md"
+    },
+    {
+      "id": "E10",
+      "lane": "E",
+      "title": "Cross-link candidate scan to WBS traceability",
+      "status": "done",
+      "depends_on": [
+        "E7",
+        "E8",
+        "E9"
+      ],
+      "evidence": "wbs/phase-1-reports/oss-cli-shortlist.md"
+    },
+    {
+      "id": "F1",
+      "lane": "F",
+      "title": "Gather repo-level AGENTS/quality instructions",
+      "status": "done",
+      "depends_on": [],
+      "evidence": "wbs/phase-1-reports/governance-mapping.md"
+    },
+    {
+      "id": "F2",
+      "lane": "F",
+      "title": "Map task quality/strictness terminology across targets",
+      "status": "done",
+      "depends_on": [
+        "F1"
+      ],
+      "evidence": "wbs/phase-1-reports/governance-mapping.md"
+    },
+    {
+      "id": "F3",
+      "lane": "F",
+      "title": "Identify parent-project quality fallback requirements",
+      "status": "done",
+      "depends_on": [
+        "F1",
+        "F2"
+      ],
+      "evidence": "wbs/phase-1-reports/governance-mapping.md"
+    },
+    {
+      "id": "F4",
+      "lane": "F",
+      "title": "Design max-strictness mapping rubric",
+      "status": "done",
+      "depends_on": [
+        "F2"
+      ],
+      "evidence": "wbs/phase-1-reports/governance-rubric.md"
+    },
+    {
+      "id": "F5",
+      "lane": "F",
+      "title": "Assess CLIs' internal gate coverage vs external gates",
+      "status": "done",
+      "depends_on": [
+        "F2"
+      ],
+      "evidence": "wbs/phase-1-reports/governance-rubric.md"
+    },
+    {
+      "id": "F6",
+      "lane": "F",
+      "title": "Draft governance compatibility rules for harness",
+      "status": "done",
+      "depends_on": [
+        "F3",
+        "F4",
+        "F5"
+      ],
+      "evidence": "wbs/phase-1-reports/harness-governance-rules.md"
+    },
+    {
+      "id": "F7",
+      "lane": "F",
+      "title": "Define quality evidence bundle schema (commands/artifacts)",
+      "status": "done",
+      "depends_on": [
+        "F4"
+      ],
+      "evidence": "wbs/phase-1-reports/harness-governance-rules.md"
+    },
+    {
+      "id": "F8",
+      "lane": "F",
+      "title": "Map CLI API harness to parent/child repo scans",
+      "status": "done",
+      "depends_on": [
+        "F3",
+        "F6"
+      ],
+      "evidence": "wbs/phase-1-reports/harness-governance-rules.md"
+    },
+    {
+      "id": "F9",
+      "lane": "F",
+      "title": "Draft non-blocking execution policy for gate failures",
+      "status": "done",
+      "depends_on": [
+        "F7",
+        "F8"
+      ],
+      "evidence": "wbs/phase-1-reports/governance-risks.md"
+    },
+    {
+      "id": "F10",
+      "lane": "F",
+      "title": "Cross-link governance model into main harness plan",
+      "status": "done",
+      "depends_on": [
+        "F6",
+        "F7",
+        "F8",
+        "F9"
+      ],
+      "evidence": "wbs/phase-1-reports/harness-governance-rules.md"
+    },
+    {
+      "id": "G1",
+      "lane": "G",
+      "title": "Define Phase-1 synthesis schema and output files",
+      "status": "done",
+      "depends_on": [],
+      "evidence": "wbs/phase-1-reports/phase-1-synthesis.md"
+    },
+    {
+      "id": "G2",
+      "lane": "G",
+      "title": "Create OSS CLI matrix skeleton (repo, language, build, license)",
+      "status": "done",
+      "depends_on": [
+        "G1"
+      ],
+      "evidence": "research/oss-cli-matrix.md"
+    },
+    {
+      "id": "G3",
+      "lane": "G",
+      "title": "Populate matrix from lane A outputs",
+      "status": "done",
+      "depends_on": [
+        "A9"
+      ],
+      "evidence": "research/oss-cli-matrix.md"
+    },
+    {
+      "id": "G4",
+      "lane": "G",
+      "title": "Populate matrix from lane B outputs",
+      "status": "done",
+      "depends_on": [
+        "B9"
+      ],
+      "evidence": "research/oss-cli-matrix.md"
+    },
+    {
+      "id": "G5",
+      "lane": "G",
+      "title": "Populate matrix from lane C outputs",
+      "status": "done",
+      "depends_on": [
+        "C9"
+      ],
+      "evidence": "research/oss-cli-matrix.md"
+    },
+    {
+      "id": "G6",
+      "lane": "G",
+      "title": "Populate matrix from lane D outputs",
+      "status": "done",
+      "depends_on": [
+        "D9"
+      ],
+      "evidence": "research/oss-cli-matrix.md"
+    },
+    {
+      "id": "G7",
+      "lane": "G",
+      "title": "Populate matrix from web and candidate outputs",
+      "status": "done",
+      "depends_on": [
+        "E9",
+        "E10"
+      ],
+      "evidence": "research/oss-cli-matrix.md"
+    },
+    {
+      "id": "G8",
+      "lane": "G",
+      "title": "Draft cli-api-sdk harness architecture blueprint",
+      "status": "done",
+      "depends_on": [
+        "G2",
+        "F10"
+      ],
+      "evidence": "research/harness-spec.md"
+    },
+    {
+      "id": "G9",
+      "lane": "G",
+      "title": "Draft phased implementation and risk plan",
+      "status": "done",
+      "depends_on": [
+        "G3",
+        "G4",
+        "G5",
+        "G6",
+        "G7",
+        "G8"
+      ],
+      "evidence": "research/harness-spec.md"
+    },
+    {
+      "id": "G10",
+      "lane": "G",
+      "title": "Emit phase-1 artifact set and close evidence log",
+      "status": "done",
+      "depends_on": [
+        "G8",
+        "G9"
+      ],
+      "evidence": "artifacts/phase-1-closeout.md"
+    }
+  ]
+}

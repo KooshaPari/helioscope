@@ -1,0 +1,10 @@
+[package]
+name = "harness_interfaces"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+uuid = { version = "1.0", features = ["v4"] }

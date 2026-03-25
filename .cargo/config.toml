@@ -1,0 +1,25 @@
+[build]
+incremental = true
+jobs = 4
+
+[target.x86_64-apple-darwin]
+linker = "clang"
+
+[profile.dev]
+opt-level = 0
+debug = true
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+opt-level = 3
+
+[alias]
+c = "check"
+ci = "clippy --all-targets -- -D warnings"
+t = "test"
+b = "build"
+r = "run"
+w = "test --workspace"
+f = "fmt"
+fa = "fmt --all"

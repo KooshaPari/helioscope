@@ -1,0 +1,2964 @@
+{
+  "repo_id": "kilocode",
+  "manifest": {
+    "repo_id": "kilocode",
+    "root": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode",
+    "remote_url": "/Users/kooshapari/temp-PRODVERCEL/485/API/research/kilocode",
+    "default_branch": "main",
+    "discovered_at": "2026-02-22T09:57:35.783230+00:00",
+    "commit": "1440d1986d",
+    "branch": "main"
+  },
+  "commands": [
+    {
+      "command": "turbo lint --log-order grouped --output-logs new-only",
+      "bucket": "static",
+      "cwd": ".",
+      "required": true,
+      "rationale": "script 'lint' discovered from package.json",
+      "source": "package.json"
+    },
+    {
+      "command": "turbo check-types --log-order grouped --output-logs new-only",
+      "bucket": "static",
+      "cwd": ".",
+      "required": true,
+      "rationale": "script 'check-types' discovered from package.json",
+      "source": "package.json"
+    },
+    {
+      "command": "turbo format --log-order grouped --output-logs new-only",
+      "bucket": "static",
+      "cwd": ".",
+      "required": true,
+      "rationale": "script 'format' discovered from package.json",
+      "source": "package.json"
+    },
+    {
+      "command": "turbo test --log-order grouped --output-logs new-only",
+      "bucket": "test",
+      "cwd": ".",
+      "required": true,
+      "rationale": "script 'test' discovered from package.json",
+      "source": "package.json"
+    },
+    {
+      "command": "pnpm vsix",
+      "bucket": "build",
+      "cwd": ".",
+      "required": true,
+      "rationale": "script 'build' discovered from package.json",
+      "source": "package.json"
+    },
+    {
+      "command": "tsx scripts/link-packages.ts",
+      "bucket": "build",
+      "cwd": ".",
+      "required": true,
+      "rationale": "script 'link-workspace-packages' discovered from package.json",
+      "source": "package.json"
+    },
+    {
+      "command": "tsx scripts/link-packages.ts --unlink",
+      "bucket": "build",
+      "cwd": ".",
+      "required": true,
+      "rationale": "script 'unlink-workspace-packages' discovered from package.json",
+      "source": "package.json"
+    },
+    {
+      "command": "turbo jetbrains:build",
+      "bucket": "build",
+      "cwd": ".",
+      "required": true,
+      "rationale": "script 'jetbrains:build' discovered from package.json",
+      "source": "package.json"
+    },
+    {
+      "command": "turbo run cli:build",
+      "bucket": "build",
+      "cwd": ".",
+      "required": true,
+      "rationale": "script 'cli:build' discovered from package.json",
+      "source": "package.json"
+    },
+    {
+      "command": "pnpm --filter kilocode-docs build",
+      "bucket": "build",
+      "cwd": ".",
+      "required": true,
+      "rationale": "script 'docs:build' discovered from package.json",
+      "source": "package.json"
+    },
+    {
+      "command": "node scripts/bootstrap.mjs",
+      "bucket": "runtime",
+      "cwd": ".",
+      "required": true,
+      "rationale": "script 'preinstall' discovered from package.json",
+      "source": "package.json"
+    },
+    {
+      "command": "husky",
+      "bucket": "runtime",
+      "cwd": ".",
+      "required": true,
+      "rationale": "script 'prepare' discovered from package.json",
+      "source": "package.json"
+    },
+    {
+      "command": "node scripts/bootstrap.mjs",
+      "bucket": "runtime",
+      "cwd": ".",
+      "required": true,
+      "rationale": "script 'install' discovered from package.json",
+      "source": "package.json"
+    },
+    {
+      "command": "node scripts/bootstrap.mjs",
+      "bucket": "runtime",
+      "cwd": ".",
+      "required": true,
+      "rationale": "script 'install:all' discovered from package.json",
+      "source": "package.json"
+    },
+    {
+      "command": "turbo bundle --log-order grouped --output-logs new-only",
+      "bucket": "runtime",
+      "cwd": ".",
+      "required": true,
+      "rationale": "script 'bundle' discovered from package.json",
+      "source": "package.json"
+    },
+    {
+      "command": "turbo bundle:nightly --log-order grouped --output-logs new-only",
+      "bucket": "runtime",
+      "cwd": ".",
+      "required": true,
+      "rationale": "script 'bundle:nightly' discovered from package.json",
+      "source": "package.json"
+    },
+    {
+      "command": "turbo vsix --log-order grouped --output-logs new-only --force",
+      "bucket": "runtime",
+      "cwd": ".",
+      "required": true,
+      "rationale": "script 'vsix:production' discovered from package.json",
+      "source": "package.json"
+    },
+    {
+      "command": "turbo vsix --log-order grouped --output-logs new-only",
+      "bucket": "runtime",
+      "cwd": ".",
+      "required": true,
+      "rationale": "script 'vsix' discovered from package.json",
+      "source": "package.json"
+    },
+    {
+      "command": "turbo vsix:nightly --log-order grouped --output-logs new-only",
+      "bucket": "runtime",
+      "cwd": ".",
+      "required": true,
+      "rationale": "script 'vsix:nightly' discovered from package.json",
+      "source": "package.json"
+    },
+    {
+      "command": "turbo clean --log-order grouped --output-logs new-only && rimraf dist out bin .vite-port .turbo",
+      "bucket": "runtime",
+      "cwd": ".",
+      "required": true,
+      "rationale": "script 'clean' discovered from package.json",
+      "source": "package.json"
+    },
+    {
+      "command": "pnpm install --frozen-lockfile && pnpm clean && pnpm vsix && node scripts/install-vsix.js",
+      "bucket": "runtime",
+      "cwd": ".",
+      "required": true,
+      "rationale": "script 'install:vsix' discovered from package.json",
+      "source": "package.json"
+    },
+    {
+      "command": "cp CHANGELOG.md src/CHANGELOG.md && changeset version && cp -vf src/CHANGELOG.md . && pnpm --filter @kilocode/cli changeset:version",
+      "bucket": "runtime",
+      "cwd": ".",
+      "required": true,
+      "rationale": "script 'changeset:version' discovered from package.json",
+      "source": "package.json"
+    },
+    {
+      "command": "knip --include files",
+      "bucket": "runtime",
+      "cwd": ".",
+      "required": true,
+      "rationale": "script 'knip' discovered from package.json",
+      "source": "package.json"
+    },
+    {
+      "command": "dotenvx run -f packages/evals/.env.development packages/evals/.env.local -- docker compose -f packages/evals/docker-compose.yml --profile server --profile runner up --build --scale runner=0",
+      "bucket": "runtime",
+      "cwd": ".",
+      "required": true,
+      "rationale": "script 'evals' discovered from package.json",
+      "source": "package.json"
+    },
+    {
+      "command": "turbo playwright",
+      "bucket": "runtime",
+      "cwd": ".",
+      "required": true,
+      "rationale": "script 'playwright' discovered from package.json",
+      "source": "package.json"
+    },
+    {
+      "command": "pnpm --filter @roo-code/types npm:publish",
+      "bucket": "runtime",
+      "cwd": ".",
+      "required": true,
+      "rationale": "script 'npm:publish:types' discovered from package.json",
+      "source": "package.json"
+    },
+    {
+      "command": "turbo jetbrains:bundle --force",
+      "bucket": "runtime",
+      "cwd": ".",
+      "required": true,
+      "rationale": "script 'jetbrains:bundle' discovered from package.json",
+      "source": "package.json"
+    },
+    {
+      "command": "turbo jetbrains:run-bundle",
+      "bucket": "runtime",
+      "cwd": ".",
+      "required": true,
+      "rationale": "script 'jetbrains:run-bundle' discovered from package.json",
+      "source": "package.json"
+    },
+    {
+      "command": "turbo jetbrains:run",
+      "bucket": "runtime",
+      "cwd": ".",
+      "required": true,
+      "rationale": "script 'jetbrains:run' discovered from package.json",
+      "source": "package.json"
+    },
+    {
+      "command": "turbo run cli:bundle --force",
+      "bucket": "runtime",
+      "cwd": ".",
+      "required": true,
+      "rationale": "script 'cli:bundle' discovered from package.json",
+      "source": "package.json"
+    },
+    {
+      "command": "pnpm --filter @kilocode/cli run deps:install",
+      "bucket": "runtime",
+      "cwd": ".",
+      "required": true,
+      "rationale": "script 'cli:deps' discovered from package.json",
+      "source": "package.json"
+    },
+    {
+      "command": "pnpm --filter @kilocode/cli run dev",
+      "bucket": "runtime",
+      "cwd": ".",
+      "required": true,
+      "rationale": "script 'cli:dev' discovered from package.json",
+      "source": "package.json"
+    },
+    {
+      "command": "pnpm --filter @kilocode/cli run start",
+      "bucket": "runtime",
+      "cwd": ".",
+      "required": true,
+      "rationale": "script 'cli:run' discovered from package.json",
+      "source": "package.json"
+    },
+    {
+      "command": "pnpm --filter kilocode-docs start",
+      "bucket": "runtime",
+      "cwd": ".",
+      "required": true,
+      "rationale": "script 'docs:start' discovered from package.json",
+      "source": "package.json"
+    }
+  ],
+  "runs": [
+    {
+      "command": "turbo bundle --log-order grouped --output-logs new-only",
+      "bucket": "runtime",
+      "returncode": 127,
+      "attempts": 1,
+      "timed_out": false,
+      "started_at": "2026-02-22T09:58:50.186282+00:00",
+      "finished_at": "2026-02-22T09:58:50.235179+00:00",
+      "stdout_file": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/5379115.stdout.log",
+      "stderr_file": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/5379115.stderr.log",
+      "duration_ms": 48,
+      "error": null,
+      "skipped": false,
+      "artifact_dir": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness"
+    },
+    {
+      "command": "turbo bundle:nightly --log-order grouped --output-logs new-only",
+      "bucket": "runtime",
+      "returncode": 127,
+      "attempts": 1,
+      "timed_out": false,
+      "started_at": "2026-02-22T09:58:50.235866+00:00",
+      "finished_at": "2026-02-22T09:58:50.301789+00:00",
+      "stdout_file": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/7285597.stdout.log",
+      "stderr_file": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/7285597.stderr.log",
+      "duration_ms": 65,
+      "error": null,
+      "skipped": false,
+      "artifact_dir": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness"
+    },
+    {
+      "command": "turbo vsix --log-order grouped --output-logs new-only --force",
+      "bucket": "runtime",
+      "returncode": 127,
+      "attempts": 1,
+      "timed_out": false,
+      "started_at": "2026-02-22T09:58:50.315365+00:00",
+      "finished_at": "2026-02-22T09:58:50.404330+00:00",
+      "stdout_file": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/5745554.stdout.log",
+      "stderr_file": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/5745554.stderr.log",
+      "duration_ms": 88,
+      "error": null,
+      "skipped": false,
+      "artifact_dir": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness"
+    },
+    {
+      "command": "turbo vsix --log-order grouped --output-logs new-only",
+      "bucket": "runtime",
+      "returncode": 127,
+      "attempts": 1,
+      "timed_out": false,
+      "started_at": "2026-02-22T09:58:50.404835+00:00",
+      "finished_at": "2026-02-22T09:58:50.437767+00:00",
+      "stdout_file": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/4686030.stdout.log",
+      "stderr_file": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/4686030.stderr.log",
+      "duration_ms": 32,
+      "error": null,
+      "skipped": false,
+      "artifact_dir": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness"
+    },
+    {
+      "command": "turbo vsix:nightly --log-order grouped --output-logs new-only",
+      "bucket": "runtime",
+      "returncode": 127,
+      "attempts": 1,
+      "timed_out": false,
+      "started_at": "2026-02-22T09:58:50.438391+00:00",
+      "finished_at": "2026-02-22T09:58:50.450610+00:00",
+      "stdout_file": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/7436694.stdout.log",
+      "stderr_file": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/7436694.stderr.log",
+      "duration_ms": 12,
+      "error": null,
+      "skipped": false,
+      "artifact_dir": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness"
+    },
+    {
+      "command": "pnpm --filter @kilocode/cli run deps:install",
+      "bucket": "runtime",
+      "returncode": 124,
+      "attempts": 1,
+      "timed_out": true,
+      "started_at": "2026-02-22T09:58:50.450951+00:00",
+      "finished_at": "2026-02-22T09:59:02.460380+00:00",
+      "stdout_file": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/1757187.stdout.log",
+      "stderr_file": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/1757187.stderr.log",
+      "duration_ms": 12009,
+      "error": "timeout after 12s",
+      "skipped": false,
+      "artifact_dir": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness"
+    },
+    {
+      "command": "pnpm --filter @kilocode/cli run dev",
+      "bucket": "runtime",
+      "returncode": 124,
+      "attempts": 1,
+      "timed_out": true,
+      "started_at": "2026-02-22T09:59:02.469300+00:00",
+      "finished_at": "2026-02-22T09:59:14.523150+00:00",
+      "stdout_file": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/1003358.stdout.log",
+      "stderr_file": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/1003358.stderr.log",
+      "duration_ms": 12053,
+      "error": "timeout after 12s",
+      "skipped": false,
+      "artifact_dir": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness"
+    },
+    {
+      "command": "pnpm --filter @kilocode/cli run start",
+      "bucket": "runtime",
+      "returncode": 1,
+      "attempts": 1,
+      "timed_out": false,
+      "started_at": "2026-02-22T09:59:14.525626+00:00",
+      "finished_at": "2026-02-22T09:59:23.354924+00:00",
+      "stdout_file": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/8071315.stdout.log",
+      "stderr_file": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/8071315.stderr.log",
+      "duration_ms": 8829,
+      "error": null,
+      "skipped": false,
+      "artifact_dir": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness"
+    }
+  ],
+  "quality": {
+    "discovered_rules": [
+      "strict-full"
+    ],
+    "inferred_profile": "strict-full",
+    "mapped_buckets": {
+      "STATIC": [],
+      "TEST": [],
+      "BUILD": [],
+      "API": [],
+      "RUNTIME": [],
+      "QUALITY": []
+    },
+    "blockers": [
+      {
+        "bucket": "STATIC",
+        "severity": "block",
+        "reason": "missing command marker in executed profile"
+      },
+      {
+        "bucket": "TEST",
+        "severity": "block",
+        "reason": "missing command marker in executed profile"
+      },
+      {
+        "bucket": "BUILD",
+        "severity": "block",
+        "reason": "missing command marker in executed profile"
+      }
+    ],
+    "warnings": [
+      {
+        "bucket": "STATIC",
+        "severity": "warn",
+        "reason": "partial evidence only"
+      },
+      {
+        "bucket": "TEST",
+        "severity": "warn",
+        "reason": "partial evidence only"
+      },
+      {
+        "bucket": "BUILD",
+        "severity": "warn",
+        "reason": "partial evidence only"
+      }
+    ]
+  },
+  "result_code": "FAIL",
+  "evidence": [
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.git-blame-ignore-revs",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/CODE_OF_CONDUCT.md",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/pnpm-lock.yaml",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.envrc",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/flake.lock",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/knip.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/LICENSE",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/CHANGELOG.md",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/renovate.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.vscodeignore",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.env.sample",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/turbo.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.tool-versions",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/PRIVACY.md",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.gitmodules",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.prettierignore",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/NOTICE",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/README.md",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/kilo.gif",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.dockerignore",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.prettierrc.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.gitignore",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/package.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/flake.nix",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/CONTRIBUTING.md",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.nvmrc",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.gitattributes",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.kilocodemodes",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/tsconfig.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.rooignore",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/DEVELOPMENT.md",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.gitconfig",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/ellipsis.yaml",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/pnpm-workspace.yaml",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.husky/pre-push",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.husky/pre-commit",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/releases/3.34.7-release.png",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/releases/3.28.14-release.png",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/releases/3.31.0-release.png",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/releases/3.26.0-release.png",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/releases/3.28.3-release.png",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/releases/3.26.5-release.png",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/releases/3.32.0-release.png",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/releases/3.28.6-release.png",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/releases/3.29.1-release.png",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/releases/3.34.2-release.png",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/releases/3.30.2-release.png",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/releases/3.28.5-release.png",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/releases/3.26.6-release.png",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/releases/3.28.0-release.png",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/releases/3.31.3-release.png",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/releases/3.26.3-release.png",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/releases/3.33.1-release.png",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/releases/3.28.9-release.png",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/releases/3.34.4-release.png",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/releases/3.30.3-release.png",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/releases/3.29.0-release.png",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/releases/3.34.3-release.png",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/releases/3.28.7-release.png",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/releases/3.26.4-release.png",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/releases/3.32.1-release.png",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/releases/3.28.10-release.png",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/releases/3.28.2-release.png",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/releases/3.28.15-release.png",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/releases/3.26.1-release.png",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/releases/3.31.1-release.png",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/releases/3.33.3-release.png",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/releases/3.34.6-release.png",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/releases/3.34.5-release.png",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/releases/3.28.8-release.png",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/releases/template.png",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/releases/3.26.2-release.png",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/releases/3.28.16-release.png",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/releases/v3.33.0-release.png",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/releases/3.28.1-release.png",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/releases/3.26.7-release.png",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/releases/3.28.4-release.png",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/releases/3.34.0-release.png",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/releases/3.27.0-release.png",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/releases/3.30.0-release.png",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.changeset/thin-dots-smoke.md",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.changeset/gentle-plants-smile.md",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.changeset/config.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.changeset/README.md",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.changeset/tidy-donuts-judge.md",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.changeset/curly-jokes-cut.md",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.changeset/shy-bats-talk.md",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/launch/README.md",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/node_modules/.modules.yaml",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/node_modules/.pnpm-workspace-state.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/3997076.stdout.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/9473948.stderr.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/7528765.stdout.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/2483364.stderr.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/2203333.stderr.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/8622234.stderr.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/2328563.stdout.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/5880768.stderr.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/6729733.stderr.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/9377733.stdout.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/3889155.stdout.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/9950443.stderr.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/5530092.stdout.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/6472222.stdout.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/8943419.stderr.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/1080165.stderr.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/1962881.stderr.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/5122916.stderr.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/6498038.stdout.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/624608.stderr.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/701902.stderr.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/5001540.stdout.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/5568398.stdout.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/5989910.stderr.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/9679716.stdout.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/2627721.stdout.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/6912621.stderr.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/6879265.stderr.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/1145139.stderr.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/7690887.stdout.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/2061469.stderr.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/7608753.stdout.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/6069346.stderr.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/5409839.stdout.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/1136327.stdout.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/3693358.stderr.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/3265932.stderr.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/8622234.stdout.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/2203333.stdout.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/2328563.stderr.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/6729733.stdout.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/5880768.stdout.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/7528765.stderr.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/2483364.stdout.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/9473948.stdout.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/3997076.stderr.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/8943419.stdout.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/1080165.stdout.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/3889155.stderr.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/9377733.stderr.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/6472222.stderr.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/9950443.stdout.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/5530092.stderr.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/5989910.stdout.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/2627721.stderr.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/9679716.stderr.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/5122916.stdout.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/6498038.stderr.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/1962881.stdout.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/5001540.stderr.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/5568398.stderr.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/624608.stdout.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/701902.stdout.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/6069346.stdout.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/5409839.stderr.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/7690887.stderr.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/7608753.stderr.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/2061469.stdout.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/3693358.stdout.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/3265932.stdout.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/1136327.stderr.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/6912621.stdout.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/1145139.stdout.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.helios-harness/6879265.stdout.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/cli/npm-shrinkwrap.dist.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/cli/CHANGELOG.md",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/cli/Dockerfile",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/cli/turbo.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/cli/README.md",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/cli/package.dist.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/cli/.gitignore",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/cli/package.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/cli/tsconfig.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/cli/esbuild.config.mjs",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/cli/vitest.config.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/cli/eslint.config.mjs",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.devcontainer/setup.sh",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.devcontainer/Dockerfile",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.devcontainer/.dockerignore",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.devcontainer/devcontainer.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/jetbrains/README.md",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/jetbrains/.gitignore",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/webview-ui/agent-manager.html",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/webview-ui/index.html",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/webview-ui/turbo.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/webview-ui/tsconfig.tsbuildinfo",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/webview-ui/.gitignore",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/webview-ui/package.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/webview-ui/browser-panel.html",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/webview-ui/components.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/webview-ui/tsconfig.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/webview-ui/vite.config.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/webview-ui/vitest.config.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/webview-ui/vitest.setup.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/webview-ui/eslint.config.mjs",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/scripts/find-missing-translations.js",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/scripts/reset-kilocode-state.sh",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/scripts/update-contributors.js",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/scripts/find-missing-i18n-key.js",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/scripts/install-vsix.js",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/scripts/bootstrap.mjs",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.github/CODEOWNERS",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.github/pull_request_template.md",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.github/copilot-instructions.md",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.github/dependabot.yml",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.git/config",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.git/HEAD",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.git/description",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.git/index",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.git/packed-refs",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.vscode/settings.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.vscode/extensions.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.vscode/launch.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.vscode/tasks.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/package.nls.fr.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/package.nls.ko.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/package.nls.ca.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/package.nls.hi.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/CHANGELOG.md",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/esbuild.mjs",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/.vscodeignore",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/package.nls.id.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/package.nls.cs.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/package.nls.pt-BR.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/turbo.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/extension.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/package.nls.zh-TW.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/package.nls.vi.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/package.nls.ar.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/package.nls.es.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/.prettierignore",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/package.nls.th.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/package.nls.tr.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/.gitignore",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/package.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/package.nls.ja.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/package.nls.nl.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/tsconfig.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/package.nls.zh-CN.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/vitest.config.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/package.nls.uk.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/package.nls.pl.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/package.nls.ru.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/package.nls.de.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/vitest.setup.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/package.nls.it.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/eslint.config.mjs",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/package.nls.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/benchmark/src/utils.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/benchmark/src/runExercise.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.husky/_/pre-rebase",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.husky/_/pre-applypatch",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.husky/_/husky.sh",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.husky/_/pre-auto-gc",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.husky/_/pre-merge-commit",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.husky/_/post-commit",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.husky/_/applypatch-msg",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.husky/_/prepare-commit-msg",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.husky/_/h",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.husky/_/post-checkout",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.husky/_/post-applypatch",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.husky/_/.gitignore",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.husky/_/post-rewrite",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.husky/_/commit-msg",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.husky/_/pre-push",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.husky/_/post-merge",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.husky/_/pre-commit",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/node_modules/.pnpm/lock.yaml",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/node_modules/.bin/jiti",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/node_modules/.bin/tsserver",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/node_modules/.bin/dotenvx",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/node_modules/.bin/rimraf",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/node_modules/.bin/acorn",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/node_modules/.bin/prettier",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/node_modules/.bin/turbo",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/node_modules/.bin/knip",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/node_modules/.bin/tsx",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/node_modules/.bin/changeset",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/node_modules/.bin/tsc",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/node_modules/.bin/lint-staged",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/node_modules/.bin/vsce",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/node_modules/.bin/ovsx",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/node_modules/.bin/only-allow",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/node_modules/.bin/git-dotenvx",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/node_modules/.bin/eslint",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/node_modules/.bin/glob",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/node_modules/.bin/husky",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/node_modules/.bin/esbuild",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/node_modules/.bin/knip-bun",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/node_modules/.bin/mkdirp",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/cli/dist/index.js",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/cli/dist/npm-shrinkwrap.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/cli/dist/README.md",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/cli/dist/package-lock.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/cli/dist/package.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/cli/integration-tests/simple-file-operations.test.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/cli/integration-tests/logo.test.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/cli/integration-tests/test-helper.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/cli/docs/PROVIDER_CONFIGURATION.md",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/cli/docs/DOCKER_ENV_EXAMPLE.md",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/cli/docs/DOCKER.md",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/cli/docs/DEVELOPMENT.md",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/cli/docs/ENVIRONMENT_VARIABLES.md",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/cli/.turbo/turbo-lint.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/cli/scripts/copy-extension.mjs",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/cli/src/cli.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/cli/src/index.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/jetbrains/host/pnpm-lock.yaml",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/jetbrains/host/bootstrap-window.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/jetbrains/host/bootstrap-server.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/jetbrains/host/bootstrap-import.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/jetbrains/host/tsconfig.base.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/jetbrains/host/bootstrap-fork.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/jetbrains/host/turbo.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/jetbrains/host/extension.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/jetbrains/host/cli.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/jetbrains/host/bootstrap-cli.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/jetbrains/host/electron.d.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/jetbrains/host/tsconfig.vscode-dts.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/jetbrains/host/tsec.exemptions.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/jetbrains/host/tsconfig.monaco.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/jetbrains/host/.gitignore",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/jetbrains/host/package.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/jetbrains/host/tsup.config.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/jetbrains/host/tsconfig.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/jetbrains/host/tsconfig.tsec.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/jetbrains/host/tsconfig.vscode-proposed-dts.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/jetbrains/host/server-cli.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/jetbrains/host/bootstrap-node.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/jetbrains/host/server-main.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/jetbrains/host/eslint.config.mjs",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/jetbrains/host/bootstrap-meta.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/jetbrains/host/bootstrap-esm.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/jetbrains/plugin/detekt.yml",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/jetbrains/plugin/genPlatform.gradle",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/jetbrains/plugin/turbo.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/jetbrains/plugin/gradle.properties.template",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/jetbrains/plugin/gradlew",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/jetbrains/plugin/.gitignore",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/jetbrains/plugin/package.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/jetbrains/plugin/platform.zip",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/jetbrains/plugin/build.gradle.kts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/jetbrains/plugin/settings.gradle.kts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/jetbrains/plugin/gradlew.bat",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/jetbrains/scripts/check-dependencies.sh",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/jetbrains/scripts/check-dependencies.js",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.turbo/cache/1bbd6e03117479dc.tar.zst",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.turbo/cache/1bbd6e03117479dc-meta.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.turbo/cache/ef652eff7c1aae8e-meta.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.turbo/cache/ef652eff7c1aae8e.tar.zst",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/webview-ui/.turbo/turbo-build.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/webview-ui/audio/notification.wav",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/webview-ui/audio/celebration.wav",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/webview-ui/audio/progress_loop.wav",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/webview-ui/public/.gitkeep",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/webview-ui/src/index.tsx",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/webview-ui/src/App.tsx",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/webview-ui/src/types.d.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/webview-ui/src/index.css",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/webview-ui/src/codicon-custom.css",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/webview-ui/src/vite-env.d.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/webview-ui/src/preflight.css",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/webview-ui/src/browser-panel.tsx",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/webview-ui/src/kilocode.css",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/webview-ui/src/exports.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.kilocode/rules-translate/instructions-de.md",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.kilocode/rules-translate/001-general-rules.md",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.kilocode/rules-translate/instructions-zh-cn.md",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.kilocode/rules-translate/instructions-zh-tw.md",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.kilocode/workflows/add-missing-translations.md",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.kilocode/rules/rules.md",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/scripts/kilocode/roomerge_02_cleanup.sh",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/scripts/kilocode/roomerge_01_init.sh",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/scripts/kilocode/roomerge_03_package_json.js",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/scripts/kilocode/roomerge_80_fix_roo_in_translations.sh",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/packages/evals/ARCHITECTURE.md",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/packages/evals/Dockerfile.runner",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/packages/evals/.env.test",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/packages/evals/Dockerfile.web",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/packages/evals/README.md",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/packages/evals/vitest-global-setup.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/packages/evals/.gitignore",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/packages/evals/package.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/packages/evals/tsconfig.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/packages/evals/docker-compose.yml",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/packages/evals/drizzle.config.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/packages/evals/vitest.config.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/packages/evals/.env.development",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/packages/evals/eslint.config.mjs",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/packages/evals/ADDING-EVALS.md",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/packages/types/.gitignore",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/packages/types/package.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/packages/types/tsup.config.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/packages/types/tsconfig.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/packages/types/vitest.config.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/packages/types/eslint.config.mjs",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/packages/config-eslint/react.js",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/packages/config-eslint/package.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/packages/config-eslint/next.js",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/packages/config-eslint/base.js",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/packages/config-typescript/vscode-library.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/packages/config-typescript/nextjs.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/packages/config-typescript/package.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/packages/config-typescript/cjs.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/packages/config-typescript/base.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/packages/cloud/package.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/packages/cloud/tsconfig.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/packages/cloud/vitest.config.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/packages/cloud/eslint.config.mjs",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/packages/ipc/README.md",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/packages/ipc/package.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/packages/ipc/tsconfig.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/packages/ipc/eslint.config.mjs",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/packages/telemetry/package.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/packages/telemetry/tsconfig.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/packages/telemetry/vitest.config.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/packages/telemetry/eslint.config.mjs",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/packages/build/package.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/packages/build/tsconfig.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/packages/build/vitest.config.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/packages/build/eslint.config.mjs",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.github/workflows/evals.yml",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.github/workflows/cli-publish.yml",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.github/workflows/storybook-playwright-snapshot.yml",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.github/workflows/marketplace-publish.yml",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.github/workflows/docusaurus-build.yml",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.github/workflows/update-contributors.yml",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.github/workflows/code-qa.yml",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.github/workflows/changeset-release.yml",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.github/workflows/build-cli.yml",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.github/scripts/comment-playwright-results.js",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.github/scripts/get_prev_version_refs.py",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.github/ISSUE_TEMPLATE/bug_report.yml",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.github/ISSUE_TEMPLATE/config.yml",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.git/info/exclude",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.git/logs/HEAD",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.git/hooks/commit-msg.sample",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.git/hooks/post-commit",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.git/hooks/pre-rebase.sample",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.git/hooks/sendemail-validate.sample",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.git/hooks/pre-commit.sample",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.git/hooks/post-checkout",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.git/hooks/applypatch-msg.sample",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.git/hooks/fsmonitor-watchman.sample",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.git/hooks/pre-receive.sample",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.git/hooks/prepare-commit-msg.sample",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.git/hooks/post-update.sample",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.git/hooks/pre-merge-commit.sample",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.git/hooks/pre-applypatch.sample",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.git/hooks/pre-push",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.git/hooks/post-merge",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.git/hooks/pre-push.sample",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.git/hooks/update.sample",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/.git/hooks/push-to-checkout.sample",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/kilocode-docs/docusaurus.config.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/kilocode-docs/LICENSE",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/kilocode-docs/.kilocoderules",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/kilocode-docs/sidebars.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/kilocode-docs/turbo.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/kilocode-docs/README.md",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/kilocode-docs/.gitignore",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/kilocode-docs/package.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/kilocode-docs/.kilocodemodes",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/kilocode-docs/tsconfig.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/kilocode-docs/.env.example",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/vscode-nightly/esbuild.mjs",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/vscode-nightly/turbo.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/vscode-nightly/package.nightly.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/vscode-nightly/.gitignore",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/vscode-nightly/package.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/vscode-nightly/package.nls.nightly.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/storybook/README.md",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/storybook/.gitignore",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/storybook/package.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/storybook/tsconfig.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/vscode-e2e/.env.local.sample",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/vscode-e2e/tsconfig.esm.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/vscode-e2e/package.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/vscode-e2e/.env.integration.example",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/vscode-e2e/tsconfig.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/vscode-e2e/eslint.config.mjs",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/vscode-e2e/.vscode-test.mjs",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/playwright-e2e/.env.local.sample",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/playwright-e2e/run-docker-playwright.js",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/playwright-e2e/Dockerfile.playwright-ci",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/playwright-e2e/.dockerignore",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/playwright-e2e/docker-entrypoint.sh",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/playwright-e2e/.gitignore",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/playwright-e2e/package.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/playwright-e2e/playwright.globalSetup.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/playwright-e2e/tsconfig.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/playwright-e2e/playwright.config.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/playwright-e2e/eslint.config.mjs",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/playwright-e2e/.pnpmrc",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/web-roo-code/next-sitemap.config.cjs",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/web-roo-code/turbo.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/web-roo-code/postcss.config.cjs",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/web-roo-code/.npmrc",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/web-roo-code/next-env.d.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/web-roo-code/tailwind.config.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/web-roo-code/.gitignore",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/web-roo-code/package.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/web-roo-code/components.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/web-roo-code/tsconfig.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/web-roo-code/.env.example",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/web-roo-code/eslint.config.mjs",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/web-roo-code/next.config.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/web-evals/postcss.config.mjs",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/web-evals/turbo.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/web-evals/next-env.d.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/web-evals/.gitignore",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/web-evals/package.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/web-evals/.env",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/web-evals/components.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/web-evals/tsconfig.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/web-evals/vitest.config.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/web-evals/eslint.config.mjs",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/apps/web-evals/next.config.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/__mocks__/vscode.js",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/test-llm-autocompletion/test-cases.spec.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/test-llm-autocompletion/utils.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/test-llm-autocompletion/llm-client.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/test-llm-autocompletion/README.md",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/test-llm-autocompletion/test-cases.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/test-llm-autocompletion/html-report.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/test-llm-autocompletion/package.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/test-llm-autocompletion/tsconfig.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/test-llm-autocompletion/approvals.spec.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/test-llm-autocompletion/opus-approval.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/test-llm-autocompletion/mock-context-provider.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/test-llm-autocompletion/approvals.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/test-llm-autocompletion/runner.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/test-llm-autocompletion/mock-vscode.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/test-llm-autocompletion/ghost-provider-tester.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/core/kilocode.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/extension/api.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/walkthrough/step5.md",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/walkthrough/step1.md",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/walkthrough/step4.md",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/walkthrough/step3.md",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/walkthrough/step2.md",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/utils/safeWriteJson.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/utils/xml-matcher.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/utils/outputChannelLogger.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/utils/path.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/utils/lancedb-manager.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/utils/commands.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/utils/github-url-utils.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/utils/autoLaunchingTask.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/utils/vscode-config.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/utils/fowardingLogger.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/utils/anthropicApiKeyWarning.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/utils/errors.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/utils/vitest-verbosity.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/utils/storage.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/utils/fs.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/utils/usage-tracker.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/utils/kilo-config-file.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/utils/autoImportSettings.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/utils/tts.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/utils/xml.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/utils/shell.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/utils/resolveToolProtocol.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/utils/tiktoken.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/utils/focusPanel.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/utils/keybindings.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/utils/object.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/utils/terminalCommandGenerator.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/utils/config.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/utils/text-normalization.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/utils/git.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/utils/single-completion-handler.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/utils/migrateSettings.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/utils/pathUtils.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/utils/globalContext.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/utils/countTokens.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/shared/WebviewMessage.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/shared/embeddingModels.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/shared/quote-protection.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/shared/ExtensionMessage.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/shared/todo.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/shared/array.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/shared/getApiMetrics.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/shared/cost.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/shared/support-prompt.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/shared/http.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/shared/language.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/shared/globalFileNames.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/shared/ProfileValidator.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/shared/mcp.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/shared/experiments.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/shared/api.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/shared/checkExistApiConfig.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/shared/modes.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/shared/GitWatcher.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/shared/vsCodeSelectorUtils.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/shared/tools.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/shared/context-mentions.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/shared/parse-command.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/shared/combineApiRequests.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/shared/id.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/shared/combineCommandSequences.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/shared/cline-rules.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/shared/browserUtils.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/shared/safeJsonParse.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/shared/package.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/__tests__/extension.spec.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/__tests__/commands.spec.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/__tests__/command-integration.spec.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/__tests__/dist_assets.spec.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/__tests__/common-mocks.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/__tests__/command-mentions.spec.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/__tests__/migrateSettings.spec.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/api/index.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/workers/types.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/workers/countTokens.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/activate/humanRelay.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/activate/handleTask.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/activate/CodeActionProvider.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/activate/registerTerminalActions.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/activate/index.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/activate/handleUri.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/activate/registerCommands.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/activate/registerCodeActions.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/i18n/setup.ts",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/src/i18n/index.ts",
+      "artifact_type": "signal"
+    }
+  ],
+  "plan_hash": "subset-build-8"
+}

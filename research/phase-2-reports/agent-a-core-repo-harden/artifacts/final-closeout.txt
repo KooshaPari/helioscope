@@ -1,0 +1,9 @@
+# Lane-A Final Closeout
+
+- A1-A10 evidence collection completed with bounded command execution.
+- Status: `PASS` for codex, `WARN` for opencode/kilocode/cliproxyapi-plusplus, `WARN/BLOCK` for goose due missing checkout lockfile state.
+- Lockfile parity and strictness outcomes are captured in:
+  - `artifacts/lockfile-parity.txt`
+  - `artifacts/strictness-results.md`
+  - `artifacts/strictness-parity.md`
+- Open risks are captured in `artifacts/unresolved-risks.txt` and must be resolved before hard-gating `A10` decisions.

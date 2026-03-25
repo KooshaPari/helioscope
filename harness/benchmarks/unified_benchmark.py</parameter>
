@@ -1,0 +1,220 @@
+"""Unified Benchmark with config-based model selection.
+
+Loads from ~/.factory/config.json and tries cliproxy first, then direct API.
+"""
+
+import asyncio
+import json
+import os
+import sys
+import time
+import httpx
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Optional
+
+CONFIG_PATH = Path.home() / ".factory" / "config.json"
+CLIPROXY_URL = os.environ.get("CLIPROXY_URL", "http://localhost:8317")
+
+
+def load_config() -> dict:
+    """Load model config from ~/.factory/config.json"""
+    if CONFIG_PATH.exists():
+        return json.loads(CONFIG_PATH.read_text())
+    return {}
+
+
+def find_model_config(models: list, prefix: str = None, suffix: str = None) -> Optional[dict]:
+    """Find model by prefix/suffix match."""
+    for m in models:
+        name = m.get("model_display_name", m.get("model", ""))
+        model_id = m.get("model", "")
+        
+        if prefix and name.startswith(prefix):
+            return m
+        if suffix and name.endswith(suffix):
+            return m
+        if prefix and model_id.startswith(prefix):
+            return m
+        if suffix and model_id.endswith(suffix):
+            return m
+    return None
+
+
+@dataclass
+class BenchmarkResult:
+    model: str
+    latency_ms: float = 0.0
+    success: bool = False
+    error: str = ""
+    source: str = "unknown"
+    tokens: int = 0
+
+
+async def call_cliproxy(model: str, prompt: str) -> BenchmarkResult:
+    """Try cliproxy first."""
+    try:
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            # Health check
+            try:
+                resp = await client.get(f"{CLIPROXY_URL}/health", timeout=5.0)
+            except:
+                pass  # May not have health endpoint
+            
+            # Chat completion
+            start = time.perf_counter()
+            resp = await client.post(
+                f"{CLIPROXY_URL}/v1/chat/completions",
+                json={
+                    "model": model,
+                    "messages": [{"role": "user", "content": prompt}],
+                    "max_tokens": 50,
+                },
+                timeout=30.0
+            )
+            latency = (time.perf_counter() - start) * 1000
+            
+            if resp.status_code == 200:
+                return BenchmarkResult(
+                    model=model,
+                    latency_ms=latency,
+                    success=True,
+                    source="cliproxy"
+                )
+            else:
+                return BenchmarkResult(
+                    model=model,
+                    success=False,
+                    error=f"HTTP {resp.status_code}",
+                    source="cliproxy"
+                )
+    except Exception as e:
+        return BenchmarkResult(
+            model=model,
+            success=False,
+            error=str(e)[:100],
+            source="cliproxy"
+        )
+
+
+async def call_direct(model_cfg: dict, prompt: str) -> BenchmarkResult:
+    """Fallback to direct API."""
+    base_url = model_cfg.get("base_url", "")
+    api_key = model_cfg.get("api_key", "")
+    model_id = model_cfg.get("model", "")
+    
+    if not api_key or api_key == "dummy-not-used":
+        return BenchmarkResult(
+            model=model_id,
+            success=False,
+            error="No API key",
+            source="direct"
+        )
+    
+    try:
+        # Determine endpoint
+        if "anthropic" in base_url.lower() or "claude" in model_id.lower():
+            endpoint = f"{base_url}/v1/messages"
+        else:
+            endpoint = f"{base_url}/chat/completions"
+        
+        async with httpx.AsyncClient(timeout=60.0) as client:
+            start = time.perf_counter()
+            resp = await client.post(
+                endpoint,
+                headers={
+                    "Authorization": f"Bearer {api_key}",
+                    "Content-Type": "application/json"
+                },
+                json={
+                    "model": model_id,
+                    "messages": [{"role": "user", "content": prompt}],
+                    "max_tokens": 50
+                },
+                timeout=60.0
+            )
+            latency = (time.perf_counter() - start) * 1000
+            
+            if resp.status_code == 200:
+                return BenchmarkResult(
+                    model=model_id,
+                    latency_ms=latency,
+                    success=True,
+                    source="direct"
+                )
+            else:
+                return BenchmarkResult(
+                    model=model_id,
+                    success=False,
+                    error=f"HTTP {resp.status_code}",
+                    source="direct"
+                )
+    except Exception as e:
+        return BenchmarkResult(
+            model=model_cfg.get("model", "unknown"),
+            success=False,
+            error=str(e)[:100],
+            source="direct"
+        )
+
+
+async def run_benchmark(model_prefix: str = None, model_suffix: str = None, prompt: str = "say hi") -> BenchmarkResult:
+    """Run benchmark with config-based model selection."""
+    config = load_config()
+    models = config.get("custom_models", [])
+    
+    # Find matching model
+    model_cfg = find_model_config(models, prefix=model_prefix, suffix=model_suffix)
+    
+    if not model_cfg:
+        # Default to minimax-m2.5-highspeed if available
+        model_cfg = find_model_config(models, suffix="highspeed") or find_model_config(models, suffix="minimax")
+    
+    if not model_cfg:
+        return BenchmarkResult(
+            model="no model found",
+            success=False,
+            error="No matching model in config"
+        )
+    
+    model_id = model_cfg.get("model_display_name", model_cfg.get("model", "unknown"))
+    print(f"Testing {model_id}...")
+    
+    # Try cliproxy first
+    result = await call_cliproxy(model_id, prompt)
+    if result.success:
+        print(f"  ✓ cliproxy: {result.latency_ms:.1f}ms")
+        return result
+    
+    print(f"  ✗ cliproxy: {result.error}")
+    
+    # Fallback to direct
+    print(f"  Trying direct API...")
+    result = await call_direct(model_cfg, prompt)
+    if result.success:
+        print(f"  ✓ direct: {result.latency_ms:.1f}ms")
+    else:
+        print(f"  ✗ direct: {result.error}")
+    
+    return result
+
+
+async def main():
+    print("=" * 50)
+    print("Unified Benchmark with Config Loading")
+    print("=" * 50)
+    
+    # Try minimax-m2.5-highspeed
+    result = await run_benchmark(model_suffix="highspeed")
+    
+    print("\n" + "=" * 50)
+    print(f"Result: {'✓ SUCCESS' if result.success else '✗ FAILED'}")
+    print(f"Model: {result.model}")
+    print(f"Latency: {result.latency_ms:.1f}ms")
+    print(f"Source: {result.source}")
+    if result.error:
+        print(f"Error: {result.error}")
+
+
+if __name__ == "__main__":
+    asyncio.run(main())

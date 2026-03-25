@@ -1,0 +1,121 @@
+# Lockfile Parity Report
+generated_at=2026-02-22T09:08:13.936262+00:00
+## codex
+  lockfiles: ["clones/codex/codex-rs/Cargo.lock", "clones/codex/pnpm-lock.yaml"]
+  - cd clones/codex && timeout 180 pnpm install --frozen-lockfile
+    stdout:
+      Scope: all 5 workspace projects
+      Lockfile is up to date, resolution step is skipped
+      Progress: resolved 0, reused 1, downloaded 0, added 0
+      Packages: -46
+      ----------------------------------------------
+      Progress: resolved 0, reused 46, downloaded 0, added 0, done
+      
+      sdk/typescript prepare$ pnpm run build
+      sdk/typescript prepare: > @openai/codex-sdk@0.0.0-dev build /Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/codex/sdk/typescript
+      sdk/typescript prepare: > tsup
+      sdk/typescript prepare: CLI Building entry: src/index.ts
+      sdk/typescript prepare: CLI Using tsconfig: tsconfig.json
+      sdk/typescript prepare: CLI tsup v8.5.0
+      sdk/typescript prepare: CLI Using tsup config: /Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/codex/sdk/typescript/tsup.config.ts
+      sdk/typescript prepare: CLI Target: node18
+      sdk/typescript prepare: CLI Cleaning output folder
+      sdk/typescript prepare: ESM Build start
+      sdk/typescript prepare: ESM dist/index.js     13.88 KB
+      sdk/typescript prepare: ESM dist/index.js.map 27.76 KB
+      sdk/typescript prepare: ESM ⚡️ Build success in 17ms
+      sdk/typescript prepare: DTS Build start
+      sdk/typescript prepare: DTS ⚡️ Build success in 1086ms
+      sdk/typescript prepare: DTS dist/index.d.ts 9.53 KB
+      sdk/typescript prepare: Done
+      Done in 4.2s using pnpm v10.29.3
+  status: PASS
+## opencode
+  lockfiles: ["clones/opencode/go.sum"]
+  - cd clones/opencode && timeout 180 go mod tidy && timeout 180 go mod download
+    stderr:
+      go: downloading go1.24.0 (darwin/arm64)
+  status: PASS
+## kilocode
+  lockfiles: ["clones/kilocode/jetbrains/host/pnpm-lock.yaml", "clones/kilocode/pnpm-lock.yaml"]
+  - command: cd clones/kilocode && timeout 180 pnpm install --frozen-lockfile && timeout 180 pnpm --dir jetbrains/host install --frozen-lockfile
+    status: FAIL
+    returncode: -9
+    stdout:
+       WARN  Unsupported engine: wanted: {"node":"20.19.2"} (current: {"node":"v25.6.1","pnpm":"10.8.1"})
+      src                                      |  WARN  Unsupported engine: wanted: {"node":"20.19.2"} (current: {"node":"v25.6.1","pnpm":"10.8.1"})
+      Scope: all 21 workspace projects
+      Lockfile is up to date, resolution step is skipped
+      Progress: resolved 1, reused 0, downloaded 0, added 0
+      Packages: +3873
+      ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      Progress: resolved 3873, reused 532, downloaded 0, added 0
+      Progress: resolved 3873, reused 1975, downloaded 0, added 0
+      Progress: resolved 3873, reused 3213, downloaded 0, added 0
+      Progress: resolved 3873, reused 3519, downloaded 3, added 0
+      Progress: resolved 3873, reused 3519, downloaded 6, added 6
+      Progress: resolved 3873, reused 3519, downloaded 17, added 17
+      Progress: resolved 3873, reused 3519, downloaded 26, added 26
+      Progress: resolved 3873, reused 3519, downloaded 32, added 32
+      Progress: resolved 3873, reused 3519, downloaded 48, added 48
+      Progress: resolved 3873, reused 3519, downloaded 55, added 54
+      Progress: resolved 3873, reused 3519, downloaded 63, added 63
+      Progress: resolved 3873, reused 3519, downloaded 68, added 68
+      Progress: resolved 3873, reused 3519, downloaded 75, added 74
+      Progress: resolved 3873, reused 3519, downloaded 82, added 82
+      Progress: resolved 3873, reused 3519, downloaded 86, added 85
+      Progress: resolved 3873, reused 3519, downloaded 87, added 85
+      Progress: resolved 3873, reused 3519, downloaded 94, added 93
+      Progress: resolved 3873, reused 3519, downloaded 103, added 102
+      Progress: resolved 3873, reused 3519, downloaded 105, added 105
+      Progress: resolved 3873, reused 3519, downloaded 110, added 110
+      Progress: resolved 3873, reused 3519, downloaded 121, added 121
+      Progress: resolved 3873, reused 3519, downloaded 125, added 124
+      Progress: resolved 3873, reused 3519, downloaded 125, added 125
+      Progress: resolved 3873, reused 3519, downloaded 128, added 128
+      Progress: resolved 3873, reused 3519, downloaded 139, added 139
+      Progress: resolved 3873, reused 3519, downloaded 147, added 147
+      Progress: resolved 3873, reused 3519, downloaded 157, added 156
+      Progress: resolved 3873, reused 3519, downloaded 163, added 163
+      Progress: resolved 3873, reused 3519, downloaded 173, added 174
+      Progress: resolved 3873, reused 3519, downloaded 183, added 184
+      Progress: resolved 3873, reused 3519, downloaded 187, added 188
+      Progress: resolved 3873, reused 3519, downloaded 196, added 196
+      Progress: resolved 3873, reused 3519, downloaded 206, added 207
+      Progress: resolved 3873, reused 3519, downloaded 215, added 215
+      Progress: resolved 3873, reused 3519, downloaded 230, added 231
+      Progress: resolved 3873, reused 3519, downloaded 240, added 241
+      Progress: resolved 3873, reused 3519, downloaded 251, added 252
+      Progress: resolved 3873, reused 3519, downloaded 258, added 259
+      Progress: resolved 3873, reused 3519, downloaded 264, added 265
+      Progress: resolved 3873, reused 3519, downloaded 274, added 275
+      Progress: resolved 3873, reused 3519, downloaded 282, added 283
+      Progress: resolved 3873, reused 3519, downloaded 292, added 293
+      Progress: resolved 3873, reused 3519, downloaded 298, added 299
+      Progress: resolved 3873, reused 3519, downloaded 301, added 301
+      Progress: resolved 3873, reused 3519, downloaded 304, added 305
+      Progress: resolved 3873, reused 3519, downloaded 305, added 306
+      Progress: resolved 3873, reused 3519, downloaded 306, added 306
+      Progress: resolved 3873, reused 3519, downloaded 306, added 307
+      Progress: resolved 3873, reused 3519, downloaded 307, added 307
+      Progress: resolved 3873, reused 3519, downloaded 307, added 308
+      Progress: resolved 3873, reused 3519, downloaded 308, added 308
+      Progress: resolved 3873, reused 3519, downloaded 308, added 309
+    stderr:
+      (node:89640) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+      (Use `node --trace-deprecation ...` to show where the warning was created)
+  status: WARN
+## cliproxyapi-plusplus
+  lockfiles: ["clones/cliproxyapi-plusplus/go.sum"]
+  - cd clones/cliproxyapi-plusplus && timeout 180 go mod tidy && timeout 180 go mod download
+    stderr:
+      go: downloading go1.24.3 (darwin/arm64)
+  status: PASS
+## goose
+  lockfiles: []
+  - command: cd clones/goose && timeout 180 cargo generate-lockfile
+    status: FAIL
+    returncode: 101
+    stderr:
+      error: could not find `Cargo.toml` in `/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/goose` or any parent directory
+  status: BLOCK (no lock files found)

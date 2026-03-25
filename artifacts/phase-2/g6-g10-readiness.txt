@@ -1,0 +1,23 @@
+# Phase-2 G6-G10 Ready-State Evidence
+status: PASS
+
+## G6
+- [x] /Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/research/phase-2-reports/agent-a-core-repo-harden.md
+- [x] /Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/research/phase-2-reports/agent-b-candidate-expansion.md
+- [x] /Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/artifacts/phase-2 (dir, 12 entries)
+
+## G7
+- [x] /Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/research/phase-2-reports/agent-c-governance-strictness.md
+
+## G8
+- [x] /Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/research/phase-2-reports/agent-d-harness-architecture.md
+
+## G9
+- [x] /Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/research/phase-2-reports/agent-e-validation-automation.md
+
+## G10
+- [x] /Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/research/phase-2-reports/agent-f-closeout-delivery.md
+- [x] /Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/wbs/phase-2.json
+
+
+Cross-lane handoff precondition: G10 depends on G6-G9 + F10 and is satisfied if all above are present.

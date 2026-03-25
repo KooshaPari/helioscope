@@ -1,0 +1,5 @@
+{"repo": "cliproxyapi-plusplus", "result_code": "FAIL", "commands": 4, "runs": 4, "blockers": 0, "warnings": 0}
+{"repo": "codex", "result_code": "FAIL", "commands": 4, "runs": 4, "blockers": 3, "warnings": 3}
+{"repo": "goose", "result_code": "FAIL", "commands": 2, "runs": 2, "blockers": 3, "warnings": 3}
+{"repo": "kilocode", "result_code": "FAIL", "commands": 34, "runs": 8, "blockers": 3, "warnings": 3}
+{"repo": "opencode", "result_code": "FAIL", "commands": 3, "runs": 3, "blockers": 0, "warnings": 0}

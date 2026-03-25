@@ -1,0 +1,456 @@
+{
+  "repo_id": "opencode",
+  "manifest": {
+    "repo_id": "opencode",
+    "root": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode",
+    "remote_url": "https://github.com/opencode-ai/opencode.git",
+    "default_branch": "main",
+    "discovered_at": "2026-02-22T10:13:09.787690+00:00",
+    "commit": "73ee493",
+    "branch": "main"
+  },
+  "commands": [
+    {
+      "command": "go test ./...",
+      "bucket": "static",
+      "cwd": ".",
+      "required": true,
+      "rationale": "script 'go-check' discovered from go.mod",
+      "source": "go.mod"
+    },
+    {
+      "command": "go fmt ./...",
+      "bucket": "static",
+      "cwd": ".",
+      "required": true,
+      "rationale": "script 'go-fmt' discovered from go.mod",
+      "source": "go.mod"
+    },
+    {
+      "command": "go build ./...",
+      "bucket": "build",
+      "cwd": ".",
+      "required": true,
+      "rationale": "script 'go-build' discovered from go.mod",
+      "source": "go.mod"
+    }
+  ],
+  "runs": [
+    {
+      "command": "go test ./...",
+      "bucket": "static",
+      "returncode": 1,
+      "attempts": 1,
+      "timed_out": false,
+      "started_at": "2026-02-22T10:13:09.887441+00:00",
+      "finished_at": "2026-02-22T10:13:27.294430+00:00",
+      "stdout_file": "clones/opencode/.helios-harness/1027050.stdout.log",
+      "stderr_file": "clones/opencode/.helios-harness/1027050.stderr.log",
+      "duration_ms": 17406,
+      "error": null,
+      "skipped": false,
+      "artifact_dir": "clones/opencode/.helios-harness"
+    },
+    {
+      "command": "go fmt ./...",
+      "bucket": "static",
+      "returncode": 0,
+      "attempts": 1,
+      "timed_out": false,
+      "started_at": "2026-02-22T10:13:27.294788+00:00",
+      "finished_at": "2026-02-22T10:13:28.254264+00:00",
+      "stdout_file": "clones/opencode/.helios-harness/5155229.stdout.log",
+      "stderr_file": "clones/opencode/.helios-harness/5155229.stderr.log",
+      "duration_ms": 959,
+      "error": null,
+      "skipped": false,
+      "artifact_dir": "clones/opencode/.helios-harness"
+    },
+    {
+      "command": "go build ./...",
+      "bucket": "build",
+      "returncode": 0,
+      "attempts": 1,
+      "timed_out": false,
+      "started_at": "2026-02-22T10:13:28.254970+00:00",
+      "finished_at": "2026-02-22T10:13:37.153783+00:00",
+      "stdout_file": "clones/opencode/.helios-harness/1780580.stdout.log",
+      "stderr_file": "clones/opencode/.helios-harness/1780580.stderr.log",
+      "duration_ms": 8898,
+      "error": null,
+      "skipped": false,
+      "artifact_dir": "clones/opencode/.helios-harness"
+    }
+  ],
+  "quality": {
+    "discovered_rules": [
+      "strict-full"
+    ],
+    "inferred_profile": "strict-full",
+    "mapped_buckets": {
+      "STATIC": [
+        "go fmt ./..."
+      ],
+      "TEST": [
+        "go test ./..."
+      ],
+      "BUILD": [
+        "go build ./..."
+      ],
+      "API": [],
+      "RUNTIME": [],
+      "QUALITY": [
+        "go test ./...",
+        "go fmt ./...",
+        "go build ./..."
+      ]
+    },
+    "blockers": [],
+    "warnings": []
+  },
+  "result_code": "FAIL",
+  "evidence": [
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/opencode-schema.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/go.mod",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/install",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/.opencode.json",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/sqlc.yaml",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/LICENSE",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/go.sum",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/README.md",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/.goreleaser.yml",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/.gitignore",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/main.go",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/cmd/root.go",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/.helios-harness/9231038.stdout.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/.helios-harness/4270870.stdout.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/.helios-harness/9294183.stderr.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/.helios-harness/9231038.stderr.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/.helios-harness/4270870.stderr.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/.helios-harness/9294183.stdout.log",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/scripts/snapshot",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/scripts/release",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/scripts/check_hidden_chars.sh",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/.git/config",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/.git/HEAD",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/.git/description",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/.git/index",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/.git/packed-refs",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/cmd/schema/README.md",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/cmd/schema/main.go",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/internal/fileutil/fileutil.go",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/internal/app/app.go",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/internal/app/lsp.go",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/internal/config/config.go",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/internal/config/init.go",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/internal/tui/tui.go",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/internal/completions/files-folders.go",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/internal/message/message.go",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/internal/message/attachment.go",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/internal/message/content.go",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/internal/diff/patch.go",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/internal/diff/diff.go",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/internal/lsp/methods.go",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/internal/lsp/transport.go",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/internal/lsp/handlers.go",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/internal/lsp/protocol.go",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/internal/lsp/client.go",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/internal/lsp/language.go",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/internal/version/version.go",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/internal/history/file.go",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/internal/format/format.go",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/internal/format/spinner.go",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/internal/db/connect.go",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/internal/db/models.go",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/internal/db/embed.go",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/internal/db/db.go",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/internal/db/sessions.sql.go",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/internal/db/messages.sql.go",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/internal/db/files.sql.go",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/internal/db/querier.go",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/internal/pubsub/events.go",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/internal/pubsub/broker.go",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/internal/permission/permission.go",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/internal/logging/logger.go",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/internal/logging/message.go",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/internal/logging/writer.go",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/internal/session/session.go",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/.github/workflows/release.yml",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/.github/workflows/build.yml",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/.git/info/exclude",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/.git/logs/HEAD",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/.git/hooks/commit-msg.sample",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/.git/hooks/pre-rebase.sample",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/.git/hooks/sendemail-validate.sample",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/.git/hooks/pre-commit.sample",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/.git/hooks/applypatch-msg.sample",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/.git/hooks/fsmonitor-watchman.sample",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/.git/hooks/pre-receive.sample",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/.git/hooks/prepare-commit-msg.sample",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/.git/hooks/post-update.sample",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/.git/hooks/pre-merge-commit.sample",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/.git/hooks/pre-applypatch.sample",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/.git/hooks/pre-push.sample",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/.git/hooks/update.sample",
+      "artifact_type": "signal"
+    },
+    {
+      "path": "/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/.git/hooks/push-to-checkout.sample",
+      "artifact_type": "signal"
+    }
+  ],
+  "plan_hash": "65dcc5982da00f86be00c8a00dac789a33300d3dfc759f36a7ac3e551be40ad4",
+  "runner_config": {
+    "max_parallel": 1,
+    "timeout_seconds": 20,
+    "retries": 0,
+    "retry_delay_seconds": 1.0,
+    "continue_on_fail": true,
+    "budget_seconds": null
+  },
+  "created_at": "2026-02-22T10:13:37.154353+00:00"
+}

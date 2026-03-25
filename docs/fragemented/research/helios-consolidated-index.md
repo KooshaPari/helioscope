@@ -1,0 +1,473 @@
+# Helios Harness Consolidation Index
+
+> Regenerated: 2026-02-22T11:22:30Z
+
+## Scope
+- `research/helios-consolidated.md` (markdown artifacts)
+- `research/helios-consolidated-evidence.md` (non-markdown evidence artifacts)
+
+## Markdown Sources
+
+- A1.md
+  - Source: `A1.md` from `helios-consolidated.md` line ~161
+  - Link: [A1.md](research/helios-consolidated.md#a1md)
+- A10.md
+  - Source: `A10.md` from `helios-consolidated.md` line ~175
+  - Link: [A10.md](research/helios-consolidated.md#a10md)
+- A2.md
+  - Source: `A2.md` from `helios-consolidated.md` line ~189
+  - Link: [A2.md](research/helios-consolidated.md#a2md)
+- A3.md
+  - Source: `A3.md` from `helios-consolidated.md` line ~203
+  - Link: [A3.md](research/helios-consolidated.md#a3md)
+- A4.md
+  - Source: `A4.md` from `helios-consolidated.md` line ~217
+  - Link: [A4.md](research/helios-consolidated.md#a4md)
+- A5.md
+  - Source: `A5.md` from `helios-consolidated.md` line ~231
+  - Link: [A5.md](research/helios-consolidated.md#a5md)
+- A6.md
+  - Source: `A6.md` from `helios-consolidated.md` line ~245
+  - Link: [A6.md](research/helios-consolidated.md#a6md)
+- A7.md
+  - Source: `A7.md` from `helios-consolidated.md` line ~259
+  - Link: [A7.md](research/helios-consolidated.md#a7md)
+- A8.md
+  - Source: `A8.md` from `helios-consolidated.md` line ~273
+  - Link: [A8.md](research/helios-consolidated.md#a8md)
+- A9.md
+  - Source: `A9.md` from `helios-consolidated.md` line ~287
+  - Link: [A9.md](research/helios-consolidated.md#a9md)
+- B1.md
+  - Source: `B1.md` from `helios-consolidated.md` line ~301
+  - Link: [B1.md](research/helios-consolidated.md#b1md)
+- B10.md
+  - Source: `B10.md` from `helios-consolidated.md` line ~315
+  - Link: [B10.md](research/helios-consolidated.md#b10md)
+- B2.md
+  - Source: `B2.md` from `helios-consolidated.md` line ~329
+  - Link: [B2.md](research/helios-consolidated.md#b2md)
+- B3.md
+  - Source: `B3.md` from `helios-consolidated.md` line ~343
+  - Link: [B3.md](research/helios-consolidated.md#b3md)
+- B4.md
+  - Source: `B4.md` from `helios-consolidated.md` line ~357
+  - Link: [B4.md](research/helios-consolidated.md#b4md)
+- B5.md
+  - Source: `B5.md` from `helios-consolidated.md` line ~371
+  - Link: [B5.md](research/helios-consolidated.md#b5md)
+- B6.md
+  - Source: `B6.md` from `helios-consolidated.md` line ~385
+  - Link: [B6.md](research/helios-consolidated.md#b6md)
+- B7.md
+  - Source: `B7.md` from `helios-consolidated.md` line ~399
+  - Link: [B7.md](research/helios-consolidated.md#b7md)
+- B8.md
+  - Source: `B8.md` from `helios-consolidated.md` line ~413
+  - Link: [B8.md](research/helios-consolidated.md#b8md)
+- B9.md
+  - Source: `B9.md` from `helios-consolidated.md` line ~427
+  - Link: [B9.md](research/helios-consolidated.md#b9md)
+- C1.md
+  - Source: `C1.md` from `helios-consolidated.md` line ~441
+  - Link: [C1.md](research/helios-consolidated.md#c1md)
+- C10.md
+  - Source: `C10.md` from `helios-consolidated.md` line ~455
+  - Link: [C10.md](research/helios-consolidated.md#c10md)
+- C2.md
+  - Source: `C2.md` from `helios-consolidated.md` line ~469
+  - Link: [C2.md](research/helios-consolidated.md#c2md)
+- C3.md
+  - Source: `C3.md` from `helios-consolidated.md` line ~483
+  - Link: [C3.md](research/helios-consolidated.md#c3md)
+- C4.md
+  - Source: `C4.md` from `helios-consolidated.md` line ~497
+  - Link: [C4.md](research/helios-consolidated.md#c4md)
+- C5.md
+  - Source: `C5.md` from `helios-consolidated.md` line ~511
+  - Link: [C5.md](research/helios-consolidated.md#c5md)
+- C6.md
+  - Source: `C6.md` from `helios-consolidated.md` line ~525
+  - Link: [C6.md](research/helios-consolidated.md#c6md)
+- C7.md
+  - Source: `C7.md` from `helios-consolidated.md` line ~539
+  - Link: [C7.md](research/helios-consolidated.md#c7md)
+- C8.md
+  - Source: `C8.md` from `helios-consolidated.md` line ~553
+  - Link: [C8.md](research/helios-consolidated.md#c8md)
+- C9.md
+  - Source: `C9.md` from `helios-consolidated.md` line ~567
+  - Link: [C9.md](research/helios-consolidated.md#c9md)
+- D1.md
+  - Source: `D1.md` from `helios-consolidated.md` line ~581
+  - Link: [D1.md](research/helios-consolidated.md#d1md)
+- D10.md
+  - Source: `D10.md` from `helios-consolidated.md` line ~595
+  - Link: [D10.md](research/helios-consolidated.md#d10md)
+- D2.md
+  - Source: `D2.md` from `helios-consolidated.md` line ~609
+  - Link: [D2.md](research/helios-consolidated.md#d2md)
+- D3.md
+  - Source: `D3.md` from `helios-consolidated.md` line ~623
+  - Link: [D3.md](research/helios-consolidated.md#d3md)
+- D4.md
+  - Source: `D4.md` from `helios-consolidated.md` line ~637
+  - Link: [D4.md](research/helios-consolidated.md#d4md)
+- D5.md
+  - Source: `D5.md` from `helios-consolidated.md` line ~651
+  - Link: [D5.md](research/helios-consolidated.md#d5md)
+- D6.md
+  - Source: `D6.md` from `helios-consolidated.md` line ~665
+  - Link: [D6.md](research/helios-consolidated.md#d6md)
+- D7.md
+  - Source: `D7.md` from `helios-consolidated.md` line ~679
+  - Link: [D7.md](research/helios-consolidated.md#d7md)
+- D8.md
+  - Source: `D8.md` from `helios-consolidated.md` line ~693
+  - Link: [D8.md](research/helios-consolidated.md#d8md)
+- D9.md
+  - Source: `D9.md` from `helios-consolidated.md` line ~707
+  - Link: [D9.md](research/helios-consolidated.md#d9md)
+- E1.md
+  - Source: `E1.md` from `helios-consolidated.md` line ~721
+  - Link: [E1.md](research/helios-consolidated.md#e1md)
+- E10.md
+  - Source: `E10.md` from `helios-consolidated.md` line ~735
+  - Link: [E10.md](research/helios-consolidated.md#e10md)
+- E2.md
+  - Source: `E2.md` from `helios-consolidated.md` line ~749
+  - Link: [E2.md](research/helios-consolidated.md#e2md)
+- E3.md
+  - Source: `E3.md` from `helios-consolidated.md` line ~763
+  - Link: [E3.md](research/helios-consolidated.md#e3md)
+- E4.md
+  - Source: `E4.md` from `helios-consolidated.md` line ~777
+  - Link: [E4.md](research/helios-consolidated.md#e4md)
+- E5.md
+  - Source: `E5.md` from `helios-consolidated.md` line ~791
+  - Link: [E5.md](research/helios-consolidated.md#e5md)
+- E6.md
+  - Source: `E6.md` from `helios-consolidated.md` line ~805
+  - Link: [E6.md](research/helios-consolidated.md#e6md)
+- E7.md
+  - Source: `E7.md` from `helios-consolidated.md` line ~819
+  - Link: [E7.md](research/helios-consolidated.md#e7md)
+- E8.md
+  - Source: `E8.md` from `helios-consolidated.md` line ~833
+  - Link: [E8.md](research/helios-consolidated.md#e8md)
+- E9.md
+  - Source: `E9.md` from `helios-consolidated.md` line ~847
+  - Link: [E9.md](research/helios-consolidated.md#e9md)
+- F1.md
+  - Source: `F1.md` from `helios-consolidated.md` line ~861
+  - Link: [F1.md](research/helios-consolidated.md#f1md)
+- F10.md
+  - Source: `F10.md` from `helios-consolidated.md` line ~875
+  - Link: [F10.md](research/helios-consolidated.md#f10md)
+- F2.md
+  - Source: `F2.md` from `helios-consolidated.md` line ~889
+  - Link: [F2.md](research/helios-consolidated.md#f2md)
+- F3.md
+  - Source: `F3.md` from `helios-consolidated.md` line ~903
+  - Link: [F3.md](research/helios-consolidated.md#f3md)
+- F4.md
+  - Source: `F4.md` from `helios-consolidated.md` line ~917
+  - Link: [F4.md](research/helios-consolidated.md#f4md)
+- F5.md
+  - Source: `F5.md` from `helios-consolidated.md` line ~931
+  - Link: [F5.md](research/helios-consolidated.md#f5md)
+- F6.md
+  - Source: `F6.md` from `helios-consolidated.md` line ~945
+  - Link: [F6.md](research/helios-consolidated.md#f6md)
+- F7.md
+  - Source: `F7.md` from `helios-consolidated.md` line ~959
+  - Link: [F7.md](research/helios-consolidated.md#f7md)
+- F8.md
+  - Source: `F8.md` from `helios-consolidated.md` line ~973
+  - Link: [F8.md](research/helios-consolidated.md#f8md)
+- F9.md
+  - Source: `F9.md` from `helios-consolidated.md` line ~987
+  - Link: [F9.md](research/helios-consolidated.md#f9md)
+- G1.md
+  - Source: `G1.md` from `helios-consolidated.md` line ~1001
+  - Link: [G1.md](research/helios-consolidated.md#g1md)
+- G10.md
+  - Source: `G10.md` from `helios-consolidated.md` line ~1015
+  - Link: [G10.md](research/helios-consolidated.md#g10md)
+- G2.md
+  - Source: `G2.md` from `helios-consolidated.md` line ~1029
+  - Link: [G2.md](research/helios-consolidated.md#g2md)
+- G3.md
+  - Source: `G3.md` from `helios-consolidated.md` line ~1043
+  - Link: [G3.md](research/helios-consolidated.md#g3md)
+- G4.md
+  - Source: `G4.md` from `helios-consolidated.md` line ~1057
+  - Link: [G4.md](research/helios-consolidated.md#g4md)
+- G5.md
+  - Source: `G5.md` from `helios-consolidated.md` line ~1071
+  - Link: [G5.md](research/helios-consolidated.md#g5md)
+- G6.md
+  - Source: `G6.md` from `helios-consolidated.md` line ~1085
+  - Link: [G6.md](research/helios-consolidated.md#g6md)
+- G7.md
+  - Source: `G7.md` from `helios-consolidated.md` line ~1099
+  - Link: [G7.md](research/helios-consolidated.md#g7md)
+- G8.md
+  - Source: `G8.md` from `helios-consolidated.md` line ~1113
+  - Link: [G8.md](research/helios-consolidated.md#g8md)
+- G9.md
+  - Source: `G9.md` from `helios-consolidated.md` line ~1127
+  - Link: [G9.md](research/helios-consolidated.md#g9md)
+- codex-api-matrix.md
+  - Source: `codex-api-matrix.md` from `helios-consolidated.md` line ~1141
+  - Link: [codex-api-matrix.md](research/helios-consolidated.md#codex-api-matrixmd)
+- codex-dist-matrix.md
+  - Source: `codex-dist-matrix.md` from `helios-consolidated.md` line ~1149
+  - Link: [codex-dist-matrix.md](research/helios-consolidated.md#codex-dist-matrixmd)
+- codex-quality.md
+  - Source: `codex-quality.md` from `helios-consolidated.md` line ~1157
+  - Link: [codex-quality.md](research/helios-consolidated.md#codex-qualitymd)
+- codex-readiness-score.md
+  - Source: `codex-readiness-score.md` from `helios-consolidated.md` line ~1165
+  - Link: [codex-readiness-score.md](research/helios-consolidated.md#codex-readiness-scoremd)
+- codex-repo-status.md
+  - Source: `codex-repo-status.md` from `helios-consolidated.md` line ~1173
+  - Link: [codex-repo-status.md](research/helios-consolidated.md#codex-repo-statusmd)
+- codex-sdk-matrix.md
+  - Source: `codex-sdk-matrix.md` from `helios-consolidated.md` line ~1181
+  - Link: [codex-sdk-matrix.md](research/helios-consolidated.md#codex-sdk-matrixmd)
+- codex-toolchain.md
+  - Source: `codex-toolchain.md` from `helios-consolidated.md` line ~1189
+  - Link: [codex-toolchain.md](research/helios-consolidated.md#codex-toolchainmd)
+- goose-config-model.md
+  - Source: `goose-config-model.md` from `helios-consolidated.md` line ~1197
+  - Link: [goose-config-model.md](research/helios-consolidated.md#goose-config-modelmd)
+- goose-install-matrix.md
+  - Source: `goose-install-matrix.md` from `helios-consolidated.md` line ~1205
+  - Link: [goose-install-matrix.md](research/helios-consolidated.md#goose-install-matrixmd)
+- goose-mcp-api.md
+  - Source: `goose-mcp-api.md` from `helios-consolidated.md` line ~1213
+  - Link: [goose-mcp-api.md](research/helios-consolidated.md#goose-mcp-apimd)
+- goose-quality.md
+  - Source: `goose-quality.md` from `helios-consolidated.md` line ~1221
+  - Link: [goose-quality.md](research/helios-consolidated.md#goose-qualitymd)
+- goose-readiness-score.md
+  - Source: `goose-readiness-score.md` from `helios-consolidated.md` line ~1229
+  - Link: [goose-readiness-score.md](research/helios-consolidated.md#goose-readiness-scoremd)
+- goose-repo-status.md
+  - Source: `goose-repo-status.md` from `helios-consolidated.md` line ~1237
+  - Link: [goose-repo-status.md](research/helios-consolidated.md#goose-repo-statusmd)
+- goose-runtime-profile.md
+  - Source: `goose-runtime-profile.md` from `helios-consolidated.md` line ~1245
+  - Link: [goose-runtime-profile.md](research/helios-consolidated.md#goose-runtime-profilemd)
+- goose-toolchain.md
+  - Source: `goose-toolchain.md` from `helios-consolidated.md` line ~1253
+  - Link: [goose-toolchain.md](research/helios-consolidated.md#goose-toolchainmd)
+- governance-mapping.md
+  - Source: `governance-mapping.md` from `helios-consolidated.md` line ~1261
+  - Link: [governance-mapping.md](research/helios-consolidated.md#governance-mappingmd)
+- governance-risks.md
+  - Source: `governance-risks.md` from `helios-consolidated.md` line ~1269
+  - Link: [governance-risks.md](research/helios-consolidated.md#governance-risksmd)
+- governance-rubric.md
+  - Source: `governance-rubric.md` from `helios-consolidated.md` line ~1277
+  - Link: [governance-rubric.md](research/helios-consolidated.md#governance-rubricmd)
+- harness-governance-rules.md
+  - Source: `harness-governance-rules.md` from `helios-consolidated.md` line ~1285
+  - Link: [harness-governance-rules.md](research/helios-consolidated.md#harness-governance-rulesmd)
+- kilo-api-matrix.md
+  - Source: `kilo-api-matrix.md` from `helios-consolidated.md` line ~1293
+  - Link: [kilo-api-matrix.md](research/helios-consolidated.md#kilo-api-matrixmd)
+- kilo-config-model.md
+  - Source: `kilo-config-model.md` from `helios-consolidated.md` line ~1301
+  - Link: [kilo-config-model.md](research/helios-consolidated.md#kilo-config-modelmd)
+- kilo-extensions-matrix.md
+  - Source: `kilo-extensions-matrix.md` from `helios-consolidated.md` line ~1309
+  - Link: [kilo-extensions-matrix.md](research/helios-consolidated.md#kilo-extensions-matrixmd)
+- kilo-quality.md
+  - Source: `kilo-quality.md` from `helios-consolidated.md` line ~1317
+  - Link: [kilo-quality.md](research/helios-consolidated.md#kilo-qualitymd)
+- kilo-readiness-score.md
+  - Source: `kilo-readiness-score.md` from `helios-consolidated.md` line ~1325
+  - Link: [kilo-readiness-score.md](research/helios-consolidated.md#kilo-readiness-scoremd)
+- kilo-repo-status.md
+  - Source: `kilo-repo-status.md` from `helios-consolidated.md` line ~1333
+  - Link: [kilo-repo-status.md](research/helios-consolidated.md#kilo-repo-statusmd)
+- kilo-runtime-profile.md
+  - Source: `kilo-runtime-profile.md` from `helios-consolidated.md` line ~1341
+  - Link: [kilo-runtime-profile.md](research/helios-consolidated.md#kilo-runtime-profilemd)
+- kilo-toolchain.md
+  - Source: `kilo-toolchain.md` from `helios-consolidated.md` line ~1349
+  - Link: [kilo-toolchain.md](research/helios-consolidated.md#kilo-toolchainmd)
+- opencode-api-matrix.md
+  - Source: `opencode-api-matrix.md` from `helios-consolidated.md` line ~1357
+  - Link: [opencode-api-matrix.md](research/helios-consolidated.md#opencode-api-matrixmd)
+- opencode-auth.md
+  - Source: `opencode-auth.md` from `helios-consolidated.md` line ~1365
+  - Link: [opencode-auth.md](research/helios-consolidated.md#opencode-authmd)
+- opencode-plugin-matrix.md
+  - Source: `opencode-plugin-matrix.md` from `helios-consolidated.md` line ~1373
+  - Link: [opencode-plugin-matrix.md](research/helios-consolidated.md#opencode-plugin-matrixmd)
+- opencode-quality.md
+  - Source: `opencode-quality.md` from `helios-consolidated.md` line ~1381
+  - Link: [opencode-quality.md](research/helios-consolidated.md#opencode-qualitymd)
+- opencode-readiness-score.md
+  - Source: `opencode-readiness-score.md` from `helios-consolidated.md` line ~1389
+  - Link: [opencode-readiness-score.md](research/helios-consolidated.md#opencode-readiness-scoremd)
+- opencode-repo-status.md
+  - Source: `opencode-repo-status.md` from `helios-consolidated.md` line ~1397
+  - Link: [opencode-repo-status.md](research/helios-consolidated.md#opencode-repo-statusmd)
+- opencode-runtime-profile.md
+  - Source: `opencode-runtime-profile.md` from `helios-consolidated.md` line ~1405
+  - Link: [opencode-runtime-profile.md](research/helios-consolidated.md#opencode-runtime-profilemd)
+- opencode-toolchain.md
+  - Source: `opencode-toolchain.md` from `helios-consolidated.md` line ~1413
+  - Link: [opencode-toolchain.md](research/helios-consolidated.md#opencode-toolchainmd)
+- oss-cli-constraints.md
+  - Source: `oss-cli-constraints.md` from `helios-consolidated.md` line ~1421
+  - Link: [oss-cli-constraints.md](research/helios-consolidated.md#oss-cli-constraintsmd)
+- oss-cli-discovery.md
+  - Source: `oss-cli-discovery.md` from `helios-consolidated.md` line ~1429
+  - Link: [oss-cli-discovery.md](research/helios-consolidated.md#oss-cli-discoverymd)
+- oss-cli-feasibility.md
+  - Source: `oss-cli-feasibility.md` from `helios-consolidated.md` line ~1437
+  - Link: [oss-cli-feasibility.md](research/helios-consolidated.md#oss-cli-feasibilitymd)
+- oss-cli-shortlist.md
+  - Source: `oss-cli-shortlist.md` from `helios-consolidated.md` line ~1445
+  - Link: [oss-cli-shortlist.md](research/helios-consolidated.md#oss-cli-shortlistmd)
+- oss-cli-web-candidates.md
+  - Source: `oss-cli-web-candidates.md` from `helios-consolidated.md` line ~1453
+  - Link: [oss-cli-web-candidates.md](research/helios-consolidated.md#oss-cli-web-candidatesmd)
+- phase-1-synthesis.md
+  - Source: `phase-1-synthesis.md` from `helios-consolidated.md` line ~1461
+  - Link: [phase-1-synthesis.md](research/helios-consolidated.md#phase-1-synthesismd)
+- agent-a-codex.md
+  - Source: `agent-a-codex.md` from `helios-consolidated.md` line ~1469
+  - Link: [agent-a-codex.md](research/helios-consolidated.md#agent-a-codexmd)
+- agent-b-opencode.md
+  - Source: `agent-b-opencode.md` from `helios-consolidated.md` line ~1551
+  - Link: [agent-b-opencode.md](research/helios-consolidated.md#agent-b-opencodemd)
+- agent-c-goose.md
+  - Source: `agent-c-goose.md` from `helios-consolidated.md` line ~1646
+  - Link: [agent-c-goose.md](research/helios-consolidated.md#agent-c-goosemd)
+- agent-d-kilo.md
+  - Source: `agent-d-kilo.md` from `helios-consolidated.md` line ~1743
+  - Link: [agent-d-kilo.md](research/helios-consolidated.md#agent-d-kilomd)
+- agent-e-discovery.md
+  - Source: `agent-e-discovery.md` from `helios-consolidated.md` line ~1849
+  - Link: [agent-e-discovery.md](research/helios-consolidated.md#agent-e-discoverymd)
+- agent-f-governance.md
+  - Source: `agent-f-governance.md` from `helios-consolidated.md` line ~1923
+  - Link: [agent-f-governance.md](research/helios-consolidated.md#agent-f-governancemd)
+- agent-a-core-repo-harden.md
+  - Source: `agent-a-core-repo-harden.md` from `helios-consolidated.md` line ~2007
+  - Link: [agent-a-core-repo-harden.md](research/helios-consolidated.md#agent-a-core-repo-hardenmd)
+- strictness-parity.md
+  - Source: `strictness-parity.md` from `helios-consolidated.md` line ~2146
+  - Link: [strictness-parity.md](research/helios-consolidated.md#strictness-paritymd)
+- strictness-results.md
+  - Source: `strictness-results.md` from `helios-consolidated.md` line ~2168
+  - Link: [strictness-results.md](research/helios-consolidated.md#strictness-resultsmd)
+- agent-b-candidate-expansion.md
+  - Source: `agent-b-candidate-expansion.md` from `helios-consolidated.md` line ~2350
+  - Link: [agent-b-candidate-expansion.md](research/helios-consolidated.md#agent-b-candidate-expansionmd)
+- b-local-scan.md
+  - Source: `b-local-scan.md` from `helios-consolidated.md` line ~2430
+  - Link: [b-local-scan.md](research/helios-consolidated.md#b-local-scanmd)
+- b9-web-registry-sweep.md
+  - Source: `b9-web-registry-sweep.md` from `helios-consolidated.md` line ~2494
+  - Link: [b9-web-registry-sweep.md](research/helios-consolidated.md#b9-web-registry-sweepmd)
+- agent-c-governance-strictness.md
+  - Source: `agent-c-governance-strictness.md` from `helios-consolidated.md` line ~2519
+  - Link: [agent-c-governance-strictness.md](research/helios-consolidated.md#agent-c-governance-strictnessmd)
+- strictness-equivalence-matrix.md
+  - Source: `strictness-equivalence-matrix.md` from `helios-consolidated.md` line ~2697
+  - Link: [strictness-equivalence-matrix.md](research/helios-consolidated.md#strictness-equivalence-matrixmd)
+- agent-d-harness-architecture.md
+  - Source: `agent-d-harness-architecture.md` from `helios-consolidated.md` line ~2729
+  - Link: [agent-d-harness-architecture.md](research/helios-consolidated.md#agent-d-harness-architecturemd)
+- phase2-harness-implementation.md
+  - Source: `phase2-harness-implementation.md` from `helios-consolidated.md` line ~2988
+  - Link: [phase2-harness-implementation.md](research/helios-consolidated.md#phase2-harness-implementationmd)
+- agent-e-validation-automation.md
+  - Source: `agent-e-validation-automation.md` from `helios-consolidated.md` line ~3037
+  - Link: [agent-e-validation-automation.md](research/helios-consolidated.md#agent-e-validation-automationmd)
+- e5-e10-evidence.md
+  - Source: `e5-e10-evidence.md` from `helios-consolidated.md` line ~3070
+  - Link: [e5-e10-evidence.md](research/helios-consolidated.md#e5-e10-evidencemd)
+- agent-f-closeout-delivery.md
+  - Source: `agent-f-closeout-delivery.md` from `helios-consolidated.md` line ~3110
+  - Link: [agent-f-closeout-delivery.md](research/helios-consolidated.md#agent-f-closeout-deliverymd)
+- closeout-matrix-schema.md
+  - Source: `closeout-matrix-schema.md` from `helios-consolidated.md` line ~3121
+  - Link: [closeout-matrix-schema.md](research/helios-consolidated.md#closeout-matrix-schemamd)
+- closeout-task-map.md
+  - Source: `closeout-task-map.md` from `helios-consolidated.md` line ~3144
+  - Link: [closeout-task-map.md](research/helios-consolidated.md#closeout-task-mapmd)
+- f5-schema-validation.md
+  - Source: `f5-schema-validation.md` from `helios-consolidated.md` line ~3166
+  - Link: [f5-schema-validation.md](research/helios-consolidated.md#f5-schema-validationmd)
+- f5-validation-commands.md
+  - Source: `f5-validation-commands.md` from `helios-consolidated.md` line ~3191
+  - Link: [f5-validation-commands.md](research/helios-consolidated.md#f5-validation-commandsmd)
+- risk-log.md
+  - Source: `risk-log.md` from `helios-consolidated.md` line ~3206
+  - Link: [risk-log.md](research/helios-consolidated.md#risk-logmd)
+
+## JSON Evidence
+
+- discovery-codex.json
+  - Source: `discovery-codex.json` from `helios-consolidated-evidence.md` line ~1625
+  - Link: [discovery-codex.json](research/helios-consolidated-evidence.md#discovery-codexjson)
+- phase-1.json
+  - Source: `phase-1.json` from `helios-consolidated-evidence.md` line ~4178
+  - Link: [phase-1.json](research/helios-consolidated-evidence.md#phase-1json)
+- phase-2.json
+  - Source: `phase-2.json` from `helios-consolidated-evidence.md` line ~4945
+  - Link: [phase-2.json](research/helios-consolidated-evidence.md#phase-2json)
+
+## YAML Evidence
+
+- e2-command-map-schema.yaml
+  - Source: `e2-command-map-schema.yaml` from `helios-consolidated-evidence.md` line ~4106
+  - Link: [e2-command-map-schema.yaml](research/helios-consolidated-evidence.md#e2-command-map-schemayaml)
+- e6-failure-budget.yaml
+  - Source: `e6-failure-budget.yaml` from `helios-consolidated-evidence.md` line ~4158
+  - Link: [e6-failure-budget.yaml](research/helios-consolidated-evidence.md#e6-failure-budgetyaml)
+
+## Text Evidence
+
+- branch-topology.txt
+  - Source: `branch-topology.txt` from `helios-consolidated-evidence.md` line ~35
+  - Link: [branch-topology.txt](research/helios-consolidated-evidence.md#branch-topologytxt)
+- commit-provenance.txt
+  - Source: `commit-provenance.txt` from `helios-consolidated-evidence.md` line ~75
+  - Link: [commit-provenance.txt](research/helios-consolidated-evidence.md#commit-provenancetxt)
+- final-cleanliness.txt
+  - Source: `final-cleanliness.txt` from `helios-consolidated-evidence.md` line ~113
+  - Link: [final-cleanliness.txt](research/helios-consolidated-evidence.md#final-cleanlinesstxt)
+- final-closeout.txt
+  - Source: `final-closeout.txt` from `helios-consolidated-evidence.md` line ~419
+  - Link: [final-closeout.txt](research/helios-consolidated-evidence.md#final-closeouttxt)
+- lockfile-inventory.txt
+  - Source: `lockfile-inventory.txt` from `helios-consolidated-evidence.md` line ~438
+  - Link: [lockfile-inventory.txt](research/helios-consolidated-evidence.md#lockfile-inventorytxt)
+- lockfile-parity.txt
+  - Source: `lockfile-parity.txt` from `helios-consolidated-evidence.md` line ~454
+  - Link: [lockfile-parity.txt](research/helios-consolidated-evidence.md#lockfile-paritytxt)
+- repo-manifest.txt
+  - Source: `repo-manifest.txt` from `helios-consolidated-evidence.md` line ~585
+  - Link: [repo-manifest.txt](research/helios-consolidated-evidence.md#repo-manifesttxt)
+- strictness-surface.txt
+  - Source: `strictness-surface.txt` from `helios-consolidated-evidence.md` line ~600
+  - Link: [strictness-surface.txt](research/helios-consolidated-evidence.md#strictness-surfacetxt)
+- task-metadata.txt
+  - Source: `task-metadata.txt` from `helios-consolidated-evidence.md` line ~1595
+  - Link: [task-metadata.txt](research/helios-consolidated-evidence.md#task-metadatatxt)
+- unresolved-risks.txt
+  - Source: `unresolved-risks.txt` from `helios-consolidated-evidence.md` line ~1610
+  - Link: [unresolved-risks.txt](research/helios-consolidated-evidence.md#unresolved-riskstxt)
+
+## Notes
+- Index entries are grouped by detected source artifact type (md/json/yaml/txt).
+- Source references are based on consolidated heading offsets and deterministic slug IDs.

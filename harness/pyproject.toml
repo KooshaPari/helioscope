@@ -1,0 +1,27 @@
+[project]
+name = "helios-harness"
+version = "0.1.0"
+description = "Reusable CLI/API/SDK quality harness for phase-2 evidence generation"
+requires-python = ">=3.12"
+dependencies = []
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project.scripts]
+helios-harness = "harness.scripts.run_harness:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["harness.src.harness"]
+
+# M1/Apple Silicon build settings
+[tool.hatch.envs.default]
+features = ["simd"]
+
+[tool.hatch.envs.default.overrides]
+matrix = { python = "3.12-aarch64" }
+
+# Universal Binary support
+[tool.hatch.metadata]
+allow-multiple-wheels = true

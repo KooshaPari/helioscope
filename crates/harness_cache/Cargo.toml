@@ -1,0 +1,19 @@
+[package]
+name = "harness_cache"
+version = "0.3.0"
+edition = "2021"
+
+[dependencies]
+tokio = { version = "1", features = ["sync", "rt"] }
+thiserror = "2"
+tracing = "0.1"
+moka = { version = "0.12", features = ["sync", "future"] }
+
+[dev-dependencies]
+criterion = "0.5"
+tokio = { version = "1", features = ["full"] }
+futures = "0.3"
+
+[[bench]]
+name = "cache_bench"
+harness = false

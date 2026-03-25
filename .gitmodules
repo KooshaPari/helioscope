@@ -1,0 +1,9 @@
+[submodule "clones/helios-cli"]
+	path = clones/helios-cli
+	url = https://github.com/KooshaPari/helios-cli.git
+[submodule "heliosBench"]
+	path = heliosBench
+	url = ../heliosBench
+[submodule "portage"]
+	path = portage
+	url = ../portage

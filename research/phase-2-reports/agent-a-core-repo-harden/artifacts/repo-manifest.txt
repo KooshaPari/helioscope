@@ -1,0 +1,5 @@
+codex
+opencode
+goose
+kilocode
+cliproxyapi-plusplus

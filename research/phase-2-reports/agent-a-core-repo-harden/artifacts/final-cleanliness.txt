@@ -1,0 +1,296 @@
+## main...origin/main
+## main...origin/main
+## main...origin/main
+## main...origin/main
+## main...origin/main [ahead 6, behind 62]
+ D AUDIT_AND_FIXES_REPORT.md
+ D AUGGIE_CLI_COMMAND_REFERENCE.md
+ D AUGGIE_CURSOR_STREAMING_ANALYSIS.md
+ D AUGGIE_EXECUTOR_IMPLEMENTATION_COMPLETE.md
+ D AUGGIE_EXECUTOR_IMPLEMENTATION_GUIDE.md
+ D AUGGIE_EXECUTOR_SUMMARY.md
+ D AUGGIE_IMPLEMENTATION_FINAL.md
+ D AUGMENT_CODE_PROPOSAL_SUMMARY.md
+ D AUGMENT_INTEGRATION_CLARIFICATION.md
+ D AUGMENT_PROVIDER_PROPOSAL_SUMMARY.md
+ D COMPLETE_DELIVERY_INDEX.md
+ D COMPLETE_GAP_ANALYSIS_AND_FIXES.md
+ D COMPLETE_PROJECT_INDEX.md
+ D COMPREHENSIVE_FINAL_PLAN.md
+ D CUSTOM_IMPLEMENTATION_BREAKDOWN.md
+ D CUSTOM_VS_LIBRARY_DETAILED.md
+ D DELIVERY_MANIFEST.md
+ D DEPLOYMENT_GUIDE.md
+ D FALLBACK_RULES_REFERENCE.md
+ D FINAL_DELIVERY_SUMMARY.md
+ D FINAL_REMAINING_GAPS_FIXED.md
+ D FULL_PROPOSAL.md
+ D HOW_TO_REVIEW_AUGMENT_PROPOSAL.md
+ D IMPLEMENTATION_GUIDE.md
+ D IMPLEMENTATION_GUIDE_WITH_LIBRARIES.md
+ D IMPLEMENTATION_SUMMARY.md
+ D INTELLIGENT_ROUTER_PROPOSAL.md
+ D LICENSE
+ D ORM_IAC_RESEARCH.md
+ D PHASE1_COMPLETION_SUMMARY.md
+ D PHASE1_IMPLEMENTATION_STATUS.md
+ D PHASE1_INTEGRATION_GUIDE.md
+ D PHASE2_3_4_COMPLETE_ROADMAP.md
+ D PHASE_1_STATUS.md
+ D PHASE_2_STATUS.md
+ D PHASE_3_STATUS.md
+ D PHASE_4_STATUS.md
+ D PHASE_5_STATUS.md
+ D POSTGRES_EVERYTHING_ANALYSIS.md
+ D PROPOSAL_COMPLETE_SUMMARY.md
+ D PROPOSAL_HANDOFF.md
+ D PULUMI_GUIDE.md
+ M README.md
+ D README_CN.md
+ D RESEARCH_EXISTING_LIBRARIES.md
+ D SIMPLIFIED_ARCHITECTURE.md
+ D STREAMING_IMPLEMENTATION_SUMMARY.md
+ D TOOLS_DEEP_COMPARISON.md
+ D VALIDATION_AGAINST_INITIAL_ASK.md
+ D WHAT_REMAINS_CUSTOM_SUMMARY.md
+ D WHY_THREE_ROUTERS.md
+ M cmd/api/main.go
+ M cmd/server/main.go
+ D cmd/server/main.go.bak
+ M docs/sdk-access.md
+ M docs/sdk-access_CN.md
+ M docs/sdk-advanced.md
+ M docs/sdk-advanced_CN.md
+ M docs/sdk-usage.md
+ M docs/sdk-usage_CN.md
+ M examples/custom-provider/main.go
+ M examples/translator/main.go
+ M go.mod
+ M go.sum
+ M infra/go.mod
+ M internal/access/config_access/provider.go
+ M internal/access/reconcile.go
+ M internal/api/cache_middleware.go
+ M internal/api/fallback_handlers.go
+ M internal/api/handlers.go
+ M internal/api/handlers/management/auth_files.go
+ M internal/api/handlers/management/config_basic.go
+ M internal/api/handlers/management/config_lists.go
+ M internal/api/handlers/management/gateway.go
+ M internal/api/handlers/management/handler.go
+ M internal/api/handlers/management/logs.go
+ M internal/api/handlers/management/usage.go
+ M internal/api/handlers/management/vertex_import.go
+ M internal/api/handlers_test.go
+ M internal/api/health_routes.go
+ M internal/api/health_routes_test.go
+ M internal/api/learning_handlers.go
+ M internal/api/middleware.go
+ M internal/api/middleware/request_logging.go
+ M internal/api/middleware/response_writer.go
+ M internal/api/modules/amp/amp.go
+ M internal/api/modules/amp/amp_test.go
+ M internal/api/modules/amp/fallback_handlers.go
+ M internal/api/modules/amp/gemini_bridge.go
+ M internal/api/modules/amp/routes.go
+ M internal/api/modules/amp/routes_test.go
+ M internal/api/modules/modules.go
+ M internal/api/monitoring_handlers.go
+ M internal/api/router.go
+ M internal/api/routing_handlers.go
+ M internal/api/server.go
+ M internal/api/server_test.go
+ M internal/api/services_handler.go
+ M internal/auth/claude/anthropic_auth.go
+ M internal/auth/claude/token.go
+ M internal/auth/codex/openai_auth.go
+ M internal/auth/codex/token.go
+ M internal/auth/gemini/gemini_auth.go
+ M internal/auth/gemini/gemini_token.go
+ M internal/auth/iflow/iflow_auth.go
+ M internal/auth/iflow/iflow_token.go
+ M internal/auth/qwen/qwen_auth.go
+ M internal/auth/qwen/qwen_token.go
+ M internal/auth/vertex/vertex_credentials.go
+ M internal/benchmarks/sync_service.go
+ M internal/cmd/anthropic_login.go
+ M internal/cmd/auggie_setup.go
+ M internal/cmd/auth_manager.go
+ M internal/cmd/iflow_cookie.go
+ M internal/cmd/iflow_login.go
+ M internal/cmd/login.go
+ M internal/cmd/openai_login.go
+ M internal/cmd/qwen_login.go
+ M internal/cmd/run.go
+ M internal/cmd/vertex_import.go
+ M internal/config/config.go
+ M internal/gateway/handler.go
+ M internal/integration/phases_integration.go
+ M internal/integration/platform.go
+ M internal/interfaces/types.go
+ M internal/logging/gin_logger.go
+ M internal/logging/global_logger.go
+ M internal/logging/request_logger.go
+ M internal/managementasset/updater.go
+ M internal/registry/model_registry.go
+ M internal/router/routellm.go
+ M internal/router/routing_service.go
+ M internal/runtime/executor/aistudio_executor.go
+ M internal/runtime/executor/auggie_executor.go
+ M internal/runtime/executor/auggie_executor_test.go
+ M internal/runtime/executor/claude_executor.go
+ M internal/runtime/executor/codex_executor.go
+ M internal/runtime/executor/copilot_cli_executor.go
+ M internal/runtime/executor/copilot_cli_executor_test.go
+ M internal/runtime/executor/cursor_agent_executor.go
+ D internal/runtime/executor/cursor_agent_executor.go.bak
+ M internal/runtime/executor/cursor_agent_executor_test.go
+ M internal/runtime/executor/error_classification_test.go
+ M internal/runtime/executor/gemini_cli_executor.go
+ M internal/runtime/executor/gemini_executor.go
+ M internal/runtime/executor/gemini_vertex_executor.go
+ M internal/runtime/executor/iflow_executor.go
+ M internal/runtime/executor/logging_helpers.go
+ M internal/runtime/executor/openai_compat_executor.go
+ M internal/runtime/executor/payload_helpers.go
+ M internal/runtime/executor/proxy_helpers.go
+ M internal/runtime/executor/qwen_executor.go
+ M internal/runtime/executor/usage_helpers.go
+ M internal/services/unified_provider.go
+ M internal/storage/benchmark_repository.go
+ M internal/storage/model_repository.go
+ M internal/storage/model_repository_test.go
+ M internal/store/gitstore.go
+ M internal/store/objectstore.go
+ M internal/store/postgresstore.go
+ M internal/translator/claude/gemini-cli/claude_gemini-cli_request.go
+ M internal/translator/claude/gemini-cli/claude_gemini-cli_response.go
+ M internal/translator/claude/gemini-cli/init.go
+ M internal/translator/claude/gemini/claude_gemini_request.go
+ M internal/translator/claude/gemini/init.go
+ M internal/translator/claude/openai/chat-completions/init.go
+ M internal/translator/claude/openai/responses/init.go
+ M internal/translator/codex/claude/codex_claude_request.go
+ M internal/translator/codex/claude/init.go
+ M internal/translator/codex/gemini-cli/codex_gemini-cli_request.go
+ M internal/translator/codex/gemini-cli/codex_gemini-cli_response.go
+ M internal/translator/codex/gemini-cli/init.go
+ M internal/translator/codex/gemini/codex_gemini_request.go
+ M internal/translator/codex/gemini/init.go
+ M internal/translator/codex/openai/chat-completions/codex_openai_request.go
+ M internal/translator/codex/openai/chat-completions/init.go
+ M internal/translator/codex/openai/responses/codex_openai-responses_request.go
+ M internal/translator/codex/openai/responses/init.go
+ M internal/translator/gemini-cli/claude/gemini-cli_claude_request.go
+ M internal/translator/gemini-cli/claude/init.go
+ M internal/translator/gemini-cli/gemini/gemini-cli_gemini_request.go
+ M internal/translator/gemini-cli/gemini/init.go
+ M internal/translator/gemini-cli/openai/chat-completions/gemini-cli_openai_request.go
+ M internal/translator/gemini-cli/openai/chat-completions/gemini-cli_openai_response.go
+ M internal/translator/gemini-cli/openai/chat-completions/init.go
+ M internal/translator/gemini-cli/openai/responses/gemini-cli_openai-responses_request.go
+ M internal/translator/gemini-cli/openai/responses/gemini-cli_openai-responses_response.go
+ M internal/translator/gemini-cli/openai/responses/init.go
+ M internal/translator/gemini/claude/gemini_claude_request.go
+ M internal/translator/gemini/claude/init.go
+ M internal/translator/gemini/gemini-cli/gemini_gemini-cli_request.go
+ M internal/translator/gemini/gemini-cli/init.go
+ M internal/translator/gemini/gemini/gemini_gemini_request.go
+ M internal/translator/gemini/gemini/init.go
+ M internal/translator/gemini/openai/chat-completions/gemini_openai_request.go
+ M internal/translator/gemini/openai/chat-completions/init.go
+ M internal/translator/gemini/openai/responses/gemini_openai-responses_request.go
+ M internal/translator/gemini/openai/responses/init.go
+ M internal/translator/init.go
+ M internal/translator/openai/claude/init.go
+ M internal/translator/openai/claude/openai_claude_response.go
+ M internal/translator/openai/gemini-cli/init.go
+ M internal/translator/openai/gemini-cli/openai_gemini_request.go
+ M internal/translator/openai/gemini-cli/openai_gemini_response.go
+ M internal/translator/openai/gemini/init.go
+ M internal/translator/openai/openai/chat-completions/init.go
+ M internal/translator/openai/openai/responses/init.go
+ M internal/translator/translator/translator.go
+ M internal/usage/logger_plugin.go
+ M internal/util/provider.go
+ M internal/util/proxy.go
+ M internal/util/thinking.go
+ M internal/util/util.go
+ M internal/watcher/watcher.go
+ M sdk/access/registry.go
+ M sdk/api/handlers/claude/code_handlers.go
+ M sdk/api/handlers/gemini/gemini-cli_handlers.go
+ M sdk/api/handlers/gemini/gemini_handlers.go
+ M sdk/api/handlers/handlers.go
+ M sdk/api/handlers/openai/openai_handlers.go
+ M sdk/api/handlers/openai/openai_responses_handlers.go
+ M sdk/auth/auggie.go
+ M sdk/auth/claude.go
+ M sdk/auth/codex.go
+ M sdk/auth/errors.go
+ M sdk/auth/filestore.go
+ M sdk/auth/gemini.go
+ M sdk/auth/iflow.go
+ M sdk/auth/interfaces.go
+ M sdk/auth/manager.go
+ M sdk/auth/qwen.go
+ M sdk/auth/refresh_registry.go
+ M sdk/auth/store_registry.go
+ M sdk/cliproxy/auth/manager.go
+ M sdk/cliproxy/auth/selector.go
+ M sdk/cliproxy/auth/types.go
+ M sdk/cliproxy/builder.go
+ M sdk/cliproxy/executor/types.go
+ M sdk/cliproxy/model_registry.go
+ M sdk/cliproxy/pipeline/context.go
+ M sdk/cliproxy/providers.go
+ M sdk/cliproxy/rtprovider.go
+ M sdk/cliproxy/service.go
+ M sdk/cliproxy/types.go
+ M sdk/cliproxy/watcher.go
+ M sdk/translator/builtin/builtin.go
+?? Dockerfile.dual-router
+?? Makefile.dev
+?? WARP.md
+?? api
+?? cliauth.test
+?? cmd/dual-router/
+?? data/
+?? docker-compose.dual-router.yml
+?? docker-compose.full-stack.yml
+?? docker-compose.mlx.yml
+?? examples/automated-auth/
+?? grafana-provisioning/
+?? init-postgres.sql
+?? integration.test
+?? internal/agentapi/
+?? internal/api/dual_router_handler.go
+?? internal/api/handlers/bifrost.go
+?? internal/auth/cursor/
+?? internal/benchmarks/scheduler.go
+?? internal/benchmarks/scheduler_test.go
+?? internal/benchmarks/seed/
+?? internal/benchmarks/strategies/
+?? internal/cmd/cursor_login.go
+?? internal/handlers/
+?? internal/normalization/
+?? internal/router/arch_router.go
+?? internal/router/dual_router_test_v2.go
+?? internal/router/dual_router_v2.go
+?? internal/router/executor_registry_v2.go
+?? internal/router/microservice.go
+?? internal/router/mirt.go
+?? internal/router/validation_test.go
+?? internal/saip/
+?? internal/tools/
+?? k8s-dual-router.yml
+?? migrations/00003_create_dual_router_schema.sql
+?? migrations/00003_create_dual_router_schema_sqlite.sql
+?? migrations/00004_create_saip_schema.sql
+?? nats.conf
+?? pkg/
+?? prometheus.yml
+?? router.test
+?? scripts/
+?? server
+?? test/

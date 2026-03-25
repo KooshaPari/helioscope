@@ -1,0 +1,6 @@
+repo,lockfiles
+codex,"/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/codex/codex-rs/Cargo.lock;/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/codex/pnpm-lock.yaml"
+opencode,"/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/opencode/go.sum"
+kilocode,"/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/jetbrains/host/pnpm-lock.yaml;/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/kilocode/pnpm-lock.yaml"
+goose,"/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/goose/Cargo.lock;/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/goose/documentation/package-lock.json;/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/goose/ui/desktop/package-lock.json"
+cliproxyapi-plusplus,"/Users/kooshapari/temp-PRODVERCEL/485/heliosHarness/clones/cliproxyapi-plusplus/go.sum"

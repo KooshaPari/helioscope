@@ -1,0 +1,42 @@
+version: v1
+buckets:
+  - name: bootstrap
+    aliases:
+      - install
+      - setup
+      - bootstrap
+  - name: static
+    aliases:
+      - lint
+      - fmt
+      - format
+      - typecheck
+      - clippy
+      - eslint
+  - name: test
+    aliases:
+      - test
+      - pytest
+      - gotest
+      - nextest
+  - name: build
+    aliases:
+      - build
+      - compile
+      - package
+  - name: api
+    aliases:
+      - openapi
+      - schema
+  - name: runtime
+    aliases:
+      - run
+      - serve
+      - start
+
+action:
+  default_profile: strict-full
+  hard_buckets:
+    - static
+    - test
+    - build

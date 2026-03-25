@@ -1,0 +1,21 @@
+[package]
+name = "harness_verify"
+version = "0.1.0"
+edition = "2021"
+description = "Verification pipeline for heliosHarness autonomous agents"
+
+[dependencies]
+harness_spec = { path = "../harness_spec" }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+thiserror = "1.0"
+uuid = { version = "1.0", features = ["v4", "serde"] }
+chrono = { version = "0.4", features = ["serde"] }
+tokio = { version = "1.0", features = ["full"] }
+tracing = "0.1"
+
+[dev-dependencies]
+tokio-test = "0.4"
+
+[features]
+default = []

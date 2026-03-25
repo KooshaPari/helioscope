@@ -1,0 +1,30 @@
+== codex ==
+origin	https://github.com/openai/codex.git (fetch)
+origin	https://github.com/openai/codex.git (push)
+main
+55fc075
+
+== opencode ==
+origin	https://github.com/opencode-ai/opencode.git (fetch)
+origin	https://github.com/opencode-ai/opencode.git (push)
+main
+73ee493
+
+== kilocode ==
+origin	/Users/kooshapari/temp-PRODVERCEL/485/API/research/kilocode (fetch)
+origin	/Users/kooshapari/temp-PRODVERCEL/485/API/research/kilocode (push)
+main
+1440d1986d
+
+== goose ==
+origin	https://github.com/block/goose.git (fetch)
+origin	https://github.com/block/goose.git (push)
+main
+66d075050ed
+
+== cliproxyapi-plusplus ==
+origin	https://github.com/router-for-me/CLIProxyAPI.git (fetch)
+origin	https://github.com/router-for-me/CLIProxyAPI.git (push)
+main
+f80eed6
+

@@ -1,0 +1,206 @@
+version: '3'
+
+tasks:
+  default:
+    cmds:
+      - task: help
+
+  help:
+    desc: Show available tasks
+    cmds:
+      - |
+        echo "Helios Router - Task Runner"
+        echo ""
+        echo "Service Management:"
+        echo "  task dev          - Start all services (NATS + Streamlit)"
+        echo "  task dev:nats     - Start NATS only"
+        echo "  task dev:streamlit - Start Streamlit only"
+        echo "  task stop         - Stop all services"
+        echo "  task status       - Check service status"
+        echo "  task restart      - Restart all services"
+        echo "  task health       - Health check"
+        echo ""
+        echo "Development:"
+        echo "  task lint         - Run ruff linter"
+        echo "  task fmt          - Format code with ruff"
+        echo "  task test         - Run pytest"
+        echo "  task quality      - Run all linters and tests"
+        echo "  task install      - Install dependencies"
+        echo ""
+        echo "Utilities:"
+        echo "  task nats:status  - Check NATS status"
+        echo "  task nats:logs    - Show NATS logs"
+        echo "  task clean        - Clean logs and caches"
+
+  install:
+    desc: Install dependencies with uv
+    cmds:
+      - echo "[INSTALL] Installing dependencies..."
+      - uv sync
+
+  lint:
+    desc: Run ruff linter
+    cmds:
+      - echo "[LINT] Running ruff..."
+      - ruff check .
+
+  fmt:
+    desc: Format code with ruff
+    cmds:
+      - echo "[FMT] Formatting code with ruff..."
+      - ruff format .
+      - ruff check . --fix
+
+  test:
+    desc: Run pytest
+    cmds:
+      - echo "[TEST] Running pytest..."
+      - pytest tests/ -v
+
+  quality:
+    desc: Run linting, formatting, and tests
+    cmds:
+      - task: lint
+      - task: fmt
+      - task: test
+
+  # Service Management
+  dev:
+    desc: Start all services (NATS + Streamlit)
+    cmds:
+      - task: preflight
+      - task: dev:nats
+      - echo "[INFO] Waiting for NATS to be ready..."
+      - sleep 2
+      - task: dev:streamlit
+      - echo ""
+      - echo "[DEV] Services started:"
+      - echo "  NATS: nats://localhost:4222"
+      - echo "  Streamlit: http://localhost:8501"
+
+  dev:nats:
+    desc: Start NATS server
+    cmds:
+      - echo "[LIFECYCLE] START nats-server $(date)"
+      - |
+        if pgrep -f "nats-server" > /dev/null; then
+          echo "[INFO] nats-server already running"
+        else
+          nats-server -c /dev/null &
+          sleep 1
+          echo "[INFO] NATS started on nats://localhost:4222"
+        fi
+
+  dev:streamlit:
+    desc: Start Streamlit application
+    cmds:
+      - echo "[LIFECYCLE] START streamlit $(date)"
+      - |
+        if pgrep -f "streamlit run app.py" > /dev/null; then
+          echo "[INFO] streamlit already running"
+        else
+          PYTHONPATH={{.ROOT}}/src:$PYTHONPATH python -m streamlit run app.py --server.port 8501 &
+          sleep 2
+          echo "[INFO] Streamlit started on http://localhost:8501"
+        fi
+
+  stop:
+    desc: Stop all services
+    cmds:
+      - task: stop:streamlit
+      - task: stop:nats
+
+  stop:nats:
+    desc: Stop NATS server
+    cmds:
+      - |
+        pgrep -f "nats-server" | xargs kill 2>/dev/null || true
+        echo "[LIFECYCLE] STOP nats-server"
+
+  stop:streamlit:
+    desc: Stop Streamlit application
+    cmds:
+      - |
+        pgrep -f "streamlit run" | xargs kill 2>/dev/null || true
+        echo "[LIFECYCLE] STOP streamlit"
+
+  status:
+    desc: Check status of all services
+    cmds:
+      - echo "=== Helios Router Status ==="
+      - task: nats:status
+      - echo ""
+      - echo "Streamlit:"
+      - |
+        if pgrep -f "streamlit" > /dev/null; then
+          echo "  Status: Running (http://localhost:8501)"
+        else
+          echo "  Status: Not running"
+        fi
+
+  restart:
+    desc: Restart all services
+    cmds:
+      - task: stop
+      - sleep 1
+      - task: dev
+
+  health:
+    desc: Perform health checks on running services
+    cmds:
+      - echo "=== Health Check ==="
+      - |
+        if nc -z localhost 4222 2>/dev/null; then
+          echo "NATS: healthy"
+        else
+          echo "NATS: unhealthy or not running"
+        fi
+      - |
+        if curl -s http://localhost:8501/_stcore/health 2>/dev/null | grep -q "ok"; then
+          echo "Streamlit: healthy"
+        else
+          echo "Streamlit: not responding or not running"
+        fi
+
+  clean:
+    desc: Clean logs and caches
+    cmds:
+      - echo "[CLEAN] Removing log files and caches..."
+      - find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
+      - find . -type d -name .pytest_cache -exec rm -rf {} + 2>/dev/null || true
+      - find . -type d -name .ruff_cache -exec rm -rf {} + 2>/dev/null || true
+      - rm -f .process-compose/logs/*.log 2>/dev/null || true
+      - echo "[CLEAN] Done"
+
+  # NATS utilities
+  nats:status:
+    desc: Show NATS status
+    cmds:
+      - echo "NATS Status:"
+      - |
+        nats-server -v 2>/dev/null && echo "  Installed: Yes" || echo "  Installed: No"
+        pgrep -f "nats-server" > /dev/null && echo "  Running: Yes" || echo "  Running: No"
+
+  nats:logs:
+    desc: Show NATS logs
+    cmds:
+      - |
+        if pgrep -f "nats-server" > /dev/null; then
+          nats server report jetstream 2>/dev/null || echo "JetStream not available"
+        else
+          echo "NATS is not running"
+        fi
+
+  # Preflight checks
+  preflight:
+    desc: Check prerequisites (internal)
+    cmds:
+      - echo "[PREFLIGHT] Checking dependencies..."
+      - |
+        which nats-server >/dev/null 2>&1 || { echo "[PREFLIGHT] ERROR: nats-server not found. Install with: brew install nats-server"; exit 1; }
+        which python3 >/dev/null 2>&1 || { echo "[PREFLIGHT] ERROR: python3 not found"; exit 1; }
+        which uv >/dev/null 2>&1 || { echo "[PREFLIGHT] ERROR: uv not found. Install with: pip install uv"; exit 1; }
+      - echo "[PREFLIGHT] OK"
+
+vars:
+  ROOT: '{{.PWD}}'

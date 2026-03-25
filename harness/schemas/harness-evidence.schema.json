@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/helios/harness-evidence.schema.json",
+  "title": "Harness Evidence",
+  "type": "object",
+  "required": ["repo_id", "manifest", "commands", "runs", "quality", "result_code", "evidence"],
+  "properties": {
+    "repo_id": {"type": "string"},
+    "manifest": {"type": "object"},
+    "commands": {"type": "array"},
+    "runs": {"type": "array"},
+    "quality": {"type": "object"},
+    "result_code": {"enum": ["PASS", "WARN", "FAIL"]},
+    "evidence": {"type": "array"}
+  },
+  "additionalProperties": true
+}

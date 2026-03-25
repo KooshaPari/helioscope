@@ -1,0 +1,3 @@
+# Cargo Nextest Configuration
+[profile.test]
+threads = 4

@@ -1,0 +1,60 @@
+# Helios Router - Process Compose Configuration
+# Usage: process-compose up -f process-compose.yaml
+
+version: "1.0"
+
+environment:
+  - PYTHONPATH=./src
+  - NATS_URL=nats://localhost:4222
+
+log_dir: .process-compose/logs
+lock_dir: .process-compose/locks
+
+services:
+  nats-server:
+    command: nats-server -c /dev/null
+    info:
+      description: NATS Server for event bus and KV cache
+      port: 4222
+      health_endpoint: ""
+    preflight:
+      command: which nats-server
+      required: true
+      error_message: "Install NATS: brew install nats-server"
+    log_file: .process-compose/logs/nats.log
+    restart_policy: on-failure
+    restart_delay: 5s
+    env:
+      - NATS__JETSTREAM=enabled
+      - NATS__KV_STORE_DIR=/tmp/nats-kv
+
+  streamlit:
+    command: python3 -m streamlit run app.py --server.port 8501
+    working_dir: .
+    info:
+      description: Helios Router Dashboard
+      port: 8501
+      health_endpoint: http://localhost:8501/_stcore/health
+    depends_on:
+      - nats-server
+    preflight:
+      command: test -f app.py
+      required: true
+    log_file: .process-compose/logs/streamlit.log
+    restart_policy: on-failure
+    restart_delay: 5s
+    env:
+      - PYTHONPATH=./src
+    ready_line: "You can now view your Streamlit app"
+
+  # Optional: NATS monitor (nats-top alternative)
+  nats-monitor:
+    command: nats-server --profile monitor :8222
+    info:
+      description: NATS monitoring server
+      port: 8222
+    depends_on:
+      - nats-server
+    log_file: .process-compose/logs/nats-monitor.log
+    restart_policy: on-failure
+    optional: true

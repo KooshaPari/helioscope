@@ -1,0 +1,10 @@
+failure_budget:
+  global_warn: 2
+  global_block: 4
+  phase:
+    discover: 1
+    discover_block: 1
+    validate: 2
+    validate_block: 2
+  retry:
+    max_attempts: 1

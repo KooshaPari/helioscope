@@ -1,0 +1,23 @@
+[package]
+name = "harness_runner"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tokio = { version = "1", features = ["process", "io-util", "time", "sync"] }
+serde = { version = "1.0", features = ["derive"] }
+tracing = "0.1"
+
+[lib]
+path = "src/lib.rs"
+
+# M1/Apple Silicon optimizations
+[target.'cfg(target_arch = "aarch64")'.dependencies]
+rayon = "1.8"  # SIMD parallelization
+
+# Release optimizations for M1
+[profile.release]
+opt-level = 3
+lto = "thin"
+codegen-units = 1
+strip = true

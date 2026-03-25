@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  nats:
+    image: nats:latest
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+    command: ["-js", "-max_payload=8MB"]
+    volumes:
+      - nats_data:/data
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8222/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    ports:
+      - "8501:8501"
+    environment:
+      - NATS_URL=nats://nats:4222
+      - DB_PATH=/data/helios.db
+      - STREAMLIT_SERVER_PORT=8501
+      - STREAMLIT_SERVER_ENABLE_CORS=true
+      - STREAMLIT_SERVER_ENABLE_XSRF_PROTECTION=false
+    volumes:
+      - ./helios.db:/data/helios.db:ro
+      - ./app.py:/app/app.py:ro
+      - ./src:/app/src:ro
+    depends_on:
+      nats:
+        condition: service_healthy
+    command: streamlit run app.py --server.port 8501 --server.address 0.0.0.0
+
+volumes:
+  nats_data:

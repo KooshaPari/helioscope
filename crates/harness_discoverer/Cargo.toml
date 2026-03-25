@@ -1,0 +1,10 @@
+[package]
+name = "harness_discoverer"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tokio = { version = "1", features = ["sync", "rt"] }
+
+[lib]
+path = "src/lib.rs"

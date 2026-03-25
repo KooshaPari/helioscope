@@ -19,7 +19,7 @@ jobs:
 
       - name: Run CPU sampling test
         run: |
-          python -c "
+          python3 - <<'EOF'
           import sys
           import time
           sys.path.insert(0, 'harness/src')
@@ -27,9 +27,9 @@ jobs:
 
           print('=== CPU Info ===')
           info = get_cpu_info()
-          print(f'Cores: {info[\"physical_cores\"]} physical, {info[\"logical_cores\"]} logical')
-          print(f'Freq: {info[\"freq_mhz\"]} MHz')
-          print(f'Arch: {info[\"arch\"]}')
+          print(f'Cores: {info["physical_cores"]} physical, {info["logical_cores"]} logical')
+          print(f'Freq: {info["freq_mhz"]} MHz')
+          print(f'Arch: {info["arch"]}')
 
           print('\n=== CPU Sampling Test ===')
           sampler = CPUSampler(interval=0.01)
@@ -47,13 +47,13 @@ jobs:
           time.sleep(0.2)
           stats = sampler.stop()
 
-          print(f'Samples: {stats.get(\"samples\", 0)}')
-          print(f'CPU Avg: {stats.get(\"cpu_avg\", 0):.1f}%')
-          print(f'CPU Peak: {stats.get(\"cpu_peak\", 0):.1f}%')
-          print(f'Memory Avg: {stats.get(\"memory_avg\", 0):.1f}MB')
-          print(f'Memory Peak: {stats.get(\"memory_peak\", 0):.1f}MB')
+          print(f'Samples: {stats.get("samples", 0)}')
+          print(f'CPU Avg: {stats.get("cpu_avg", 0):.1f}%')
+          print(f'CPU Peak: {stats.get("cpu_peak", 0):.1f}%')
+          print(f'Memory Avg: {stats.get("memory_avg", 0):.1f}MB')
+          print(f'Memory Peak: {stats.get("memory_peak", 0):.1f}MB')
           print('CPU profiling working!')
-          "
+          EOF
 
   async-runtime:
     runs-on: macos-latest
@@ -67,7 +67,7 @@ jobs:
 
       - name: Test async runtime
         run: |
-          python -c "
+          python3 - <<'EOF'
           import sys
           import asyncio
           sys.path.insert(0, 'harness/src')
@@ -89,7 +89,7 @@ jobs:
           results = runtime.run(test_gather())
           print(f'Results: {len(results)} tasks completed')
           print('Async runtime working!')
-          "
+          EOF
 
   graceful-shutdown:
     runs-on: macos-latest
@@ -103,7 +103,7 @@ jobs:
 
       - name: Test graceful shutdown
         run: |
-          python -c "
+          python3 - <<'EOF'
           import sys
           sys.path.insert(0, 'harness/src')
           from harness.shutdown import GracefulShutdown, register_cleanup, get_shutdown_state
@@ -121,4 +121,4 @@ jobs:
           state = get_shutdown_state()
           print(f'Registered: {state.stage.value}')
           print('Graceful shutdown working!')
-          "
+          EOF

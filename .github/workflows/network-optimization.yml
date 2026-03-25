@@ -23,7 +23,7 @@ jobs:
           import sys
           import time
           sys.path.insert(0, 'harness/src')
-          from harness.circuit_breaker import CircuitBreaker, CircuitState, CircuitOpenError
+          from harness.circuit_breaker import CircuitBreaker, CircuitState, CircuitBreakerError
 
           print('=== Circuit Breaker Test ===')
           cb = CircuitBreaker('test', failure_threshold=3, timeout=1)

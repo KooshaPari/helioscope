@@ -9,23 +9,23 @@ pub fn validate(spec: &Specification) -> Result<()> {
     if spec.spec.name.is_empty() {
         return Err(SpecError::MissingField("name".to_string()));
     }
-    
+
     // Validate version format
     validate_version(&spec.spec.version)?;
-    
+
     // Validate verification rules
     for rule in &spec.spec.verification {
         validate_verification_rule(rule)?;
     }
-    
+
     // Validate rollback config
     validate_rollback_config(&spec.spec.rollback)?;
-    
+
     // Validate success criteria
     for criterion in &spec.spec.success_criteria {
         validate_success_criterion(criterion)?;
     }
-    
+
     Ok(())
 }
 
@@ -33,28 +33,32 @@ pub fn validate(spec: &Specification) -> Result<()> {
 fn validate_version(version: &str) -> Result<()> {
     // Basic semver validation
     let parts: Vec<&str> = version.split('.').collect();
-    
+
     if parts.len() < 2 {
         return Err(SpecError::InvalidValue {
             field: "version".to_string(),
             message: "Version must be in semver format (x.y.z)".to_string(),
         });
     }
-    
+
     // Check major version is numeric
-    parts[0].parse::<u32>()
+    parts[0]
+        .parse::<u32>()
         .map_err(|_| SpecError::InvalidValue {
             field: "version".to_string(),
             message: "Major version must be numeric".to_string(),
         })?;
-    
+
     Ok(())
 }
 
 /// Validate verification rule
 fn validate_verification_rule(rule: &VerificationRule) -> Result<()> {
     match rule {
-        VerificationRule::Test { name, timeout_seconds } => {
+        VerificationRule::Test {
+            name,
+            timeout_seconds,
+        } => {
             if name.is_empty() {
                 return Err(SpecError::InvalidValue {
                     field: "verification.test.name".to_string(),
@@ -90,7 +94,10 @@ fn validate_verification_rule(rule: &VerificationRule) -> Result<()> {
                 });
             }
         }
-        VerificationRule::Custom { command, expected_exit_code: _expected_exit_code } => {
+        VerificationRule::Custom {
+            command,
+            expected_exit_code: _expected_exit_code,
+        } => {
             if command.is_empty() {
                 return Err(SpecError::InvalidValue {
                     field: "verification.custom.command".to_string(),
@@ -100,7 +107,7 @@ fn validate_verification_rule(rule: &VerificationRule) -> Result<()> {
             // expected_exit_code can be any value, no validation needed
         }
     }
-    
+
     Ok(())
 }
 
@@ -111,14 +118,14 @@ fn validate_rollback_config(config: &RollbackConfig) -> Result<()> {
             // All strategies are valid
         }
     }
-    
+
     if config.timeout_seconds == 0 {
         return Err(SpecError::InvalidValue {
             field: "rollback.timeout".to_string(),
             message: "Timeout must be greater than 0".to_string(),
         });
     }
-    
+
     Ok(())
 }
 
@@ -130,19 +137,19 @@ fn validate_success_criterion(criterion: &SuccessCriterion) -> Result<()> {
             message: "Metric name cannot be empty".to_string(),
         });
     }
-    
+
     // At least one of threshold, minimum, or maximum should be set
     let has_threshold = criterion.threshold.is_some();
     let has_minimum = criterion.minimum.is_some();
     let has_maximum = criterion.maximum.is_some();
-    
+
     if !has_threshold && !has_minimum && !has_maximum {
         return Err(SpecError::InvalidValue {
             field: "success_criteria".to_string(),
             message: "At least one of threshold, minimum, or maximum must be set".to_string(),
         });
     }
-    
+
     Ok(())
 }
 
@@ -150,7 +157,7 @@ fn validate_success_criterion(criterion: &SuccessCriterion) -> Result<()> {
 pub fn validate_with_options(spec: &Specification, options: &ParseOptions) -> Result<()> {
     // First do basic validation
     validate(spec)?;
-    
+
     // If strict mode, do additional checks
     if options.strict {
         // Check owner is set in strict mode
@@ -159,7 +166,7 @@ pub fn validate_with_options(spec: &Specification, options: &ParseOptions) -> Re
                 "Owner is required in strict mode".to_string(),
             ));
         }
-        
+
         // Check at least one verification rule in strict mode
         if spec.spec.verification.is_empty() {
             return Err(SpecError::ValidationError(
@@ -167,7 +174,7 @@ pub fn validate_with_options(spec: &Specification, options: &ParseOptions) -> Re
             ));
         }
     }
-    
+
     Ok(())
 }
 
@@ -198,7 +205,7 @@ mod tests {
                 metadata: std::collections::HashMap::new(),
             },
         };
-        
+
         assert!(validate(&spec).is_ok());
     }
 
@@ -217,7 +224,7 @@ mod tests {
                 metadata: std::collections::HashMap::new(),
             },
         };
-        
+
         assert!(validate(&spec).is_err());
     }
 
@@ -236,7 +243,7 @@ mod tests {
                 metadata: std::collections::HashMap::new(),
             },
         };
-        
+
         assert!(validate(&spec).is_err());
     }
 }

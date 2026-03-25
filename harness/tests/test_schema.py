@@ -3,12 +3,11 @@
 import pytest
 from datetime import datetime
 import sys
-sys.path.insert(0, 'src')
+
+sys.path.insert(0, "src")
 
 from harness.schema import evidence_payload, _result_code
-from harness.interfaces import (
-    DiscoverOutput, RepoManifest, RunResult, QualityNormalization
-)
+from harness.interfaces import DiscoverOutput, RepoManifest, RunResult, QualityNormalization
 
 
 class TestResultCode:
@@ -92,15 +91,15 @@ class TestEvidencePayload:
             files=[],
             buckets={},
         )
-        
+
         runs: list[RunResult] = []
-        
+
         quality = QualityNormalization(
             blockers=[],
             warnings=[],
         )
-        
+
         result = evidence_payload(manifest, runs, quality)
-        
+
         assert result["repo_id"] == "test-repo"
         assert result["result_code"] == "WARN"

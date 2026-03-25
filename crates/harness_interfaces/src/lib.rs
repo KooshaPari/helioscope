@@ -23,12 +23,12 @@ impl Request {
             body: None,
         }
     }
-    
+
     pub fn with_header(mut self, key: &str, val: &str) -> Self {
         self.headers.insert(key.to_string(), val.to_string());
         self
     }
-    
+
     pub fn with_body(mut self, body: Vec<u8>) -> Self {
         self.body = Some(body);
         self
@@ -44,15 +44,33 @@ pub struct Response {
 }
 
 impl Response {
-    pub fn ok() -> Self { Self { status: 200, headers: HashMap::new(), body: None } }
-    pub fn created() -> Self { Self { status: 201, headers: HashMap::new(), body: None } }
-    pub fn error(status: u16) -> Self { Self { status, headers: HashMap::new(), body: None } }
-    
+    pub fn ok() -> Self {
+        Self {
+            status: 200,
+            headers: HashMap::new(),
+            body: None,
+        }
+    }
+    pub fn created() -> Self {
+        Self {
+            status: 201,
+            headers: HashMap::new(),
+            body: None,
+        }
+    }
+    pub fn error(status: u16) -> Self {
+        Self {
+            status,
+            headers: HashMap::new(),
+            body: None,
+        }
+    }
+
     pub fn with_header(mut self, key: &str, val: &str) -> Self {
         self.headers.insert(key.to_string(), val.to_string());
         self
     }
-    
+
     pub fn with_body(mut self, body: Vec<u8>) -> Self {
         self.body = Some(body);
         self
@@ -69,7 +87,11 @@ pub struct Event {
 
 impl Event {
     pub fn new(topic: &str, payload: Vec<u8>) -> Self {
-        Self { topic: topic.to_string(), payload, metadata: HashMap::new() }
+        Self {
+            topic: topic.to_string(),
+            payload,
+            metadata: HashMap::new(),
+        }
     }
 }
 

@@ -51,5 +51,7 @@ jobs:
           components: miri
 
       - name: Miri test
+        env:
+          MIRIFLAGS: -Zmiri-disable-isolation
         run: |
           cargo +nightly miri test --all

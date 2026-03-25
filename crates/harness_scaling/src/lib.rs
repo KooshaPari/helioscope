@@ -67,7 +67,9 @@ impl ResourceSampler {
 
     #[inline]
     pub fn average(&self) -> f64 {
-        if self.samples.is_empty() { return 0.0; }
+        if self.samples.is_empty() {
+            return 0.0;
+        }
         self.samples.iter().sum::<f64>() / self.samples.len() as f64
     }
 
@@ -81,8 +83,12 @@ impl ResourceSampler {
         self.samples.iter().cloned().fold(f64::INFINITY, f64::min)
     }
 
-    pub fn len(&self) -> usize { self.samples.len() }
-    pub fn is_empty(&self) -> bool { self.samples.is_empty() }
+    pub fn len(&self) -> usize {
+        self.samples.len()
+    }
+    pub fn is_empty(&self) -> bool {
+        self.samples.is_empty()
+    }
 }
 
 /// Predictive scaling using linear regression
@@ -109,36 +115,45 @@ impl PredictiveScaler {
 
     /// Predict value at future time step
     pub fn predict(&self) -> Option<f64> {
-        if self.history.len() < 2 { return None; }
-        
+        if self.history.len() < 2 {
+            return None;
+        }
+
         let n = self.history.len() as f64;
         let mut sum_x = 0.0;
         let mut sum_y = 0.0;
         let mut sum_xy = 0.0;
         let mut sum_xx = 0.0;
-        
+
         for (x, y) in &self.history {
             sum_x += x;
             sum_y += y;
             sum_xy += x * y;
             sum_xx += x * x;
         }
-        
+
         let denominator = n * sum_xx - sum_x * sum_x;
-        if denominator == 0.0 { return None; }
-        
+        if denominator == 0.0 {
+            return None;
+        }
+
         let slope = (n * sum_xy - sum_x * sum_y) / denominator;
         let intercept = (sum_y - slope * sum_x) / n;
-        
+
         let future_x = (self.history.len() + self.prediction_horizon) as f64;
         Some(slope * future_x + intercept)
     }
 }
 
 /// Calculate replicas with hysteresis
-pub fn calculate_replicas(config: &ScalingConfig, cpu_percent: f64, memory_percent: f64, current: u32) -> u32 {
+pub fn calculate_replicas(
+    config: &ScalingConfig,
+    cpu_percent: f64,
+    memory_percent: f64,
+    current: u32,
+) -> u32 {
     let avg_load = (cpu_percent + memory_percent) / 2.0;
-    
+
     let target = if avg_load > config.target_cpu_percent * config.scale_up_threshold {
         // Scale up
         (current as f64 * 1.5).ceil() as u32
@@ -148,13 +163,17 @@ pub fn calculate_replicas(config: &ScalingConfig, cpu_percent: f64, memory_perce
     } else {
         current
     };
-    
+
     target.clamp(config.min_instances, config.max_instances)
 }
 
 /// Circuit breaker states
 #[derive(Debug, Clone, PartialEq)]
-pub enum CircuitState { Closed, Open, HalfOpen }
+pub enum CircuitState {
+    Closed,
+    Open,
+    HalfOpen,
+}
 
 /// Circuit breaker for fault tolerance
 pub struct CircuitBreaker {
@@ -200,7 +219,7 @@ impl CircuitBreaker {
     pub fn record_failure(&mut self) {
         self.failure_count += 1;
         self.last_failure = Some(std::time::Instant::now());
-        
+
         match self.state {
             CircuitState::Closed => {
                 if self.failure_count >= self.failure_threshold {
@@ -219,11 +238,15 @@ impl CircuitBreaker {
         self.state != CircuitState::Open
     }
 
-    pub fn state(&self) -> &CircuitState { &self.state }
-    
+    pub fn state(&self) -> &CircuitState {
+        &self.state
+    }
+
     pub fn can_attempt(&self, retry_timeout_secs: u64) -> bool {
-        if self.state != CircuitState::Open { return true; }
-        
+        if self.state != CircuitState::Open {
+            return true;
+        }
+
         if let Some(last) = self.last_failure {
             return last.elapsed().as_secs() >= retry_timeout_secs;
         }
@@ -232,7 +255,9 @@ impl CircuitBreaker {
 }
 
 impl Default for CircuitBreaker {
-    fn default() -> Self { Self::new(5) }
+    fn default() -> Self {
+        Self::new(5)
+    }
 }
 
 /// Token bucket rate limiter

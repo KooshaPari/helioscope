@@ -38,10 +38,11 @@ def detect_harness() -> str:
     harness = os.environ.get("HARNESS", "").lower()
     if harness:
         return harness
-    
+
     # Check cliproxy availability
     try:
         import socket
+
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.settimeout(1)
         result = sock.connect_ex(("localhost", 8317))
@@ -57,7 +58,7 @@ def select_model_for_harness(models: list, harness: str) -> Optional[dict]:
     """Select optimal model variant based on harness type."""
     if not models:
         return None
-    
+
     # cliproxy: prefer standard minimax-m2.5
     if harness == "cliproxy":
         for m in models:
@@ -65,18 +66,18 @@ def select_model_for_harness(models: list, harness: str) -> Optional[dict]:
             if "minimax" in name.lower() and "highspeed" not in name.lower():
                 return m
         return models[0]
-    
+
     # Other harnesses: prefer highspeed variant
     for m in models:
         name = m.get("model_display_name", "")
         if "highspeed" in name.lower() or "fast" in name.lower():
             return m
-    
+
     # Default: first minimax model
     for m in models:
         if "minimax" in m.get("model_display_name", "").lower():
             return m
-    
+
     return models[0] if models else None
 
 
@@ -107,30 +108,36 @@ async def run_model(model_cfg: dict, prompt: str = "hi") -> Result:
     model = model_cfg.get("model_display_name", "unknown")
     base_url = model_cfg.get("base_url", "")
     api_key = model_cfg.get("api_key", "")
-    
+
     # Try cliproxy
     try:
         cliproxy_model = get_cliproxy_model_id(model)
         async with httpx.AsyncClient(timeout=30.0) as c:
-            r = await c.post(f"{CLIPROXY_URL}/v1/chat/completions",
-                json={"model": cliproxy_model, "messages": [{"role": "user", "content": prompt}], "max_tokens": 20})
+            r = await c.post(
+                f"{CLIPROXY_URL}/v1/chat/completions",
+                json={"model": cliproxy_model, "messages": [{"role": "user", "content": prompt}], "max_tokens": 20},
+            )
             if r.status_code == 200:
                 return Result(model, 100, True, "cliproxy")
     except Exception as e:
         pass
-    
+
     # Direct
     if not api_key or "dummy" in api_key.lower():
         return Result(model, 0, False, "direct", "no key")
-    
+
     try:
         async with httpx.AsyncClient(timeout=60.0) as c:
             start = time.perf_counter()
-            r = await c.post(f"{base_url}/v1/messages",
+            r = await c.post(
+                f"{base_url}/v1/messages",
                 headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
-                json={"model": model, "messages": [{"role": "user", "content": prompt}], "max_tokens": 20})
+                json={"model": model, "messages": [{"role": "user", "content": prompt}], "max_tokens": 20},
+            )
             lat = (time.perf_counter() - start) * 1000
-            return Result(model, lat, r.status_code == 200, "direct", str(r.status_code) if r.status_code != 200 else "")
+            return Result(
+                model, lat, r.status_code == 200, "direct", str(r.status_code) if r.status_code != 200 else ""
+            )
     except Exception as e:
         return Result(model, 0, False, "direct", str(e)[:50])
 
@@ -138,11 +145,11 @@ async def run_model(model_cfg: dict, prompt: str = "hi") -> Result:
 async def main():
     cfg = load_config()
     models = cfg.get("custom_models", [])
-    
+
     # Detect harness and select optimal model
     harness = detect_harness()
     print(f"Detected harness: {harness}")
-    
+
     # Benchmark all minimax models
     print("\n=== Benchmark Results ===")
     for m in models:

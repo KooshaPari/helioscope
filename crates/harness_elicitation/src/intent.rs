@@ -54,13 +54,13 @@ impl Intent {
 pub struct ClassifiedIntent {
     /// The intent
     pub intent: Intent,
-    
+
     /// Confidence score (0.0 - 1.0)
     pub confidence: f64,
-    
+
     /// Extracted entities
     pub entities: Vec<Entity>,
-    
+
     /// Original input
     pub original_input: String,
 }
@@ -70,10 +70,10 @@ pub struct ClassifiedIntent {
 pub struct Entity {
     /// Entity type
     pub entity_type: EntityType,
-    
+
     /// Entity value
     pub value: String,
-    
+
     /// Confidence
     pub confidence: f64,
 }

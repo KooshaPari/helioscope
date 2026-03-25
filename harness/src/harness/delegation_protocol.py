@@ -16,6 +16,7 @@ from .id_utils import new_id
 
 class DelegationState(Enum):
     """State of a delegation."""
+
     PENDING = "pending"
     RUNNING = "running"
     COMPLETED = "completed"
@@ -27,6 +28,7 @@ class DelegationState(Enum):
 @dataclass
 class DelegationRequest:
     """Request for delegating a task."""
+
     id: str
     from_agent: str
     to_agent: str
@@ -41,6 +43,7 @@ class DelegationRequest:
 @dataclass
 class DelegationResult:
     """Result of a delegated task."""
+
     request_id: str
     state: DelegationState
     result: Any = None
@@ -54,21 +57,21 @@ class DelegationResult:
 
 class DelegationProtocol:
     """Protocol for delegating tasks between agents.
-    
+
     Usage:
         protocol = DelegationProtocol()
-        
+
         # Delegate a task
         request = await protocol.delegate(
             from_agent=\"orchestrator\",
             to_agent=\"coder-1\",
             task=\"Write a function\"
         )
-        
+
         # Wait for result
         result = await protocol.wait_result(request.id)
     """
-    
+
     def __init__(self):
         self._pending: dict[str, DelegationRequest] = {}
         self._results: dict[str, DelegationResult] = {}
@@ -76,25 +79,17 @@ class DelegationProtocol:
         self._locks: dict[str, asyncio.Lock] = {}
         self._lock = threading.Lock()
         self._callbacks: dict[str, list[Callable]] = {}  # state -> callbacks
-    
-    def register_handler(
-        self, 
-        agent_type: str, 
-        handler: Callable[[DelegationRequest], Any]
-    ) -> None:
+
+    def register_handler(self, agent_type: str, handler: Callable[[DelegationRequest], Any]) -> None:
         """Register a handler for an agent type."""
         self._handlers[agent_type] = handler
-    
-    def register_callback(
-        self, 
-        state: DelegationState, 
-        callback: Callable[[DelegationResult], None]
-    ) -> None:
+
+    def register_callback(self, state: DelegationState, callback: Callable[[DelegationResult], None]) -> None:
         """Register callback for state changes."""
         if state.value not in self._callbacks:
             self._callbacks[state.value] = []
         self._callbacks[state.value].append(callback)
-    
+
     async def delegate(
         self,
         from_agent: str,
@@ -116,16 +111,16 @@ class DelegationProtocol:
             timeout_seconds=timeout_seconds,
             metadata=metadata or {},
         )
-        
+
         with self._lock:
             self._pending[request.id] = request
             self._locks[request.id] = asyncio.Lock()
-        
+
         # Start execution
         asyncio.create_task(self._execute(request))
-        
+
         return request
-    
+
     async def _execute(self, request: DelegationRequest) -> None:
         """Execute a delegated task."""
         # Create pending result
@@ -136,10 +131,10 @@ class DelegationProtocol:
         )
         self._results[request.id] = result
         self._notify(DelegationState.RUNNING, result)
-        
+
         # Get handler for agent
         handler = self._handlers.get(request.to_agent)
-        
+
         if not handler:
             result.state = DelegationState.FAILED
             result.error = f"No handler for agent: {request.to_agent}"
@@ -147,7 +142,7 @@ class DelegationProtocol:
             result.latency_ms = (result.completed_at - result.started_at) * 1000
             self._notify(DelegationState.FAILED, result)
             return
-        
+
         # Execute with timeout
         try:
             result.result = await asyncio.wait_for(
@@ -165,35 +160,38 @@ class DelegationProtocol:
             result.completed_at = time.time()
             result.latency_ms = (result.completed_at - result.started_at) * 1000
             self._notify(result.state, result)
-    
+
     async def wait_result(self, request_id: str, timeout: Optional[float] = None) -> DelegationResult:
         """Wait for a delegation result."""
         lock = self._locks.get(request_id)
         if not lock:
             # Already completed, return cached
-            return self._results.get(request_id, DelegationResult(
-                request_id=request_id,
-                state=DelegationState.FAILED,
-                error="Request not found",
-            ))
-        
+            return self._results.get(
+                request_id,
+                DelegationResult(
+                    request_id=request_id,
+                    state=DelegationState.FAILED,
+                    error="Request not found",
+                ),
+            )
+
         async with lock:
             # Wait until we have a result
             while request_id not in self._results:
                 await asyncio.sleep(0.1)
-            
+
             return self._results[request_id]
-    
+
     def get_result(self, request_id: str) -> Optional[DelegationResult]:
         """Get result without waiting."""
         return self._results.get(request_id)
-    
+
     def cancel(self, request_id: str) -> bool:
         """Cancel a pending delegation."""
         with self._lock:
             if request_id in self._pending:
                 del self._pending[request_id]
-                
+
                 # Mark as cancelled
                 result = DelegationResult(
                     request_id=request_id,
@@ -204,24 +202,24 @@ class DelegationProtocol:
                 self._notify(DelegationState.CANCELLED, result)
                 return True
             return False
-    
+
     def get_pending(self) -> list[DelegationRequest]:
         """Get all pending delegations."""
         return list(self._pending.values())
-    
+
     def get_stats(self) -> dict:
         """Get delegation statistics."""
         states = {}
         for result in self._results.values():
             state = result.state.value
             states[state] = states.get(state, 0) + 1
-        
+
         return {
-            'pending': len(self._pending),
-            'total': len(self._results),
-            'by_state': states,
+            "pending": len(self._pending),
+            "total": len(self._results),
+            "by_state": states,
         }
-    
+
     def _notify(self, state: DelegationState, result: DelegationResult) -> None:
         """Notify callbacks of state change."""
         callbacks = self._callbacks.get(state.value, [])

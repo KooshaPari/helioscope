@@ -1,7 +1,7 @@
 //! Adapters - Concrete implementations
 
-use crate::domain::{Teammate, DelegationRequest, DelegationResult, HealthStatus};
-use crate::ports::{TeammateRegistryPort, DelegationPort, HealthCheckPort};
+use crate::domain::{DelegationRequest, DelegationResult, HealthStatus, Teammate};
+use crate::ports::{DelegationPort, HealthCheckPort, TeammateRegistryPort};
 use std::collections::HashMap;
 use std::sync::{Arc, RwLock};
 use tracing::debug;
@@ -21,7 +21,9 @@ impl InMemoryTeammateRegistry {
 }
 
 impl Default for InMemoryTeammateRegistry {
-    fn default() -> Self { Self::new() }
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl TeammateRegistryPort for InMemoryTeammateRegistry {
@@ -37,19 +39,25 @@ impl TeammateRegistryPort for InMemoryTeammateRegistry {
     }
 
     fn list(&self) -> Vec<Teammate> {
-        self.teammates.read().ok()
+        self.teammates
+            .read()
+            .ok()
             .map(|t| t.values().cloned().collect())
             .unwrap_or_default()
     }
 
     fn find_by_role(&self, role: &str) -> Vec<Teammate> {
-        self.teammates.read().ok()
+        self.teammates
+            .read()
+            .ok()
             .map(|t| t.values().filter(|tm| tm.role == role).cloned().collect())
             .unwrap_or_default()
     }
 
     fn unregister(&self, id: &str) -> bool {
-        self.teammates.write().ok()
+        self.teammates
+            .write()
+            .ok()
             .map(|mut t| t.remove(id).is_some())
             .unwrap_or(false)
     }
@@ -98,7 +106,9 @@ impl HealthCheckPort for HealthCheckAdapter {
     }
 
     fn healthy_teammates(&self) -> Vec<Teammate> {
-        self.registry.read().ok()
+        self.registry
+            .read()
+            .ok()
             .map(|t| t.values().cloned().collect())
             .unwrap_or_default()
     }

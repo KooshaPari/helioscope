@@ -22,22 +22,12 @@ class TestTeammate:
     """Test Teammate model."""
 
     def test_teammate_creation(self):
-        t = Teammate(
-            id="test-agent",
-            name="Test Agent",
-            role="coder",
-            description="A test agent"
-        )
+        t = Teammate(id="test-agent", name="Test Agent", role="coder", description="A test agent")
         assert t.id == "test-agent"
         assert t.role == "coder"
 
     def test_teammate_defaults(self):
-        t = Teammate(
-            id="default-agent",
-            name="Default",
-            role="general",
-            description="Test"
-        )
+        t = Teammate(id="default-agent", name="Default", role="general", description="Test")
         assert t.max_concurrent == 1
         assert t.timeout_seconds == 300
         assert t.tools == []
@@ -47,19 +37,13 @@ class TestDelegationRequest:
     """Test DelegationRequest model."""
 
     def test_delegation_request_defaults(self):
-        req = DelegationRequest(
-            teammate_id="agent-1",
-            task_description="Do something"
-        )
+        req = DelegationRequest(teammate_id="agent-1", task_description="Do something")
         assert req.priority == Priority.NORMAL
         assert req.timeout_seconds == 300
 
     def test_delegation_request_custom(self):
         req = DelegationRequest(
-            teammate_id="agent-1",
-            task_description="Do something",
-            priority=Priority.HIGH,
-            timeout_seconds=600
+            teammate_id="agent-1", task_description="Do something", priority=Priority.HIGH, timeout_seconds=600
         )
         assert req.priority == Priority.HIGH
         assert req.timeout_seconds == 600
@@ -110,12 +94,9 @@ class TestDelegationProtocol:
     def test_protocol_cancel_delegation_found(self):
         protocol = DelegationProtocol()
         # Add a fake delegation
-        req = DelegationRequest(
-            teammate_id="test",
-            task_description="test"
-        )
+        req = DelegationRequest(teammate_id="test", task_description="test")
         protocol._delegations["test-id"] = req
-        
+
         result = protocol.cancel_delegation("test-id")
         assert result is True
         assert protocol.get_status("test-id").status == DelegationStatus.CANCELLED

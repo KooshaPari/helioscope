@@ -1,7 +1,7 @@
 //! Queue module - High-performance queues for heliosHarness
 
-use std::sync::atomic::{AtomicUsize, Ordering};
 use std::collections::VecDeque;
+use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::{Arc, Mutex};
 use thiserror::Error;
 
@@ -10,16 +10,16 @@ use thiserror::Error;
 pub enum QueueError {
     #[error("Channel is closed")]
     Closed,
-    
+
     #[error("Channel is full")]
     Full,
-    
+
     #[error("Channel is empty")]
     Empty,
-    
+
     #[error("Send error: {0}")]
     Send(String),
-    
+
     #[error("Receive error: {0}")]
     Receive(String),
 }
@@ -47,11 +47,15 @@ impl<T> Channel<T> {
             let closed = self.closed.lock().map_err(|e| e.to_string())?;
             *closed
         };
-        if is_closed { return Err("Channel closed".into()); }
-        
+        if is_closed {
+            return Err("Channel closed".into());
+        }
+
         let mut buffer = self.buffer.lock().map_err(|e| e.to_string())?;
-        if buffer.len() >= self.capacity { return Err("Channel full".into()); }
-        
+        if buffer.len() >= self.capacity {
+            return Err("Channel full".into());
+        }
+
         buffer.push_back(item);
         self.size.fetch_add(1, Ordering::Relaxed);
         Ok(())
@@ -59,17 +63,27 @@ impl<T> Channel<T> {
 
     pub fn recv(&self) -> Option<T> {
         let mut buffer = self.buffer.lock().ok()?;
-        if buffer.is_empty() { return None; }
+        if buffer.is_empty() {
+            return None;
+        }
         self.size.fetch_sub(1, Ordering::Relaxed);
         buffer.pop_front()
     }
 
-    pub fn len(&self) -> usize { self.size.load(Ordering::Relaxed) }
-    pub fn is_empty(&self) -> bool { self.len() == 0 }
-    pub fn is_full(&self) -> bool { self.len() >= self.capacity }
-    
+    pub fn len(&self) -> usize {
+        self.size.load(Ordering::Relaxed)
+    }
+    pub fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
+    pub fn is_full(&self) -> bool {
+        self.len() >= self.capacity
+    }
+
     pub fn close(&self) {
-        if let Ok(mut closed) = self.closed.lock() { *closed = true; }
+        if let Ok(mut closed) = self.closed.lock() {
+            *closed = true;
+        }
     }
 }
 
@@ -84,24 +98,37 @@ pub struct RingBuffer<T> {
 
 impl<T> RingBuffer<T> {
     pub fn new(capacity: usize) -> Self {
-        Self { data: Vec::with_capacity(capacity), read: 0, write: 0, capacity }
+        Self {
+            data: Vec::with_capacity(capacity),
+            read: 0,
+            write: 0,
+            capacity,
+        }
     }
 
     pub fn push(&mut self, item: T) -> bool {
-        if self.data.len() >= self.capacity { return false; }
+        if self.data.len() >= self.capacity {
+            return false;
+        }
         self.data.push(item);
         true
     }
 
     pub fn pop(&mut self) -> Option<T> {
-        if self.read >= self.data.len() { return None; }
+        if self.read >= self.data.len() {
+            return None;
+        }
         let item = self.data.remove(self.read);
         self.read += 1;
         Some(item)
     }
 
-    pub fn len(&self) -> usize { self.data.len().saturating_sub(self.read) }
-    pub fn is_empty(&self) -> bool { self.len() == 0 }
+    pub fn len(&self) -> usize {
+        self.data.len().saturating_sub(self.read)
+    }
+    pub fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
 }
 
 /// Work-stealing queue for parallel processing
@@ -119,21 +146,33 @@ impl<T> WorkQueue<T> {
     }
 
     pub fn push(&self, item: T) {
-        if let Ok(mut q) = self.local.lock() { q.push_back(item); }
+        if let Ok(mut q) = self.local.lock() {
+            q.push_back(item);
+        }
     }
 
     pub fn pop(&self) -> Option<T> {
         if let Ok(mut q) = self.local.lock() {
-            if let Some(item) = q.pop_front() { return Some(item); }
+            if let Some(item) = q.pop_front() {
+                return Some(item);
+            }
         }
-        if let Ok(mut g) = self.global.lock() { return g.pop_back(); }
+        if let Ok(mut g) = self.global.lock() {
+            return g.pop_back();
+        }
         None
     }
 
     pub fn steal(&self) -> Option<T> {
-        if let Ok(mut g) = self.global.lock() { return g.pop_back(); }
+        if let Ok(mut g) = self.global.lock() {
+            return g.pop_back();
+        }
         None
     }
 }
 
-impl<T> Default for WorkQueue<T> { fn default() -> Self { Self::new() } }
+impl<T> Default for WorkQueue<T> {
+    fn default() -> Self {
+        Self::new()
+    }
+}

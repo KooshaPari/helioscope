@@ -1,13 +1,6 @@
 name: Pages Deploy
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'docs/**'
-      - '.github/workflows/pages.yml'
-      - 'docs/package.json'
-      - 'docs/package-lock.json'
   workflow_dispatch:
 
 permissions:

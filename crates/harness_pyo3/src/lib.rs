@@ -4,10 +4,10 @@
 use pyo3::prelude::*;
 use pyo3::types::PyModule;
 use std::collections::HashMap;
-use parking_lot::Mutex;
+use ffi_utils::FfiMutex;
 use std::time::{Duration, Instant};
 
-static CACHE: Mutex<Option<PyCache>> = Mutex::new(None);
+static CACHE: FfiMutex<Option<PyCache>> = FfiMutex::new(None);
 
 struct PyCache {
     store: HashMap<String, CacheItem>,

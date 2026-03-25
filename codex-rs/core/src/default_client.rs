@@ -193,7 +193,10 @@ pub fn build_reqwest_client() -> reqwest::Client {
         builder = builder.no_proxy();
     }
 
-    builder.build().unwrap_or_else(|_| reqwest::Client::new())
+    builder.build().unwrap_or_else(|e| {
+        tracing::warn!("failed to build reqwest client, falling back to default client: {e}");
+        reqwest::Client::new()
+    })
 }
 
 pub fn default_headers() -> HeaderMap {

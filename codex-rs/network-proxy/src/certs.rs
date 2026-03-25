@@ -303,7 +303,7 @@ mod tests {
 
     #[test]
     fn validate_existing_ca_key_file_rejects_group_world_permissions() {
-        let dir = tempdir().unwrap();
+        let dir = tempdir().expect("create temp dir");
         let key_path = dir.path().join("ca.key");
         fs::write(&key_path, "key").unwrap();
         fs::set_permissions(&key_path, fs::Permissions::from_mode(0o644)).unwrap();
@@ -319,7 +319,7 @@ mod tests {
     fn validate_existing_ca_key_file_rejects_symlink() {
         use std::os::unix::fs::symlink;
 
-        let dir = tempdir().unwrap();
+        let dir = tempdir().expect("create temp dir");
         let target = dir.path().join("real.key");
         let link = dir.path().join("ca.key");
         fs::write(&target, "key").unwrap();
@@ -334,7 +334,7 @@ mod tests {
 
     #[test]
     fn validate_existing_ca_key_file_allows_private_permissions() {
-        let dir = tempdir().unwrap();
+        let dir = tempdir().expect("create temp dir");
         let key_path = dir.path().join("ca.key");
         fs::write(&key_path, "key").unwrap();
         fs::set_permissions(&key_path, fs::Permissions::from_mode(0o600)).unwrap();

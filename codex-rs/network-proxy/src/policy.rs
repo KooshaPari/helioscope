@@ -333,7 +333,7 @@ mod tests {
 
     #[test]
     fn compile_globset_normalizes_trailing_dots() {
-        let set = compile_globset(&["Example.COM.".to_string()]).unwrap();
+        let set = compile_globset(&["Example.COM.".to_string()]).expect("compile_globset should succeed");
 
         assert_eq!(true, set.is_match("example.com"));
         assert_eq!(false, set.is_match("api.example.com"));
@@ -341,7 +341,7 @@ mod tests {
 
     #[test]
     fn compile_globset_normalizes_wildcards() {
-        let set = compile_globset(&["*.Example.COM.".to_string()]).unwrap();
+        let set = compile_globset(&["*.Example.COM.".to_string()]).expect("compile_globset should succeed");
 
         assert_eq!(true, set.is_match("api.example.com"));
         assert_eq!(false, set.is_match("example.com"));
@@ -349,7 +349,7 @@ mod tests {
 
     #[test]
     fn compile_globset_normalizes_apex_and_subdomains() {
-        let set = compile_globset(&["**.Example.COM.".to_string()]).unwrap();
+        let set = compile_globset(&["**.Example.COM.".to_string()]).expect("compile_globset should succeed");
 
         assert_eq!(true, set.is_match("example.com"));
         assert_eq!(true, set.is_match("api.example.com"));
@@ -357,47 +357,47 @@ mod tests {
 
     #[test]
     fn compile_globset_normalizes_bracketed_ipv6_literals() {
-        let set = compile_globset(&["[::1]".to_string()]).unwrap();
+        let set = compile_globset(&["[::1]".to_string()]).expect("compile_globset should succeed");
 
         assert_eq!(true, set.is_match("::1"));
     }
 
     #[test]
     fn is_loopback_host_handles_localhost_variants() {
-        assert!(is_loopback_host(&Host::parse("localhost").unwrap()));
-        assert!(is_loopback_host(&Host::parse("localhost.").unwrap()));
-        assert!(is_loopback_host(&Host::parse("LOCALHOST").unwrap()));
-        assert!(!is_loopback_host(&Host::parse("notlocalhost").unwrap()));
+        assert!(is_loopback_host(&Host::parse("localhost").expect("Host::parse should succeed")));
+        assert!(is_loopback_host(&Host::parse("localhost.").expect("Host::parse should succeed")));
+        assert!(is_loopback_host(&Host::parse("LOCALHOST").expect("Host::parse should succeed")));
+        assert!(!is_loopback_host(&Host::parse("notlocalhost").expect("Host::parse should succeed")));
     }
 
     #[test]
     fn is_loopback_host_handles_ip_literals() {
-        assert!(is_loopback_host(&Host::parse("127.0.0.1").unwrap()));
-        assert!(is_loopback_host(&Host::parse("::1").unwrap()));
-        assert!(!is_loopback_host(&Host::parse("1.2.3.4").unwrap()));
+        assert!(is_loopback_host(&Host::parse("127.0.0.1").expect("Host::parse should succeed")));
+        assert!(is_loopback_host(&Host::parse("::1").expect("Host::parse should succeed")));
+        assert!(!is_loopback_host(&Host::parse("1.2.3.4").expect("Host::parse should succeed")));
     }
 
     #[test]
     fn is_non_public_ip_rejects_private_and_loopback_ranges() {
-        assert!(is_non_public_ip("127.0.0.1".parse().unwrap()));
-        assert!(is_non_public_ip("10.0.0.1".parse().unwrap()));
-        assert!(is_non_public_ip("192.168.0.1".parse().unwrap()));
-        assert!(is_non_public_ip("100.64.0.1".parse().unwrap()));
-        assert!(is_non_public_ip("192.0.0.1".parse().unwrap()));
-        assert!(is_non_public_ip("192.0.2.1".parse().unwrap()));
-        assert!(is_non_public_ip("198.18.0.1".parse().unwrap()));
-        assert!(is_non_public_ip("198.51.100.1".parse().unwrap()));
-        assert!(is_non_public_ip("203.0.113.1".parse().unwrap()));
-        assert!(is_non_public_ip("240.0.0.1".parse().unwrap()));
-        assert!(is_non_public_ip("0.1.2.3".parse().unwrap()));
-        assert!(!is_non_public_ip("8.8.8.8".parse().unwrap()));
+        assert!(is_non_public_ip("127.0.0.1".parse().expect("parse should succeed")));
+        assert!(is_non_public_ip("10.0.0.1".parse().expect("parse should succeed")));
+        assert!(is_non_public_ip("192.168.0.1".parse().expect("parse should succeed")));
+        assert!(is_non_public_ip("100.64.0.1".parse().expect("parse should succeed")));
+        assert!(is_non_public_ip("192.0.0.1".parse().expect("parse should succeed")));
+        assert!(is_non_public_ip("192.0.2.1".parse().expect("parse should succeed")));
+        assert!(is_non_public_ip("198.18.0.1".parse().expect("parse should succeed")));
+        assert!(is_non_public_ip("198.51.100.1".parse().expect("parse should succeed")));
+        assert!(is_non_public_ip("203.0.113.1".parse().expect("parse should succeed")));
+        assert!(is_non_public_ip("240.0.0.1".parse().expect("parse should succeed")));
+        assert!(is_non_public_ip("0.1.2.3".parse().expect("parse should succeed")));
+        assert!(!is_non_public_ip("8.8.8.8".parse().expect("parse should succeed")));
 
-        assert!(is_non_public_ip("::ffff:127.0.0.1".parse().unwrap()));
-        assert!(is_non_public_ip("::ffff:10.0.0.1".parse().unwrap()));
-        assert!(!is_non_public_ip("::ffff:8.8.8.8".parse().unwrap()));
+        assert!(is_non_public_ip("::ffff:127.0.0.1".parse().expect("parse should succeed")));
+        assert!(is_non_public_ip("::ffff:10.0.0.1".parse().expect("parse should succeed")));
+        assert!(!is_non_public_ip("::ffff:8.8.8.8".parse().expect("parse should succeed")));
 
-        assert!(is_non_public_ip("::1".parse().unwrap()));
-        assert!(is_non_public_ip("fe80::1".parse().unwrap()));
+        assert!(is_non_public_ip("::1".parse().expect("parse should succeed")));
+        assert!(is_non_public_ip("fe80::1".parse().expect("parse should succeed")));
         assert!(is_non_public_ip("fc00::1".parse().unwrap()));
     }
 

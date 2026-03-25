@@ -1,5 +1,6 @@
 import sys
-sys.path.insert(0, 'src')
+
+sys.path.insert(0, "src")
 
 from harness.discoverer import Discoverer
 from harness.interfaces import DiscoverInput
@@ -35,7 +36,7 @@ def test_discover_signals():
     """Test signal extraction."""
     root = Path(__file__).resolve().parents[1]
     d = Discoverer()
-    
+
     # Test _extract_signals method
     signals = d._extract_signals(root)
     assert isinstance(signals, list)
@@ -45,7 +46,7 @@ def test_discover_collect_files():
     """Test file collection."""
     root = Path(__file__).resolve().parents[1]
     d = Discoverer()
-    
+
     files = list(d._collect_files(root, 3))
     assert isinstance(files, list)
 
@@ -54,7 +55,7 @@ def test_discover_extract_scripts():
     """Test script extraction."""
     root = Path(__file__).resolve().parents[1]
     d = Discoverer()
-    
+
     scripts = d._extract_scripts(root)
     assert isinstance(scripts, list)
 
@@ -63,7 +64,7 @@ def test_discover_bucket_commands():
     """Test command bucketing."""
     root = Path(__file__).resolve().parents[1]
     d = Discoverer()
-    
+
     scripts = [
         {"name": "test", "command": "pytest", "source": "package.json"},
         {"name": "lint", "command": "ruff check", "source": "package.json"},

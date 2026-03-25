@@ -13,7 +13,7 @@ class TestRunnerConfig:
     def test_default_config(self):
         """Test default configuration values."""
         config = RunnerConfig()
-        
+
         assert config.timeout_seconds == 1200
         assert config.continue_on_fail is True
         assert config.max_parallel_jobs == 2
@@ -25,7 +25,7 @@ class TestRunnerConfig:
             continue_on_fail=False,
             max_parallel_jobs=4,
         )
-        
+
         assert config.timeout_seconds == 600
         assert config.continue_on_fail is False
         assert config.max_parallel_jobs == 4
@@ -49,7 +49,7 @@ class TestRunResult:
             duration_ms=1000,
             artifact_dir="/artifacts",
         )
-        
+
         assert result.command == "echo test"
         assert result.returncode == 0
         assert result.error is None
@@ -70,7 +70,7 @@ class TestRunResult:
             artifact_dir="/artifacts",
             skipped=True,
         )
-        
+
         assert result.skipped is True
 
 
@@ -80,20 +80,20 @@ class TestRunner:
     def test_runner_default_config(self):
         """Test Runner with default config."""
         runner = Runner()
-        
+
         assert runner.config.timeout_seconds == 1200
 
     def test_runner_custom_config(self):
         """Test Runner with custom config."""
         config = RunnerConfig(timeout_seconds=300)
         runner = Runner(config)
-        
+
         assert runner.config.timeout_seconds == 300
 
     def test_slug_generation(self):
         """Test command slug generation."""
         runner = Runner()
-        
+
         # _slug returns a hash-based string
         slug = runner._slug("echo hello")
         assert slug.isdigit()  # Should be numeric
@@ -109,22 +109,22 @@ class TestRunnerProfile:
     def test_run_profile_empty_commands(self):
         """Test running profile with no commands."""
         runner = Runner()
-        
+
         results = runner.run_profile([], "/test/root")
-        
+
         assert results == []
 
-    @patch('src.harness.runner.Popen')
+    @patch("src.harness.runner.Popen")
     def test_run_profile_budget_exhausted(self, mock_popen):
         """Test profile stops when budget is exhausted."""
         config = RunnerConfig(budget_seconds=0)
         runner = Runner(config)
-        
+
         commands = [
             CanonicalCommand(command="echo test", bucket=EvidenceBucket.BUILD, cwd="/test", required=True),
         ]
-        
+
         results = runner.run_profile(commands, "/test/root")
-        
+
         assert len(results) == 1
         assert results[0].skipped is True

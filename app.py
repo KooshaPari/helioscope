@@ -117,6 +117,7 @@ def publish_pareto_update(role: str, weights: dict):
     """Stub for Pareto updates - implement NATS publish"""
     pass
 
+
 def main():
     if not DB_PATH.exists():
         init_db()
@@ -208,13 +209,21 @@ def main():
 
         if not roles_df.empty:
             selected_role = st.selectbox("Select Role", roles_df["role_id"].tolist())
-            role_row = roles_df[roles_df["role_id"] == selected_role].iloc[0] if len(roles_df[roles_df["role_id"] == selected_role]) > 0 else None
+            role_row = (
+                roles_df[roles_df["role_id"] == selected_role].iloc[0]
+                if len(roles_df[roles_df["role_id"] == selected_role]) > 0
+                else None
+            )
 
             # Get weights from role
             role_weights = {}
             for g in BENCH_GROUPS:
                 col = f"w_{g}"
-                role_weights[g] = DEFAULT_WEIGHTS.get(g, 0.0) if role_row is None else role_row.to_dict().get(col, DEFAULT_WEIGHTS.get(g, 0.0))
+                role_weights[g] = (
+                    DEFAULT_WEIGHTS.get(g, 0.0)
+                    if role_row is None
+                    else role_row.to_dict().get(col, DEFAULT_WEIGHTS.get(g, 0.0))
+                )
 
             col1, col2 = st.columns(2)
             with col1:
@@ -270,8 +279,17 @@ def main():
             role_id = st.selectbox("Role", roles_df["role_id"].tolist() if not roles_df.empty else ["default"])
 
             # Get weights
-            role_row = roles_df[roles_df["role_id"] == role_id].iloc[0] if len(roles_df[roles_df["role_id"] == role_id]) > 0 else None
-            weights = {g: role_row.to_dict().get(f"w_{g}", DEFAULT_WEIGHTS.get(g, 0.1)) if role_row is not None else DEFAULT_WEIGHTS.get(g, 0.1) for g in BENCH_GROUPS}
+            role_row = (
+                roles_df[roles_df["role_id"] == role_id].iloc[0]
+                if len(roles_df[roles_df["role_id"] == role_id]) > 0
+                else None
+            )
+            weights = {
+                g: role_row.to_dict().get(f"w_{g}", DEFAULT_WEIGHTS.get(g, 0.1))
+                if role_row is not None
+                else DEFAULT_WEIGHTS.get(g, 0.1)
+                for g in BENCH_GROUPS
+            }
 
             # Compute indices
             indices = offers_df[["offer_id", "provider_id", "model_id"]].copy()

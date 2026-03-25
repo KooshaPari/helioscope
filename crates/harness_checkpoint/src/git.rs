@@ -54,7 +54,7 @@ pub fn create_git_checkpoint(
         .unwrap_or_else(|| format!("Checkpoint for spec: {}", spec_id));
 
     let signature = Signature::now("heliosHarness", "checkpoint@helios.local")
-        .unwrap_or_else(|_| Signature::now("heliosHarness", "checkpoint@helios.local").unwrap());
+        .expect("failed to create git signature for checkpoint");
 
     let oid = index
         .write_tree()

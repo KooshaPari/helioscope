@@ -119,6 +119,9 @@ mod tests {
         engine.register("chk-001", "test-spec");
         let result = engine.rollback("chk-001");
         assert!(result.is_some());
-        assert!(engine.verify(&result.unwrap()));
+        let result = engine.rollback("chk-001");
+        assert!(result.is_some());
+        let record = result.expect("rollback returned a record");
+        assert!(engine.verify(&record));
     }
 }

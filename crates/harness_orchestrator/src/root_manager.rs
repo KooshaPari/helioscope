@@ -196,7 +196,7 @@ mod tests {
     #[tokio::test]
     async fn test_register_agent() {
         let manager = RootManager::new();
-        let id = manager.register_agent("test-agent", vec![AgentCapability::General]).await.unwrap();
+        let id = manager.register_agent("test-agent", vec![AgentCapability::General]).await.expect("register_agent failed");
         assert!(!id.is_nil());
     }
     
@@ -218,7 +218,7 @@ mod tests {
             },
         };
         
-        let tasks = manager.decompose(&spec).await.unwrap();
+        let tasks = manager.decompose(&spec).await.expect("decompose failed");
         assert!(!tasks.is_empty());
     }
 }

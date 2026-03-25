@@ -4,7 +4,7 @@
 use pyo3::prelude::*;
 use pyo3::types::PyModule;
 use std::collections::HashMap;
-use std::sync::Mutex;
+use parking_lot::Mutex;
 use std::time::{Duration, Instant};
 
 static CACHE: Mutex<Option<PyCache>> = Mutex::new(None);
@@ -45,37 +45,37 @@ impl PyCache {
 
 #[pyfunction]
 fn init_cache() {
-    let mut guard = CACHE.lock().unwrap();
+    let mut guard = CACHE.lock();
     *guard = Some(PyCache::new());
 }
 
 #[pyfunction]
 fn cache_get(key: &str) -> Option<String> {
-    let mut guard = CACHE.lock().unwrap();
+    let mut guard = CACHE.lock();
     guard.as_mut().and_then(|c| c.get(key))
 }
 
 #[pyfunction]
 fn cache_set(key: String, value: String, ttl_secs: Option<u64>) {
-    let mut guard = CACHE.lock().unwrap();
+    let mut guard = CACHE.lock();
     if let Some(c) = guard.as_mut() { c.set(key, value, ttl_secs); }
 }
 
 #[pyfunction]
 fn cache_delete(key: &str) -> bool {
-    let mut guard = CACHE.lock().unwrap();
+    let mut guard = CACHE.lock();
     guard.as_mut().map(|c| c.delete(key)).unwrap_or(false)
 }
 
 #[pyfunction]
 fn cache_clear() {
-    let mut guard = CACHE.lock().unwrap();
+    let mut guard = CACHE.lock();
     if let Some(c) = guard.as_mut() { c.clear(); }
 }
 
 #[pyfunction]
 fn cache_stats() -> (u64, u64, f64, usize) {
-    let guard = CACHE.lock().unwrap();
+    let guard = CACHE.lock();
     guard.as_ref().map(|c| c.stats()).unwrap_or((0, 0, 0.0, 0))
 }
 

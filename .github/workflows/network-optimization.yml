@@ -19,14 +19,15 @@ jobs:
 
       - name: Test Circuit Breaker
         run: |
-          python -c "
+          python3 - <<'EOF'
           import sys
           import time
           sys.path.insert(0, 'harness/src')
-          from harness.circuit_breaker import CircuitBreaker, CircuitState, CircuitOpenError
+          from harness.circuit_breaker import CircuitBreaker, CircuitBreakerConfig, CircuitState, CircuitBreakerError
 
           print('=== Circuit Breaker Test ===')
-          cb = CircuitBreaker('test', failure_threshold=3, timeout=1)
+          config = CircuitBreakerConfig(failure_threshold=3, timeout=1)
+          cb = CircuitBreaker(config=config)
 
           # Test normal operation
           def succeed():
@@ -45,7 +46,7 @@ jobs:
 
           print(f'After failures - State: {cb.state.value}')
           print('Circuit breaker working!')
-          "
+          EOF
 
   request-batching:
     runs-on: macos-latest
@@ -59,7 +60,7 @@ jobs:
 
       - name: Test Request Batcher
         run: |
-          python -c "
+          python3 - <<'EOF'
           import asyncio
           import sys
           sys.path.insert(0, 'harness/src')
@@ -80,13 +81,13 @@ jobs:
                   results.append(result)
 
               stats = batcher.get_stats()
-              print(f'Processed: {stats[\"total_requests\"]} requests')
-              print(f'Batches: {stats[\"total_batches\"]}')
+              print(f'Processed: {stats["total_requests"]} requests')
+              print(f'Batches: {stats["total_batches"]}')
               print(f'Results: {results}')
 
           asyncio.run(test())
           print('Request batcher working!')
-          "
+          EOF
 
   latency-tracking:
     runs-on: macos-latest
@@ -100,7 +101,7 @@ jobs:
 
       - name: Test Latency Tracker
         run: |
-          python -c "
+          python3 - <<'EOF'
           import sys
           import time
           sys.path.insert(0, 'harness/src')
@@ -127,4 +128,4 @@ jobs:
           stats2 = tracker.get_stats('api/users')
           print(f'Context manager: {stats2.count} records')
           print('Latency tracker working!')
-          "
+          EOF

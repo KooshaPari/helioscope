@@ -26,11 +26,11 @@ jobs:
 
       - name: Run memory leak detection tests
         run: |
-          python -m pytest tests/ -v --timeout=300 -x
+          python3 -m pytest tests/ -v --timeout=300 -x
 
       - name: Run subprocess FD leak test
         run: |
-          python -c "
+          python3 - <<'EOF'
           import subprocess
           import os
           import sys
@@ -39,7 +39,8 @@ jobs:
 
           # Get initial FD count
           pid = os.getpid()
-          initial_fds = len(os.listdir(f'/proc/{pid}/fd'))
+          # Use /dev/fd which works on both macOS and Linux
+          initial_fds = len(os.listdir('/dev/fd'))
 
           # Run test
           for i in range(10):
@@ -47,14 +48,14 @@ jobs:
                   proc.wait()
 
           # Check final FD count
-          final_fds = len(os.listdir(f'/proc/{pid}/fd'))
+          final_fds = len(os.listdir('/dev/fd'))
           leaked = final_fds - initial_fds
           print(f'FDs: initial={initial_fds}, final={final_fds}, leaked={leaked}')
           if leaked > 5:
               print('LEAK DETECTED!')
               sys.exit(1)
           print('No FD leaks detected')
-          "
+          EOF
 
   benchmark-memory:
     runs-on: macos-latest
@@ -68,15 +69,15 @@ jobs:
 
       - name: Run memory profiling benchmark
         run: |
-          python -c "
+          python3 - <<'EOF'
           import sys
           sys.path.insert(0, 'harness/src')
           from harness.memory_profiler import MemoryProfiler, get_memory_usage
 
           print('=== Memory Usage Test ===')
           mem = get_memory_usage()
-          print(f'RSS: {mem[\"rss_mb\"]:.1f}MB')
-          print(f'VMS: {mem[\"vms_mb\"]:.1f}MB')
+          print(f'RSS: {mem["rss_mb"]:.1f}MB')
+          print(f'VMS: {mem["vms_mb"]:.1f}MB')
 
           # Test profiler
           profiler = MemoryProfiler()
@@ -97,7 +98,7 @@ jobs:
               sys.exit(1)
           else:
               print('\nNo memory leaks detected')
-          "
+          EOF
 
   cache-bounds-test:
     runs-on: macos-latest
@@ -111,7 +112,7 @@ jobs:
 
       - name: Test bounded cache
         run: |
-          python -c "
+          python3 - <<'EOF'
           import sys
           sys.path.insert(0, 'harness/src')
           from harness.bounded_cache import BoundedCache, EvictionPolicy
@@ -129,4 +130,4 @@ jobs:
           # Verify eviction worked
           assert len(cache) <= 5, f'Cache exceeded max size: {len(cache)}'
           print('Cache bounds enforced correctly')
-          "
+          EOF

@@ -2,7 +2,7 @@
 
 use crate::classifier::IntentClassifier;
 use crate::error::{ElicitationError, Result};
-use crate::intent::{ClassifiedIntent, Intent};
+use crate::intent::{ClassifiedIntent, Entity, Intent};
 use chrono::Utc;
 use harness_spec::models::{
     BehaviorSpec, RollbackConfig, SpecContent, Specification, SuccessCriterion, VerificationRule,

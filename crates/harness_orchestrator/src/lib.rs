@@ -244,13 +244,7 @@ impl RootManager {
             self.completed.write().await.push(task.id);
 
             // Release agent
-            self.agents
-                .write()
-                .await
-                .iter_mut()
-                .find(|a| a.id == agent_id);
-            if let Some(a) = self
-                .agents
+            if let Some(a) = self.agents
                 .write()
                 .await
                 .iter_mut()

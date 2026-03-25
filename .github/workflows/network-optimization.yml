@@ -20,32 +20,33 @@ jobs:
       - name: Test Circuit Breaker
         run: |
           python -c "
-          import sys
-          import time
-          sys.path.insert(0, 'harness/src')
-          from harness.circuit_breaker import CircuitBreaker, CircuitState, CircuitOpenError
+import sys
+import time
+sys.path.insert(0, 'harness/src')
+from harness.circuit_breaker import CircuitBreaker, CircuitBreakerConfig, CircuitState, CircuitBreakerError
 
-          print('=== Circuit Breaker Test ===')
-          cb = CircuitBreaker('test', failure_threshold=3, timeout=1)
+print('=== Circuit Breaker Test ===')
+config = CircuitBreakerConfig(failure_threshold=3, timeout=1)
+cb = CircuitBreaker(config=config)
 
-          # Test normal operation
-          def succeed():
-              return 'ok'
+# Test normal operation
+def succeed():
+    return 'ok'
 
-          result = cb.call(succeed)
-          print(f'Normal call: {result}')
-          print(f'State: {cb.state.value}')
+result = cb.call(succeed)
+print(f'Normal call: {result}')
+print(f'State: {cb.state.value}')
 
-          # Test failure tracking
-          for i in range(5):
-              try:
-                  cb.call(lambda: (_ for _ in ()).throw(Exception('fail')))
-              except:
-                  pass
+# Test failure tracking
+for i in range(5):
+    try:
+        cb.call(lambda: (_ for _ in ()).throw(Exception('fail')))
+    except:
+        pass
 
-          print(f'After failures - State: {cb.state.value}')
-          print('Circuit breaker working!')
-          "
+print(f'After failures - State: {cb.state.value}')
+print('Circuit breaker working!')
+"
 
   request-batching:
     runs-on: macos-latest

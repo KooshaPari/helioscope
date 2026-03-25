@@ -16,7 +16,10 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-          
+
+      - name: Install dependencies
+        run: pip install psutil
+
       - name: Run CPU sampling test
         run: |
           python -c "
@@ -64,7 +67,7 @@ print('CPU profiling working!')
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-          
+
       - name: Test async runtime
         run: |
           python -c "
@@ -100,7 +103,7 @@ print('Async runtime working!')
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-          
+
       - name: Test graceful shutdown
         run: |
           python -c "

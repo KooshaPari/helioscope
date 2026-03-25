@@ -37,9 +37,10 @@ import sys
 sys.path.insert(0, 'harness/src')
 from harness.resources import SubprocessManager, safe_popen
 
-# Get initial FD count
+# Get initial FD count (use /dev/fd on macOS, /proc/PID/fd on Linux)
 pid = os.getpid()
-initial_fds = len(os.listdir(f'/proc/{pid}/fd'))
+fd_dir = '/dev/fd' if sys.platform == 'darwin' else f'/proc/{pid}/fd'
+initial_fds = len(os.listdir(fd_dir))
 
 # Run test
 for i in range(10):
@@ -47,7 +48,7 @@ for i in range(10):
         proc.wait()
 
 # Check final FD count
-final_fds = len(os.listdir(f'/proc/{pid}/fd'))
+final_fds = len(os.listdir(fd_dir))
 leaked = final_fds - initial_fds
 print(f'FDs: initial={initial_fds}, final={final_fds}, leaked={leaked}')
 if leaked > 5:
@@ -60,12 +61,15 @@ print('No FD leaks detected')
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-          
+
+      - name: Install dependencies
+        run: pip install psutil
+
       - name: Run memory profiling benchmark
         run: |
           python -c "

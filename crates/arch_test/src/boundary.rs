@@ -1,7 +1,17 @@
-//! Boundary enforcement tests
+//! Boundary enforcement tests for hexagonal architecture
+
 use std::path::Path;
+
+/// Layer in hexagonal architecture
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub enum Layer { Domain, Application, Ports, Infrastructure, Adapters }
+pub enum Layer {
+    Domain,
+    Application,
+    Ports,
+    Infrastructure,
+    Adapters,
+}
+
 impl Layer {
     pub fn from_path(path: &Path) -> Option<Self> {
         let s = path.to_string_lossy();
@@ -12,6 +22,7 @@ impl Layer {
         else if s.contains("/adapters/") { Some(Layer::Adapters) }
         else { None }
     }
+    
     pub fn allowed(&self) -> Vec<Layer> {
         match self {
             Layer::Domain => vec![],
@@ -22,11 +33,39 @@ impl Layer {
         }
     }
 }
-pub struct BoundaryEnforcer { violations: Vec<(String, String)> }
-impl BoundaryEnforcer { pub fn new() -> Self { Self { violations: Vec::new() } } pub fn is_clean(&self) -> bool { self.violations.is_empty() } }
-impl Default for BoundaryEnforcer { fn default() -> Self::new() }
-#[cfg(test)] mod tests {
+
+/// Boundary enforcer
+pub struct BoundaryEnforcer {
+    violations: Vec<(String, String)>,
+}
+
+impl BoundaryEnforcer {
+    pub fn new() -> Self {
+        Self { violations: Vec::new() }
+    }
+    
+    pub fn is_clean(&self) -> bool {
+        self.violations.is_empty()
+    }
+}
+
+impl Default for BoundaryEnforcer {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+#[cfg(test)]
+mod tests {
     use super::*;
-    #[test] fn test_domain_layer() { assert!(Layer::from_path(Path::new("src/domain/model.rs")).is_some()); }
-    #[test] fn test_boundary_clean() { assert!(BoundaryEnforcer::new().is_clean()); }
+    
+    #[test]
+    fn test_domain_layer() {
+        assert!(Layer::from_path(Path::new("src/domain/model.rs")).is_some());
+    }
+    
+    #[test]
+    fn test_boundary_clean() {
+        assert!(BoundaryEnforcer::new().is_clean());
+    }
 }

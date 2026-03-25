@@ -2,6 +2,7 @@
 name = "arch_test"
 version = "0.1.0"
 edition = "2021"
+description = "Architectural tests for heliosCLI - boundary enforcement, TDD patterns, property-based testing"
 
 [dependencies]
 proptest = "1.4"

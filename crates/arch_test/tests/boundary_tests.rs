@@ -110,7 +110,7 @@ fn no_cyclic_dependencies() {
         }
 
         visited.insert(path_str.clone());
-        stack.insert(path_str);
+        stack.insert(path_str.clone());
 
         // Check imports
         if let Ok(content) = std::fs::read_to_string(path) {

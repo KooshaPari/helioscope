@@ -40,7 +40,7 @@ fn test_insert_and_get() {
     let mut map = HashMap::new();
     map.insert("key1", "value1");
 
-    assert_eq!(map.get("key1"), Some(&"value1".to_string()));
+    assert_eq!(map.get("key1"), Some(&"value1"));
 }
 
 /// Test: Update existing value
@@ -50,7 +50,7 @@ fn test_update_existing_value() {
     map.insert("key1", "value1");
     map.insert("key1", "value2");
 
-    assert_eq!(map.get("key1"), Some(&"value2".to_string()));
+    assert_eq!(map.get("key1"), Some(&"value2"));
     assert_eq!(map.len(), 1);
 }
 

@@ -21,12 +21,15 @@ from typing import Any, Callable
 # Lazy psutil - only load when needed for process monitoring
 _psutil = None
 
+
 def _get_psutil():
     global _psutil
     if _psutil is None:
         import psutil
+
         _psutil = psutil
     return _psutil
+
 
 import yaml
 from pydantic import BaseModel, ConfigDict
@@ -71,6 +74,7 @@ class HealthStatus(str, Enum):
 
 class Teammate(BaseModel):
     """Teammate definition."""
+
     model_config = ConfigDict(use_enum_values=True)
 
     id: str
@@ -85,6 +89,7 @@ class Teammate(BaseModel):
 
 class DelegationRequest(BaseModel):
     """Delegation request."""
+
     model_config = ConfigDict(use_enum_values=True)
 
     teammate_id: str
@@ -96,6 +101,7 @@ class DelegationRequest(BaseModel):
 
 class DelegationResult(BaseModel):
     """Delegation result."""
+
     model_config = ConfigDict(use_enum_values=True)
 
     delegation_id: str
@@ -194,9 +200,7 @@ class DelegationProtocol:
 
         try:
             # Execute with timeout
-            result = await asyncio.wait_for(
-                executor.execute(request), timeout=request.timeout_seconds
-            )
+            result = await asyncio.wait_for(executor.execute(request), timeout=request.timeout_seconds)
 
             # Store result
             delegation_result = DelegationResult(
@@ -204,9 +208,7 @@ class DelegationProtocol:
                 teammate_id=request.teammate_id,
                 status=DelegationStatus.COMPLETED,
                 result=result.get("output", ""),
-                duration_ms=int(
-                    (datetime.now(timezone.utc) - start_time).total_seconds() * 1000
-                ),
+                duration_ms=int((datetime.now(timezone.utc) - start_time).total_seconds() * 1000),
                 evidence=result.get("evidence", []),
             )
 
@@ -216,9 +218,7 @@ class DelegationProtocol:
                 teammate_id=request.teammate_id,
                 status=DelegationStatus.FAILED,
                 error="Timeout",
-                duration_ms=int(
-                    (datetime.now(timezone.utc) - start_time).total_seconds() * 1000
-                ),
+                duration_ms=int((datetime.now(timezone.utc) - start_time).total_seconds() * 1000),
             )
 
         except Exception as e:
@@ -227,9 +227,7 @@ class DelegationProtocol:
                 teammate_id=request.teammate_id,
                 status=DelegationStatus.FAILED,
                 error=str(e),
-                duration_ms=int(
-                    (datetime.now(timezone.utc) - start_time).total_seconds() * 1000
-                ),
+                duration_ms=int((datetime.now(timezone.utc) - start_time).total_seconds() * 1000),
             )
 
         self._results[delegation_id] = delegation_result

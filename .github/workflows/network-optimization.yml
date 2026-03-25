@@ -11,120 +11,120 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-          
+
       - name: Test Circuit Breaker
         run: |
           python -c "
-import sys
-import time
-sys.path.insert(0, 'harness/src')
-from harness.circuit_breaker import CircuitBreaker, CircuitState, CircuitOpenError
+          import sys
+          import time
+          sys.path.insert(0, 'harness/src')
+          from harness.circuit_breaker import CircuitBreaker, CircuitState, CircuitOpenError
 
-print('=== Circuit Breaker Test ===')
-cb = CircuitBreaker('test', failure_threshold=3, timeout=1)
+          print('=== Circuit Breaker Test ===')
+          cb = CircuitBreaker('test', failure_threshold=3, timeout=1)
 
-# Test normal operation
-def succeed():
-    return 'ok'
+          # Test normal operation
+          def succeed():
+              return 'ok'
 
-result = cb.call(succeed)
-print(f'Normal call: {result}')
-print(f'State: {cb.state.value}')
+          result = cb.call(succeed)
+          print(f'Normal call: {result}')
+          print(f'State: {cb.state.value}')
 
-# Test failure tracking
-for i in range(5):
-    try:
-        cb.call(lambda: (_ for _ in ()).throw(Exception('fail')))
-    except:
-        pass
+          # Test failure tracking
+          for i in range(5):
+              try:
+                  cb.call(lambda: (_ for _ in ()).throw(Exception('fail')))
+              except:
+                  pass
 
-print(f'After failures - State: {cb.state.value}')
-print('Circuit breaker working!')
-"
+          print(f'After failures - State: {cb.state.value}')
+          print('Circuit breaker working!')
+          "
 
   request-batching:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-          
+
       - name: Test Request Batcher
         run: |
           python -c "
-import asyncio
-import sys
-sys.path.insert(0, 'harness/src')
-from harness.request_batcher import RequestBatcher
+          import asyncio
+          import sys
+          sys.path.insert(0, 'harness/src')
+          from harness.request_batcher import RequestBatcher
 
-print('=== Request Batcher Test ===')
+          print('=== Request Batcher Test ===')
 
-async def process_batch(items):
-    await asyncio.sleep(0.01)  # Simulate API call
-    return [f'processed_{item}' for item in items]
+          async def process_batch(items):
+              await asyncio.sleep(0.01)  # Simulate API call
+              return [f'processed_{item}' for item in items]
 
-batcher = RequestBatcher(process_batch, batch_size=5)
+          batcher = RequestBatcher(process_batch, batch_size=5)
 
-async def test():
-    results = []
-    for i in range(3):
-        result = await batcher.submit(f'req{i}', f'item{i}')
-        results.append(result)
-    
-    stats = batcher.get_stats()
-    print(f'Processed: {stats[\"total_requests\"]} requests')
-    print(f'Batches: {stats[\"total_batches\"]}')
-    print(f'Results: {results}')
+          async def test():
+              results = []
+              for i in range(3):
+                  result = await batcher.submit(f'req{i}', f'item{i}')
+                  results.append(result)
 
-asyncio.run(test())
-print('Request batcher working!')
-"
+              stats = batcher.get_stats()
+              print(f'Processed: {stats[\"total_requests\"]} requests')
+              print(f'Batches: {stats[\"total_batches\"]}')
+              print(f'Results: {results}')
+
+          asyncio.run(test())
+          print('Request batcher working!')
+          "
 
   latency-tracking:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-          
+
       - name: Test Latency Tracker
         run: |
           python -c "
-import sys
-import time
-sys.path.insert(0, 'harness/src')
-from harness.latency_tracker import LatencyTracker, get_network_metrics
+          import sys
+          import time
+          sys.path.insert(0, 'harness/src')
+          from harness.latency_tracker import LatencyTracker, get_network_metrics
 
-print('=== Latency Tracker Test ===')
+          print('=== Latency Tracker Test ===')
 
-tracker = LatencyTracker()
+          tracker = LatencyTracker()
 
-# Record some measurements
-for i in range(100):
-    tracker.record('api/test', 10 + i * 0.5, True)
+          # Record some measurements
+          for i in range(100):
+              tracker.record('api/test', 10 + i * 0.5, True)
 
-stats = tracker.get_stats('api/test')
-print(f'Count: {stats.count}')
-print(f'Mean: {stats.mean_ms:.1f}ms')
-print(f'P95: {stats.p95_ms:.1f}ms')
-print(f'P99: {stats.p99_ms:.1f}ms')
+          stats = tracker.get_stats('api/test')
+          print(f'Count: {stats.count}')
+          print(f'Mean: {stats.mean_ms:.1f}ms')
+          print(f'P95: {stats.p95_ms:.1f}ms')
+          print(f'P99: {stats.p99_ms:.1f}ms')
 
-# Test context manager
-with tracker.track('api/users') as ctx:
-    time.sleep(0.01)
+          # Test context manager
+          with tracker.track('api/users') as ctx:
+              time.sleep(0.01)
 
-stats2 = tracker.get_stats('api/users')
-print(f'Context manager: {stats2.count} records')
-print('Latency tracker working!')
-"
+          stats2 = tracker.get_stats('api/users')
+          print(f'Context manager: {stats2.count} records')
+          print('Latency tracker working!')
+          "

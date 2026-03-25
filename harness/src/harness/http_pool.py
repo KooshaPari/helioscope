@@ -13,6 +13,7 @@ from dataclasses import dataclass, field
 @dataclass
 class PoolConfig:
     """Configuration for HTTP connection pool."""
+
     max_connections: int = 100
     max_keepalive_connections: int = 20
     keepalive_expiry: float = 30.0
@@ -24,34 +25,34 @@ class PoolConfig:
 
 class HTTPConnectionPool:
     """Singleton HTTP connection pool manager.
-    
+
     Usage:
         pool = HTTPConnectionPool.get_instance()
         client = pool.get_client()
-        
+
         # Or use the context manager
         with pool.get_client() as client:
             response = client.get(url)
     """
-    
-    _instance: Optional['HTTPConnectionPool'] = None
+
+    _instance: Optional["HTTPConnectionPool"] = None
     _lock = threading.Lock()
-    
+
     def __init__(self, config: Optional[PoolConfig] = None):
         self._config = config or PoolConfig()
         self._client: Optional[httpx.Client] = None
         self._async_client: Optional[httpx.AsyncClient] = None
         self._client_lock = threading.Lock()
-    
+
     @classmethod
-    def get_instance(cls, config: Optional[PoolConfig] = None) -> 'HTTPConnectionPool':
+    def get_instance(cls, config: Optional[PoolConfig] = None) -> "HTTPConnectionPool":
         """Get singleton instance."""
         if cls._instance is None:
             with cls._lock:
                 if cls._instance is None:
                     cls._instance = cls(config)
         return cls._instance
-    
+
     @classmethod
     def reset_instance(cls) -> None:
         """Reset singleton (for testing)."""
@@ -59,7 +60,7 @@ class HTTPConnectionPool:
             if cls._instance:
                 cls._instance.close()
             cls._instance = None
-    
+
     def get_client(self) -> httpx.Client:
         """Get a synchronous HTTP client with connection pooling."""
         if self._client is None:
@@ -80,7 +81,7 @@ class HTTPConnectionPool:
                         http2=True,  # Enable HTTP/2 for better multiplexing
                     )
         return self._client
-    
+
     def get_async_client(self) -> httpx.AsyncClient:
         """Get an async HTTP client with connection pooling."""
         if self._async_client is None:
@@ -101,25 +102,25 @@ class HTTPConnectionPool:
                         http2=True,
                     )
         return self._async_client
-    
+
     @property
     def config(self) -> PoolConfig:
         """Get pool configuration."""
         return self._config
-    
+
     def get_stats(self) -> dict[str, Any]:
         """Get pool statistics."""
         stats = {
-            'max_connections': self._config.max_connections,
-            'max_keepalive': self._config.max_keepalive_connections,
-            'keepalive_expiry': self._config.keepalive_expiry,
+            "max_connections": self._config.max_connections,
+            "max_keepalive": self._config.max_keepalive_connections,
+            "keepalive_expiry": self._config.keepalive_expiry,
         }
         if self._client:
-            stats['client_active'] = True
+            stats["client_active"] = True
         if self._async_client:
-            stats['async_client_active'] = True
+            stats["async_client_active"] = True
         return stats
-    
+
     def close(self) -> None:
         """Close the connection pool."""
         with self._client_lock:
@@ -131,6 +132,7 @@ class HTTPConnectionPool:
                 # This is a simplified version
                 try:
                     import asyncio
+
                     asyncio.get_event_loop().run_until_complete(self._async_client.aclose())
                 except Exception:
                     pass
@@ -139,7 +141,7 @@ class HTTPConnectionPool:
 
 def get_http_client(config: Optional[PoolConfig] = None) -> httpx.Client:
     """Get a shared HTTP client with connection pooling.
-    
+
     Usage:
         client = get_http_client()
         response = client.get("https://api.example.com")
@@ -149,7 +151,7 @@ def get_http_client(config: Optional[PoolConfig] = None) -> httpx.Client:
 
 def get_async_http_client(config: Optional[PoolConfig] = None) -> httpx.AsyncClient:
     """Get a shared async HTTP client with connection pooling.
-    
+
     Usage:
         client = await get_async_http_client()
         response = await client.get("https://api.example.com")
@@ -160,13 +162,15 @@ def get_async_http_client(config: Optional[PoolConfig] = None) -> httpx.AsyncCli
 # Decorator for easy client usage
 def with_client(func):
     """Decorator to automatically inject HTTP client.
-    
+
     Usage:
         @with_client
         def make_request(client, url):
             return client.get(url)
     """
+
     def wrapper(*args, **kwargs):
         client = get_http_client()
         return func(client, *args, **kwargs)
+
     return wrapper

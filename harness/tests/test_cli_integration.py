@@ -24,12 +24,7 @@ def test_execute_phase_2_harness_script_smoke(tmp_path: Path) -> None:
     repo_root = workspace / "clones" / "toyrepo"
     repo_root.mkdir()
     (repo_root / "package.json").write_text(
-        '{\n'
-        '  "scripts": {\n'
-        '    "quality": "echo quality",\n'
-        '    "test": "echo test"\n'
-        "  }\n"
-        "}\n"
+        '{\n  "scripts": {\n    "quality": "echo quality",\n    "test": "echo test"\n  }\n}\n'
     )
 
     env = os.environ.copy()

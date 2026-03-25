@@ -1,6 +1,5 @@
 """Pareto computation module - candidate for Rust extraction"""
 
-
 import numpy as np
 import pandas as pd
 

@@ -292,9 +292,7 @@ class SpeculativeExecutor:
     async def race_first(self, providers: list[Callable], task: Any) -> Any:
         """Execute providers, return first success."""
         tasks = [asyncio.create_task(p(task)) for p in providers]
-        done, pending = await asyncio.wait(
-            tasks, timeout=30.0, return_when=asyncio.FIRST_COMPLETED
-        )
+        done, pending = await asyncio.wait(tasks, timeout=30.0, return_when=asyncio.FIRST_COMPLETED)
 
         # Cancel pending
         for t in pending:
@@ -316,9 +314,7 @@ class SpeculativeExecutor:
         quality_fn: Callable[[Any], float] | None = None,
     ) -> Any:
         """Race providers, return best quality."""
-        results = await asyncio.gather(
-            *[p(task) for p in providers], return_exceptions=True
-        )
+        results = await asyncio.gather(*[p(task) for p in providers], return_exceptions=True)
 
         valid = [r for r in results if not isinstance(r, Exception)]
         if not valid:

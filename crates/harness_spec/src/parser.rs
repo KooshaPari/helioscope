@@ -5,14 +5,12 @@ use crate::models::*;
 
 /// Parse specification from YAML content
 pub fn parse_yaml(content: &str) -> Result<Specification> {
-    serde_yaml::from_str(content)
-        .map_err(|e| SpecError::ParseError(e.to_string()))
+    serde_yaml::from_str(content).map_err(|e| SpecError::ParseError(e.to_string()))
 }
 
 /// Parse specification from JSON content
 pub fn parse_json(content: &str) -> Result<Specification> {
-    serde_json::from_str(content)
-        .map_err(|e| SpecError::JsonParseError(e.to_string()))
+    serde_json::from_str(content).map_err(|e| SpecError::JsonParseError(e.to_string()))
 }
 
 /// Parse specification with automatic format detection
@@ -26,7 +24,7 @@ pub fn parse(content: &str, format: SpecFormat) -> Result<Specification> {
 /// Auto-detect format from content
 pub fn parse_auto(content: &str) -> Result<Specification> {
     let trimmed = content.trim();
-    
+
     if trimmed.starts_with('{') {
         parse_json(trimmed)
     } else {

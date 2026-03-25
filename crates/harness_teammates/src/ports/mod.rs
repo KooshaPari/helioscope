@@ -1,6 +1,6 @@
 //! Ports - Interface definitions for teammates
 
-use crate::domain::{Teammate, DelegationRequest, DelegationResult, HealthStatus};
+use crate::domain::{DelegationRequest, DelegationResult, HealthStatus, Teammate};
 
 /// Inbound port - Teammate registry operations
 pub trait TeammateRegistryPort: Send + Sync {

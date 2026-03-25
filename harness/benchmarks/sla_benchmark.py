@@ -29,12 +29,14 @@ from typing import Any
 # Optional imports
 try:
     import httpx
+
     HAS_HTTPX = True
 except ImportError:
     HAS_HTTPX = False
 
 try:
     import psutil
+
     HAS_PSUTIL = True
 except ImportError:
     HAS_PSUTIL = False
@@ -78,9 +80,7 @@ class BenchmarkSuite:
     def add(self, name: str, value: float, unit: str, **tags: str) -> None:
         self.results.append(BenchmarkResult(name=name, value=value, unit=unit, tags=tags))
 
-    def add_sla(
-        self, name: str, value: float, unit: str, threshold: float, sla_type: str
-    ) -> None:
+    def add_sla(self, name: str, value: float, unit: str, threshold: float, sla_type: str) -> None:
         passed = True
         if sla_type == "latency":
             passed = value <= threshold

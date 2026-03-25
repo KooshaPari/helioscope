@@ -66,7 +66,7 @@ class RepoManifest:
         except CalledProcessError:
             branch = "(no-git)"
             commit = ""
-        default_branch = (branch or "main")
+        default_branch = branch or "main"
         return cls(
             repo_id=repo_id,
             root=root,

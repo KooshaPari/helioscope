@@ -1,13 +1,13 @@
 //! Verification pipeline for heliosHarness
-//! 
+//!
 //! Provides test execution, security scanning, and performance benchmarking.
 
-pub mod pipeline;
-pub mod runners;
 pub mod error;
+pub mod pipeline;
 pub mod result;
+pub mod runners;
 
-pub use pipeline::*;
-pub use runners::*;
 pub use error::*;
+pub use pipeline::*;
 pub use result::*;
+pub use runners::*;

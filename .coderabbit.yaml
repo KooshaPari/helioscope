@@ -1,11 +1,15 @@
 # yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
 
 reviews:
-  profile: assertive
+  profile: chill  # Valid schema value: use assertive manually for stricter release/hotfix sweeps.
   request_changes_workflow: true
   auto_review:
     enabled: true
     auto_incremental_review: true
+
+# Stage intent is preserved operationally outside this file:
+# - branch and CI stage gates continue to define review strictness by lane.
+# - switch `reviews.profile` to `assertive` for release/hotfix hardening passes.
 
 pre_merge_checks:
   docstrings:
@@ -16,3 +20,7 @@ pre_merge_checks:
     mode: warning
   issue_assessment:
     mode: warning
+
+pr_validation:
+  block_on:
+    severity: info

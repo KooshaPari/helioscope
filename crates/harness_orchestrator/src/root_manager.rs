@@ -218,7 +218,7 @@ mod tests {
             },
         };
         
-        let tasks = manager.decompose(&spec).await.unwrap();
+        let tasks = manager.decompose(&spec).await.expect("decompose failed");
         assert!(!tasks.is_empty());
     }
 }

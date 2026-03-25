@@ -244,7 +244,8 @@ impl RootManager {
             self.completed.write().await.push(task.id);
 
             // Release agent
-            if let Some(a) = self.agents
+            if let Some(a) = self
+                .agents
                 .write()
                 .await
                 .iter_mut()

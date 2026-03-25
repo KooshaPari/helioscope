@@ -1,0 +1,7 @@
+[package]
+name = "harness_zig"
+version = "0.1.0"
+edition = "2021"
+description = "Zig harness for heliosCLI"
+
+[dependencies]

@@ -2,8 +2,12 @@
 
 use crate::error::{ElicitationError, Result};
 use crate::intent::{ClassifiedIntent, Entity, EntityType, Intent};
+use once_cell::sync::Lazy;
 use regex::Regex;
 use std::collections::HashMap;
+
+static FILE_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r"(\S+\.(rs|py|js|ts|yaml|json|toml))").expect("invalid file regex"));
+static FUNC_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r"(?:function|fn|def|method)\s+(\w+)").expect("invalid func regex"));
 
 /// Intent classifier
 pub struct IntentClassifier {
@@ -192,8 +196,7 @@ impl IntentClassifier {
         let mut entities = Vec::new();
 
         // Extract file paths
-        let file_regex = Regex::new(r"(\S+\.(rs|py|js|ts|yaml|json|toml))").unwrap();
-        for cap in file_regex.captures_iter(input) {
+        for cap in FILE_REGEX.captures_iter(input) {
             if let Some(m) = cap.get(1) {
                 entities.push(Entity {
                     entity_type: EntityType::File,
@@ -204,8 +207,7 @@ impl IntentClassifier {
         }
 
         // Extract function names (simple pattern)
-        let func_regex = Regex::new(r"(?:function|fn|def|method)\s+(\w+)").unwrap();
-        for cap in func_regex.captures_iter(input) {
+        for cap in FUNC_REGEX.captures_iter(input) {
             if let Some(m) = cap.get(1) {
                 entities.push(Entity {
                     entity_type: EntityType::Function,

@@ -1,13 +1,15 @@
 //! Intent classifier
 
-use crate::error::{ElicitationError, Result};
+use crate::error::Result;
 use crate::intent::{ClassifiedIntent, Entity, EntityType, Intent};
 use once_cell::sync::Lazy;
 use regex::Regex;
 use std::collections::HashMap;
 
-static FILE_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r"(\S+\.(rs|py|js|ts|yaml|json|toml))").expect("invalid file regex"));
-static FUNC_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r"(?:function|fn|def|method)\s+(\w+)").expect("invalid func regex"));
+static FILE_REGEX: Lazy<Regex> =
+    Lazy::new(|| Regex::new(r"(\S+\.(rs|py|js|ts|yaml|json|toml))").expect("invalid file regex"));
+static FUNC_REGEX: Lazy<Regex> =
+    Lazy::new(|| Regex::new(r"(?:function|fn|def|method)\s+(\w+)").expect("invalid func regex"));
 
 /// Intent classifier
 pub struct IntentClassifier {

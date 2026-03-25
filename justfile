@@ -94,37 +94,3 @@ feature-matrix:
 # Tail logs from the state SQLite database
 log *args:
     if [ "${1:-}" = "--" ]; then shift; fi; cargo run -p codex-state --bin logs_client -- "$@"
-
-# Standardized task-surface wrapper recipes.
-surface-lint:
-    bash ../scripts/task_surface.sh lint
-
-surface-test:
-    bash ../scripts/task_surface.sh test
-
-surface-fmt:
-    bash ../scripts/task_surface.sh fmt
-
-surface-quality:
-    bash ../scripts/task_surface.sh quality
-
-# DevOps / Delivery helpers
-devops-status:
-    git -C .. status --short --branch
-    git -C .. remote -v
-    git -C .. log --oneline -n 5
-
-devops-check *args:
-    bash ../scripts/devops-checker.sh "$@"
-
-devops-check-ci:
-    bash ../scripts/devops-checker.sh --check-ci
-
-devops-check-ci-summary:
-    bash ../scripts/devops-checker.sh --check-ci --emit-summary
-
-devops-push *args:
-    bash ../scripts/push-helioscli-with-fallback.sh "$@"
-
-devops-push-origin *args:
-    bash ../scripts/push-helioscli-with-fallback.sh --skip-primary "$@"

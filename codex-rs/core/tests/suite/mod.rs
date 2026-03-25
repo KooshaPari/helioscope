@@ -83,7 +83,6 @@ mod json_result;
 mod list_dir;
 mod live_cli;
 mod live_reload;
-mod memories;
 mod model_info_overrides;
 mod model_overrides;
 mod model_switching;

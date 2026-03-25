@@ -95,12 +95,15 @@ impl ToolOutput {
         match self {
             ToolOutput::Function { body, success } => {
                 // `custom_tool_call` is the Responses API item type for freeform
-                // tools (`ToolSpec::Freeform`, e.g. freeform `apply_patch` or
-                // `js_repl`).
+                // tools (`ToolSpec::Freeform`, e.g. freeform `apply_patch`).
+                // Those payloads must round-trip as `custom_tool_call_output`
+                // with plain string output.
                 if matches!(payload, ToolPayload::Custom { .. }) {
+                    // Freeform/custom tools (`custom_tool_call`) use the custom
+                    // output wire shape and remain string-only.
                     return ResponseInputItem::CustomToolCallOutput {
                         call_id: call_id.to_string(),
-                        output: FunctionCallOutputPayload { body, success },
+                        output: body.to_text().unwrap_or_default(),
                     };
                 }
 
@@ -180,9 +183,7 @@ mod tests {
         match response {
             ResponseInputItem::CustomToolCallOutput { call_id, output } => {
                 assert_eq!(call_id, "call-42");
-                assert_eq!(output.text_content(), Some("patched"));
-                assert!(output.content_items().is_none());
-                assert_eq!(output.success, Some(true));
+                assert_eq!(output, "patched");
             }
             other => panic!("expected CustomToolCallOutput, got {other:?}"),
         }
@@ -233,21 +234,8 @@ mod tests {
 
         match response {
             ResponseInputItem::CustomToolCallOutput { call_id, output } => {
-                let expected = vec![
-                    FunctionCallOutputContentItem::InputText {
-                        text: "line 1".to_string(),
-                    },
-                    FunctionCallOutputContentItem::InputImage {
-                        image_url: "data:image/png;base64,AAA".to_string(),
-                    },
-                    FunctionCallOutputContentItem::InputText {
-                        text: "line 2".to_string(),
-                    },
-                ];
                 assert_eq!(call_id, "call-99");
-                assert_eq!(output.content_items(), Some(expected.as_slice()));
-                assert_eq!(output.body.to_text().as_deref(), Some("line 1\nline 2"));
-                assert_eq!(output.success, Some(true));
+                assert_eq!(output, "line 1\nline 2");
             }
             other => panic!("expected CustomToolCallOutput, got {other:?}"),
         }

@@ -78,7 +78,7 @@ done
 
 require_cmds() {
   local missing=0
-  for cmd in gh; do
+  for cmd in gh jq; do
     if ! command -v "$cmd" >/dev/null 2>&1; then
       echo "Missing required command: $cmd" >&2
       missing=1
@@ -101,20 +101,6 @@ require_cmds() {
 }
 
 require_cmds
-
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-TOOLING_DISPATCH="$SCRIPT_DIR/tooling-dispatch.sh"
-
-if [[ ! -x "$TOOLING_DISPATCH" ]]; then
-  echo "Missing required script: $TOOLING_DISPATCH" >&2
-  exit 1
-fi
-
-JQ_CMD=("$TOOLING_DISPATCH" json)
-
-jq_run() {
-  "${JQ_CMD[@]}" "$@"
-}
 
 run_gh() {
   if command -v timeout >/dev/null 2>&1; then
@@ -269,8 +255,8 @@ ping_coderabbit_if_needed() {
 classify_cycle() {
   local pr_json="$1"
   local num branch merge_state
-  num=$(echo "$pr_json" | jq_run -r '.number')
-  branch=$(echo "$pr_json" | jq_run -r '.headRefName')
+  num=$(echo "$pr_json" | jq -r '.number')
+  branch=$(echo "$pr_json" | jq -r '.headRefName')
 
   local checks
   if [[ "$DRY_RUN" -eq 1 ]]; then
@@ -279,8 +265,8 @@ classify_cycle() {
     checks=$(run_gh pr checks "$num" --repo "$REPO" --json name,state || echo '[]')
   fi
   local fail_total fail_non_coderabbit
-  fail_total=$(echo "$checks" | jq_run '[.[] | select(.state=="FAILURE" or .state=="ACTION_REQUIRED")] | length')
-  fail_non_coderabbit=$(echo "$checks" | jq_run '[.[] | select((.state=="FAILURE" or .state=="ACTION_REQUIRED") and (.name | ascii_downcase) != "coderabbit")] | length')
+  fail_total=$(echo "$checks" | jq '[.[] | select(.state=="FAILURE" or .state=="ACTION_REQUIRED")] | length')
+  fail_non_coderabbit=$(echo "$checks" | jq '[.[] | select((.state=="FAILURE" or .state=="ACTION_REQUIRED") and (.name | ascii_downcase) != "coderabbit")] | length')
 
   local comment_json
   if [[ "$DRY_RUN" -eq 1 ]]; then
@@ -289,7 +275,7 @@ classify_cycle() {
     comment_json=$(run_gh pr view "$num" --json comments --repo "$REPO" || echo '{"comments":[]}')
   fi
   local cr_rate
-  cr_rate=$(echo "$comment_json" | jq_run '[.comments[] | select(.author.login=="coderabbitai" and (.body | test("rate limit|secondary rate limit|quota|retry-after|abuse"; "i")))] | length')
+  cr_rate=$(echo "$comment_json" | jq '[.comments[] | select(.author.login=="coderabbitai" and (.body | test("rate limit|secondary rate limit|quota|retry-after|abuse"; "i")))] | length')
 
   local meta
   if [[ "$DRY_RUN" -eq 1 ]]; then
@@ -297,9 +283,9 @@ classify_cycle() {
   else
     meta=$(run_gh pr view "$num" --repo "$REPO" --json mergeStateStatus,mergeable || echo '{"mergeStateStatus":"UNKNOWN","mergeable":"UNKNOWN"}')
   fi
-  merge_state=$(echo "$meta" | jq_run -r '.mergeStateStatus')
+  merge_state=$(echo "$meta" | jq -r '.mergeStateStatus')
   local mergeable
-  mergeable=$(echo "$meta" | jq_run -r '.mergeable')
+  mergeable=$(echo "$meta" | jq -r '.mergeable')
 
   local state
   state=$(status_badge "$merge_state" "$fail_total" "$fail_non_coderabbit" "$cr_rate" "$mergeable")
@@ -331,7 +317,7 @@ while true; do
     while IFS= read -r pr_json; do
       [[ -z "$pr_json" ]] && continue
       classify_cycle "$pr_json"
-    done < <(echo "$open_json" | jq_run -c '.[]')
+    done < <(echo "$open_json" | jq -c '.[]')
   fi
 
   if [[ "$ONCE" -eq 1 ]]; then

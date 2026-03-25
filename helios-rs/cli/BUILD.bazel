@@ -1,8 +1,8 @@
-load("//:defs.bzl", "multiplatform_binaries")
+load("//:defs.bzl", "helios_rust_crate", "multiplatform_binaries")
 
-alias(
-    name = "helios",
-    actual = "//codex-rs/cli:codex",
+helios_rust_crate(
+    name = "cli",
+    crate_name = "helios_cli",
 )
 
 multiplatform_binaries(

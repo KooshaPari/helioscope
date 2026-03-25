@@ -90,26 +90,20 @@ directory (it returns the restored thread summary).
 
 Fetch the catalog of models available in the current Codex build with `model/list`. The request accepts optional pagination inputs:
 
-- `limit` – number of models to return (defaults to a server-selected value)
+- `pageSize` – number of models to return (defaults to a server-selected value)
 - `cursor` – opaque string from the previous response’s `nextCursor`
 
 Each response yields:
 
-- `data` – ordered list of models. A model includes:
+- `items` – ordered list of models. A model includes:
   - `id`, `model`, `displayName`, `description`
   - `supportedReasoningEfforts` – array of objects with:
-    - `reasoningEffort` – one of `none|minimal|low|medium|high|xhigh`
+    - `reasoningEffort` – one of `minimal|low|medium|high`
     - `description` – human-friendly label for the effort
   - `defaultReasoningEffort` – suggested effort for the UI
-  - `inputModalities` – accepted input types for the model
   - `supportsPersonality` – whether the model supports personality-specific instructions
   - `isDefault` – whether the model is recommended for most users
   - `upgrade` – optional recommended upgrade model id
-  - `upgradeInfo` – optional upgrade metadata object with:
-    - `model` – recommended upgrade model id
-    - `upgradeCopy` – optional display copy for the upgrade recommendation
-    - `modelLink` – optional link for the upgrade recommendation
-    - `migrationMarkdown` – optional markdown shown when presenting the upgrade
 - `nextCursor` – pass into the next request to continue paging (optional)
 
 ## Collaboration modes (experimental)

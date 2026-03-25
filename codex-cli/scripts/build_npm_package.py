@@ -3,7 +3,6 @@
 
 import argparse
 import json
-import os
 import shutil
 import subprocess
 import sys
@@ -340,26 +339,11 @@ def run_command(cmd: list[str], cwd: Path | None = None) -> None:
     subprocess.run(cmd, cwd=cwd, check=True)
 
 
-def resolve_preferred_pm() -> str:
-    preferred = os.environ.get("CODEX_PREFERRED_PM", "pnpm").strip().lower()
-    if preferred not in {"pnpm", "bun"}:
-        raise RuntimeError(
-            "Invalid CODEX_PREFERRED_PM value. Expected 'pnpm' or 'bun', "
-            f"got: {preferred!r}"
-        )
-    if shutil.which(preferred) is None:
-        raise RuntimeError(
-            f"CODEX_PREFERRED_PM={preferred!r} requested but '{preferred}' is not in PATH."
-        )
-    return preferred
-
-
 def stage_codex_sdk_sources(staging_dir: Path) -> None:
     package_root = CODEX_SDK_ROOT
-    pm = resolve_preferred_pm()
 
-    run_command([pm, "install", "--frozen-lockfile"], cwd=package_root)
-    run_command([pm, "run", "build"], cwd=package_root)
+    run_command(["pnpm", "install", "--frozen-lockfile"], cwd=package_root)
+    run_command(["pnpm", "run", "build"], cwd=package_root)
 
     dist_src = package_root / "dist"
     if not dist_src.exists():

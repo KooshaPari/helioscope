@@ -117,10 +117,7 @@ impl ToolCallRuntime {
         match &call.payload {
             ToolPayload::Custom { .. } => ResponseInputItem::CustomToolCallOutput {
                 call_id: call.call_id.clone(),
-                output: FunctionCallOutputPayload {
-                    body: FunctionCallOutputBody::Text(Self::abort_message(call, secs)),
-                    ..Default::default()
-                },
+                output: Self::abort_message(call, secs),
             },
             ToolPayload::Mcp { .. } => ResponseInputItem::McpToolCallOutput {
                 call_id: call.call_id.clone(),

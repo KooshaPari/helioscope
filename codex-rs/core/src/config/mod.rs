@@ -9,7 +9,6 @@ use crate::config::types::McpServerDisabledReason;
 use crate::config::types::McpServerTransportConfig;
 use crate::config::types::MemoriesConfig;
 use crate::config::types::MemoriesToml;
-use crate::config::types::ModelAvailabilityNuxConfig;
 use crate::config::types::Notice;
 use crate::config::types::NotificationMethod;
 use crate::config::types::Notifications;
@@ -50,6 +49,8 @@ use crate::project_doc::LOCAL_PROJECT_DOC_FILENAME;
 use crate::protocol::AskForApproval;
 use crate::protocol::ReadOnlyAccess;
 use crate::protocol::SandboxPolicy;
+#[cfg(target_os = "macos")]
+use crate::seatbelt_permissions::MacOsSeatbeltProfileExtensions;
 use crate::unified_exec::DEFAULT_MAX_BACKGROUND_TERMINAL_TIMEOUT_MS;
 use crate::unified_exec::MIN_EMPTY_YIELD_TIME_MS;
 use crate::windows_sandbox::WindowsSandboxLevelExt;
@@ -65,7 +66,6 @@ use codex_protocol::config_types::TrustLevel;
 use codex_protocol::config_types::Verbosity;
 use codex_protocol::config_types::WebSearchMode;
 use codex_protocol::config_types::WindowsSandboxLevel;
-use codex_protocol::models::MacOsSeatbeltProfileExtensions;
 use codex_protocol::openai_models::ModelsResponse;
 use codex_protocol::openai_models::ReasoningEffort;
 use codex_rmcp_client::OAuthCredentialsStoreMode;
@@ -82,6 +82,8 @@ use std::path::Path;
 use std::path::PathBuf;
 #[cfg(test)]
 use tempfile::tempdir;
+#[cfg(not(target_os = "macos"))]
+type MacOsSeatbeltProfileExtensions = ();
 
 use crate::config::permissions::network_proxy_config_from_permissions;
 use crate::config::profile::ConfigProfile;
@@ -98,7 +100,6 @@ pub mod types;
 pub use codex_config::Constrained;
 pub use codex_config::ConstraintError;
 pub use codex_config::ConstraintResult;
-pub use codex_network_proxy::NetworkProxyAuditMetadata;
 
 pub use network_proxy_spec::NetworkProxySpec;
 pub use network_proxy_spec::StartedNetworkProxy;
@@ -114,10 +115,21 @@ pub use codex_git::GhostSnapshotConfig;
 /// the context window.
 pub(crate) const PROJECT_DOC_MAX_BYTES: usize = 32 * 1024; // 32 KiB
 pub(crate) const DEFAULT_AGENT_MAX_THREADS: Option<usize> = Some(6);
+pub(crate) const DEFAULT_AGENT_MAX_SPAWN_DEPTH: Option<usize> = Some(2);
 pub(crate) const DEFAULT_AGENT_MAX_DEPTH: i32 = 1;
 pub(crate) const DEFAULT_AGENT_JOB_MAX_RUNTIME_SECONDS: Option<u64> = None;
 
 pub const CONFIG_TOML_FILE: &str = "config.toml";
+
+fn default_sqlite_home(sandbox_policy: &SandboxPolicy, codex_home: &Path) -> PathBuf {
+    if matches!(sandbox_policy, SandboxPolicy::WorkspaceWrite { .. }) {
+        let mut path = std::env::temp_dir();
+        path.push("codex-sqlite");
+        path
+    } else {
+        codex_home.to_path_buf()
+    }
+}
 
 fn resolve_sqlite_home_env(resolved_cwd: &Path) -> Option<PathBuf> {
     let raw = std::env::var(codex_state::SQLITE_HOME_ENV).ok()?;
@@ -277,9 +289,6 @@ pub struct Config {
     /// Show startup tooltips in the TUI welcome screen.
     pub show_tooltips: bool,
 
-    /// Persisted startup availability NUX state for model tooltips.
-    pub model_availability_nux: ModelAvailabilityNuxConfig,
-
     /// Start the TUI in the specified collaboration mode (plan/default).
 
     /// Controls whether the TUI uses the terminal's alternate screen buffer.
@@ -348,6 +357,8 @@ pub struct Config {
 
     /// Maximum number of agent threads that can be open concurrently.
     pub agent_max_threads: Option<usize>,
+    /// Maximum depth for thread-spawned subagents.
+    pub agent_max_spawn_depth: Option<usize>,
     /// Maximum runtime in seconds for agent job workers before they are failed.
     pub agent_job_max_runtime_seconds: Option<u64>,
 
@@ -413,9 +424,9 @@ pub struct Config {
     /// global default").
     pub plan_mode_reasoning_effort: Option<ReasoningEffort>,
 
-    /// Optional value to use for `reasoning.summary` when making a request
-    /// using the Responses API. When unset, the model catalog default is used.
-    pub model_reasoning_summary: Option<ReasoningSummary>,
+    /// If not "none", the value to use for `reasoning.summary` when making a
+    /// request using the Responses API.
+    pub model_reasoning_summary: ReasoningSummary,
 
     /// Optional override to force-enable reasoning summaries for the configured model.
     pub model_supports_reasoning_summaries: Option<bool>,
@@ -429,9 +440,6 @@ pub struct Config {
 
     /// Base URL for requests to ChatGPT (as opposed to the OpenAI API).
     pub chatgpt_base_url: String,
-
-    /// Machine-local realtime audio device preferences used by realtime voice.
-    pub realtime_audio: RealtimeAudioConfig,
 
     /// Experimental / do not use. Overrides only the realtime conversation
     /// websocket transport base URL (the `Op::RealtimeConversation` `/ws`
@@ -1141,7 +1149,8 @@ pub struct ConfigToml {
     pub history: Option<History>,
 
     /// Directory where Codex stores the SQLite state DB.
-    /// Defaults to `$CODEX_SQLITE_HOME` when set. Otherwise uses `$CODEX_HOME`.
+    /// Defaults to `$CODEX_SQLITE_HOME` when set. Otherwise uses a temp dir
+    /// under WorkspaceWrite sandboxing and `$CODEX_HOME` for other modes.
     pub sqlite_home: Option<AbsolutePathBuf>,
 
     /// Directory where Codex writes log files, for example `codex-tui.log`.
@@ -1181,10 +1190,6 @@ pub struct ConfigToml {
 
     /// Base URL for requests to ChatGPT (as opposed to the OpenAI API).
     pub chatgpt_base_url: Option<String>,
-
-    /// Machine-local realtime audio device preferences used by realtime voice.
-    #[serde(default)]
-    pub audio: Option<RealtimeAudioToml>,
 
     /// Experimental / do not use. Overrides only the realtime conversation
     /// websocket transport base URL (the `Op::RealtimeConversation` `/ws`
@@ -1317,19 +1322,6 @@ impl ProjectConfig {
     }
 }
 
-#[derive(Debug, Clone, Default, PartialEq, Eq)]
-pub struct RealtimeAudioConfig {
-    pub microphone: Option<String>,
-    pub speaker: Option<String>,
-}
-
-#[derive(Serialize, Deserialize, Debug, Clone, Default, PartialEq, Eq, JsonSchema)]
-#[schemars(deny_unknown_fields)]
-pub struct RealtimeAudioToml {
-    pub microphone: Option<String>,
-    pub speaker: Option<String>,
-}
-
 #[derive(Serialize, Deserialize, Debug, Clone, Default, PartialEq, JsonSchema)]
 #[schemars(deny_unknown_fields)]
 pub struct ToolsToml {
@@ -1348,6 +1340,9 @@ pub struct AgentsToml {
     /// When unset, no limit is enforced.
     #[schemars(range(min = 1))]
     pub max_threads: Option<usize>,
+    /// Maximum depth for thread-spawned subagents.
+    #[schemars(range(min = 1))]
+    pub max_spawn_depth: Option<usize>,
     /// Maximum nesting depth allowed for spawned agent threads.
     /// Root sessions start at depth 0.
     #[schemars(range(min = 1))]
@@ -1870,6 +1865,25 @@ impl Config {
             })
             .transpose()?
             .unwrap_or_default();
+        let agent_max_spawn_depth = cfg
+            .agents
+            .as_ref()
+            .and_then(|agents| agents.max_spawn_depth)
+            .or(DEFAULT_AGENT_MAX_SPAWN_DEPTH);
+        if agent_max_spawn_depth == Some(0) {
+            return Err(std::io::Error::new(
+                std::io::ErrorKind::InvalidInput,
+                "agents.max_spawn_depth must be at least 1",
+            ));
+        }
+        if let Some(max_spawn_depth) = agent_max_spawn_depth
+            && max_spawn_depth > i32::MAX as usize
+        {
+            return Err(std::io::Error::new(
+                std::io::ErrorKind::InvalidInput,
+                "agents.max_spawn_depth must fit within a 32-bit signed integer",
+            ));
+        }
         let agent_job_max_runtime_seconds = cfg
             .agents
             .as_ref()
@@ -2018,7 +2032,7 @@ impl Config {
             .as_ref()
             .map(AbsolutePathBuf::to_path_buf)
             .or_else(|| resolve_sqlite_home_env(&resolved_cwd))
-            .unwrap_or_else(|| codex_home.to_path_buf());
+            .unwrap_or_else(|| default_sqlite_home(&sandbox_policy, &codex_home));
 
         // Ensure that every field of ConfigRequirements is applied to the final
         // Config.
@@ -2135,6 +2149,7 @@ impl Config {
             agent_max_depth,
             agent_roles,
             memories: cfg.memories.unwrap_or_default().into(),
+            agent_max_spawn_depth,
             agent_job_max_runtime_seconds,
             codex_home,
             sqlite_home,
@@ -2162,7 +2177,8 @@ impl Config {
                 .or(cfg.plan_mode_reasoning_effort),
             model_reasoning_summary: config_profile
                 .model_reasoning_summary
-                .or(cfg.model_reasoning_summary),
+                .or(cfg.model_reasoning_summary)
+                .unwrap_or_default(),
             model_supports_reasoning_summaries: cfg.model_supports_reasoning_summaries,
             model_catalog,
             model_verbosity: config_profile.model_verbosity.or(cfg.model_verbosity),
@@ -2170,12 +2186,6 @@ impl Config {
                 .chatgpt_base_url
                 .or(cfg.chatgpt_base_url)
                 .unwrap_or("https://chatgpt.com/backend-api/".to_string()),
-            realtime_audio: cfg
-                .audio
-                .map_or_else(RealtimeAudioConfig::default, |audio| RealtimeAudioConfig {
-                    microphone: audio.microphone,
-                    speaker: audio.speaker,
-                }),
             experimental_realtime_ws_base_url: cfg.experimental_realtime_ws_base_url,
             experimental_realtime_ws_backend_prompt: cfg.experimental_realtime_ws_backend_prompt,
             forced_chatgpt_workspace_id,
@@ -2217,11 +2227,6 @@ impl Config {
                 .unwrap_or_default(),
             animations: cfg.tui.as_ref().map(|t| t.animations).unwrap_or(true),
             show_tooltips: cfg.tui.as_ref().map(|t| t.show_tooltips).unwrap_or(true),
-            model_availability_nux: cfg
-                .tui
-                .as_ref()
-                .map(|t| t.model_availability_nux.clone())
-                .unwrap_or_default(),
             tui_alternate_screen: cfg
                 .tui
                 .as_ref()
@@ -2410,7 +2415,6 @@ mod tests {
     use crate::config::types::McpServerTransportConfig;
     use crate::config::types::MemoriesConfig;
     use crate::config::types::MemoriesToml;
-    use crate::config::types::ModelAvailabilityNuxConfig;
     use crate::config::types::NotificationMethod;
     use crate::config::types::Notifications;
     use crate::config_loader::RequirementSource;
@@ -2443,7 +2447,6 @@ mod tests {
             enabled_tools: None,
             disabled_tools: None,
             scopes: None,
-            oauth_resource: None,
         }
     }
 
@@ -2463,7 +2466,6 @@ mod tests {
             enabled_tools: None,
             disabled_tools: None,
             scopes: None,
-            oauth_resource: None,
         }
     }
 
@@ -2500,10 +2502,7 @@ persistence = "none"
 
         let memories = r#"
 [memories]
-generate_memories = false
-use_memories = false
 max_raw_memories_for_global = 512
-max_unused_days = 21
 max_rollout_age_days = 42
 max_rollouts_per_startup = 9
 min_rollout_idle_hours = 24
@@ -2514,10 +2513,7 @@ phase_2_model = "gpt-5"
             toml::from_str::<ConfigToml>(memories).expect("TOML deserialization should succeed");
         assert_eq!(
             Some(MemoriesToml {
-                generate_memories: Some(false),
-                use_memories: Some(false),
                 max_raw_memories_for_global: Some(512),
-                max_unused_days: Some(21),
                 max_rollout_age_days: Some(42),
                 max_rollouts_per_startup: Some(9),
                 min_rollout_idle_hours: Some(24),
@@ -2536,61 +2532,13 @@ phase_2_model = "gpt-5"
         assert_eq!(
             config.memories,
             MemoriesConfig {
-                generate_memories: false,
-                use_memories: false,
                 max_raw_memories_for_global: 512,
-                max_unused_days: 21,
                 max_rollout_age_days: 42,
                 max_rollouts_per_startup: 9,
                 min_rollout_idle_hours: 24,
                 phase_1_model: Some("gpt-5-mini".to_string()),
                 phase_2_model: Some("gpt-5".to_string()),
             }
-        );
-    }
-
-    #[test]
-    fn config_toml_deserializes_model_availability_nux() {
-        let toml = r#"
-[tui.model_availability_nux]
-"gpt-foo" = 2
-"gpt-bar" = 4
-"#;
-        let cfg: ConfigToml =
-            toml::from_str(toml).expect("TOML deserialization should succeed for TUI NUX");
-
-        assert_eq!(
-            cfg.tui.expect("tui config should deserialize"),
-            Tui {
-                notifications: Notifications::default(),
-                notification_method: NotificationMethod::default(),
-                animations: true,
-                show_tooltips: true,
-                alternate_screen: AltScreenMode::default(),
-                status_line: None,
-                theme: None,
-                model_availability_nux: ModelAvailabilityNuxConfig {
-                    shown_count: HashMap::from([
-                        ("gpt-bar".to_string(), 4),
-                        ("gpt-foo".to_string(), 2),
-                    ]),
-                },
-            }
-        );
-    }
-
-    #[test]
-    fn runtime_config_defaults_model_availability_nux() {
-        let cfg = Config::load_from_base_config_with_overrides(
-            ConfigToml::default(),
-            ConfigOverrides::default(),
-            tempdir().expect("tempdir").path().to_path_buf(),
-        )
-        .expect("load config");
-
-        assert_eq!(
-            cfg.model_availability_nux,
-            ModelAvailabilityNuxConfig::default()
         );
     }
 
@@ -2728,7 +2676,6 @@ theme = "dracula"
                 alternate_screen: AltScreenMode::Auto,
                 status_line: None,
                 theme: None,
-                model_availability_nux: ModelAvailabilityNuxConfig::default(),
             }
         );
     }
@@ -3032,23 +2979,6 @@ trust_level = "trusted"
                 other => panic!("expected workspace-write policy, got {other:?}"),
             }
         }
-
-        Ok(())
-    }
-
-    #[test]
-    fn sqlite_home_defaults_to_codex_home_for_workspace_write() -> std::io::Result<()> {
-        let codex_home = TempDir::new()?;
-        let config = Config::load_from_base_config_with_overrides(
-            ConfigToml::default(),
-            ConfigOverrides {
-                sandbox_mode: Some(SandboxMode::WorkspaceWrite),
-                ..Default::default()
-            },
-            codex_home.path().to_path_buf(),
-        )?;
-
-        assert_eq!(config.sqlite_home, codex_home.path().to_path_buf());
 
         Ok(())
     }
@@ -3553,7 +3483,6 @@ profile = "project"
                 enabled_tools: None,
                 disabled_tools: None,
                 scopes: None,
-                oauth_resource: None,
             },
         );
 
@@ -3711,7 +3640,6 @@ bearer_token = "secret"
                 enabled_tools: None,
                 disabled_tools: None,
                 scopes: None,
-                oauth_resource: None,
             },
         )]);
 
@@ -3783,7 +3711,6 @@ ZIG_VAR = "3"
                 enabled_tools: None,
                 disabled_tools: None,
                 scopes: None,
-                oauth_resource: None,
             },
         )]);
 
@@ -3835,7 +3762,6 @@ ZIG_VAR = "3"
                 enabled_tools: None,
                 disabled_tools: None,
                 scopes: None,
-                oauth_resource: None,
             },
         )]);
 
@@ -3885,7 +3811,6 @@ ZIG_VAR = "3"
                 enabled_tools: None,
                 disabled_tools: None,
                 scopes: None,
-                oauth_resource: None,
             },
         )]);
 
@@ -3951,7 +3876,6 @@ startup_timeout_sec = 2.0
                 enabled_tools: None,
                 disabled_tools: None,
                 scopes: None,
-                oauth_resource: None,
             },
         )]);
         apply_blocking(
@@ -4029,7 +3953,6 @@ X-Auth = "DOCS_AUTH"
                 enabled_tools: None,
                 disabled_tools: None,
                 scopes: None,
-                oauth_resource: None,
             },
         )]);
 
@@ -4060,7 +3983,6 @@ X-Auth = "DOCS_AUTH"
                 enabled_tools: None,
                 disabled_tools: None,
                 scopes: None,
-                oauth_resource: None,
             },
         );
         apply_blocking(
@@ -4129,7 +4051,6 @@ url = "https://example.com/mcp"
                     enabled_tools: None,
                     disabled_tools: None,
                     scopes: None,
-                    oauth_resource: None,
                 },
             ),
             (
@@ -4150,7 +4071,6 @@ url = "https://example.com/mcp"
                     enabled_tools: None,
                     disabled_tools: None,
                     scopes: None,
-                    oauth_resource: None,
                 },
             ),
         ]);
@@ -4234,7 +4154,6 @@ url = "https://example.com/mcp"
                 enabled_tools: None,
                 disabled_tools: None,
                 scopes: None,
-                oauth_resource: None,
             },
         )]);
 
@@ -4280,7 +4199,6 @@ url = "https://example.com/mcp"
                 enabled_tools: None,
                 disabled_tools: None,
                 scopes: None,
-                oauth_resource: None,
             },
         )]);
 
@@ -4326,7 +4244,6 @@ url = "https://example.com/mcp"
                 enabled_tools: Some(vec!["allowed".to_string()]),
                 disabled_tools: Some(vec!["blocked".to_string()]),
                 scopes: None,
-                oauth_resource: None,
             },
         )]);
 
@@ -4350,51 +4267,6 @@ url = "https://example.com/mcp"
         assert_eq!(
             docs.disabled_tools.as_ref(),
             Some(&vec!["blocked".to_string()])
-        );
-
-        Ok(())
-    }
-
-    #[tokio::test]
-    async fn replace_mcp_servers_streamable_http_serializes_oauth_resource() -> anyhow::Result<()> {
-        let codex_home = TempDir::new()?;
-
-        let servers = BTreeMap::from([(
-            "docs".to_string(),
-            McpServerConfig {
-                transport: McpServerTransportConfig::StreamableHttp {
-                    url: "https://example.com/mcp".to_string(),
-                    bearer_token_env_var: None,
-                    http_headers: None,
-                    env_http_headers: None,
-                },
-                enabled: true,
-                required: false,
-                disabled_reason: None,
-                startup_timeout_sec: None,
-                tool_timeout_sec: None,
-                enabled_tools: None,
-                disabled_tools: None,
-                scopes: None,
-                oauth_resource: Some("https://resource.example.com".to_string()),
-            },
-        )]);
-
-        apply_blocking(
-            codex_home.path(),
-            None,
-            &[ConfigEdit::ReplaceMcpServers(servers.clone())],
-        )?;
-
-        let config_path = codex_home.path().join(CONFIG_TOML_FILE);
-        let serialized = std::fs::read_to_string(&config_path)?;
-        assert!(serialized.contains(r#"oauth_resource = "https://resource.example.com""#));
-
-        let loaded = load_global_mcp_servers(codex_home.path()).await?;
-        let docs = loaded.get("docs").expect("docs entry");
-        assert_eq!(
-            docs.oauth_resource.as_deref(),
-            Some("https://resource.example.com")
         );
 
         Ok(())
@@ -4615,6 +4487,7 @@ model = "gpt-5.1-codex"
         let cfg = ConfigToml {
             agents: Some(AgentsToml {
                 max_threads: None,
+                max_spawn_depth: None,
                 max_depth: None,
                 job_max_runtime_seconds: None,
                 roles: BTreeMap::from([(
@@ -4890,6 +4763,7 @@ model_verbosity = "high"
                 agent_max_depth: DEFAULT_AGENT_MAX_DEPTH,
                 agent_roles: BTreeMap::new(),
                 memories: MemoriesConfig::default(),
+                agent_max_spawn_depth: DEFAULT_AGENT_MAX_SPAWN_DEPTH,
                 agent_job_max_runtime_seconds: DEFAULT_AGENT_JOB_MAX_RUNTIME_SECONDS,
                 codex_home: fixture.codex_home(),
                 sqlite_home: fixture.codex_home(),
@@ -4908,13 +4782,12 @@ model_verbosity = "high"
                 show_raw_agent_reasoning: false,
                 model_reasoning_effort: Some(ReasoningEffort::High),
                 plan_mode_reasoning_effort: None,
-                model_reasoning_summary: Some(ReasoningSummary::Detailed),
+                model_reasoning_summary: ReasoningSummary::Detailed,
                 model_supports_reasoning_summaries: None,
                 model_catalog: None,
                 model_verbosity: None,
                 personality: Some(Personality::Pragmatic),
                 chatgpt_base_url: "https://chatgpt.com/backend-api/".to_string(),
-                realtime_audio: RealtimeAudioConfig::default(),
                 experimental_realtime_ws_base_url: None,
                 experimental_realtime_ws_backend_prompt: None,
                 base_instructions: None,
@@ -4940,7 +4813,6 @@ model_verbosity = "high"
                 tui_notification_method: Default::default(),
                 animations: true,
                 show_tooltips: true,
-                model_availability_nux: ModelAvailabilityNuxConfig::default(),
                 analytics_enabled: Some(true),
                 feedback_enabled: true,
                 tui_alternate_screen: AltScreenMode::Auto,
@@ -5018,6 +4890,7 @@ model_verbosity = "high"
             agent_max_depth: DEFAULT_AGENT_MAX_DEPTH,
             agent_roles: BTreeMap::new(),
             memories: MemoriesConfig::default(),
+            agent_max_spawn_depth: DEFAULT_AGENT_MAX_SPAWN_DEPTH,
             agent_job_max_runtime_seconds: DEFAULT_AGENT_JOB_MAX_RUNTIME_SECONDS,
             codex_home: fixture.codex_home(),
             sqlite_home: fixture.codex_home(),
@@ -5036,13 +4909,12 @@ model_verbosity = "high"
             show_raw_agent_reasoning: false,
             model_reasoning_effort: None,
             plan_mode_reasoning_effort: None,
-            model_reasoning_summary: None,
+            model_reasoning_summary: ReasoningSummary::default(),
             model_supports_reasoning_summaries: None,
             model_catalog: None,
             model_verbosity: None,
             personality: Some(Personality::Pragmatic),
             chatgpt_base_url: "https://chatgpt.com/backend-api/".to_string(),
-            realtime_audio: RealtimeAudioConfig::default(),
             experimental_realtime_ws_base_url: None,
             experimental_realtime_ws_backend_prompt: None,
             base_instructions: None,
@@ -5068,7 +4940,6 @@ model_verbosity = "high"
             tui_notification_method: Default::default(),
             animations: true,
             show_tooltips: true,
-            model_availability_nux: ModelAvailabilityNuxConfig::default(),
             analytics_enabled: Some(true),
             feedback_enabled: true,
             tui_alternate_screen: AltScreenMode::Auto,
@@ -5144,6 +5015,7 @@ model_verbosity = "high"
             agent_max_depth: DEFAULT_AGENT_MAX_DEPTH,
             agent_roles: BTreeMap::new(),
             memories: MemoriesConfig::default(),
+            agent_max_spawn_depth: DEFAULT_AGENT_MAX_SPAWN_DEPTH,
             agent_job_max_runtime_seconds: DEFAULT_AGENT_JOB_MAX_RUNTIME_SECONDS,
             codex_home: fixture.codex_home(),
             sqlite_home: fixture.codex_home(),
@@ -5162,13 +5034,12 @@ model_verbosity = "high"
             show_raw_agent_reasoning: false,
             model_reasoning_effort: None,
             plan_mode_reasoning_effort: None,
-            model_reasoning_summary: None,
+            model_reasoning_summary: ReasoningSummary::default(),
             model_supports_reasoning_summaries: None,
             model_catalog: None,
             model_verbosity: None,
             personality: Some(Personality::Pragmatic),
             chatgpt_base_url: "https://chatgpt.com/backend-api/".to_string(),
-            realtime_audio: RealtimeAudioConfig::default(),
             experimental_realtime_ws_base_url: None,
             experimental_realtime_ws_backend_prompt: None,
             base_instructions: None,
@@ -5194,7 +5065,6 @@ model_verbosity = "high"
             tui_notification_method: Default::default(),
             animations: true,
             show_tooltips: true,
-            model_availability_nux: ModelAvailabilityNuxConfig::default(),
             analytics_enabled: Some(false),
             feedback_enabled: true,
             tui_alternate_screen: AltScreenMode::Auto,
@@ -5256,6 +5126,7 @@ model_verbosity = "high"
             agent_max_depth: DEFAULT_AGENT_MAX_DEPTH,
             agent_roles: BTreeMap::new(),
             memories: MemoriesConfig::default(),
+            agent_max_spawn_depth: DEFAULT_AGENT_MAX_SPAWN_DEPTH,
             agent_job_max_runtime_seconds: DEFAULT_AGENT_JOB_MAX_RUNTIME_SECONDS,
             codex_home: fixture.codex_home(),
             sqlite_home: fixture.codex_home(),
@@ -5274,13 +5145,12 @@ model_verbosity = "high"
             show_raw_agent_reasoning: false,
             model_reasoning_effort: Some(ReasoningEffort::High),
             plan_mode_reasoning_effort: None,
-            model_reasoning_summary: Some(ReasoningSummary::Detailed),
+            model_reasoning_summary: ReasoningSummary::Detailed,
             model_supports_reasoning_summaries: None,
             model_catalog: None,
             model_verbosity: Some(Verbosity::High),
             personality: Some(Personality::Pragmatic),
             chatgpt_base_url: "https://chatgpt.com/backend-api/".to_string(),
-            realtime_audio: RealtimeAudioConfig::default(),
             experimental_realtime_ws_base_url: None,
             experimental_realtime_ws_backend_prompt: None,
             base_instructions: None,
@@ -5306,7 +5176,6 @@ model_verbosity = "high"
             tui_notification_method: Default::default(),
             animations: true,
             show_tooltips: true,
-            model_availability_nux: ModelAvailabilityNuxConfig::default(),
             analytics_enabled: Some(true),
             feedback_enabled: true,
             tui_alternate_screen: AltScreenMode::Auto,
@@ -5921,12 +5790,12 @@ mcp_oauth_callback_url = "https://example.com/callback"
         let config = ConfigBuilder::default()
             .codex_home(codex_home.path().to_path_buf())
             .cloud_requirements(CloudRequirementsLoader::new(async {
-                Ok(Some(crate::config_loader::ConfigRequirementsToml {
+                Some(crate::config_loader::ConfigRequirementsToml {
                     allowed_sandbox_modes: Some(vec![
                         crate::config_loader::SandboxModeRequirement::ReadOnly,
                     ]),
                     ..Default::default()
-                }))
+                })
             }))
             .build()
             .await?;
@@ -5962,9 +5831,9 @@ mcp_oauth_callback_url = "https://example.com/callback"
         let config = ConfigBuilder::default()
             .codex_home(codex_home.path().to_path_buf())
             .fallback_cwd(Some(codex_home.path().to_path_buf()))
-            .cloud_requirements(CloudRequirementsLoader::new(async move {
-                Ok(Some(requirements))
-            }))
+            .cloud_requirements(CloudRequirementsLoader::new(
+                async move { Some(requirements) },
+            ))
             .build()
             .await?;
         assert_eq!(
@@ -5988,12 +5857,12 @@ mcp_oauth_callback_url = "https://example.com/callback"
             .codex_home(codex_home.path().to_path_buf())
             .fallback_cwd(Some(codex_home.path().to_path_buf()))
             .cloud_requirements(CloudRequirementsLoader::new(async {
-                Ok(Some(crate::config_loader::ConfigRequirementsToml {
+                Some(crate::config_loader::ConfigRequirementsToml {
                     allowed_web_search_modes: Some(vec![
                         crate::config_loader::WebSearchModeRequirement::Cached,
                     ]),
                     ..Default::default()
-                }))
+                })
             }))
             .build()
             .await?;
@@ -6029,10 +5898,10 @@ trust_level = "untrusted"
             .codex_home(codex_home.path().to_path_buf())
             .fallback_cwd(Some(workspace.path().to_path_buf()))
             .cloud_requirements(CloudRequirementsLoader::new(async {
-                Ok(Some(crate::config_loader::ConfigRequirementsToml {
+                Some(crate::config_loader::ConfigRequirementsToml {
                     allowed_approval_policies: Some(vec![AskForApproval::OnRequest]),
                     ..Default::default()
-                }))
+                })
             }))
             .build()
             .await?;
@@ -6058,10 +5927,10 @@ trust_level = "untrusted"
             .codex_home(codex_home.path().to_path_buf())
             .fallback_cwd(Some(codex_home.path().to_path_buf()))
             .cloud_requirements(CloudRequirementsLoader::new(async {
-                Ok(Some(crate::config_loader::ConfigRequirementsToml {
+                Some(crate::config_loader::ConfigRequirementsToml {
                     allowed_approval_policies: Some(vec![AskForApproval::OnRequest]),
                     ..Default::default()
-                }))
+                })
             }))
             .build()
             .await?;
@@ -6123,39 +5992,6 @@ experimental_realtime_ws_backend_prompt = "prompt from config"
         assert_eq!(
             config.experimental_realtime_ws_backend_prompt.as_deref(),
             Some("prompt from config")
-        );
-        Ok(())
-    }
-
-    #[test]
-    fn realtime_audio_loads_from_config_toml() -> std::io::Result<()> {
-        let cfg: ConfigToml = toml::from_str(
-            r#"
-[audio]
-microphone = "USB Mic"
-speaker = "Desk Speakers"
-"#,
-        )
-        .expect("TOML deserialization should succeed");
-
-        let realtime_audio = cfg
-            .audio
-            .as_ref()
-            .expect("realtime audio config should be present");
-        assert_eq!(realtime_audio.microphone.as_deref(), Some("USB Mic"));
-        assert_eq!(realtime_audio.speaker.as_deref(), Some("Desk Speakers"));
-
-        let codex_home = TempDir::new()?;
-        let config = Config::load_from_base_config_with_overrides(
-            cfg,
-            ConfigOverrides::default(),
-            codex_home.path().to_path_buf(),
-        )?;
-
-        assert_eq!(config.realtime_audio.microphone.as_deref(), Some("USB Mic"));
-        assert_eq!(
-            config.realtime_audio.speaker.as_deref(),
-            Some("Desk Speakers")
         );
         Ok(())
     }

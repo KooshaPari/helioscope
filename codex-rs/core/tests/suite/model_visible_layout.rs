@@ -6,6 +6,7 @@ use std::sync::Arc;
 use anyhow::Result;
 use codex_core::config::types::Personality;
 use codex_core::features::Feature;
+use codex_protocol::config_types::ReasoningSummary;
 use codex_protocol::protocol::AskForApproval;
 use codex_protocol::protocol::EventMsg;
 use codex_protocol::protocol::Op;
@@ -25,7 +26,6 @@ use core_test_support::responses::start_mock_server;
 use core_test_support::skip_if_no_network;
 use core_test_support::test_codex::test_codex;
 use core_test_support::wait_for_event;
-use serde_json::json;
 
 const PRETURN_CONTEXT_DIFF_CWD: &str = "PRETURN_CONTEXT_DIFF_CWD";
 
@@ -51,30 +51,6 @@ fn agents_message_count(request: &ResponsesRequest) -> usize {
         .iter()
         .filter(|text| text.starts_with("# AGENTS.md instructions for "))
         .count()
-}
-
-fn format_environment_context_subagents_snapshot(subagents: &[&str]) -> String {
-    let subagents_block = if subagents.is_empty() {
-        String::new()
-    } else {
-        let lines = subagents
-            .iter()
-            .map(|line| format!("    {line}"))
-            .collect::<Vec<_>>()
-            .join("\n");
-        format!("\n  <subagents>\n{lines}\n  </subagents>")
-    };
-    let items = vec![json!({
-        "type": "message",
-        "role": "user",
-        "content": [{
-            "type": "input_text",
-            "text": format!(
-                "<environment_context>\n  <cwd>/tmp/example</cwd>\n  <shell>bash</shell>{subagents_block}\n</environment_context>"
-            ),
-        }],
-    })];
-    context_snapshot::format_response_items_snapshot(items.as_slice(), &context_snapshot_options())
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
@@ -121,7 +97,7 @@ async fn snapshot_model_visible_layout_turn_overrides() -> Result<()> {
             sandbox_policy: SandboxPolicy::new_read_only_policy(),
             model: test.session_configured.model.clone(),
             effort: test.config.model_reasoning_effort,
-            summary: None,
+            summary: ReasoningSummary::Auto,
             collaboration_mode: None,
             personality: None,
         })
@@ -143,7 +119,7 @@ async fn snapshot_model_visible_layout_turn_overrides() -> Result<()> {
             sandbox_policy: SandboxPolicy::new_read_only_policy(),
             model: test.session_configured.model.clone(),
             effort: test.config.model_reasoning_effort,
-            summary: None,
+            summary: ReasoningSummary::Auto,
             collaboration_mode: None,
             personality: Some(Personality::Friendly),
         })
@@ -220,7 +196,7 @@ async fn snapshot_model_visible_layout_cwd_change_does_not_refresh_agents() -> R
             sandbox_policy: SandboxPolicy::new_read_only_policy(),
             model: test.session_configured.model.clone(),
             effort: test.config.model_reasoning_effort,
-            summary: None,
+            summary: ReasoningSummary::Auto,
             collaboration_mode: None,
             personality: None,
         })
@@ -242,7 +218,7 @@ async fn snapshot_model_visible_layout_cwd_change_does_not_refresh_agents() -> R
             sandbox_policy: SandboxPolicy::new_read_only_policy(),
             model: test.session_configured.model.clone(),
             effort: test.config.model_reasoning_effort,
-            summary: None,
+            summary: ReasoningSummary::Auto,
             collaboration_mode: None,
             personality: None,
         })
@@ -347,7 +323,7 @@ async fn snapshot_model_visible_layout_resume_with_personality_change() -> Resul
             sandbox_policy: SandboxPolicy::new_read_only_policy(),
             model: resumed.session_configured.model.clone(),
             effort: resumed.config.model_reasoning_effort,
-            summary: None,
+            summary: ReasoningSummary::Auto,
             collaboration_mode: None,
             personality: Some(Personality::Friendly),
         })
@@ -465,26 +441,6 @@ async fn snapshot_model_visible_layout_resume_override_matches_rollout_model() -
                 ("First Request After Resume + Override", &resumed_request),
             ]
         )
-    );
-
-    Ok(())
-}
-
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn snapshot_model_visible_layout_environment_context_includes_one_subagent() -> Result<()> {
-    insta::assert_snapshot!(
-        "model_visible_layout_environment_context_includes_one_subagent",
-        format_environment_context_subagents_snapshot(&["- agent-1: Atlas"])
-    );
-
-    Ok(())
-}
-
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn snapshot_model_visible_layout_environment_context_includes_two_subagents() -> Result<()> {
-    insta::assert_snapshot!(
-        "model_visible_layout_environment_context_includes_two_subagents",
-        format_environment_context_subagents_snapshot(&["- agent-1: Atlas", "- agent-2: Juniper"])
     );
 
     Ok(())

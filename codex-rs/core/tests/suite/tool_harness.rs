@@ -4,6 +4,7 @@ use std::fs;
 
 use assert_matches::assert_matches;
 use codex_core::features::Feature;
+use codex_protocol::config_types::ReasoningSummary;
 use codex_protocol::plan_tool::StepStatus;
 use codex_protocol::protocol::AskForApproval;
 use codex_protocol::protocol::EventMsg;
@@ -88,7 +89,7 @@ async fn shell_tool_executes_command_and_streams_output() -> anyhow::Result<()> 
             sandbox_policy: SandboxPolicy::DangerFullAccess,
             model: session_model,
             effort: None,
-            summary: None,
+            summary: ReasoningSummary::Auto,
             collaboration_mode: None,
             personality: None,
         })
@@ -157,7 +158,7 @@ async fn update_plan_tool_emits_plan_update_event() -> anyhow::Result<()> {
             sandbox_policy: SandboxPolicy::DangerFullAccess,
             model: session_model,
             effort: None,
-            summary: None,
+            summary: ReasoningSummary::Auto,
             collaboration_mode: None,
             personality: None,
         })
@@ -236,7 +237,7 @@ async fn update_plan_tool_rejects_malformed_payload() -> anyhow::Result<()> {
             sandbox_policy: SandboxPolicy::DangerFullAccess,
             model: session_model,
             effort: None,
-            summary: None,
+            summary: ReasoningSummary::Auto,
             collaboration_mode: None,
             personality: None,
         })
@@ -327,7 +328,7 @@ async fn apply_patch_tool_executes_and_emits_patch_events() -> anyhow::Result<()
             sandbox_policy: SandboxPolicy::DangerFullAccess,
             model: session_model,
             effort: None,
-            summary: None,
+            summary: ReasoningSummary::Auto,
             collaboration_mode: None,
             personality: None,
         })
@@ -426,7 +427,7 @@ async fn apply_patch_reports_parse_diagnostics() -> anyhow::Result<()> {
             sandbox_policy: SandboxPolicy::DangerFullAccess,
             model: session_model,
             effort: None,
-            summary: None,
+            summary: ReasoningSummary::Auto,
             collaboration_mode: None,
             personality: None,
         })

@@ -31,6 +31,7 @@ jobs:
           echo "BASE_REF=$BASE_REF"
           echo "PR_LABELS=$PR_LABELS"
 
+          # 1) Fix branches must be layered; direct fix/* -> main/master is blocked unless explicitly overridden.
           if [[ "$HEAD_REF" == fix/* ]]; then
             if [[ "$BASE_REF" == "main" || "$BASE_REF" == "master" ]]; then
               if [[ "$PR_LABELS" != *"layered-pr-exception"* ]]; then
@@ -41,19 +42,16 @@ jobs:
             fi
           fi
 
-          # Integration sync branches may intentionally contain merge commits.
-          if [[ "$HEAD_REF" == merge/* || "$HEAD_REF" == sync/* ]]; then
-            echo "Skipping merge-commit policy check for integration branch: $HEAD_REF"
-            exit 0
-          fi
-
+          # 2) Prevent merge commits in PR branch (exclude GitHub's synthetic merge commit).
           git fetch origin "$BASE_REF" --depth=1 || true
-          PR_HEAD="${{ github.event.pull_request.head.sha }}"
-          MERGES=$(git rev-list --merges "origin/$BASE_REF..$PR_HEAD" || true)
+          # Use the actual PR head ref, not the GitHub merge commit (HEAD).
+          git fetch origin "$HEAD_REF" --depth=50 || true
+          MERGES=$(git rev-list --merges "origin/$BASE_REF..origin/$HEAD_REF" 2>/dev/null || true)
           if [[ -n "$MERGES" ]]; then
-            echo "ERROR: merge commits detected in PR diff range:"
+            echo "ERROR: merge commits detected in PR branch:"
             echo "$MERGES"
             exit 1
           fi
 
+          # 3) Local --no-verify cannot be detected directly; this server-side gate exists to prevent bypass outcomes.
           echo "Policy gate passed."

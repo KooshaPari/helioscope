@@ -28,7 +28,7 @@ def multiplatform_binaries(name, platforms = PLATFORMS):
         tags = ["manual"],
     )
 
-def codex_rust_crate(
+def helios_rust_crate(
         name,
         crate_name,
         crate_features = [],
@@ -95,8 +95,7 @@ def codex_rust_crate(
         "BAZEL_PACKAGE": native.package_name(),
     } | rustc_env
 
-    dep_data = DEP_DATA.get(native.package_name())
-    binaries = dep_data["binaries"] if dep_data else {}
+    binaries = DEP_DATA.get(native.package_name())["binaries"]
 
     lib_srcs = crate_srcs or native.glob(["src/**/*.rs"], exclude = binaries.values(), allow_empty = True)
 
@@ -197,8 +196,3 @@ def codex_rust_crate(
             env = cargo_env,
             tags = test_tags,
         )
-
-def helios_rust_crate(**kwargs):
-    # Keep helios-specific call sites working while codex-rs BUILD files
-    # continue to load the canonical codex_rust_crate macro.
-    codex_rust_crate(**kwargs)

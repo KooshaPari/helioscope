@@ -298,7 +298,12 @@ fn merge_directory_app(existing: &mut DirectoryApp, incoming: DirectoryApp) {
         .as_deref()
         .map(|value| !value.trim().is_empty())
         .unwrap_or(false);
-    if incoming_description_present {
+    let existing_description_present = existing
+        .description
+        .as_deref()
+        .map(|value| !value.trim().is_empty())
+        .unwrap_or(false);
+    if !existing_description_present && incoming_description_present {
         existing.description = description;
     }
 

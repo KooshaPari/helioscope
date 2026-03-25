@@ -104,7 +104,6 @@ mod tests {
         HookPayload {
             session_id: ThreadId::new(),
             cwd: PathBuf::from(CWD),
-            client: None,
             triggered_at: Utc
                 .with_ymd_and_hms(2025, 1, 1, 0, 0, 0)
                 .single()
@@ -173,7 +172,6 @@ mod tests {
         HookPayload {
             session_id: ThreadId::new(),
             cwd: PathBuf::from(CWD),
-            client: None,
             triggered_at: Utc
                 .with_ymd_and_hms(2025, 1, 1, 0, 0, 0)
                 .single()

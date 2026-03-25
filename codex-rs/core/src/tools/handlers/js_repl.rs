@@ -155,13 +155,9 @@ impl ToolHandler for JsReplHandler {
         };
 
         let content = result.output;
-        let mut items = Vec::with_capacity(result.content_items.len() + 1);
-        if !content.is_empty() {
-            items.push(FunctionCallOutputContentItem::InputText {
-                text: content.clone(),
-            });
-        }
-        items.extend(result.content_items);
+        let items = vec![FunctionCallOutputContentItem::InputText {
+            text: content.clone(),
+        }];
 
         emit_js_repl_exec_end(
             session.as_ref(),
@@ -174,11 +170,7 @@ impl ToolHandler for JsReplHandler {
         .await;
 
         Ok(ToolOutput::Function {
-            body: if items.is_empty() {
-                FunctionCallOutputBody::Text(content)
-            } else {
-                FunctionCallOutputBody::ContentItems(items)
-            },
+            body: FunctionCallOutputBody::ContentItems(items),
             success: Some(true),
         })
     }

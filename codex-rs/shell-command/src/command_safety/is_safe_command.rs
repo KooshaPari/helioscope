@@ -1,5 +1,4 @@
 use crate::bash::parse_shell_lc_plain_commands;
-use crate::command_safety::is_dangerous_command::executable_name_lookup_key;
 // Find the first matching git subcommand, skipping known global options that
 // may appear before it (e.g., `-C`, `-c`, `--git-dir`).
 // Implemented in `is_dangerous_command` and shared here.
@@ -48,7 +47,10 @@ fn is_safe_to_call_with_exec(command: &[String]) -> bool {
         return false;
     };
 
-    match executable_name_lookup_key(cmd0).as_deref() {
+    match std::path::Path::new(&cmd0)
+        .file_name()
+        .and_then(|osstr| osstr.to_str())
+    {
         Some(cmd) if cfg!(target_os = "linux") && matches!(cmd, "numfmt" | "tac") => true,
 
         #[rustfmt::skip]
@@ -490,18 +492,6 @@ mod tests {
             r"C:\Program Files\PowerShell\7\pwsh.exe",
             "-Command",
             "Get-Location",
-        ])));
-    }
-
-    #[test]
-    fn windows_git_full_path_is_safe() {
-        if !cfg!(windows) {
-            return;
-        }
-
-        assert!(is_known_safe_command(&vec_str(&[
-            r"C:\Program Files\Git\cmd\git.exe",
-            "status",
         ])));
     }
 

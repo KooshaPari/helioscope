@@ -5,7 +5,6 @@ use crate::config::ConfigOverrides;
 use crate::config::ConfigToml;
 use crate::config::ConstraintError;
 use crate::config::ProjectConfig;
-use crate::config_loader::CloudRequirementsLoadError;
 use crate::config_loader::CloudRequirementsLoader;
 use crate::config_loader::ConfigLayerEntry;
 use crate::config_loader::ConfigLoadError;
@@ -577,7 +576,7 @@ allowed_approval_policies = ["on-request"]
             ..LoaderOverrides::default()
         },
         CloudRequirementsLoader::new(async {
-            Ok(Some(ConfigRequirementsToml {
+            Some(ConfigRequirementsToml {
                 allowed_approval_policies: Some(vec![AskForApproval::Never]),
                 allowed_sandbox_modes: None,
                 allowed_web_search_modes: None,
@@ -585,7 +584,7 @@ allowed_approval_policies = ["on-request"]
                 rules: None,
                 enforce_residency: None,
                 network: None,
-            }))
+            })
         }),
     )
     .await?;
@@ -672,7 +671,7 @@ async fn load_config_layers_includes_cloud_requirements() -> anyhow::Result<()> 
         network: None,
     };
     let expected = requirements.clone();
-    let cloud_requirements = CloudRequirementsLoader::new(async move { Ok(Some(requirements)) });
+    let cloud_requirements = CloudRequirementsLoader::new(async move { Some(requirements) });
 
     let layers = load_config_layers_state(
         &codex_home,
@@ -699,31 +698,6 @@ async fn load_config_layers_includes_cloud_requirements() -> anyhow::Result<()> 
             requirement_source: RequirementSource::CloudRequirements,
         })
     );
-
-    Ok(())
-}
-
-#[tokio::test]
-async fn load_config_layers_fails_when_cloud_requirements_loader_fails() -> anyhow::Result<()> {
-    let tmp = tempdir()?;
-    let codex_home = tmp.path().join("home");
-    tokio::fs::create_dir_all(&codex_home).await?;
-    let cwd = AbsolutePathBuf::from_absolute_path(tmp.path())?;
-
-    let err = load_config_layers_state(
-        &codex_home,
-        Some(cwd),
-        &[] as &[(String, TomlValue)],
-        LoaderOverrides::default(),
-        CloudRequirementsLoader::new(async {
-            Err(CloudRequirementsLoadError::new("cloud requirements failed"))
-        }),
-    )
-    .await
-    .expect_err("cloud requirements failure should fail closed");
-
-    assert_eq!(err.kind(), std::io::ErrorKind::Other);
-    assert!(err.to_string().contains("cloud requirements failed"));
 
     Ok(())
 }
@@ -1416,7 +1390,6 @@ prefix_rules = [
                 matched_rules: vec![RuleMatch::PrefixRuleMatch {
                     matched_prefix: tokens(&["rm"]),
                     decision: Decision::Forbidden,
-                    resolved_program: None,
                     justification: None,
                 }],
             }
@@ -1442,7 +1415,6 @@ prefix_rules = [
                 matched_rules: vec![RuleMatch::PrefixRuleMatch {
                     matched_prefix: tokens(&["git", "status"]),
                     decision: Decision::Prompt,
-                    resolved_program: None,
                     justification: None,
                 }],
             }
@@ -1454,7 +1426,6 @@ prefix_rules = [
                 matched_rules: vec![RuleMatch::PrefixRuleMatch {
                     matched_prefix: tokens(&["hg", "status"]),
                     decision: Decision::Prompt,
-                    resolved_program: None,
                     justification: None,
                 }],
             }
@@ -1538,7 +1509,6 @@ prefix_rules = []
                 matched_rules: vec![RuleMatch::PrefixRuleMatch {
                     matched_prefix: vec!["rm".to_string()],
                     decision: Decision::Forbidden,
-                    resolved_program: None,
                     justification: None,
                 }],
             }
@@ -1577,7 +1547,6 @@ prefix_rules = []
                 matched_rules: vec![RuleMatch::PrefixRuleMatch {
                     matched_prefix: vec!["rm".to_string()],
                     decision: Decision::Forbidden,
-                    resolved_program: None,
                     justification: None,
                 }],
             }
@@ -1592,7 +1561,6 @@ prefix_rules = []
                 matched_rules: vec![RuleMatch::PrefixRuleMatch {
                     matched_prefix: vec!["git".to_string(), "push".to_string()],
                     decision: Decision::Prompt,
-                    resolved_program: None,
                     justification: None,
                 }],
             }

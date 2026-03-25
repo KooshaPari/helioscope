@@ -29,7 +29,7 @@ result
 *~
 
 # cli tools
-.claude/
+CLAUDE.md
 AGENTS.override.md
 
 # caches
@@ -90,3 +90,15 @@ CHANGELOG.ignore.md
 __pycache__/
 *.pyc
 
+
+# AI tool artifacts
+.claude/
+.codex/
+.cursor/
+.gemini/
+.kittify/
+.kilocode/
+.github/prompts/
+.github/copilot-instructions.md
+.claudeignore
+.llmignore

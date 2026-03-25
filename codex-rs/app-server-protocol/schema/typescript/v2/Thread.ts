@@ -12,10 +12,6 @@ export type Thread = { id: string,
  */
 preview: string, 
 /**
- * Whether the thread is ephemeral and should not be materialized on disk.
- */
-ephemeral: boolean, 
-/**
  * Model provider used for this thread (for example, 'openai').
  */
 modelProvider: string, 

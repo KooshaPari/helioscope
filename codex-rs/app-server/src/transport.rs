@@ -671,16 +671,11 @@ pub(crate) async fn route_outgoing_envelope(
 mod tests {
     use super::*;
     use crate::error_code::OVERLOADED_ERROR_CODE;
-    use codex_utils_absolute_path::AbsolutePathBuf;
     use pretty_assertions::assert_eq;
     use serde_json::json;
     use std::path::PathBuf;
     use tokio::time::Duration;
     use tokio::time::timeout;
-
-    fn absolute_path(path: &str) -> AbsolutePathBuf {
-        AbsolutePathBuf::from_absolute_path(path).expect("absolute path")
-    }
 
     #[test]
     fn app_server_transport_parses_stdio_listen_url() {
@@ -982,7 +977,7 @@ mod tests {
                                 network: None,
                                 file_system: Some(
                                     codex_app_server_protocol::AdditionalFileSystemPermissions {
-                                        read: Some(vec![absolute_path("/tmp/allowed")]),
+                                        read: Some(vec![PathBuf::from("/tmp/allowed")]),
                                         write: None,
                                     },
                                 ),
@@ -991,7 +986,6 @@ mod tests {
                         ),
                         proposed_execpolicy_amendment: None,
                         proposed_network_policy_amendments: None,
-                        available_decisions: None,
                     },
                 }),
             },
@@ -1044,7 +1038,7 @@ mod tests {
                                 network: None,
                                 file_system: Some(
                                     codex_app_server_protocol::AdditionalFileSystemPermissions {
-                                        read: Some(vec![absolute_path("/tmp/allowed")]),
+                                        read: Some(vec![PathBuf::from("/tmp/allowed")]),
                                         write: None,
                                     },
                                 ),
@@ -1053,7 +1047,6 @@ mod tests {
                         ),
                         proposed_execpolicy_amendment: None,
                         proposed_network_policy_amendments: None,
-                        available_decisions: None,
                     },
                 }),
             },
@@ -1065,13 +1058,12 @@ mod tests {
             .await
             .expect("request should be delivered to the connection");
         let json = serde_json::to_value(message).expect("request should serialize");
-        let allowed_path = absolute_path("/tmp/allowed").to_string_lossy().into_owned();
         assert_eq!(
             json["params"]["additionalPermissions"],
             json!({
                 "network": null,
                 "fileSystem": {
-                    "read": [allowed_path],
+                    "read": ["/tmp/allowed"],
                     "write": null,
                 },
                 "macos": null,

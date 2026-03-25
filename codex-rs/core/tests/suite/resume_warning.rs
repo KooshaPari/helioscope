@@ -4,7 +4,6 @@ use codex_core::CodexAuth;
 use codex_core::NewThread;
 use codex_protocol::ThreadId;
 use codex_protocol::config_types::ModeKind;
-use codex_protocol::config_types::ReasoningSummary;
 use codex_protocol::protocol::EventMsg;
 use codex_protocol::protocol::InitialHistory;
 use codex_protocol::protocol::ResumedHistory;
@@ -28,8 +27,6 @@ fn resume_history(
     let turn_ctx = TurnContextItem {
         turn_id: Some(turn_id.clone()),
         cwd: config.cwd.clone(),
-        current_date: None,
-        timezone: None,
         approval_policy: config.permissions.approval_policy.value(),
         sandbox_policy: config.permissions.sandbox_policy.get().clone(),
         network: None,
@@ -37,9 +34,7 @@ fn resume_history(
         personality: None,
         collaboration_mode: None,
         effort: config.model_reasoning_effort,
-        summary: config
-            .model_reasoning_summary
-            .unwrap_or(ReasoningSummary::Auto),
+        summary: config.model_reasoning_summary,
         user_instructions: None,
         developer_instructions: None,
         final_output_json_schema: None,

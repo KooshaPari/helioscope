@@ -1,15 +1,46 @@
 # yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
 
 reviews:
-  profile: chill  # Valid schema value: use assertive manually for stricter release/hotfix sweeps.
+  profile: auto  # Determined by stage detected from branch name
   request_changes_workflow: true
   auto_review:
     enabled: true
     auto_incremental_review: true
 
-# Stage intent is preserved operationally outside this file:
-# - branch and CI stage gates continue to define review strictness by lane.
-# - switch `reviews.profile` to `assertive` for release/hotfix hardening passes.
+# Stage profiles control review depth and focus areas.
+# The CI pipeline (stage-gates.yml) detects the stage from the branch prefix
+# and CodeRabbit applies the matching profile automatically.
+profiles:
+  spike:
+    severity: critical_only
+    auto_approve: true
+    focus: [security]
+  poc:
+    severity: high_only
+    auto_approve: true
+    focus: [security, correctness]
+  alpha:
+    severity: high_only
+    auto_approve: false
+    focus: [security, correctness]
+  beta:
+    severity: medium_and_above
+    auto_approve: false
+    focus: [security, correctness, style, performance]
+  rc:
+    severity: all
+    auto_approve: false
+    focus: [security, correctness, style, performance, documentation]
+    zero_tolerance: true
+  ga:
+    severity: all
+    auto_approve: false
+    focus: [security, correctness, style, performance, documentation]
+    zero_tolerance: true
+  hotfix:
+    severity: high_only
+    auto_approve: false
+    focus: [security, correctness]
 
 pre_merge_checks:
   docstrings:

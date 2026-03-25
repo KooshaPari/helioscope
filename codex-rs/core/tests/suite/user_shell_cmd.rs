@@ -1,5 +1,6 @@
 use anyhow::Context;
 use codex_core::features::Feature;
+use codex_protocol::config_types::ReasoningSummary;
 use codex_protocol::protocol::AskForApproval;
 use codex_protocol::protocol::EventMsg;
 use codex_protocol::protocol::ExecCommandEndEvent;
@@ -177,7 +178,7 @@ async fn user_shell_command_does_not_replace_active_turn() -> anyhow::Result<()>
             sandbox_policy: SandboxPolicy::DangerFullAccess,
             model: fixture.session_configured.model.clone(),
             effort: None,
-            summary: None,
+            summary: ReasoningSummary::Auto,
             collaboration_mode: None,
             personality: None,
         })

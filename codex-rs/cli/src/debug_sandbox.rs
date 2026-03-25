@@ -7,7 +7,6 @@ use std::path::PathBuf;
 
 use codex_core::config::Config;
 use codex_core::config::ConfigOverrides;
-use codex_core::config::NetworkProxyAuditMetadata;
 use codex_core::exec_env::create_env;
 use codex_core::landlock::spawn_command_under_linux_sandbox;
 #[cfg(target_os = "macos")]
@@ -224,7 +223,6 @@ async fn run_command_under_sandbox(
                 None,
                 None,
                 managed_network_requirements_enabled,
-                NetworkProxyAuditMetadata::default(),
             )
             .await
             .map_err(|err| anyhow::anyhow!("failed to start managed network proxy: {err}"))?,

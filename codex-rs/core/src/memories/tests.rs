@@ -86,9 +86,7 @@ async fn sync_rollout_summaries_and_raw_memories_file_keeps_latest_memories_only
         raw_memory: "raw memory".to_string(),
         rollout_summary: "short summary".to_string(),
         rollout_slug: None,
-        rollout_path: PathBuf::from("/tmp/rollout-100.jsonl"),
         cwd: PathBuf::from("/tmp/workspace"),
-        git_branch: None,
         generated_at: Utc.timestamp_opt(101, 0).single().expect("timestamp"),
     }];
 
@@ -137,7 +135,6 @@ async fn sync_rollout_summaries_and_raw_memories_file_keeps_latest_memories_only
     assert!(raw_memories.contains("raw memory"));
     assert!(raw_memories.contains(&keep_id));
     assert!(raw_memories.contains("cwd: /tmp/workspace"));
-    assert!(raw_memories.contains("rollout_path: /tmp/rollout-100.jsonl"));
     assert!(raw_memories.contains(&format!(
         "rollout_summary_file: {canonical_rollout_summary_file}"
     )));
@@ -153,10 +150,6 @@ async fn sync_rollout_summaries_and_raw_memories_file_keeps_latest_memories_only
         .find("cwd: /tmp/workspace")
         .map(|offset| thread_pos + offset)
         .expect("cwd should exist after thread header");
-    let rollout_path_pos = raw_memories[thread_pos..]
-        .find("rollout_path: /tmp/rollout-100.jsonl")
-        .map(|offset| thread_pos + offset)
-        .expect("rollout_path should exist after thread header");
     let file_pos = raw_memories[thread_pos..]
         .find(&format!(
             "rollout_summary_file: {canonical_rollout_summary_file}"
@@ -165,8 +158,7 @@ async fn sync_rollout_summaries_and_raw_memories_file_keeps_latest_memories_only
         .expect("rollout_summary_file should exist after thread header");
     assert!(thread_pos < updated_pos);
     assert!(updated_pos < cwd_pos);
-    assert!(cwd_pos < rollout_path_pos);
-    assert!(rollout_path_pos < file_pos);
+    assert!(cwd_pos < file_pos);
 }
 
 #[tokio::test]
@@ -192,9 +184,7 @@ async fn sync_rollout_summaries_uses_timestamp_hash_and_sanitized_slug_filename(
         raw_memory: "raw memory".to_string(),
         rollout_summary: "short summary".to_string(),
         rollout_slug: Some("Unsafe Slug/With Spaces & Symbols + EXTRA_LONG_12345".to_string()),
-        rollout_path: PathBuf::from("/tmp/rollout-200.jsonl"),
         cwd: PathBuf::from("/tmp/workspace"),
-        git_branch: Some("feature/memory-branch".to_string()),
         generated_at: Utc.timestamp_opt(201, 0).single().expect("timestamp"),
     }];
 
@@ -249,8 +239,6 @@ async fn sync_rollout_summaries_uses_timestamp_hash_and_sanitized_slug_filename(
         .await
         .expect("read rollout summary");
     assert!(summary.contains(&format!("thread_id: {thread_id}")));
-    assert!(summary.contains("rollout_path: /tmp/rollout-200.jsonl"));
-    assert!(summary.contains("git_branch: feature/memory-branch"));
     assert!(
         !tokio::fs::try_exists(&stale_unslugged_path)
             .await
@@ -295,9 +283,7 @@ task_outcome: success
             .to_string(),
         rollout_summary: "short summary".to_string(),
         rollout_slug: Some("Unsafe Slug/With Spaces & Symbols + EXTRA_LONG_12345".to_string()),
-        rollout_path: PathBuf::from("/tmp/rollout-200.jsonl"),
         cwd: PathBuf::from("/tmp/workspace"),
-        git_branch: None,
         generated_at: Utc.timestamp_opt(201, 0).single().expect("timestamp"),
     }];
 
@@ -330,12 +316,6 @@ task_outcome: success
     let raw_memories = tokio::fs::read_to_string(raw_memories_file(&root))
         .await
         .expect("read raw memories");
-    let summary = tokio::fs::read_to_string(
-        rollout_summaries_dir(&root).join(canonical_rollout_summary_file),
-    )
-    .await
-    .expect("read rollout summary");
-    assert!(summary.contains("rollout_path: /tmp/rollout-200.jsonl"));
     assert!(raw_memories.contains(&format!(
         "rollout_summary_file: {canonical_rollout_summary_file}"
     )));
@@ -380,9 +360,7 @@ mod phase2 {
             raw_memory: "raw memory".to_string(),
             rollout_summary: "rollout summary".to_string(),
             rollout_slug: None,
-            rollout_path: PathBuf::from("/tmp/rollout-summary.jsonl"),
             cwd: PathBuf::from("/tmp/workspace"),
-            git_branch: None,
             generated_at: chrono::DateTime::<Utc>::from_timestamp(source_updated_at + 1, 0)
                 .expect("valid generated_at timestamp"),
         }
@@ -564,7 +542,7 @@ mod phase2 {
     #[tokio::test]
     async fn dispatch_reclaims_stale_global_lock_and_starts_consolidation() {
         let harness = DispatchHarness::new().await;
-        harness.seed_stage1_output(Utc::now().timestamp()).await;
+        harness.seed_stage1_output(100).await;
 
         let stale_claim = harness
             .state_db
@@ -578,18 +556,12 @@ mod phase2 {
 
         phase2::run(&harness.session, Arc::clone(&harness.config)).await;
 
-        let post_dispatch_claim = harness
+        let running_claim = harness
             .state_db
             .try_claim_global_phase2_job(ThreadId::new(), 3_600)
             .await
-            .expect("claim after stale lock dispatch");
-        assert!(
-            matches!(
-                post_dispatch_claim,
-                Phase2JobClaimOutcome::SkippedRunning | Phase2JobClaimOutcome::SkippedNotDirty
-            ),
-            "stale-lock dispatch should either keep the reclaimed job running or finish it before re-claim"
-        );
+            .expect("claim while running");
+        pretty_assertions::assert_eq!(running_claim, Phase2JobClaimOutcome::SkippedRunning);
 
         let user_input_ops = harness.user_input_ops_count();
         pretty_assertions::assert_eq!(user_input_ops, 1);

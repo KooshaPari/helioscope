@@ -565,7 +565,7 @@
               "type": "string"
             },
             "output": {
-              "$ref": "#/definitions/FunctionCallOutputPayload"
+              "type": "string"
             },
             "type": {
               "enum": [

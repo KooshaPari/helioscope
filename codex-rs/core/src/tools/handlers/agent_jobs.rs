@@ -1,4 +1,5 @@
 use crate::agent::exceeds_thread_spawn_depth_limit;
+use crate::agent::max_thread_spawn_depth;
 use crate::agent::next_thread_spawn_depth;
 use crate::agent::status::is_final;
 use crate::codex::Session;
@@ -530,7 +531,7 @@ async fn build_runner_options(
 ) -> Result<JobRunnerOptions, FunctionCallError> {
     let session_source = turn.session_source.clone();
     let child_depth = next_thread_spawn_depth(&session_source);
-    let max_depth = turn.config.agent_max_depth;
+    let max_depth = max_thread_spawn_depth(turn.config.agent_max_spawn_depth);
     if exceeds_thread_spawn_depth_limit(child_depth, max_depth) {
         return Err(FunctionCallError::RespondToModel(
             "agent depth limit reached; this session cannot spawn more subagents".to_string(),
@@ -539,7 +540,7 @@ async fn build_runner_options(
     let max_concurrency =
         normalize_concurrency(requested_concurrency, turn.config.agent_max_threads);
     let base_instructions = session.get_base_instructions().await;
-    let spawn_config = build_agent_spawn_config(&base_instructions, turn.as_ref())?;
+    let spawn_config = build_agent_spawn_config(&base_instructions, turn.as_ref(), child_depth)?;
     Ok(JobRunnerOptions {
         max_concurrency,
         spawn_config,

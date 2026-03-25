@@ -65,8 +65,5 @@ jobs:
       - name: Check codex-cli/README ToC
         run: python3 scripts/readme_toc.py codex-cli/README.md
 
-      - name: OXC format check (run `pnpm run format:fix` to fix)
+      - name: Prettier (run `pnpm run format:fix` to fix)
         run: pnpm run format
-
-      - name: OXC lint check
-        run: pnpm run lint

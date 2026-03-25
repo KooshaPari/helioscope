@@ -130,20 +130,6 @@ def run_command(cmd: list[str]) -> None:
     subprocess.run(cmd, cwd=REPO_ROOT, check=True)
 
 
-def resolve_preferred_pm() -> str:
-    preferred = os.environ.get("CODEX_PREFERRED_PM", "pnpm").strip().lower()
-    if preferred not in {"pnpm", "bun"}:
-        raise RuntimeError(
-            "Invalid CODEX_PREFERRED_PM value. Expected 'pnpm' or 'bun', "
-            f"got: {preferred!r}"
-        )
-    if shutil.which(preferred) is None:
-        raise RuntimeError(
-            f"CODEX_PREFERRED_PM={preferred!r} requested but '{preferred}' is not in PATH."
-        )
-    return preferred
-
-
 def tarball_name_for_package(package: str, version: str) -> str:
     if package in CODEX_PLATFORM_PACKAGES:
         platform = package.removeprefix("codex-")
@@ -153,8 +139,6 @@ def tarball_name_for_package(package: str, version: str) -> str:
 
 def main() -> int:
     args = parse_args()
-    preferred_pm = resolve_preferred_pm()
-    print(f"Using CODEX_PREFERRED_PM={preferred_pm}")
 
     output_dir = args.output_dir or (REPO_ROOT / "dist" / "npm")
     output_dir.mkdir(parents=True, exist_ok=True)

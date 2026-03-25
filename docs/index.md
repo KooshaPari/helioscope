@@ -1,13 +1,32 @@
-# Documentation
+# Consolidated Index
 
-<CategorySwitcher />
+## Files
 
-Welcome to the unified docs surface.
+* `CLA.md`
+* `agents_md.md`
+* `authentication.md`
+* `config.md`
+* `contributing.md`
+* `example-config.md`
+* `exec.md`
+* `execpolicy.md`
+* `exit-confirmation-prompt-design.md`
+* `getting-started.md`
+* `install.md`
+* `js_repl.md`
+* `license.md`
+* `open-source-fund.md`
+* `prompts.md`
+* `sandbox.md`
+* `skills.md`
+* `slash_commands.md`
+* `tui-alternate-screen.md`
+* `tui-chat-composer.md`
+* `tui-request-user-input.md`
+* `tui-stream-chunking-review.md`
+* `tui-stream-chunking-tuning.md`
+* `tui-stream-chunking-validation.md`
 
-## Super Categories
+## Subdirectories
 
-- [Wiki (User Guides)](/wiki/)
-- [Development Guide](/development/)
-- [Document Index](/index/)
-- [API](/api/)
-- [Roadmap](/roadmap/)
+* _No subdirectories_

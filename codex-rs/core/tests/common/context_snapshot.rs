@@ -62,7 +62,7 @@ pub fn format_response_items_snapshot(items: &[Value], options: &ContextSnapshot
             match item_type {
                 "message" => {
                     let role = item.get("role").and_then(Value::as_str).unwrap_or("unknown");
-                    let rendered_parts = item
+                    let text = item
                         .get("content")
                         .and_then(Value::as_array)
                         .map(|content| {
@@ -93,27 +93,11 @@ pub fn format_response_items_snapshot(items: &[Value], options: &ContextSnapshot
                                     }
                                 })
                                 .collect::<Vec<String>>()
+                                .join(" | ")
                         })
-                        .unwrap_or_default();
-                    let role = if rendered_parts.len() > 1 {
-                        format!("{role}[{}]", rendered_parts.len())
-                    } else {
-                        role.to_string()
-                    };
-                    if rendered_parts.is_empty() {
-                        return format!("{idx:02}:message/{role}:<NO_TEXT>");
-                    }
-                    if rendered_parts.len() == 1 {
-                        return format!("{idx:02}:message/{role}:{}", rendered_parts[0]);
-                    }
-
-                    let parts = rendered_parts
-                        .iter()
-                        .enumerate()
-                        .map(|(part_idx, part)| format!("    [{:02}] {part}", part_idx + 1))
-                        .collect::<Vec<String>>()
-                        .join("\n");
-                    format!("{idx:02}:message/{role}:\n{parts}")
+                        .filter(|text| !text.is_empty())
+                        .unwrap_or_else(|| "<NO_TEXT>".to_string());
+                    format!("{idx:02}:message/{role}:{text}")
                 }
                 "function_call" => {
                     let name = item.get("name").and_then(Value::as_str).unwrap_or("unknown");
@@ -238,34 +222,15 @@ fn canonicalize_snapshot_text(text: &str) -> String {
         return "<AGENTS_MD>".to_string();
     }
     if text.starts_with("<environment_context>") {
-        let subagent_count = text
-            .split_once("<subagents>")
-            .and_then(|(_, rest)| rest.split_once("</subagents>"))
-            .map(|(subagents, _)| {
-                subagents
-                    .lines()
-                    .filter(|line| line.trim_start().starts_with("- "))
-                    .count()
-            })
-            .unwrap_or(0);
-        let subagents_suffix = if subagent_count > 0 {
-            format!(":subagents={subagent_count}")
-        } else {
-            String::new()
-        };
         if let (Some(cwd_start), Some(cwd_end)) = (text.find("<cwd>"), text.find("</cwd>")) {
             let cwd = &text[cwd_start + "<cwd>".len()..cwd_end];
             return if cwd.ends_with("PRETURN_CONTEXT_DIFF_CWD") {
-                format!("<ENVIRONMENT_CONTEXT:cwd=PRETURN_CONTEXT_DIFF_CWD{subagents_suffix}>")
+                "<ENVIRONMENT_CONTEXT:cwd=PRETURN_CONTEXT_DIFF_CWD>".to_string()
             } else {
-                format!("<ENVIRONMENT_CONTEXT:cwd=<CWD>{subagents_suffix}>")
+                "<ENVIRONMENT_CONTEXT:cwd=<CWD>>".to_string()
             };
         }
-        return if subagent_count > 0 {
-            format!("<ENVIRONMENT_CONTEXT{subagents_suffix}>")
-        } else {
-            "<ENVIRONMENT_CONTEXT>".to_string()
-        };
+        return "<ENVIRONMENT_CONTEXT>".to_string();
     }
     if text.starts_with("You are performing a CONTEXT CHECKPOINT COMPACTION.") {
         return "<SUMMARIZATION_PROMPT>".to_string();
@@ -293,7 +258,7 @@ mod tests {
             "role": "user",
             "content": [{
                 "type": "input_text",
-                "text": "# AGENTS.md instructions for /tmp/example\n\n<INSTRUCTIONS>\nbody\n</INSTRUCTIONS>"
+                "text": "# AGENTS.md instructions for /tmp/example"
             }]
         })];
 
@@ -304,7 +269,7 @@ mod tests {
 
         assert_eq!(
             rendered,
-            r"00:message/user:# AGENTS.md instructions for /tmp/example\n\n<INSTRUCTIONS>\nbody\n</INSTRUCTIONS>"
+            "00:message/user:# AGENTS.md instructions for /tmp/example"
         );
     }
 
@@ -315,7 +280,7 @@ mod tests {
             "role": "user",
             "content": [{
                 "type": "input_text",
-                "text": "# AGENTS.md instructions for /tmp/example\n\n<INSTRUCTIONS>\nbody\n</INSTRUCTIONS>"
+                "text": "# AGENTS.md instructions for /tmp/example"
             }]
         })];
 
@@ -325,28 +290,6 @@ mod tests {
         );
 
         assert_eq!(rendered, "00:message/user:<AGENTS_MD>");
-    }
-
-    #[test]
-    fn redacted_text_mode_normalizes_environment_context_with_subagents() {
-        let items = vec![json!({
-            "type": "message",
-            "role": "user",
-            "content": [{
-                "type": "input_text",
-                "text": "<environment_context>\n  <cwd>/tmp/example</cwd>\n  <shell>bash</shell>\n  <subagents>\n    - agent-1: atlas\n    - agent-2\n  </subagents>\n</environment_context>"
-            }]
-        })];
-
-        let rendered = format_response_items_snapshot(
-            &items,
-            &ContextSnapshotOptions::default().render_mode(ContextSnapshotRenderMode::RedactedText),
-        );
-
-        assert_eq!(
-            rendered,
-            "00:message/user:<ENVIRONMENT_CONTEXT:cwd=<CWD>:subagents=2>"
-        );
     }
 
     #[test]
@@ -390,7 +333,7 @@ mod tests {
 
         assert_eq!(
             rendered,
-            "00:message/user[3]:\n    [01] <image>\n    [02] <input_image:image_url>\n    [03] </image>"
+            "00:message/user:<image> | <input_image:image_url> | </image>"
         );
     }
 }

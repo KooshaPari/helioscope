@@ -59,6 +59,7 @@ pub(crate) struct FooterProps {
     pub(crate) esc_backtrack_hint: bool,
     pub(crate) use_shift_enter_hint: bool,
     pub(crate) is_task_running: bool,
+    pub(crate) steer_enabled: bool,
     pub(crate) collaboration_modes_enabled: bool,
     pub(crate) is_wsl: bool,
     /// Which key the user must press again to quit.
@@ -125,8 +126,8 @@ pub(crate) enum FooterMode {
     ComposerEmpty,
     /// Base single-line footer when the composer contains a draft.
     ///
-    /// The shortcuts hint is suppressed here; when a task is running, this
-    /// mode can show the queue hint instead.
+    /// The shortcuts hint is suppressed here; when a task is running with
+    /// steer enabled, this mode can show the queue hint instead.
     ComposerHasDraft,
 }
 
@@ -178,7 +179,7 @@ pub(crate) fn footer_height(props: &FooterProps) -> u16 {
         | FooterMode::ComposerHasDraft => false,
     };
     let show_queue_hint = match props.mode {
-        FooterMode::ComposerHasDraft => props.is_task_running,
+        FooterMode::ComposerHasDraft => props.is_task_running && props.steer_enabled,
         FooterMode::QuitShortcutReminder
         | FooterMode::ComposerEmpty
         | FooterMode::ShortcutOverlay
@@ -1019,7 +1020,7 @@ mod tests {
                     | FooterMode::ComposerHasDraft => false,
                 };
                 let show_queue_hint = match props.mode {
-                    FooterMode::ComposerHasDraft => props.is_task_running,
+                    FooterMode::ComposerHasDraft => props.is_task_running && props.steer_enabled,
                     FooterMode::QuitShortcutReminder
                     | FooterMode::ComposerEmpty
                     | FooterMode::ShortcutOverlay
@@ -1188,6 +1189,7 @@ mod tests {
                 esc_backtrack_hint: false,
                 use_shift_enter_hint: false,
                 is_task_running: false,
+                steer_enabled: false,
                 collaboration_modes_enabled: false,
                 is_wsl: false,
                 quit_shortcut_key: key_hint::ctrl(KeyCode::Char('c')),
@@ -1205,6 +1207,7 @@ mod tests {
                 esc_backtrack_hint: true,
                 use_shift_enter_hint: true,
                 is_task_running: false,
+                steer_enabled: false,
                 collaboration_modes_enabled: false,
                 is_wsl: false,
                 quit_shortcut_key: key_hint::ctrl(KeyCode::Char('c')),
@@ -1222,6 +1225,7 @@ mod tests {
                 esc_backtrack_hint: false,
                 use_shift_enter_hint: false,
                 is_task_running: false,
+                steer_enabled: false,
                 collaboration_modes_enabled: true,
                 is_wsl: false,
                 quit_shortcut_key: key_hint::ctrl(KeyCode::Char('c')),
@@ -1239,6 +1243,7 @@ mod tests {
                 esc_backtrack_hint: false,
                 use_shift_enter_hint: false,
                 is_task_running: false,
+                steer_enabled: false,
                 collaboration_modes_enabled: false,
                 is_wsl: false,
                 quit_shortcut_key: key_hint::ctrl(KeyCode::Char('c')),
@@ -1256,6 +1261,7 @@ mod tests {
                 esc_backtrack_hint: false,
                 use_shift_enter_hint: false,
                 is_task_running: true,
+                steer_enabled: false,
                 collaboration_modes_enabled: false,
                 is_wsl: false,
                 quit_shortcut_key: key_hint::ctrl(KeyCode::Char('c')),
@@ -1273,6 +1279,7 @@ mod tests {
                 esc_backtrack_hint: false,
                 use_shift_enter_hint: false,
                 is_task_running: false,
+                steer_enabled: false,
                 collaboration_modes_enabled: false,
                 is_wsl: false,
                 quit_shortcut_key: key_hint::ctrl(KeyCode::Char('c')),
@@ -1290,6 +1297,7 @@ mod tests {
                 esc_backtrack_hint: true,
                 use_shift_enter_hint: false,
                 is_task_running: false,
+                steer_enabled: false,
                 collaboration_modes_enabled: false,
                 is_wsl: false,
                 quit_shortcut_key: key_hint::ctrl(KeyCode::Char('c')),
@@ -1307,6 +1315,7 @@ mod tests {
                 esc_backtrack_hint: false,
                 use_shift_enter_hint: false,
                 is_task_running: true,
+                steer_enabled: false,
                 collaboration_modes_enabled: false,
                 is_wsl: false,
                 quit_shortcut_key: key_hint::ctrl(KeyCode::Char('c')),
@@ -1324,11 +1333,30 @@ mod tests {
                 esc_backtrack_hint: false,
                 use_shift_enter_hint: false,
                 is_task_running: false,
+                steer_enabled: false,
                 collaboration_modes_enabled: false,
                 is_wsl: false,
                 quit_shortcut_key: key_hint::ctrl(KeyCode::Char('c')),
                 context_window_percent: None,
                 context_window_used_tokens: Some(123_456),
+                status_line_value: None,
+                status_line_enabled: false,
+            },
+        );
+
+        snapshot_footer(
+            "footer_composer_has_draft_queue_hint_disabled",
+            FooterProps {
+                mode: FooterMode::ComposerHasDraft,
+                esc_backtrack_hint: false,
+                use_shift_enter_hint: false,
+                is_task_running: true,
+                steer_enabled: false,
+                collaboration_modes_enabled: false,
+                is_wsl: false,
+                quit_shortcut_key: key_hint::ctrl(KeyCode::Char('c')),
+                context_window_percent: None,
+                context_window_used_tokens: None,
                 status_line_value: None,
                 status_line_enabled: false,
             },
@@ -1341,6 +1369,7 @@ mod tests {
                 esc_backtrack_hint: false,
                 use_shift_enter_hint: false,
                 is_task_running: true,
+                steer_enabled: true,
                 collaboration_modes_enabled: false,
                 is_wsl: false,
                 quit_shortcut_key: key_hint::ctrl(KeyCode::Char('c')),
@@ -1356,6 +1385,7 @@ mod tests {
             esc_backtrack_hint: false,
             use_shift_enter_hint: false,
             is_task_running: false,
+            steer_enabled: false,
             collaboration_modes_enabled: true,
             is_wsl: false,
             quit_shortcut_key: key_hint::ctrl(KeyCode::Char('c')),
@@ -1384,6 +1414,7 @@ mod tests {
             esc_backtrack_hint: false,
             use_shift_enter_hint: false,
             is_task_running: true,
+            steer_enabled: false,
             collaboration_modes_enabled: true,
             is_wsl: false,
             quit_shortcut_key: key_hint::ctrl(KeyCode::Char('c')),
@@ -1405,6 +1436,7 @@ mod tests {
             esc_backtrack_hint: false,
             use_shift_enter_hint: false,
             is_task_running: false,
+            steer_enabled: false,
             collaboration_modes_enabled: false,
             is_wsl: false,
             quit_shortcut_key: key_hint::ctrl(KeyCode::Char('c')),
@@ -1421,6 +1453,7 @@ mod tests {
             esc_backtrack_hint: false,
             use_shift_enter_hint: false,
             is_task_running: false,
+            steer_enabled: false,
             collaboration_modes_enabled: true,
             is_wsl: false,
             quit_shortcut_key: key_hint::ctrl(KeyCode::Char('c')),
@@ -1442,6 +1475,7 @@ mod tests {
             esc_backtrack_hint: false,
             use_shift_enter_hint: false,
             is_task_running: false,
+            steer_enabled: false,
             collaboration_modes_enabled: true,
             is_wsl: false,
             quit_shortcut_key: key_hint::ctrl(KeyCode::Char('c')),
@@ -1463,6 +1497,7 @@ mod tests {
             esc_backtrack_hint: false,
             use_shift_enter_hint: false,
             is_task_running: false,
+            steer_enabled: false,
             collaboration_modes_enabled: false,
             is_wsl: false,
             quit_shortcut_key: key_hint::ctrl(KeyCode::Char('c')),
@@ -1485,6 +1520,7 @@ mod tests {
             esc_backtrack_hint: false,
             use_shift_enter_hint: false,
             is_task_running: false,
+            steer_enabled: false,
             collaboration_modes_enabled: true,
             is_wsl: false,
             quit_shortcut_key: key_hint::ctrl(KeyCode::Char('c')),
@@ -1511,6 +1547,7 @@ mod tests {
             esc_backtrack_hint: false,
             use_shift_enter_hint: false,
             is_task_running: false,
+            steer_enabled: false,
             collaboration_modes_enabled: true,
             is_wsl: false,
             quit_shortcut_key: key_hint::ctrl(KeyCode::Char('c')),

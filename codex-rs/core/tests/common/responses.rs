@@ -48,19 +48,29 @@ impl ResponseMock {
     }
 
     pub fn single_request(&self) -> ResponsesRequest {
-        let requests = self.requests.lock().unwrap();
+        let requests = self.requests.lock().expect("requests lock should not be poisoned");
         if requests.len() != 1 {
             panic!("expected 1 request, got {}", requests.len());
         }
-        requests.first().unwrap().clone()
+        requests
+            .first()
+            .expect("expected exactly one request to exist")
+            .clone()
     }
 
     pub fn requests(&self) -> Vec<ResponsesRequest> {
-        self.requests.lock().unwrap().clone()
+        self.requests
+            .lock()
+            .expect("requests lock should not be poisoned")
+            .clone()
     }
 
     pub fn last_request(&self) -> Option<ResponsesRequest> {
-        self.requests.lock().unwrap().last().cloned()
+        self.requests
+            .lock()
+            .expect("requests lock should not be poisoned")
+            .last()
+            .cloned()
     }
 
     /// Returns true if any captured request contains a `function_call` with the
@@ -108,7 +118,7 @@ impl ResponsesRequest {
                 .get("content-encoding")
                 .and_then(|value| value.to_str().ok()),
         );
-        serde_json::from_slice(&body).unwrap()
+        serde_json::from_slice(&body).expect("parse response body JSON")
     }
 
     pub fn body_bytes(&self) -> Vec<u8> {
@@ -126,7 +136,7 @@ impl ResponsesRequest {
     pub fn instructions_text(&self) -> String {
         self.body_json()["instructions"]
             .as_str()
-            .unwrap()
+            .expect("instructions field should be a string")
             .to_string()
     }
 
@@ -211,7 +221,8 @@ impl ResponsesRequest {
         self.input()
             .iter()
             .find(|item| {
-                item.get("type").unwrap() == call_type && item.get("call_id").unwrap() == call_id
+                item.get("type").and_then(Value::as_str) == Some(call_type)
+                    && item.get("call_id").and_then(Value::as_str) == Some(call_id)
             })
             .cloned()
             .unwrap_or_else(|| panic!("function call output {call_id} item not found in request"))
@@ -428,11 +439,17 @@ impl WebSocketTestServer {
     }
 
     pub fn connections(&self) -> Vec<Vec<WebSocketRequest>> {
-        self.connections.lock().unwrap().clone()
+        self.connections
+            .lock()
+            .expect("connections lock should not be poisoned")
+            .clone()
     }
 
     pub fn single_connection(&self) -> Vec<WebSocketRequest> {
-        let connections = self.connections.lock().unwrap();
+        let connections = self
+            .connections
+            .lock()
+            .expect("connections lock should not be poisoned");
         if connections.len() != 1 {
             panic!("expected 1 connection, got {}", connections.len());
         }
@@ -448,7 +465,7 @@ impl WebSocketTestServer {
             if let Some(request) = self
                 .connections
                 .lock()
-                .unwrap()
+                .expect("connections lock should not be poisoned")
                 .get(connection_index)
                 .and_then(|connection| connection.get(request_index))
                 .cloned()
@@ -460,7 +477,10 @@ impl WebSocketTestServer {
     }
 
     pub fn handshakes(&self) -> Vec<WebSocketHandshake> {
-        self.handshakes.lock().unwrap().clone()
+        self.handshakes
+            .lock()
+            .expect("handshakes lock should not be poisoned")
+            .clone()
     }
 
     /// Waits until at least `expected` websocket handshakes have been observed or timeout elapses.
@@ -468,14 +488,24 @@ impl WebSocketTestServer {
     /// Uses a short bounded polling interval so tests can deterministically wait for background
     /// websocket activity without busy-spinning.
     pub async fn wait_for_handshakes(&self, expected: usize, timeout: Duration) -> bool {
-        if self.handshakes.lock().unwrap().len() >= expected {
+        if self
+            .handshakes
+            .lock()
+            .expect("handshakes lock should not be poisoned")
+            .len()
+            >= expected {
             return true;
         }
 
         let deadline = tokio::time::Instant::now() + timeout;
         let poll_interval = Duration::from_millis(10);
         loop {
-            if self.handshakes.lock().unwrap().len() >= expected {
+            if self
+                .handshakes
+                .lock()
+                .expect("handshakes lock should not be poisoned")
+                .len()
+                >= expected {
                 return true;
             }
             let now = tokio::time::Instant::now();
@@ -487,11 +517,17 @@ impl WebSocketTestServer {
         }
     }
     pub fn single_handshake(&self) -> WebSocketHandshake {
-        let handshakes = self.handshakes.lock().unwrap();
+        let handshakes = self
+            .handshakes
+            .lock()
+            .expect("handshakes lock should not be poisoned");
         if handshakes.len() != 1 {
             panic!("expected 1 handshake, got {}", handshakes.len());
         }
-        handshakes.first().cloned().unwrap()
+        handshakes
+            .first()
+            .expect("expected exactly one handshake to exist")
+            .clone()
     }
 
     pub async fn shutdown(self) {
@@ -513,21 +549,35 @@ impl ModelsMock {
     }
 
     pub fn requests(&self) -> Vec<wiremock::Request> {
-        self.requests.lock().unwrap().clone()
+        self.requests
+            .lock()
+            .expect("requests lock should not be poisoned")
+            .clone()
     }
 
     pub fn single_request_path(&self) -> String {
-        let requests = self.requests.lock().unwrap();
+        let requests = self
+            .requests
+            .lock()
+            .expect("requests lock should not be poisoned");
         if requests.len() != 1 {
             panic!("expected 1 request, got {}", requests.len());
         }
-        requests.first().unwrap().url.path().to_string()
+        requests
+            .first()
+            .expect("expected exactly one request path to exist")
+            .url
+            .path()
+            .to_string()
     }
 }
 
 impl Match for ModelsMock {
     fn matches(&self, request: &wiremock::Request) -> bool {
-        self.requests.lock().unwrap().push(request.clone());
+        self.requests
+            .lock()
+            .expect("requests lock should not be poisoned")
+            .push(request.clone());
         true
     }
 }
@@ -536,7 +586,7 @@ impl Match for ResponseMock {
     fn matches(&self, request: &wiremock::Request) -> bool {
         self.requests
             .lock()
-            .unwrap()
+            .expect("requests lock should not be poisoned")
             .push(ResponsesRequest(request.clone()));
 
         // Enforce invariant checks on every request body captured by the mock.
@@ -551,10 +601,13 @@ pub fn sse(events: Vec<Value>) -> String {
     use std::fmt::Write as _;
     let mut out = String::new();
     for ev in events {
-        let kind = ev.get("type").and_then(|v| v.as_str()).unwrap();
-        writeln!(&mut out, "event: {kind}").unwrap();
+        let kind = ev
+            .get("type")
+            .and_then(|v| v.as_str())
+            .expect("event missing type");
+        writeln!(&mut out, "event: {kind}").expect("writing SSE event should not fail");
         if !ev.as_object().map(|o| o.len() == 1).unwrap_or(false) {
-            write!(&mut out, "data: {ev}\n\n").unwrap();
+            write!(&mut out, "data: {ev}\n\n").expect("writing SSE data should not fail");
         } else {
             out.push('\n');
         }
@@ -1198,7 +1251,9 @@ pub async fn start_websocket_server_with_headers(
                 Err(_) => return,
             };
             let connection = {
-                let mut pending = connections.lock().unwrap();
+                let mut pending = connections
+            .lock()
+            .expect("connections lock should not be poisoned");
                 pending.pop_front()
             };
 
@@ -1225,7 +1280,7 @@ pub async fn start_websocket_server_with_headers(
                     .collect();
                 handshake_log
                     .lock()
-                    .unwrap()
+                    .expect("handshakes lock should not be poisoned")
                     .push(WebSocketHandshake { headers });
 
                 let headers_mut = response.headers_mut();
@@ -1253,7 +1308,9 @@ pub async fn start_websocket_server_with_headers(
             };
 
             let connection_index = {
-                let mut log = requests.lock().unwrap();
+                let mut log = requests
+                    .lock()
+                    .expect("requests lock should not be poisoned");
                 log.push(Vec::new());
                 log.len() - 1
             };
@@ -1262,7 +1319,9 @@ pub async fn start_websocket_server_with_headers(
                     break;
                 };
                 if let Some(body) = parse_ws_request_body(message) {
-                    let mut log = requests.lock().unwrap();
+                    let mut log = requests
+                    .lock()
+                    .expect("requests lock should not be poisoned");
                     if let Some(connection_log) = log.get_mut(connection_index) {
                         connection_log.push(WebSocketRequest { body });
                         let request_index = connection_log.len() - 1;
@@ -1322,7 +1381,11 @@ pub async fn start_websocket_server_with_headers(
 
             let _ = ws_stream.close(None).await;
 
-            if connections.lock().unwrap().is_empty() {
+            if connections
+                .lock()
+                .expect("connections lock should not be poisoned")
+                .is_empty()
+            {
                 return;
             }
         }

@@ -40,7 +40,7 @@ async fn interrupt_long_running_tool_emits_turn_aborted() {
         .with_model("gpt-5.1")
         .build(&server)
         .await
-        .unwrap()
+        .expect("test operation should succeed")
         .codex;
 
     // Kick off a turn that triggers the function call.
@@ -53,12 +53,12 @@ async fn interrupt_long_running_tool_emits_turn_aborted() {
             final_output_json_schema: None,
         })
         .await
-        .unwrap();
+        .expect("test operation should succeed");
 
     // Wait until the exec begins to avoid a race, then interrupt.
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::ExecCommandBegin(_))).await;
 
-    codex.submit(Op::Interrupt).await.unwrap();
+    codex.submit(Op::Interrupt).await.expect("interrupt should succeed");
 
     // Expect TurnAborted soon after.
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnAborted(_))).await;
@@ -95,7 +95,7 @@ async fn interrupt_tool_records_history_entries() {
         .with_model("gpt-5.1")
         .build(&server)
         .await
-        .unwrap();
+        .expect("test operation should succeed");
     let codex = Arc::clone(&fixture.codex);
 
     codex
@@ -107,12 +107,12 @@ async fn interrupt_tool_records_history_entries() {
             final_output_json_schema: None,
         })
         .await
-        .unwrap();
+        .expect("test operation should succeed");
 
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::ExecCommandBegin(_))).await;
 
     tokio::time::sleep(Duration::from_secs_f32(0.1)).await;
-    codex.submit(Op::Interrupt).await.unwrap();
+    codex.submit(Op::Interrupt).await.expect("interrupt should succeed");
 
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnAborted(_))).await;
 
@@ -125,7 +125,7 @@ async fn interrupt_tool_records_history_entries() {
             final_output_json_schema: None,
         })
         .await
-        .unwrap();
+        .expect("test operation should succeed");
 
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
 
@@ -154,10 +154,10 @@ async fn interrupt_tool_records_history_entries() {
     let secs: f32 = captures
         .expect("aborted message with elapsed seconds")
         .get(1)
-        .unwrap()
+        .expect("test operation should succeed")
         .as_str()
         .parse()
-        .unwrap();
+        .expect("test operation should succeed");
     assert!(
         secs >= 0.1,
         "expected at least one tenth of a second of elapsed time, got {secs}"
@@ -193,7 +193,7 @@ async fn interrupt_persists_turn_aborted_marker_in_next_request() {
         .with_model("gpt-5.1")
         .build(&server)
         .await
-        .unwrap();
+        .expect("test operation should succeed");
     let codex = Arc::clone(&fixture.codex);
 
     codex
@@ -205,12 +205,12 @@ async fn interrupt_persists_turn_aborted_marker_in_next_request() {
             final_output_json_schema: None,
         })
         .await
-        .unwrap();
+        .expect("test operation should succeed");
 
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::ExecCommandBegin(_))).await;
 
     tokio::time::sleep(Duration::from_secs_f32(0.1)).await;
-    codex.submit(Op::Interrupt).await.unwrap();
+    codex.submit(Op::Interrupt).await.expect("interrupt should succeed");
 
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnAborted(_))).await;
 
@@ -223,7 +223,7 @@ async fn interrupt_persists_turn_aborted_marker_in_next_request() {
             final_output_json_schema: None,
         })
         .await
-        .unwrap();
+        .expect("test operation should succeed");
 
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
 

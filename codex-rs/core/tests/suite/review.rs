@@ -67,10 +67,10 @@ async fn review_op_emits_lifecycle_and_review_output() {
             }},
             {"type":"response.completed", "response": {"id": "__ID__"}}
         ]"#;
-    let review_json_escaped = serde_json::to_string(&review_json).unwrap();
+    let review_json_escaped = serde_json::to_string(&review_json).expect("test operation should succeed");
     let sse_raw = sse_template.replace("__REVIEW__", &review_json_escaped);
     let (server, _request_log) = start_responses_server_with_sse(&sse_raw, 1).await;
-    let codex_home = Arc::new(TempDir::new().unwrap());
+    let codex_home = Arc::new(TempDir::new().expect("test operation should succeed"));
     let codex = new_conversation_for_server(&server, codex_home.clone(), |_| {}).await;
 
     // Submit review request.
@@ -84,7 +84,7 @@ async fn review_op_emits_lifecycle_and_review_output() {
             },
         })
         .await
-        .unwrap();
+        .expect("test operation should succeed");
 
     // Verify lifecycle: Entered -> Exited(Some(review)) -> TurnComplete.
     let _entered = wait_for_event(&codex, |ev| matches!(ev, EventMsg::EnteredReviewMode(_))).await;
@@ -192,7 +192,7 @@ async fn review_op_with_plain_text_emits_review_fallback() {
         {"type":"response.completed", "response": {"id": "__ID__"}}
     ]"#;
     let (server, _request_log) = start_responses_server_with_sse(sse_raw, 1).await;
-    let codex_home = Arc::new(TempDir::new().unwrap());
+    let codex_home = Arc::new(TempDir::new().expect("test operation should succeed"));
     let codex = new_conversation_for_server(&server, codex_home.clone(), |_| {}).await;
 
     codex
@@ -205,7 +205,7 @@ async fn review_op_with_plain_text_emits_review_fallback() {
             },
         })
         .await
-        .unwrap();
+        .expect("test operation should succeed");
 
     let _entered = wait_for_event(&codex, |ev| matches!(ev, EventMsg::EnteredReviewMode(_))).await;
     let closed = wait_for_event(&codex, |ev| matches!(ev, EventMsg::ExitedReviewMode(_))).await;
@@ -253,7 +253,7 @@ async fn review_filters_agent_message_related_events() {
         {"type":"response.completed", "response": {"id": "__ID__"}}
     ]"#;
     let (server, _request_log) = start_responses_server_with_sse(sse_raw, 1).await;
-    let codex_home = Arc::new(TempDir::new().unwrap());
+    let codex_home = Arc::new(TempDir::new().expect("test operation should succeed"));
     let codex = new_conversation_for_server(&server, codex_home.clone(), |_| {}).await;
 
     codex
@@ -266,7 +266,7 @@ async fn review_filters_agent_message_related_events() {
             },
         })
         .await
-        .unwrap();
+        .expect("test operation should succeed");
 
     let mut saw_entered = false;
     let mut saw_exited = false;
@@ -332,10 +332,10 @@ async fn review_does_not_emit_agent_message_on_structured_output() {
             }},
             {"type":"response.completed", "response": {"id": "__ID__"}}
         ]"#;
-    let review_json_escaped = serde_json::to_string(&review_json).unwrap();
+    let review_json_escaped = serde_json::to_string(&review_json).expect("test operation should succeed");
     let sse_raw = sse_template.replace("__REVIEW__", &review_json_escaped);
     let (server, _request_log) = start_responses_server_with_sse(&sse_raw, 1).await;
-    let codex_home = Arc::new(TempDir::new().unwrap());
+    let codex_home = Arc::new(TempDir::new().expect("test operation should succeed"));
     let codex = new_conversation_for_server(&server, codex_home.clone(), |_| {}).await;
 
     codex
@@ -348,7 +348,7 @@ async fn review_does_not_emit_agent_message_on_structured_output() {
             },
         })
         .await
-        .unwrap();
+        .expect("test operation should succeed");
 
     // Drain events until TurnComplete; ensure we only see a final
     // AgentMessage (no streaming assistant messages).
@@ -390,7 +390,7 @@ async fn review_uses_custom_review_model_from_config() {
         {"type":"response.completed", "response": {"id": "__ID__"}}
     ]"#;
     let (server, request_log) = start_responses_server_with_sse(sse_raw, 1).await;
-    let codex_home = Arc::new(TempDir::new().unwrap());
+    let codex_home = Arc::new(TempDir::new().expect("test operation should succeed"));
     // Choose a review model different from the main model; ensure it is used.
     let codex = new_conversation_for_server(&server, codex_home.clone(), |cfg| {
         cfg.model = Some("gpt-4.1".to_string());
@@ -408,7 +408,7 @@ async fn review_uses_custom_review_model_from_config() {
             },
         })
         .await
-        .unwrap();
+        .expect("test operation should succeed");
 
     // Wait for completion
     let _entered = wait_for_event(&codex, |ev| matches!(ev, EventMsg::EnteredReviewMode(_))).await;
@@ -427,7 +427,7 @@ async fn review_uses_custom_review_model_from_config() {
     let request = request_log.single_request();
     assert_eq!(request.path(), "/v1/responses");
     let body = request.body_json();
-    assert_eq!(body["model"].as_str().unwrap(), "gpt-5.1");
+    assert_eq!(body["model"].as_str().expect("test operation should succeed"), "gpt-5.1");
 
     let _codex_home_guard = codex_home;
     server.verify().await;
@@ -444,7 +444,7 @@ async fn review_uses_session_model_when_review_model_unset() {
         {"type":"response.completed", "response": {"id": "__ID__"}}
     ]"#;
     let (server, request_log) = start_responses_server_with_sse(sse_raw, 1).await;
-    let codex_home = Arc::new(TempDir::new().unwrap());
+    let codex_home = Arc::new(TempDir::new().expect("test operation should succeed"));
     let codex = new_conversation_for_server(&server, codex_home.clone(), |cfg| {
         cfg.model = Some("gpt-4.1".to_string());
         cfg.review_model = None;
@@ -461,7 +461,7 @@ async fn review_uses_session_model_when_review_model_unset() {
             },
         })
         .await
-        .unwrap();
+        .expect("test operation should succeed");
 
     let _entered = wait_for_event(&codex, |ev| matches!(ev, EventMsg::EnteredReviewMode(_))).await;
     let _closed = wait_for_event(&codex, |ev| {
@@ -478,7 +478,7 @@ async fn review_uses_session_model_when_review_model_unset() {
     let request = request_log.single_request();
     assert_eq!(request.path(), "/v1/responses");
     let body = request.body_json();
-    assert_eq!(body["model"].as_str().unwrap(), "gpt-4.1");
+    assert_eq!(body["model"].as_str().expect("test operation should succeed"), "gpt-4.1");
 
     let _codex_home_guard = codex_home;
     server.verify().await;
@@ -500,11 +500,11 @@ async fn review_input_isolated_from_parent_history() {
     let (server, request_log) = start_responses_server_with_sse(sse_raw, 1).await;
 
     // Seed a parent session history via resume file with both user + assistant items.
-    let codex_home = Arc::new(TempDir::new().unwrap());
+    let codex_home = Arc::new(TempDir::new().expect("test operation should succeed"));
 
     let session_file = codex_home.path().join("resume.jsonl");
     {
-        let mut f = tokio::fs::File::create(&session_file).await.unwrap();
+        let mut f = tokio::fs::File::create(&session_file).await.expect("test operation should succeed");
         let convo_id = Uuid::new_v4();
         // Proper session_meta line (enveloped) with a conversation id
         let meta_line = serde_json::json!({
@@ -521,7 +521,7 @@ async fn review_input_isolated_from_parent_history() {
         });
         f.write_all(format!("{meta_line}\n").as_bytes())
             .await
-            .unwrap();
+            .expect("test operation should succeed");
 
         // Prior user message (enveloped response_item)
         let user = codex_protocol::models::ResponseItem::Message {
@@ -533,7 +533,7 @@ async fn review_input_isolated_from_parent_history() {
             end_turn: None,
             phase: None,
         };
-        let user_json = serde_json::to_value(&user).unwrap();
+        let user_json = serde_json::to_value(&user).expect("test operation should succeed");
         let user_line = serde_json::json!({
             "timestamp": "2024-01-01T00:00:01.000Z",
             "type": "response_item",
@@ -541,7 +541,7 @@ async fn review_input_isolated_from_parent_history() {
         });
         f.write_all(format!("{user_line}\n").as_bytes())
             .await
-            .unwrap();
+            .expect("test operation should succeed");
 
         // Prior assistant message (enveloped response_item)
         let assistant = codex_protocol::models::ResponseItem::Message {
@@ -553,7 +553,7 @@ async fn review_input_isolated_from_parent_history() {
             end_turn: None,
             phase: None,
         };
-        let assistant_json = serde_json::to_value(&assistant).unwrap();
+        let assistant_json = serde_json::to_value(&assistant).expect("test operation should succeed");
         let assistant_line = serde_json::json!({
             "timestamp": "2024-01-01T00:00:02.000Z",
             "type": "response_item",
@@ -561,7 +561,7 @@ async fn review_input_isolated_from_parent_history() {
         });
         f.write_all(format!("{assistant_line}\n").as_bytes())
             .await
-            .unwrap();
+            .expect("test operation should succeed");
     }
     let codex =
         resume_conversation_for_server(&server, codex_home.clone(), session_file.clone(), |_| {})
@@ -579,7 +579,7 @@ async fn review_input_isolated_from_parent_history() {
             },
         })
         .await
-        .unwrap();
+        .expect("test operation should succeed");
 
     let _entered = wait_for_event(&codex, |ev| matches!(ev, EventMsg::EnteredReviewMode(_))).await;
     let _closed = wait_for_event(&codex, |ev| {
@@ -681,7 +681,7 @@ async fn review_history_surfaces_in_parent_session() {
         {"type":"response.completed", "response": {"id": "__ID__"}}
     ]"#;
     let (server, request_log) = start_responses_server_with_sse(sse_raw, 2).await;
-    let codex_home = Arc::new(TempDir::new().unwrap());
+    let codex_home = Arc::new(TempDir::new().expect("test operation should succeed"));
     let codex = new_conversation_for_server(&server, codex_home.clone(), |_| {}).await;
 
     // 1) Run a review turn that produces an assistant message (isolated in child).
@@ -695,7 +695,7 @@ async fn review_history_surfaces_in_parent_session() {
             },
         })
         .await
-        .unwrap();
+        .expect("test operation should succeed");
     let _entered = wait_for_event(&codex, |ev| matches!(ev, EventMsg::EnteredReviewMode(_))).await;
     let _closed = wait_for_event(&codex, |ev| {
         matches!(
@@ -719,7 +719,7 @@ async fn review_history_surfaces_in_parent_session() {
             final_output_json_schema: None,
         })
         .await
-        .unwrap();
+        .expect("test operation should succeed");
     let _complete = wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
 
     // Inspect the second request (parent turn) input contents.
@@ -735,8 +735,8 @@ async fn review_history_surfaces_in_parent_session() {
 
     // Must include the followup as the last item for this turn
     let last = input.last().expect("at least one item in input");
-    assert_eq!(last["role"].as_str().unwrap(), "user");
-    let last_text = last["content"][0]["text"].as_str().unwrap();
+    assert_eq!(last["role"].as_str().expect("test operation should succeed"), "user");
+    let last_text = last["content"][0]["text"].as_str().expect("test operation should succeed");
     assert_eq!(last_text, followup);
 
     // Ensure review-thread content is present for downstream turns.
@@ -774,9 +774,9 @@ async fn review_uses_overridden_cwd_for_base_branch_merge_base() {
     let sse_raw = r#"[{"type":"response.completed", "response": {"id": "__ID__"}}]"#;
     let (server, request_log) = start_responses_server_with_sse(sse_raw, 1).await;
 
-    let initial_cwd = TempDir::new().unwrap();
+    let initial_cwd = TempDir::new().expect("test operation should succeed");
 
-    let repo_dir = TempDir::new().unwrap();
+    let repo_dir = TempDir::new().expect("test operation should succeed");
     let repo_path = repo_dir.path();
 
     fn run_git(repo_path: &std::path::Path, args: &[&str]) {
@@ -798,7 +798,7 @@ async fn review_uses_overridden_cwd_for_base_branch_merge_base() {
     run_git(repo_path, &["init", "-b", "main"]);
     run_git(repo_path, &["config", "user.email", "test@example.com"]);
     run_git(repo_path, &["config", "user.name", "Test User"]);
-    std::fs::write(repo_path.join("file.txt"), "hello\n").unwrap();
+    std::fs::write(repo_path.join("file.txt"), "hello\n").expect("test operation should succeed");
     run_git(repo_path, &["add", "."]);
     run_git(repo_path, &["commit", "-m", "initial"]);
 
@@ -814,7 +814,7 @@ async fn review_uses_overridden_cwd_for_base_branch_merge_base() {
         .trim()
         .to_string();
 
-    let codex_home = Arc::new(TempDir::new().unwrap());
+    let codex_home = Arc::new(TempDir::new().expect("test operation should succeed"));
     let initial_cwd_path = initial_cwd.path().to_path_buf();
     let codex = new_conversation_for_server(&server, codex_home.clone(), move |config| {
         config.cwd = initial_cwd_path;
@@ -834,7 +834,7 @@ async fn review_uses_overridden_cwd_for_base_branch_merge_base() {
             personality: None,
         })
         .await
-        .unwrap();
+        .expect("test operation should succeed");
 
     codex
         .submit(Op::Review {
@@ -846,7 +846,7 @@ async fn review_uses_overridden_cwd_for_base_branch_merge_base() {
             },
         })
         .await
-        .unwrap();
+        .expect("test operation should succeed");
 
     let _entered = wait_for_event(&codex, |ev| matches!(ev, EventMsg::EnteredReviewMode(_))).await;
     let _complete = wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;

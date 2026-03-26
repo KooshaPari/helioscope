@@ -982,20 +982,19 @@ mod tests {
             ..Default::default()
         };
         let state = Arc::new(network_proxy_state_for_policy(policy));
-        state.set_network_mode(NetworkMode::Limited).await.unwrap();
+        state.set_network_mode(NetworkMode::Limited).await.expect("network mode should update");
 
         let mut req = Request::builder()
             .method(Method::CONNECT)
             .uri("https://example.com:443")
             .header("host", "example.com:443")
             .body(Body::empty())
-            .unwrap();
+            .expect("request should build");
         req.extensions_mut().insert(state);
 
         let response = http_connect_accept(None, req).await.unwrap_err();
         assert_eq!(response.status(), StatusCode::FORBIDDEN);
-        assert_eq!(
-            response.headers().get("x-proxy-error").unwrap(),
+        assert_eq!(response.headers().get("x-proxy-error").expect("header should exist"),
             "blocked-by-mitm-required"
         );
     }
@@ -1013,10 +1012,10 @@ mod tests {
             .uri("https://example.com:443")
             .header("host", "example.com:443")
             .body(Body::empty())
-            .unwrap();
+            .expect("request should build");
         req.extensions_mut().insert(state);
 
-        let (response, _request) = http_connect_accept(None, req).await.unwrap();
+        let (response, _request) = http_connect_accept(None, req).await.expect("request should succeed");
         assert_eq!(response.status(), StatusCode::OK);
     }
 
@@ -1038,11 +1037,10 @@ mod tests {
             .expect("request should build");
         req.extensions_mut().insert(state);
 
-        let response = http_plain_proxy(None, req).await.unwrap();
+        let response = http_plain_proxy(None, req).await.expect("request should succeed");
 
         assert_eq!(response.status(), StatusCode::FORBIDDEN);
-        assert_eq!(
-            response.headers().get("x-proxy-error").unwrap(),
+        assert_eq!(response.headers().get("x-proxy-error").expect("header should exist"),
             "blocked-by-method-policy"
         );
     }
@@ -1061,12 +1059,12 @@ mod tests {
             .expect("request should build");
         req.extensions_mut().insert(state);
 
-        let response = http_plain_proxy(None, req).await.unwrap();
+        let response = http_plain_proxy(None, req).await.expect("request should succeed");
 
         if cfg!(target_os = "macos") {
             assert_eq!(response.status(), StatusCode::FORBIDDEN);
             assert_eq!(
-                response.headers().get("x-proxy-error").unwrap(),
+                response.headers().get("x-proxy-error").expect("header should exist"),
                 "blocked-by-allowlist"
             );
         } else {
@@ -1090,7 +1088,7 @@ mod tests {
             .expect("request should build");
         req.extensions_mut().insert(state);
 
-        let response = http_plain_proxy(None, req).await.unwrap();
+        let response = http_plain_proxy(None, req).await.expect("request should succeed");
         assert_eq!(response.status(), StatusCode::BAD_GATEWAY);
     }
 
@@ -1108,13 +1106,12 @@ mod tests {
             .uri("https://api.openai.com:443")
             .header("host", "api.openai.com:443")
             .body(Body::empty())
-            .unwrap();
+            .expect("request should build");
         req.extensions_mut().insert(state);
 
         let response = http_connect_accept(None, req).await.unwrap_err();
         assert_eq!(response.status(), StatusCode::FORBIDDEN);
-        assert_eq!(
-            response.headers().get("x-proxy-error").unwrap(),
+        assert_eq!(response.headers().get("x-proxy-error").expect("header should exist"),
             "blocked-by-denylist"
         );
     }
@@ -1129,11 +1126,11 @@ mod tests {
             .uri("http://raw.githubusercontent.com/openai/codex/main/README.md")
             .header(header::HOST, "api.github.com")
             .body(Body::empty())
-            .unwrap();
+            .expect("request should build");
         req.extensions_mut().insert(state);
 
         let response = http_plain_proxy(None, req).await;
-        assert_eq!(response.unwrap().status(), StatusCode::BAD_REQUEST);
+        assert_eq!(response.expect("request should succeed").status(), StatusCode::BAD_REQUEST);
     }
 
     #[test]

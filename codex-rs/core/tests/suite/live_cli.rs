@@ -22,7 +22,7 @@ fn run_live(prompt: &str) -> (assert_cmd::assert::Assert, TempDir) {
     use std::io::Write;
     use std::thread;
 
-    let dir = TempDir::new().unwrap();
+    let dir = TempDir::new().expect("should create temp dir");
 
     // Build a plain `std::process::Command` so we have full control over the underlying stdio
     // handles. `assert_cmd`’s own `Command` wrapper always forces stdout/stderr to be piped
@@ -30,7 +30,9 @@ fn run_live(prompt: &str) -> (assert_cmd::assert::Assert, TempDir) {
     // implementation). Instead we configure the std `Command` ourselves, then later hand the
     // resulting `Output` to `assert_cmd` for the familiar assertions.
 
-    let mut cmd = Command::new(codex_utils_cargo_bin::cargo_bin("codex-rs").unwrap());
+    let mut cmd = Command::new(
+        codex_utils_cargo_bin::cargo_bin("codex-rs").expect("binary path should resolve"),
+    );
     cmd.current_dir(dir.path());
     cmd.env("OPENAI_API_KEY", require_api_key());
 
@@ -127,7 +129,7 @@ fn live_create_file_hello_txt() {
     let path = dir.path().join("hello.txt");
     assert!(path.exists(), "hello.txt was not created by the model");
 
-    let contents = std::fs::read_to_string(path).unwrap();
+    let contents = std::fs::read_to_string(path).expect("should read generated file");
 
     assert_eq!(contents.trim(), "hello");
 }

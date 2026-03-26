@@ -73,16 +73,15 @@ fn assert_default_env_context(text: &str, cwd: &str, shell: &Shell) {
 }
 
 fn assert_tool_names(body: &serde_json::Value, expected_names: &[&str]) {
+    let tools = body["tools"].as_array().expect("tools array should be present");
     assert_eq!(
-        body["tools"]
-            .as_array()
-            .unwrap()
+        tools
             .iter()
             .map(|t| {
                 t.get("name")
                     .and_then(|value| value.as_str())
                     .or_else(|| t.get("type").and_then(|value| value.as_str()))
-                    .unwrap()
+                    .expect("tool should expose a name or type")
                     .to_string()
             })
             .collect::<Vec<_>>(),
@@ -396,9 +395,9 @@ async fn overrides_turn_context_but_keeps_cached_prefix_and_key_constant() -> an
         .await?;
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
 
-    let writable = TempDir::new().unwrap();
+    let writable = TempDir::new().expect("should create temp dir");
     let new_policy = SandboxPolicy::WorkspaceWrite {
-        writable_roots: vec![writable.path().try_into().unwrap()],
+        writable_roots: vec![writable.path().try_into().expect("writable root path should convert into an absolute path")],
         read_only_access: Default::default(),
         network_access: true,
         exclude_tmpdir_env_var: true,
@@ -659,10 +658,10 @@ async fn per_turn_overrides_keep_cached_prefix_and_key_constant() -> anyhow::Res
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
 
     // Second turn using per-turn overrides via UserTurn
-    let new_cwd = TempDir::new().unwrap();
-    let writable = TempDir::new().unwrap();
+    let new_cwd = TempDir::new().expect("should create temp dir");
+    let writable = TempDir::new().expect("should create temp dir");
     let new_policy = SandboxPolicy::WorkspaceWrite {
-        writable_roots: vec![AbsolutePathBuf::try_from(writable.path()).unwrap()],
+        writable_roots: vec![AbsolutePathBuf::try_from(writable.path()).expect("writable root path should convert into AbsolutePathBuf")],
         read_only_access: Default::default(),
         network_access: true,
         exclude_tmpdir_env_var: true,

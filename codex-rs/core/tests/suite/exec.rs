@@ -58,7 +58,9 @@ async fn exit_code_0_succeeds() {
     let tmp = TempDir::new().expect("should be able to create temp dir");
     let cmd = vec!["echo", "hello"];
 
-    let output = run_test_cmd(tmp, cmd).await.unwrap();
+    let output = run_test_cmd(tmp, cmd)
+        .await
+        .expect("test operation should succeed");
     assert_eq!(output.stdout.text, "hello\n");
     assert_eq!(output.stderr.text, "");
     assert_eq!(output.stdout.truncated_after_lines, None);
@@ -74,7 +76,9 @@ async fn truncates_output_lines() {
     let tmp = TempDir::new().expect("should be able to create temp dir");
     let cmd = vec!["seq", "300"];
 
-    let output = run_test_cmd(tmp, cmd).await.unwrap();
+    let output = run_test_cmd(tmp, cmd)
+        .await
+        .expect("test operation should succeed");
 
     let expected_output = (1..=300)
         .map(|i| format!("{i}\n"))
@@ -95,7 +99,9 @@ async fn truncates_output_bytes() {
     // each line is 1000 bytes
     let cmd = vec!["bash", "-lc", "seq 15 | awk '{printf \"%-1000s\\n\", $0}'"];
 
-    let output = run_test_cmd(tmp, cmd).await.unwrap();
+    let output = run_test_cmd(tmp, cmd)
+        .await
+        .expect("test operation should succeed");
 
     assert!(output.stdout.text.len() >= 15000);
     assert_eq!(output.stdout.truncated_after_lines, None);
@@ -110,7 +116,9 @@ async fn exit_command_not_found_is_ok() {
 
     let tmp = TempDir::new().expect("should be able to create temp dir");
     let cmd = vec!["/bin/bash", "-c", "nonexistent_command_12345"];
-    run_test_cmd(tmp, cmd).await.unwrap();
+    run_test_cmd(tmp, cmd)
+        .await
+        .expect("test operation should succeed");
 }
 
 /// Writing a file fails and should be considered a sandbox error

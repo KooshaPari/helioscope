@@ -19,10 +19,10 @@ use std::path::Path;
 
 fn write_skill(home: &Path, name: &str, description: &str, body: &str) -> std::path::PathBuf {
     let skill_dir = home.join("skills").join(name);
-    fs::create_dir_all(&skill_dir).unwrap();
+    fs::create_dir_all(&skill_dir).expect("test operation should succeed");
     let contents = format!("---\nname: {name}\ndescription: {description}\n---\n\n{body}\n");
     let path = skill_dir.join("SKILL.md");
-    fs::write(&path, contents).unwrap();
+    fs::write(&path, contents).expect("test operation should succeed");
     path
 }
 
@@ -111,8 +111,8 @@ async fn skill_load_errors_surface_in_session_configured() -> Result<()> {
     let server = start_mock_server().await;
     let mut builder = test_codex().with_pre_build_hook(|home| {
         let skill_dir = home.join("skills").join("broken");
-        fs::create_dir_all(&skill_dir).unwrap();
-        fs::write(skill_dir.join("SKILL.md"), "not yaml").unwrap();
+        fs::create_dir_all(&skill_dir).expect("test operation should succeed");
+        fs::write(skill_dir.join("SKILL.md"), "not yaml").expect("test operation should succeed");
     });
     let test = builder.build(&server).await?;
 

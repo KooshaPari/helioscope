@@ -76,14 +76,14 @@ use wiremock::matchers::query_param;
 
 #[expect(clippy::unwrap_used)]
 fn assert_message_role(request_body: &serde_json::Value, role: &str) {
-    assert_eq!(request_body["role"].as_str().unwrap(), role);
+    assert_eq!(request_body["role"].as_str().expect("role should be a string"), role);
 }
 
 #[expect(clippy::unwrap_used)]
 fn message_input_texts(item: &serde_json::Value) -> Vec<&str> {
     item["content"]
         .as_array()
-        .unwrap()
+        .expect("content should be an array")
         .iter()
         .filter_map(|entry| entry.get("text").and_then(|text| text.as_str()))
         .collect()
@@ -111,8 +111,8 @@ fn write_auth_json(
     });
 
     let b64 = |b: &[u8]| base64::engine::general_purpose::URL_SAFE_NO_PAD.encode(b);
-    let header_b64 = b64(&serde_json::to_vec(&header).unwrap());
-    let payload_b64 = b64(&serde_json::to_vec(&payload).unwrap());
+    let header_b64 = b64(&serde_json::to_vec(&header).expect("header should serialize"));
+    let payload_b64 = b64(&serde_json::to_vec(&payload).expect("payload should serialize"));
     let signature_b64 = b64(b"sig");
     let fake_jwt = format!("{header_b64}.{payload_b64}.{signature_b64}");
 
@@ -134,26 +134,20 @@ fn write_auth_json(
 
     std::fs::write(
         codex_home.path().join("auth.json"),
-        serde_json::to_string_pretty(&auth_json).unwrap(),
+        serde_json::to_string_pretty(&auth_json).expect("auth json should serialize"),
     )
-    .unwrap();
-
-    fake_jwt
-}
+    .expect("auth json write should succeed");
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn resume_includes_initial_messages_and_sends_prior_items() {
     skip_if_no_network!();
 
     // Create a fake rollout session file with prior user + system + assistant messages.
-    let tmpdir = TempDir::new().unwrap();
+    let tmpdir = TempDir::new().expect("should be able to create temp dir");
     let session_path = tmpdir.path().join("resume-session.jsonl");
-    let mut f = std::fs::File::create(&session_path).unwrap();
+    let mut f = std::fs::File::create(&session_path).expect("should create session file");
     let convo_id = Uuid::new_v4();
-    writeln!(
-        f,
-        "{}",
-        json!({
+    writeln!(f, "{}", json!({
             "timestamp": "2024-01-01T00:00:00.000Z",
             "type": "session_meta",
             "payload": {
@@ -165,9 +159,8 @@ async fn resume_includes_initial_messages_and_sends_prior_items() {
                 "cli_version": "test_version",
                 "model_provider": "test-provider"
             }
-        })
-    )
-    .unwrap();
+        }))
+    .expect("write session metadata line");
 
     // Prior item: user message (should be delivered)
     let prior_user = codex_protocol::models::ResponseItem::Message {
@@ -179,7 +172,7 @@ async fn resume_includes_initial_messages_and_sends_prior_items() {
         end_turn: None,
         phase: None,
     };
-    let prior_user_json = serde_json::to_value(&prior_user).unwrap();
+    let prior_user_json = serde_json::to_value(&prior_user).expect("prior user should serialize");
     writeln!(
         f,
         "{}",
@@ -189,7 +182,7 @@ async fn resume_includes_initial_messages_and_sends_prior_items() {
             "payload": prior_user_json
         })
     )
-    .unwrap();
+    .expect("write prior user response item");
 
     // Prior item: system message (excluded from API history)
     let prior_system = codex_protocol::models::ResponseItem::Message {
@@ -201,7 +194,7 @@ async fn resume_includes_initial_messages_and_sends_prior_items() {
         end_turn: None,
         phase: None,
     };
-    let prior_system_json = serde_json::to_value(&prior_system).unwrap();
+    let prior_system_json = serde_json::to_value(&prior_system).expect("prior system should serialize");
     writeln!(
         f,
         "{}",
@@ -211,7 +204,7 @@ async fn resume_includes_initial_messages_and_sends_prior_items() {
             "payload": prior_system_json
         })
     )
-    .unwrap();
+    .expect("write prior system response item");
 
     // Prior item: assistant message
     let prior_item = codex_protocol::models::ResponseItem::Message {
@@ -223,7 +216,7 @@ async fn resume_includes_initial_messages_and_sends_prior_items() {
         end_turn: None,
         phase: Some(MessagePhase::Commentary),
     };
-    let prior_item_json = serde_json::to_value(&prior_item).unwrap();
+    let prior_item_json = serde_json::to_value(&prior_item).expect("prior assistant should serialize");
     writeln!(
         f,
         "{}",
@@ -233,7 +226,7 @@ async fn resume_includes_initial_messages_and_sends_prior_items() {
             "payload": prior_item_json
         })
     )
-    .unwrap();
+    .expect("write prior assistant response item");
     drop(f);
 
     // Mock server that will receive the resumed request
@@ -245,7 +238,7 @@ async fn resume_includes_initial_messages_and_sends_prior_items() {
     .await;
 
     // Configure Codex to resume from our file
-    let codex_home = Arc::new(TempDir::new().unwrap());
+    let codex_home = Arc::new(TempDir::new().expect("should create temp dir"));
     let mut builder = test_codex()
         .with_home(codex_home.clone())
         .with_config(|config| {
@@ -264,7 +257,7 @@ async fn resume_includes_initial_messages_and_sends_prior_items() {
         .initial_messages
         .clone()
         .expect("expected initial messages option for resumed session");
-    let initial_json = serde_json::to_value(&initial_msgs).unwrap();
+    let initial_json = serde_json::to_value(&initial_msgs).expect("initial messages should serialize");
     let expected_initial_json = json!([]);
     assert_eq!(initial_json, expected_initial_json);
 
@@ -278,7 +271,7 @@ async fn resume_includes_initial_messages_and_sends_prior_items() {
             final_output_json_schema: None,
         })
         .await
-        .unwrap();
+        .expect("test operation should succeed");
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
 
     let request = resp_mock.single_request();
@@ -405,13 +398,14 @@ async fn resume_replays_legacy_js_repl_image_rollout_shapes() {
         },
     ];
 
-    let tmpdir = TempDir::new().unwrap();
+    let tmpdir = TempDir::new().expect("should be able to create temp dir");
     let session_path = tmpdir
         .path()
         .join("resume-legacy-js-repl-image-rollout.jsonl");
-    let mut f = std::fs::File::create(&session_path).unwrap();
+    let mut f = std::fs::File::create(&session_path).expect("should create session file");
     for line in rollout {
-        writeln!(f, "{}", serde_json::to_string(&line).unwrap()).unwrap();
+        writeln!(f, "{}", serde_json::to_string(&line).expect("rollout line should serialize"))
+            .expect("write rollout line");
     }
 
     let server = MockServer::start().await;
@@ -421,13 +415,15 @@ async fn resume_replays_legacy_js_repl_image_rollout_shapes() {
     )
     .await;
 
-    let codex_home = Arc::new(TempDir::new().unwrap());
+    let codex_home = Arc::new(TempDir::new().expect("should create temp dir"));
     let mut builder = test_codex().with_model("gpt-5.1");
     let test = builder
         .resume(&server, codex_home, session_path.clone())
         .await
         .expect("resume conversation");
-    test.submit_turn("after resume").await.unwrap();
+    test.submit_turn("after resume")
+        .await
+        .expect("submit turn after resume should succeed");
 
     let input = resp_mock.single_request().input();
 
@@ -516,7 +512,7 @@ async fn includes_conversation_id_and_model_headers_in_request() {
             final_output_json_schema: None,
         })
         .await
-        .unwrap();
+        .expect("test operation should succeed");
 
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
 
@@ -564,7 +560,7 @@ async fn includes_base_instructions_override_in_request() {
             final_output_json_schema: None,
         })
         .await
-        .unwrap();
+        .expect("test operation should succeed");
 
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
 
@@ -574,7 +570,7 @@ async fn includes_base_instructions_override_in_request() {
     assert!(
         request_body["instructions"]
             .as_str()
-            .unwrap()
+            .expect("instructions should be a string")
             .contains("test instructions")
     );
 }
@@ -615,7 +611,7 @@ async fn chatgpt_auth_sends_correct_request() {
             final_output_json_schema: None,
         })
         .await
-        .unwrap();
+        .expect("test operation should succeed");
 
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
 
@@ -636,9 +632,11 @@ async fn chatgpt_auth_sends_correct_request() {
     assert_eq!(request_originator, originator().value);
     assert_eq!(request_authorization, "Bearer Access Token");
     assert_eq!(request_chatgpt_account_id, "account_id");
-    assert!(request_body["stream"].as_bool().unwrap());
+    assert!(request_body["stream"].as_bool().expect("stream should be a bool"));
     assert_eq!(
-        request_body["include"][0].as_str().unwrap(),
+        request_body["include"][0]
+            .as_str()
+            .expect("include[0] should be a string"),
         "reasoning.encrypted_content"
     );
 }
@@ -672,7 +670,7 @@ async fn prefers_apikey_when_config_prefers_apikey_even_with_chatgpt_tokens() {
     };
 
     // Init session
-    let codex_home = TempDir::new().unwrap();
+    let codex_home = TempDir::new().expect("should create temp dir");
     // Write auth.json that contains both API key and ChatGPT tokens for a plan that should prefer ChatGPT,
     // but config will force API key preference.
     let _jwt = write_auth_json(
@@ -717,7 +715,7 @@ async fn prefers_apikey_when_config_prefers_apikey_even_with_chatgpt_tokens() {
             final_output_json_schema: None,
         })
         .await
-        .unwrap();
+        .expect("test operation should succeed");
 
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
 }
@@ -753,7 +751,7 @@ async fn includes_user_instructions_message_in_request() {
             final_output_json_schema: None,
         })
         .await
-        .unwrap();
+        .expect("test operation should succeed");
 
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
 
@@ -763,7 +761,7 @@ async fn includes_user_instructions_message_in_request() {
     assert!(
         !request_body["instructions"]
             .as_str()
-            .unwrap()
+            .expect("instructions should be a string")
             .contains("be nice")
     );
     assert_message_role(&request_body["input"][0], "developer");
@@ -836,7 +834,7 @@ async fn includes_apps_guidance_as_developer_message_when_enabled() {
             final_output_json_schema: None,
         })
         .await
-        .unwrap();
+        .expect("test operation should succeed");
 
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
 
@@ -895,7 +893,7 @@ async fn skills_append_to_instructions() {
     )
     .await;
 
-    let codex_home = Arc::new(TempDir::new().unwrap());
+    let codex_home = Arc::new(TempDir::new().expect("should create temp dir"));
     let skill_dir = codex_home.path().join("skills/demo");
     std::fs::create_dir_all(&skill_dir).expect("create skill dir");
     std::fs::write(
@@ -926,7 +924,7 @@ async fn skills_append_to_instructions() {
             final_output_json_schema: None,
         })
         .await
-        .unwrap();
+        .expect("test operation should succeed");
 
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
 
@@ -947,7 +945,7 @@ async fn skills_append_to_instructions() {
         instructions_text.contains("demo: build charts"),
         "expected skill summary"
     );
-    let expected_path = normalize_path(skill_dir.join("SKILL.md")).unwrap();
+    let expected_path = normalize_path(skill_dir.join("SKILL.md")).expect("normalize skill path");
     let expected_path_str = expected_path.to_string_lossy().replace('\\', "/");
     assert!(
         instructions_text.contains(&expected_path_str),
@@ -983,7 +981,7 @@ async fn includes_configured_effort_in_request() -> anyhow::Result<()> {
             final_output_json_schema: None,
         })
         .await
-        .unwrap();
+        .expect("test operation should succeed");
 
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
 
@@ -1025,7 +1023,7 @@ async fn includes_no_effort_in_request() -> anyhow::Result<()> {
             final_output_json_schema: None,
         })
         .await
-        .unwrap();
+        .expect("test operation should succeed");
 
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
 
@@ -1065,7 +1063,7 @@ async fn includes_default_reasoning_effort_in_request_when_defined_by_model_info
             final_output_json_schema: None,
         })
         .await
-        .unwrap();
+        .expect("test operation should succeed");
 
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
 
@@ -1175,7 +1173,7 @@ async fn configured_reasoning_summary_is_sent() -> anyhow::Result<()> {
             final_output_json_schema: None,
         })
         .await
-        .unwrap();
+        .expect("test operation should succeed");
 
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
 
@@ -1245,7 +1243,7 @@ async fn user_turn_explicit_reasoning_summary_overrides_model_catalog_default() 
             personality: None,
         })
         .await
-        .unwrap();
+        .expect("test operation should succeed");
 
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
 
@@ -1288,7 +1286,7 @@ async fn reasoning_summary_is_omitted_when_disabled() -> anyhow::Result<()> {
             final_output_json_schema: None,
         })
         .await
-        .unwrap();
+        .expect("test operation should succeed");
 
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
 
@@ -1344,7 +1342,7 @@ async fn reasoning_summary_none_overrides_model_catalog_default() -> anyhow::Res
             final_output_json_schema: None,
         })
         .await
-        .unwrap();
+        .expect("test operation should succeed");
 
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
 
@@ -1380,7 +1378,7 @@ async fn includes_default_verbosity_in_request() -> anyhow::Result<()> {
             final_output_json_schema: None,
         })
         .await
-        .unwrap();
+        .expect("test operation should succeed");
 
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
 
@@ -1425,7 +1423,7 @@ async fn configured_verbosity_not_sent_for_models_without_support() -> anyhow::R
             final_output_json_schema: None,
         })
         .await
-        .unwrap();
+        .expect("test operation should succeed");
 
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
 
@@ -1469,7 +1467,7 @@ async fn configured_verbosity_is_sent() -> anyhow::Result<()> {
             final_output_json_schema: None,
         })
         .await
-        .unwrap();
+        .expect("test operation should succeed");
 
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
 
@@ -1518,7 +1516,7 @@ async fn includes_developer_instructions_message_in_request() {
             final_output_json_schema: None,
         })
         .await
-        .unwrap();
+        .expect("test operation should succeed");
 
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
 
@@ -1532,7 +1530,7 @@ async fn includes_developer_instructions_message_in_request() {
     assert!(
         !request_body["instructions"]
             .as_str()
-            .unwrap()
+            .expect("instructions should be a string")
             .contains("be nice")
     );
     assert_message_role(&request_body["input"][0], "developer");
@@ -1608,7 +1606,7 @@ async fn azure_responses_request_includes_store_and_reasoning_ids() {
         supports_websockets: false,
     };
 
-    let codex_home = TempDir::new().unwrap();
+    let codex_home = TempDir::new().expect("should create temp dir");
     let mut config = load_default_config_for_test(&codex_home).await;
     config.model_provider_id = provider.name.clone();
     config.model_provider = provider.clone();
@@ -1798,7 +1796,7 @@ async fn token_count_includes_rate_limits_snapshot() {
             final_output_json_schema: None,
         })
         .await
-        .unwrap();
+        .expect("test operation should succeed");
 
     let first_token_event =
         wait_for_event(&codex, |msg| matches!(msg, EventMsg::TokenCount(_))).await;
@@ -1807,7 +1805,7 @@ async fn token_count_includes_rate_limits_snapshot() {
         _ => unreachable!(),
     };
 
-    let rate_limit_json = serde_json::to_value(&rate_limit_only).unwrap();
+    let rate_limit_json = serde_json::to_value(&rate_limit_only).expect("rate limit should serialize");
     pretty_assertions::assert_eq!(
         rate_limit_json,
         json!({
@@ -1841,7 +1839,7 @@ async fn token_count_includes_rate_limits_snapshot() {
         _ => unreachable!(),
     };
     // Assert full JSON for the final token count event (usage + rate limits)
-    let final_json = serde_json::to_value(&final_payload).unwrap();
+    let final_json = serde_json::to_value(&final_payload).expect("final payload should serialize");
     pretty_assertions::assert_eq!(
         final_json,
         json!({
@@ -2174,7 +2172,7 @@ async fn azure_overrides_assign_properties_used_for_responses_url() {
             "Authorization",
             format!(
                 "Bearer {}",
-                std::env::var(existing_env_var_with_random_value).unwrap()
+                std::env::var(existing_env_var_with_random_value).expect("expected environment variable to exist")
             )
             .as_str(),
         ))
@@ -2228,7 +2226,7 @@ async fn azure_overrides_assign_properties_used_for_responses_url() {
             final_output_json_schema: None,
         })
         .await
-        .unwrap();
+        .expect("test operation should succeed");
 
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
 }
@@ -2258,7 +2256,7 @@ async fn env_var_overrides_loaded_auth() {
             "Authorization",
             format!(
                 "Bearer {}",
-                std::env::var(existing_env_var_with_random_value).unwrap()
+                std::env::var(existing_env_var_with_random_value).expect("expected environment variable to exist")
             )
             .as_str(),
         ))
@@ -2312,7 +2310,7 @@ async fn env_var_overrides_loaded_auth() {
             final_output_json_schema: None,
         })
         .await
-        .unwrap();
+        .expect("test operation should succeed");
 
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
 }
@@ -2373,7 +2371,7 @@ async fn history_dedupes_streamed_and_final_messages_across_turns() {
             final_output_json_schema: None,
         })
         .await
-        .unwrap();
+        .expect("test operation should succeed");
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
 
     // Turn 2: user sends U2; wait for completion.
@@ -2386,7 +2384,7 @@ async fn history_dedupes_streamed_and_final_messages_across_turns() {
             final_output_json_schema: None,
         })
         .await
-        .unwrap();
+        .expect("test operation should succeed");
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
 
     // Turn 3: user sends U3; wait for completion.
@@ -2399,7 +2397,7 @@ async fn history_dedupes_streamed_and_final_messages_across_turns() {
             final_output_json_schema: None,
         })
         .await
-        .unwrap();
+        .expect("test operation should succeed");
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
 
     // Inspect the three captured requests.
@@ -2445,7 +2443,7 @@ async fn history_dedupes_streamed_and_final_messages_across_turns() {
         .cloned()
         .expect("r3 missing input array");
     // skipping earlier context and developer messages
-    let tail_len = r3_tail_expected.as_array().unwrap().len();
+    let tail_len = r3_tail_expected.as_array().expect("tail expected should be array").len();
     let actual_tail = &r3_input_array[r3_input_array.len() - tail_len..];
     assert_eq!(
         serde_json::Value::Array(actual_tail.to_vec()),

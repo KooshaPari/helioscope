@@ -48,7 +48,7 @@ async fn quota_exceeded_emits_single_error_event() -> Result<()> {
             final_output_json_schema: None,
         })
         .await
-        .unwrap();
+        .expect("test operation should succeed");
 
     let mut error_events = 0;
 

@@ -668,19 +668,19 @@ mod tests {
             .managed_by_codex(false)
             .build()
             .await
-            .unwrap();
+            .expect("proxy build should succeed");
 
         assert_eq!(
             proxy.http_addr,
-            "127.0.0.1:43128".parse::<SocketAddr>().unwrap()
+            "127.0.0.1:43128".parse::<SocketAddr>().expect("parse address should succeed")
         );
         assert_eq!(
             proxy.socks_addr,
-            "127.0.0.1:48081".parse::<SocketAddr>().unwrap()
+            "127.0.0.1:48081".parse::<SocketAddr>().expect("parse address should succeed")
         );
         assert_eq!(
             proxy.admin_addr,
-            "127.0.0.1:48080".parse::<SocketAddr>().unwrap()
+            "127.0.0.1:48080".parse::<SocketAddr>().expect("parse address should succeed")
         );
     }
 
@@ -709,7 +709,7 @@ mod tests {
         assert!(proxy.admin_addr.ip().is_loopback());
         assert_eq!(
             proxy.socks_addr,
-            "127.0.0.1:43129".parse::<SocketAddr>().unwrap()
+            "127.0.0.1:43129".parse::<SocketAddr>().expect("parse address should succeed")
         );
         assert!(
             proxy

@@ -1,6 +1,4 @@
-use anyhow::Context as _;
-use anyhow::Result;
-use anyhow::anyhow;
+use anyhow::{anyhow, Context as _, Result};
 use codex_utils_home_dir::find_codex_home;
 use rama_net::tls::ApplicationProtocol;
 use rama_tls_rustls::dep::pki_types::CertificateDer;
@@ -305,8 +303,8 @@ mod tests {
     fn validate_existing_ca_key_file_rejects_group_world_permissions() {
         let dir = tempdir().expect("create temp dir");
         let key_path = dir.path().join("ca.key");
-        fs::write(&key_path, "key").unwrap();
-        fs::set_permissions(&key_path, fs::Permissions::from_mode(0o644)).unwrap();
+        fs::write(&key_path, "key").expect("write test key");
+        fs::set_permissions(&key_path, fs::Permissions::from_mode(0o644)).expect("set permissions");
 
         let err = validate_existing_ca_key_file(&key_path).unwrap_err();
         assert!(
@@ -322,8 +320,8 @@ mod tests {
         let dir = tempdir().expect("create temp dir");
         let target = dir.path().join("real.key");
         let link = dir.path().join("ca.key");
-        fs::write(&target, "key").unwrap();
-        symlink(&target, &link).unwrap();
+        fs::write(&target, "key").expect("write test key");
+        symlink(&target, &link).expect("create symlink");
 
         let err = validate_existing_ca_key_file(&link).unwrap_err();
         assert!(
@@ -336,9 +334,9 @@ mod tests {
     fn validate_existing_ca_key_file_allows_private_permissions() {
         let dir = tempdir().expect("create temp dir");
         let key_path = dir.path().join("ca.key");
-        fs::write(&key_path, "key").unwrap();
-        fs::set_permissions(&key_path, fs::Permissions::from_mode(0o600)).unwrap();
+        fs::write(&key_path, "key").expect("write test key");
+        fs::set_permissions(&key_path, fs::Permissions::from_mode(0o600)).expect("set permissions");
 
-        validate_existing_ca_key_file(&key_path).unwrap();
+        validate_existing_ca_key_file(&key_path).expect("validation should succeed");
     }
 }

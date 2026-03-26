@@ -847,7 +847,7 @@ mod tests {
         let policy = SandboxPolicy::WorkspaceWrite {
             writable_roots: vec![vulnerable_root, empty_root]
                 .into_iter()
-                .map(|p| p.try_into().unwrap())
+                .map(|p| p.try_into().expect("path conversion should succeed"))
                 .collect(),
             read_only_access: Default::default(),
             network_access: false,

@@ -356,7 +356,7 @@ async fn responses_websocket_prewarm_uses_v2_when_model_prefers_websockets_and_f
     assert_eq!(prewarm["type"].as_str(), Some("response.create"));
     assert_eq!(
         prewarm["input"],
-        serde_json::to_value(&prompt.input).unwrap()
+        serde_json::to_value(&prompt.input).expect("prompt input should serialize")
     );
 
     server.shutdown().await;
@@ -441,7 +441,7 @@ async fn responses_websocket_v2_requests_use_v2_when_model_prefers_websockets() 
     assert_eq!(second["previous_response_id"].as_str(), Some("resp-1"));
     assert_eq!(
         second["input"],
-        serde_json::to_value(&prompt_two.input[2..]).unwrap()
+        serde_json::to_value(&prompt_two.input[2..]).expect("prompt input slice should serialize")
     );
 
     let handshake = server.single_handshake();
@@ -502,7 +502,7 @@ async fn responses_websocket_v2_incremental_requests_are_reused_across_turns() {
     assert_eq!(second["previous_response_id"].as_str(), Some("resp-1"));
     assert_eq!(
         second["input"],
-        serde_json::to_value(&prompt_two.input[2..]).unwrap()
+        serde_json::to_value(&prompt_two.input[2..]).expect("prompt input slice should serialize")
     );
 
     server.shutdown().await;
@@ -541,7 +541,7 @@ async fn responses_websocket_v2_wins_when_both_features_enabled() {
     assert_eq!(second["previous_response_id"].as_str(), Some("resp-1"));
     assert_eq!(
         second["input"],
-        serde_json::to_value(&prompt_two.input[2..]).unwrap()
+        serde_json::to_value(&prompt_two.input[2..]).expect("prompt input slice should serialize")
     );
 
     let handshake = server.single_handshake();
@@ -1162,7 +1162,7 @@ async fn responses_websocket_creates_on_non_prefix() {
     assert_eq!(second["stream"], serde_json::Value::Bool(true));
     assert_eq!(
         second["input"],
-        serde_json::to_value(&prompt_two.input).unwrap()
+        serde_json::to_value(&prompt_two.input).expect("prompt input should serialize")
     );
 
     server.shutdown().await;
@@ -1240,7 +1240,7 @@ async fn responses_websocket_v2_creates_with_previous_response_id_on_prefix() {
     assert_eq!(second["previous_response_id"].as_str(), Some("resp-1"));
     assert_eq!(
         second["input"],
-        serde_json::to_value(&prompt_two.input[2..]).unwrap()
+        serde_json::to_value(&prompt_two.input[2..]).expect("prompt input slice should serialize")
     );
 
     server.shutdown().await;
@@ -1366,7 +1366,7 @@ async fn responses_websocket_v2_after_error_uses_full_create_without_previous_re
     assert_eq!(third.get("previous_response_id"), None);
     assert_eq!(
         third["input"],
-        serde_json::to_value(&prompt_three.input).unwrap()
+        serde_json::to_value(&prompt_three.input).expect("prompt input should serialize")
     );
 
     server.shutdown().await;

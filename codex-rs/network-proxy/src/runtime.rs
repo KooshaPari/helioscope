@@ -865,9 +865,9 @@ mod tests {
             ..NetworkProxySettings::default()
         });
 
-        state.add_allowed_domain("ExAmPlE.CoM").await.unwrap();
+        state.add_allowed_domain("ExAmPlE.CoM").await.expect("runtime test should succeed");
 
-        let (allowed, denied) = state.current_patterns().await.unwrap();
+        let (allowed, denied) = state.current_patterns().await.expect("runtime test should succeed");
         assert_eq!(allowed, vec!["example.com".to_string()]);
         assert!(denied.is_empty());
         assert_eq!(
@@ -883,9 +883,9 @@ mod tests {
             ..NetworkProxySettings::default()
         });
 
-        state.add_denied_domain("EXAMPLE.COM").await.unwrap();
+        state.add_denied_domain("EXAMPLE.COM").await.expect("runtime test should succeed");
 
-        let (allowed, denied) = state.current_patterns().await.unwrap();
+        let (allowed, denied) = state.current_patterns().await.expect("runtime test should succeed");
         assert!(allowed.is_empty());
         assert_eq!(denied, vec!["example.com".to_string()]);
         assert_eq!(
@@ -988,11 +988,11 @@ mod tests {
         });
 
         assert_eq!(
-            state.host_blocked("api.openai.com", 80).await.unwrap(),
+            state.host_blocked("api.openai.com", 80).await.expect("runtime test should succeed"),
             HostBlockDecision::Allowed
         );
         assert_eq!(
-            state.host_blocked("openai.com", 80).await.unwrap(),
+            state.host_blocked("openai.com", 80).await.expect("runtime test should succeed"),
             HostBlockDecision::Blocked(HostBlockReason::NotAllowed)
         );
     }
@@ -1006,11 +1006,11 @@ mod tests {
         });
 
         assert_eq!(
-            state.host_blocked("127.0.0.1", 80).await.unwrap(),
+            state.host_blocked("127.0.0.1", 80).await.expect("runtime test should succeed"),
             HostBlockDecision::Blocked(HostBlockReason::NotAllowedLocal)
         );
         assert_eq!(
-            state.host_blocked("localhost", 80).await.unwrap(),
+            state.host_blocked("localhost", 80).await.expect("runtime test should succeed"),
             HostBlockDecision::Blocked(HostBlockReason::NotAllowedLocal)
         );
     }
@@ -1024,7 +1024,7 @@ mod tests {
         });
 
         assert_eq!(
-            state.host_blocked("127.0.0.1", 80).await.unwrap(),
+            state.host_blocked("127.0.0.1", 80).await.expect("runtime test should succeed"),
             HostBlockDecision::Blocked(HostBlockReason::NotAllowedLocal)
         );
     }
@@ -1038,7 +1038,7 @@ mod tests {
         });
 
         assert_eq!(
-            state.host_blocked("10.0.0.1", 80).await.unwrap(),
+            state.host_blocked("10.0.0.1", 80).await.expect("runtime test should succeed"),
             HostBlockDecision::Blocked(HostBlockReason::NotAllowedLocal)
         );
     }
@@ -1052,7 +1052,7 @@ mod tests {
         });
 
         assert_eq!(
-            state.host_blocked("localhost", 80).await.unwrap(),
+            state.host_blocked("localhost", 80).await.expect("runtime test should succeed"),
             HostBlockDecision::Allowed
         );
     }
@@ -1066,7 +1066,7 @@ mod tests {
         });
 
         assert_eq!(
-            state.host_blocked("10.0.0.1", 80).await.unwrap(),
+            state.host_blocked("10.0.0.1", 80).await.expect("runtime test should succeed"),
             HostBlockDecision::Allowed
         );
     }
@@ -1080,7 +1080,7 @@ mod tests {
         });
 
         assert_eq!(
-            state.host_blocked("fe80::1%lo0", 80).await.unwrap(),
+            state.host_blocked("fe80::1%lo0", 80).await.expect("runtime test should succeed"),
             HostBlockDecision::Blocked(HostBlockReason::NotAllowedLocal)
         );
     }
@@ -1094,7 +1094,7 @@ mod tests {
         });
 
         assert_eq!(
-            state.host_blocked("fe80::1%lo0", 80).await.unwrap(),
+            state.host_blocked("fe80::1%lo0", 80).await.expect("runtime test should succeed"),
             HostBlockDecision::Allowed
         );
     }
@@ -1108,7 +1108,7 @@ mod tests {
         });
 
         assert_eq!(
-            state.host_blocked("10.0.0.1", 80).await.unwrap(),
+            state.host_blocked("10.0.0.1", 80).await.expect("runtime test should succeed"),
             HostBlockDecision::Blocked(HostBlockReason::NotAllowedLocal)
         );
     }
@@ -1122,7 +1122,7 @@ mod tests {
         });
 
         assert_eq!(
-            state.host_blocked("127.0.0.1", 80).await.unwrap(),
+            state.host_blocked("127.0.0.1", 80).await.expect("runtime test should succeed"),
             HostBlockDecision::Blocked(HostBlockReason::NotAllowedLocal)
         );
     }
@@ -1362,7 +1362,7 @@ mod tests {
     #[test]
     fn compile_globset_is_case_insensitive() {
         let patterns = vec!["ExAmPle.CoM".to_string()];
-        let set = compile_globset(&patterns).unwrap();
+        let set = compile_globset(&patterns).expect("failed to compile globset from patterns");
         assert!(set.is_match("example.com"));
         assert!(set.is_match("EXAMPLE.COM"));
     }
@@ -1370,7 +1370,7 @@ mod tests {
     #[test]
     fn compile_globset_excludes_apex_for_subdomain_patterns() {
         let patterns = vec!["*.openai.com".to_string()];
-        let set = compile_globset(&patterns).unwrap();
+        let set = compile_globset(&patterns).expect("failed to compile globset from patterns");
         assert!(set.is_match("api.openai.com"));
         assert!(!set.is_match("openai.com"));
         assert!(!set.is_match("evilopenai.com"));
@@ -1379,7 +1379,7 @@ mod tests {
     #[test]
     fn compile_globset_includes_apex_for_double_wildcard_patterns() {
         let patterns = vec!["**.openai.com".to_string()];
-        let set = compile_globset(&patterns).unwrap();
+        let set = compile_globset(&patterns).expect("failed to compile globset from patterns");
         assert!(set.is_match("openai.com"));
         assert!(set.is_match("api.openai.com"));
         assert!(!set.is_match("evilopenai.com"));
@@ -1388,7 +1388,7 @@ mod tests {
     #[test]
     fn compile_globset_matches_all_with_star() {
         let patterns = vec!["*".to_string()];
-        let set = compile_globset(&patterns).unwrap();
+        let set = compile_globset(&patterns).expect("failed to compile globset from patterns");
         assert!(set.is_match("openai.com"));
         assert!(set.is_match("api.openai.com"));
     }
@@ -1396,7 +1396,7 @@ mod tests {
     #[test]
     fn compile_globset_dedupes_patterns_without_changing_behavior() {
         let patterns = vec!["example.com".to_string(), "example.com".to_string()];
-        let set = compile_globset(&patterns).unwrap();
+        let set = compile_globset(&patterns).expect("failed to compile globset from patterns");
         assert!(set.is_match("example.com"));
         assert!(set.is_match("EXAMPLE.COM"));
         assert!(!set.is_match("not-example.com"));
@@ -1418,12 +1418,12 @@ mod tests {
             ..NetworkProxySettings::default()
         });
 
-        assert!(state.is_unix_socket_allowed(&socket_path).await.unwrap());
+        assert!(state.is_unix_socket_allowed(&socket_path).await.expect("runtime test should succeed"));
         assert!(
             !state
                 .is_unix_socket_allowed("/tmp/not-allowed.sock")
                 .await
-                .unwrap()
+                .expect("runtime test should succeed")
         );
     }
 
@@ -1433,7 +1433,7 @@ mod tests {
         use std::os::unix::fs::symlink;
         use tempfile::tempdir;
 
-        let temp_dir = tempdir().unwrap();
+        let temp_dir = tempdir().expect("create temp dir");
         let dir = temp_dir.path();
 
         let real = dir.join("real.sock");
@@ -1441,11 +1441,11 @@ mod tests {
 
         // The allowlist mechanism is path-based; for test purposes we don't need an actual unix
         // domain socket. Any filesystem entry works for canonicalization.
-        std::fs::write(&real, b"not a socket").unwrap();
-        symlink(&real, &link).unwrap();
+        std::fs::write(&real, b"not a socket").expect("write test file");
+        symlink(&real, &link).expect("create symlink");
 
-        let real_s = real.to_str().unwrap().to_string();
-        let link_s = link.to_str().unwrap().to_string();
+        let real_s = real.to_str().expect("path should be UTF-8").to_string();
+        let link_s = link.to_str().expect("path should be UTF-8").to_string();
 
         let state = network_proxy_state_for_policy(NetworkProxySettings {
             allowed_domains: vec!["example.com".to_string()],
@@ -1453,7 +1453,7 @@ mod tests {
             ..NetworkProxySettings::default()
         });
 
-        assert!(state.is_unix_socket_allowed(&link_s).await.unwrap());
+        assert!(state.is_unix_socket_allowed(&link_s).await.expect("runtime test should succeed"));
     }
 
     #[cfg(target_os = "macos")]
@@ -1465,8 +1465,8 @@ mod tests {
             ..NetworkProxySettings::default()
         });
 
-        assert!(state.is_unix_socket_allowed("/tmp/any.sock").await.unwrap());
-        assert!(!state.is_unix_socket_allowed("relative.sock").await.unwrap());
+        assert!(state.is_unix_socket_allowed("/tmp/any.sock").await.expect("runtime test should succeed"));
+        assert!(!state.is_unix_socket_allowed("relative.sock").await.expect("runtime test should succeed"));
     }
 
     #[cfg(not(target_os = "macos"))]
@@ -1480,6 +1480,6 @@ mod tests {
             ..NetworkProxySettings::default()
         });
 
-        assert!(!state.is_unix_socket_allowed(&socket_path).await.unwrap());
+        assert!(!state.is_unix_socket_allowed(&socket_path).await.expect("runtime test should succeed"));
     }
 }

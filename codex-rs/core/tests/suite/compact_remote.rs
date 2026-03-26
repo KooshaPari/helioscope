@@ -847,7 +847,10 @@ async fn remote_manual_compact_emits_context_compaction_items() -> Result<()> {
 
     while !saw_turn_complete || started_item.is_none() || completed_item.is_none() || !legacy_event
     {
-        let event = codex.next_event().await.unwrap();
+        let event = codex
+            .next_event()
+            .await
+            .expect("next compaction event should be available");
         match event.msg {
             EventMsg::ItemStarted(ItemStartedEvent {
                 item: TurnItem::ContextCompaction(item),

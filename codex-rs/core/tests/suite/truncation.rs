@@ -501,7 +501,7 @@ async fn mcp_image_output_preserves_image_and_no_text_summary() -> Result<()> {
     // Expect exactly one array element: the image item; and no trailing summary text.
     let output = output_item.get("output").expect("output");
     assert!(output.is_array(), "expected array output");
-    let arr = output.as_array().unwrap();
+    let arr = output.as_array().expect("output should be an array");
     assert_eq!(arr.len(), 1, "no truncation summary should be appended");
     assert_eq!(
         arr[0],

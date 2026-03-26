@@ -32,7 +32,7 @@ use tokio::time::timeout;
 #[tokio::test]
 async fn user_shell_cmd_ls_and_cat_in_temp_dir() {
     // Create a temporary working directory with a known file.
-    let cwd = TempDir::new().unwrap();
+    let cwd = TempDir::new().expect("should create temp dir");
     let file_name = "hello.txt";
     let file_path: PathBuf = cwd.path().join(file_name);
     let contents = "hello from bang test\n";
@@ -57,7 +57,7 @@ async fn user_shell_cmd_ls_and_cat_in_temp_dir() {
     codex
         .submit(Op::RunUserShellCommand { command: list_cmd })
         .await
-        .unwrap();
+        .expect("list command should succeed");
     let msg = wait_for_event(&codex, |ev| matches!(ev, EventMsg::ExecCommandEnd(_))).await;
     let EventMsg::ExecCommandEnd(ExecCommandEndEvent {
         stdout, exit_code, ..
@@ -76,7 +76,7 @@ async fn user_shell_cmd_ls_and_cat_in_temp_dir() {
     codex
         .submit(Op::RunUserShellCommand { command: cat_cmd })
         .await
-        .unwrap();
+        .expect("cat command should succeed");
     let msg = wait_for_event(&codex, |ev| matches!(ev, EventMsg::ExecCommandEnd(_))).await;
     let EventMsg::ExecCommandEnd(ExecCommandEndEvent {
         mut stdout,
@@ -110,7 +110,7 @@ async fn user_shell_cmd_can_be_interrupted() {
     codex
         .submit(Op::RunUserShellCommand { command: sleep_cmd })
         .await
-        .unwrap();
+        .expect("user shell command should start");
 
     // Wait until it has started (ExecCommandBegin), then interrupt.
     let _begin = wait_for_event_match(codex, |ev| match ev {
@@ -120,7 +120,10 @@ async fn user_shell_cmd_can_be_interrupted() {
         _ => None,
     })
     .await;
-    codex.submit(Op::Interrupt).await.unwrap();
+    codex
+        .submit(Op::Interrupt)
+        .await
+        .expect("interrupt should succeed");
 
     // Expect a TurnAborted(Interrupted) notification.
     let msg = wait_for_event_with_timeout(

@@ -94,7 +94,7 @@ async fn retries_on_early_close() {
         })
         .build(&server)
         .await
-        .unwrap();
+        .expect("test operation should succeed");
 
     codex
         .submit(Op::UserInput {
@@ -105,7 +105,7 @@ async fn retries_on_early_close() {
             final_output_json_schema: None,
         })
         .await
-        .unwrap();
+        .expect("test operation should succeed");
 
     // Wait until TurnComplete (should succeed after retry).
     wait_for_event(&codex, |event| matches!(event, EventMsg::TurnComplete(_))).await;

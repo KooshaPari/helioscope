@@ -169,7 +169,8 @@ async fn shell_zsh_fork_prompts_for_skill_script_execution() -> Result<()> {
         AskForApproval::OnRequest,
         SandboxPolicy::new_workspace_write_policy(),
         |home| {
-            write_skill_with_shell_script(home, "mbolin-test-skill", "hello-mbolin.sh").unwrap();
+            write_skill_with_shell_script(home, "mbolin-test-skill", "hello-mbolin.sh")
+                .expect("test skill shell script should be writable");
             write_skill_metadata(
                 home,
                 "mbolin-test-skill",
@@ -182,7 +183,7 @@ permissions:
       - "./output"
 "#,
             )
-            .unwrap();
+            .expect("test skill metadata should be writable");
         },
     )
     .await?;
@@ -255,7 +256,9 @@ permissions:
         .completion
         .single_request()
         .function_call_output(tool_call_id);
-    let output = call_output["output"].as_str().unwrap_or_default();
+    let output = call_output["output"]
+        .as_str()
+        .expect("approval output should be string");
     assert!(
         output.contains("Execution denied: User denied execution"),
         "expected rejection marker in function_call_output: {output:?}"
@@ -301,7 +304,7 @@ async fn shell_zsh_fork_skill_without_permissions_inherits_turn_sandbox() -> Res
                 "sandboxed.sh",
                 &script_contents_for_hook,
             )
-            .unwrap();
+            .expect("sandboxed skill script should be writable");
         },
     )
     .await?;
@@ -448,16 +451,23 @@ async fn shell_zsh_fork_skill_session_approval_enforces_skill_permissions() -> R
         move |home| {
             let _ = fs::remove_file(&allowed_path_for_hook);
             let _ = fs::remove_file(&blocked_path_for_hook);
-            fs::create_dir_all(&allowed_dir_for_hook).unwrap();
-            fs::create_dir_all(blocked_path_for_hook.parent().unwrap()).unwrap();
+            fs::create_dir_all(&allowed_dir_for_hook)
+                .expect("allowed directory should be creatable");
+            fs::create_dir_all(
+                blocked_path_for_hook
+                    .parent()
+                    .expect("blocked path should have a parent"),
+            )
+            .expect("blocked directory should be creatable");
             write_skill_with_shell_script_contents(
                 home,
                 "mbolin-test-skill",
                 "sandboxed.sh",
                 &script_contents_for_hook,
             )
-            .unwrap();
-            write_skill_metadata(home, "mbolin-test-skill", &permissions_yaml).unwrap();
+            .expect("sandboxed skill script should be writable");
+            write_skill_metadata(home, "mbolin-test-skill", &permissions_yaml)
+                .expect("sandboxed skill metadata should be writable");
         },
     )
     .await?;

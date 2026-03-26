@@ -94,9 +94,8 @@ async fn injected_user_input_triggers_follow_up_request_with_deltas() {
         .with_model("gpt-5.1")
         .build_with_streaming_server(&server)
         .await
-        .unwrap()
+        .expect("test setup should succeed")
         .codex;
-
     codex
         .submit(Op::UserInput {
             items: vec![UserInput::Text {
@@ -106,7 +105,7 @@ async fn injected_user_input_triggers_follow_up_request_with_deltas() {
             final_output_json_schema: None,
         })
         .await
-        .unwrap();
+        .expect("first submission should succeed");
 
     wait_for_event(&codex, |event| {
         matches!(event, EventMsg::AgentMessageContentDelta(_))
@@ -122,8 +121,7 @@ async fn injected_user_input_triggers_follow_up_request_with_deltas() {
             final_output_json_schema: None,
         })
         .await
-        .unwrap();
-
+        .expect("second submission should succeed");
     let _ = gate_completed_tx.send(());
 
     wait_for_event(&codex, |event| matches!(event, EventMsg::TurnComplete(_))).await;

@@ -497,8 +497,7 @@ mod tests {
                     reason: TurnAbortReason::Interrupted,
                 }),
             })
-            .await
-            .unwrap();
+            .await.expect("send should succeed");
 
         let cancel = CancellationToken::new();
         let forward = tokio::spawn(forward_events(
@@ -522,8 +521,7 @@ mod tests {
                     },
                 }),
             })
-            .await
-            .unwrap();
+            .await.expect("send should succeed");
 
         drop(tx_events);
         cancel.cancel();

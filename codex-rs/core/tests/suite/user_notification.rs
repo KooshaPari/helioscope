@@ -47,7 +47,10 @@ mv "${tmp_path}" "${payload_path}""#,
     std::fs::set_permissions(&notify_script, std::fs::Permissions::from_mode(0o755))?;
 
     let notify_file = notify_dir.path().join("notify.txt");
-    let notify_script_str = notify_script.to_str().unwrap().to_string();
+    let notify_script_str = notify_script
+        .to_str()
+        .expect("notify script path should be valid UTF-8")
+        .to_string();
 
     let TestCodex { codex, .. } = test_codex()
         .with_config(move |cfg| cfg.notify = Some(vec![notify_script_str]))

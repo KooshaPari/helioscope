@@ -1,4 +1,6 @@
 // Aggregates all former standalone integration tests as modules.
+// Aggregates all former standalone integration tests as modules.
+// Aggregates all former standalone integration tests as modules.
 use std::ffi::OsString;
 
 use codex_arg0::Arg0PathEntryGuard;
@@ -24,27 +26,21 @@ pub static CODEX_ALIASES_TEMP_DIR: TestCodexAliasesGuard = unsafe {
     let codex_home = tempfile::Builder::new()
         .prefix("codex-core-tests")
         .tempdir()
-        .unwrap();
-    let previous_codex_home = std::env::var_os(CODEX_HOME_ENV_VAR);
+        .expect("should create codex test tempdir");
     // arg0_dispatch() creates helper links under CODEX_HOME/tmp. Point it at a
     // test-owned temp dir so startup never mutates the developer's real ~/.codex.
     //
     // Safety: #[ctor] runs before tests start, so no test threads exist yet.
-    unsafe {
-        std::env::set_var(CODEX_HOME_ENV_VAR, codex_home.path());
-    }
+    std::env::set_var(CODEX_HOME_ENV_VAR, codex_home.path());
 
+    let previous_codex_home = std::env::var_os(CODEX_HOME_ENV_VAR);
     #[allow(clippy::unwrap_used)]
-    let arg0 = arg0_dispatch().unwrap();
+    let arg0 = arg0_dispatch().expect("arg0 dispatch should succeed");
     // Restore the process environment immediately so later tests observe the
     // same CODEX_HOME state they started with.
     match previous_codex_home.as_ref() {
-        Some(value) => unsafe {
-            std::env::set_var(CODEX_HOME_ENV_VAR, value);
-        },
-        None => unsafe {
-            std::env::remove_var(CODEX_HOME_ENV_VAR);
-        },
+        Some(value) => std::env::set_var(CODEX_HOME_ENV_VAR, value),
+        None => std::env::remove_var(CODEX_HOME_ENV_VAR),
     }
 
     TestCodexAliasesGuard {

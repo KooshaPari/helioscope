@@ -16,7 +16,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install psutil pytest pytest-timeout
+          pip install pandas psutil pytest pytest-timeout
 
       - name: Run memory leak detection tests
         run: |
@@ -60,6 +60,9 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install psutil
 
       - name: Run memory profiling benchmark
         run: |

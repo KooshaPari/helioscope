@@ -87,8 +87,7 @@ async fn continue_after_stream_error() {
         })
         .build(&server)
         .await
-        .unwrap();
-
+        .expect("test setup should succeed");
     codex
         .submit(Op::UserInput {
             items: vec![UserInput::Text {
@@ -98,7 +97,7 @@ async fn continue_after_stream_error() {
             final_output_json_schema: None,
         })
         .await
-        .unwrap();
+        .expect("first submission should succeed");
 
     // Expect an Error followed by TurnComplete so the session is released.
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::Error(_))).await;
@@ -117,7 +116,6 @@ async fn continue_after_stream_error() {
             final_output_json_schema: None,
         })
         .await
-        .unwrap();
-
+        .expect("follow-up submission should succeed");
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
 }

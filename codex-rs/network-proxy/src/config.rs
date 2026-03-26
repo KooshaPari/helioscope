@@ -411,7 +411,7 @@ mod tests {
                 }
             }"#,
         )
-        .unwrap();
+        .expect("json should parse");
         let expected = NetworkProxySettings {
             enabled: true,
             ..NetworkProxySettings::default()
@@ -433,7 +433,7 @@ mod tests {
     #[test]
     fn parse_host_port_parses_host_port_without_scheme() {
         assert_eq!(
-            parse_host_port("127.0.0.1:8080", 3128).unwrap(),
+            parse_host_port("127.0.0.1:8080", 3128).expect("test should succeed"),
             SocketAddressParts {
                 host: "127.0.0.1".to_string(),
                 port: 8080,
@@ -444,7 +444,7 @@ mod tests {
     #[test]
     fn parse_host_port_parses_host_port_with_scheme_and_path() {
         assert_eq!(
-            parse_host_port("http://example.com:8080/some/path", 3128).unwrap(),
+            parse_host_port("http://example.com:8080/some/path", 3128).expect("test should succeed"),
             SocketAddressParts {
                 host: "example.com".to_string(),
                 port: 8080,
@@ -455,7 +455,7 @@ mod tests {
     #[test]
     fn parse_host_port_strips_userinfo() {
         assert_eq!(
-            parse_host_port("http://user:pass@host.example:5555", 3128).unwrap(),
+            parse_host_port("http://user:pass@host.example:5555", 3128).expect("test should succeed"),
             SocketAddressParts {
                 host: "host.example".to_string(),
                 port: 5555,
@@ -466,7 +466,7 @@ mod tests {
     #[test]
     fn parse_host_port_parses_ipv6_with_brackets() {
         assert_eq!(
-            parse_host_port("http://[::1]:9999", 3128).unwrap(),
+            parse_host_port("http://[::1]:9999", 3128).expect("test should succeed"),
             SocketAddressParts {
                 host: "::1".to_string(),
                 port: 9999,
@@ -477,7 +477,7 @@ mod tests {
     #[test]
     fn parse_host_port_does_not_treat_unbracketed_ipv6_as_host_port() {
         assert_eq!(
-            parse_host_port("2001:db8::1", 3128).unwrap(),
+            parse_host_port("2001:db8::1", 3128).expect("test should succeed"),
             SocketAddressParts {
                 host: "2001:db8::1".to_string(),
                 port: 3128,
@@ -488,7 +488,7 @@ mod tests {
     #[test]
     fn parse_host_port_falls_back_to_default_port_when_port_is_invalid() {
         assert_eq!(
-            parse_host_port("example.com:notaport", 3128).unwrap(),
+            parse_host_port("example.com:notaport", 3128).expect("test should succeed"),
             SocketAddressParts {
                 host: "example.com".to_string(),
                 port: 3128,
@@ -512,32 +512,32 @@ mod tests {
     #[test]
     fn resolve_addr_maps_localhost_to_loopback() {
         assert_eq!(
-            resolve_addr("localhost", 3128).unwrap(),
-            "127.0.0.1:3128".parse::<SocketAddr>().unwrap()
+            resolve_addr("localhost", 3128).expect("test should succeed"),
+            "127.0.0.1:3128".parse::<SocketAddr>().expect("test should succeed")
         );
     }
 
     #[test]
     fn resolve_addr_parses_ip_literals() {
         assert_eq!(
-            resolve_addr("1.2.3.4", 80).unwrap(),
-            "1.2.3.4:80".parse::<SocketAddr>().unwrap()
+            resolve_addr("1.2.3.4", 80).expect("test should succeed"),
+            "1.2.3.4:80".parse::<SocketAddr>().expect("test should succeed")
         );
     }
 
     #[test]
     fn resolve_addr_parses_ipv6_literals() {
         assert_eq!(
-            resolve_addr("http://[::1]:8080", 3128).unwrap(),
-            "[::1]:8080".parse::<SocketAddr>().unwrap()
+            resolve_addr("http://[::1]:8080", 3128).expect("test should succeed"),
+            "[::1]:8080".parse::<SocketAddr>().expect("test should succeed")
         );
     }
 
     #[test]
     fn resolve_addr_falls_back_to_loopback_for_hostnames() {
         assert_eq!(
-            resolve_addr("http://example.com:5555", 3128).unwrap(),
-            "127.0.0.1:5555".parse::<SocketAddr>().unwrap()
+            resolve_addr("http://example.com:5555", 3128).expect("test should succeed"),
+            "127.0.0.1:5555".parse::<SocketAddr>().expect("test should succeed")
         );
     }
 
@@ -548,16 +548,16 @@ mod tests {
             dangerously_allow_non_loopback_admin: true,
             ..Default::default()
         };
-        let http_addr = "0.0.0.0:3128".parse::<SocketAddr>().unwrap();
-        let socks_addr = "0.0.0.0:8081".parse::<SocketAddr>().unwrap();
-        let admin_addr = "0.0.0.0:8080".parse::<SocketAddr>().unwrap();
+        let http_addr = "0.0.0.0:3128".parse::<SocketAddr>().expect("test should succeed");
+        let socks_addr = "0.0.0.0:8081".parse::<SocketAddr>().expect("test should succeed");
+        let admin_addr = "0.0.0.0:8080".parse::<SocketAddr>().expect("test should succeed");
 
         let (http_addr, socks_addr, admin_addr) =
             clamp_bind_addrs(http_addr, socks_addr, admin_addr, &cfg);
 
-        assert_eq!(http_addr, "0.0.0.0:3128".parse::<SocketAddr>().unwrap());
-        assert_eq!(socks_addr, "0.0.0.0:8081".parse::<SocketAddr>().unwrap());
-        assert_eq!(admin_addr, "0.0.0.0:8080".parse::<SocketAddr>().unwrap());
+        assert_eq!(http_addr, "0.0.0.0:3128".parse::<SocketAddr>().expect("test should succeed"));
+        assert_eq!(socks_addr, "0.0.0.0:8081".parse::<SocketAddr>().expect("test should succeed"));
+        assert_eq!(admin_addr, "0.0.0.0:8080".parse::<SocketAddr>().expect("test should succeed"));
     }
 
     #[test]
@@ -568,16 +568,16 @@ mod tests {
             allow_unix_sockets: vec!["/tmp/docker.sock".to_string()],
             ..Default::default()
         };
-        let http_addr = "0.0.0.0:3128".parse::<SocketAddr>().unwrap();
-        let socks_addr = "0.0.0.0:8081".parse::<SocketAddr>().unwrap();
-        let admin_addr = "0.0.0.0:8080".parse::<SocketAddr>().unwrap();
+        let http_addr = "0.0.0.0:3128".parse::<SocketAddr>().expect("test should succeed");
+        let socks_addr = "0.0.0.0:8081".parse::<SocketAddr>().expect("test should succeed");
+        let admin_addr = "0.0.0.0:8080".parse::<SocketAddr>().expect("test should succeed");
 
         let (http_addr, socks_addr, admin_addr) =
             clamp_bind_addrs(http_addr, socks_addr, admin_addr, &cfg);
 
-        assert_eq!(http_addr, "127.0.0.1:3128".parse::<SocketAddr>().unwrap());
-        assert_eq!(socks_addr, "127.0.0.1:8081".parse::<SocketAddr>().unwrap());
-        assert_eq!(admin_addr, "127.0.0.1:8080".parse::<SocketAddr>().unwrap());
+        assert_eq!(http_addr, "127.0.0.1:3128".parse::<SocketAddr>().expect("test should succeed"));
+        assert_eq!(socks_addr, "127.0.0.1:8081".parse::<SocketAddr>().expect("test should succeed"));
+        assert_eq!(admin_addr, "127.0.0.1:8080".parse::<SocketAddr>().expect("test should succeed"));
     }
 
     #[test]
@@ -588,16 +588,16 @@ mod tests {
             dangerously_allow_all_unix_sockets: true,
             ..Default::default()
         };
-        let http_addr = "0.0.0.0:3128".parse::<SocketAddr>().unwrap();
-        let socks_addr = "0.0.0.0:8081".parse::<SocketAddr>().unwrap();
-        let admin_addr = "0.0.0.0:8080".parse::<SocketAddr>().unwrap();
+        let http_addr = "0.0.0.0:3128".parse::<SocketAddr>().expect("test should succeed");
+        let socks_addr = "0.0.0.0:8081".parse::<SocketAddr>().expect("test should succeed");
+        let admin_addr = "0.0.0.0:8080".parse::<SocketAddr>().expect("test should succeed");
 
         let (http_addr, socks_addr, admin_addr) =
             clamp_bind_addrs(http_addr, socks_addr, admin_addr, &cfg);
 
-        assert_eq!(http_addr, "127.0.0.1:3128".parse::<SocketAddr>().unwrap());
-        assert_eq!(socks_addr, "127.0.0.1:8081".parse::<SocketAddr>().unwrap());
-        assert_eq!(admin_addr, "127.0.0.1:8080".parse::<SocketAddr>().unwrap());
+        assert_eq!(http_addr, "127.0.0.1:3128".parse::<SocketAddr>().expect("test should succeed"));
+        assert_eq!(socks_addr, "127.0.0.1:8081".parse::<SocketAddr>().expect("test should succeed"));
+        assert_eq!(admin_addr, "127.0.0.1:8080".parse::<SocketAddr>().expect("test should succeed"));
     }
 
     #[test]

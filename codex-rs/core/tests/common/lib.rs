@@ -230,7 +230,7 @@ where
     F: Fn(&codex_protocol::protocol::EventMsg) -> Option<T>,
 {
     let ev = wait_for_event(codex, |ev| matcher(ev).is_some()).await;
-    matcher(&ev).unwrap()
+    matcher(&ev).expect("matcher should return a value after matching the event")
 }
 
 pub async fn wait_for_event_with_timeout<F>(

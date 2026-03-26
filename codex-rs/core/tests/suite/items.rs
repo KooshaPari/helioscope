@@ -490,10 +490,10 @@ async fn plan_mode_strips_plan_from_agent_messages() -> anyhow::Result<()> {
 
     let agent_text = agent_deltas.concat();
     assert_eq!(agent_text, "Intro\nOutro");
-    assert_eq!(plan_delta.unwrap(), "- Step 1\n- Step 2\n");
-    assert_eq!(plan_item.unwrap().text, "- Step 1\n- Step 2\n");
+    assert_eq!(plan_delta.expect("plan delta should be present"), "- Step 1\n- Step 2\n");
+    assert_eq!(plan_item.expect("plan item should be present").text, "- Step 1\n- Step 2\n");
     let agent_text_from_item: String = agent_item
-        .unwrap()
+        .expect("agent item should be present")
         .content
         .iter()
         .map(|entry| match entry {
@@ -888,10 +888,10 @@ async fn plan_mode_handles_missing_plan_close_tag() -> anyhow::Result<()> {
         }
     }
 
-    assert_eq!(plan_delta.unwrap(), "- Step 1\n");
-    assert_eq!(plan_item.unwrap().text, "- Step 1\n");
+    assert_eq!(plan_delta.expect("plan delta should be present"), "- Step 1\n");
+    assert_eq!(plan_item.expect("plan item should be present").text, "- Step 1\n");
     let agent_text_from_item: String = agent_item
-        .unwrap()
+        .expect("agent item should be present")
         .content
         .iter()
         .map(|entry| match entry {

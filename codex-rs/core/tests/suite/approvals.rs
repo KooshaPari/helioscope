@@ -574,20 +574,37 @@ fn parse_result(item: &Value) -> CommandResult {
             CommandResult { exit_code, stdout }
         }
         Err(_) => {
-            let structured = Regex::new(r"(?s)^Exit code:\s*(-?\d+).*?Output:\n(.*)$").unwrap();
-            let regex =
-                Regex::new(r"(?s)^.*?Process exited with code (\d+)\n.*?Output:\n(.*)$").unwrap();
+            let structured = Regex::new(r"(?s)^Exit code:\s*(-?\d+).*?Output:\n(.*)$")
+                .expect("structured command result regex should compile");
+            let regex = Regex::new(r"(?s)^.*?Process exited with code (\d+)\n.*?Output:\n(.*)$")
+                .expect("freeform command result regex should compile");
             // parse freeform output
             if let Some(captures) = structured.captures(output_str) {
-                let exit_code = captures.get(1).unwrap().as_str().parse::<i64>().unwrap();
-                let output = captures.get(2).unwrap().as_str();
+                let exit_code = captures
+                    .get(1)
+                    .expect("structured exit code capture")
+                    .as_str()
+                    .parse::<i64>()
+                    .expect("structured exit code should parse");
+                let output = captures
+                    .get(2)
+                    .expect("structured output capture")
+                    .as_str();
                 CommandResult {
                     exit_code: Some(exit_code),
                     stdout: output.to_string(),
                 }
             } else if let Some(captures) = regex.captures(output_str) {
-                let exit_code = captures.get(1).unwrap().as_str().parse::<i64>().unwrap();
-                let output = captures.get(2).unwrap().as_str();
+                let exit_code = captures
+                    .get(1)
+                    .expect("freeform exit code capture")
+                    .as_str()
+                    .parse::<i64>()
+                    .expect("freeform exit code should parse");
+                let output = captures
+                    .get(2)
+                    .expect("freeform output capture")
+                    .as_str();
                 CommandResult {
                     exit_code: Some(exit_code),
                     stdout: output.to_string(),
@@ -2009,8 +2026,9 @@ async fn matched_prefix_rule_runs_unsandboxed_under_zsh_fork() -> Result<()> {
         move |home| {
             let _ = fs::remove_file(&outside_path_for_hook);
             let rules_dir = home.join("rules");
-            fs::create_dir_all(&rules_dir).unwrap();
-            fs::write(rules_dir.join("default.rules"), &rules).unwrap();
+            fs::create_dir_all(&rules_dir).expect("rules directory should be creatable");
+            fs::write(rules_dir.join("default.rules"), &rules)
+                .expect("default.rules should be writable");
         },
     )
     .await?;

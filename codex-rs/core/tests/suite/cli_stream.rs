@@ -34,12 +34,12 @@ async fn responses_mode_stream_cli() {
     ]);
     let resp_mock = responses::mount_sse_once(&server, sse).await;
 
-    let home = TempDir::new().unwrap();
+    let home = TempDir::new().expect("test operation should succeed");
     let provider_override = format!(
         "model_providers.mock={{ name = \"mock\", base_url = \"{}/v1\", env_key = \"PATH\", wire_api = \"responses\" }}",
         server.uri()
     );
-    let bin = codex_utils_cargo_bin::cargo_bin("codex").unwrap();
+    let bin = codex_utils_cargo_bin::cargo_bin("codex").expect("test operation should succeed");
     let mut cmd = AssertCommand::new(bin);
     cmd.timeout(Duration::from_secs(30));
     cmd.arg("exec")
@@ -55,7 +55,7 @@ async fn responses_mode_stream_cli() {
         .env("OPENAI_API_KEY", "dummy")
         .env("OPENAI_BASE_URL", format!("{}/v1", server.uri()));
 
-    let output = cmd.output().unwrap();
+    let output = cmd.output().expect("test operation should succeed");
     println!("Status: {}", output.status);
     println!("Stdout:\n{}", String::from_utf8_lossy(&output.stdout));
     println!("Stderr:\n{}", String::from_utf8_lossy(&output.stderr));
@@ -107,10 +107,10 @@ async fn exec_cli_applies_model_instructions_file() {
 
     // Create a temporary instructions file with a unique marker we can assert
     // appears in the outbound request payload.
-    let custom = TempDir::new().unwrap();
+    let custom = TempDir::new().expect("test operation should succeed");
     let marker = "cli-model-instructions-file-marker";
     let custom_path = custom.path().join("instr.md");
-    std::fs::write(&custom_path, marker).unwrap();
+    std::fs::write(&custom_path, marker).expect("test operation should succeed");
     let custom_path_str = custom_path.to_string_lossy().replace('\\', "/");
 
     // Build a provider override that points at the mock server and instructs
@@ -120,9 +120,9 @@ async fn exec_cli_applies_model_instructions_file() {
         server.uri()
     );
 
-    let home = TempDir::new().unwrap();
+    let home = TempDir::new().expect("test operation should succeed");
     let repo_root = repo_root();
-    let bin = codex_utils_cargo_bin::cargo_bin("codex").unwrap();
+    let bin = codex_utils_cargo_bin::cargo_bin("codex").expect("test operation should succeed");
     let mut cmd = AssertCommand::new(bin);
     cmd.arg("exec")
         .arg("--skip-git-repo-check")
@@ -139,7 +139,7 @@ async fn exec_cli_applies_model_instructions_file() {
         .env("OPENAI_API_KEY", "dummy")
         .env("OPENAI_BASE_URL", format!("{}/v1", server.uri()));
 
-    let output = cmd.output().unwrap();
+    let output = cmd.output().expect("test operation should succeed");
     println!("Status: {}", output.status);
     println!("Stdout:\n{}", String::from_utf8_lossy(&output.stdout));
     println!("Stderr:\n{}", String::from_utf8_lossy(&output.stderr));
@@ -173,8 +173,8 @@ async fn responses_api_stream_cli() {
     let fixture = cli_responses_fixture();
     let repo_root = repo_root();
 
-    let home = TempDir::new().unwrap();
-    let bin = codex_utils_cargo_bin::cargo_bin("codex").unwrap();
+    let home = TempDir::new().expect("test operation should succeed");
+    let bin = codex_utils_cargo_bin::cargo_bin("codex").expect("test operation should succeed");
     let mut cmd = AssertCommand::new(bin);
     cmd.arg("exec")
         .arg("--skip-git-repo-check")
@@ -186,7 +186,7 @@ async fn responses_api_stream_cli() {
         .env("CODEX_RS_SSE_FIXTURE", fixture)
         .env("OPENAI_BASE_URL", "http://unused.local");
 
-    let output = cmd.output().unwrap();
+    let output = cmd.output().expect("test operation should succeed");
     assert!(output.status.success());
     let stdout = String::from_utf8_lossy(&output.stdout);
     assert!(stdout.contains("fixture hello"));
@@ -210,7 +210,7 @@ async fn integration_creates_and_checks_session_file() -> anyhow::Result<()> {
     let repo_root = repo_root();
 
     // 4. Run the codex CLI and invoke `exec`, which is what records a session.
-    let bin = codex_utils_cargo_bin::cargo_bin("codex").unwrap();
+    let bin = codex_utils_cargo_bin::cargo_bin("codex").expect("test operation should succeed");
     let mut cmd = AssertCommand::new(bin);
     cmd.arg("exec")
         .arg("--skip-git-repo-check")
@@ -223,7 +223,7 @@ async fn integration_creates_and_checks_session_file() -> anyhow::Result<()> {
         // Required for CLI arg parsing even though fixture short-circuits network usage.
         .env("OPENAI_BASE_URL", "http://unused.local");
 
-    let output = cmd.output().unwrap();
+    let output = cmd.output().expect("test operation should succeed");
     assert!(
         output.status.success(),
         "codex-cli exec failed: {}",
@@ -331,7 +331,7 @@ async fn integration_creates_and_checks_session_file() -> anyhow::Result<()> {
     // Second run: resume should update the existing file.
     let marker2 = format!("integration-resume-{}", Uuid::new_v4());
     let prompt2 = format!("echo {marker2}");
-    let bin2 = codex_utils_cargo_bin::cargo_bin("codex").unwrap();
+    let bin2 = codex_utils_cargo_bin::cargo_bin("codex").expect("test operation should succeed");
     let mut cmd2 = AssertCommand::new(bin2);
     cmd2.arg("exec")
         .arg("--skip-git-repo-check")
@@ -345,7 +345,7 @@ async fn integration_creates_and_checks_session_file() -> anyhow::Result<()> {
         .env("CODEX_RS_SSE_FIXTURE", &fixture)
         .env("OPENAI_BASE_URL", "http://unused.local");
 
-    let output2 = cmd2.output().unwrap();
+    let output2 = cmd2.output().expect("test operation should succeed");
     assert!(output2.status.success(), "resume codex-cli run failed");
 
     // Find the new session file containing the resumed marker.
@@ -386,7 +386,7 @@ async fn integration_git_info_unit_test() {
     // without depending on the full CLI integration
 
     // 1. Create temp directory for git repo
-    let temp_dir = TempDir::new().unwrap();
+    let temp_dir = TempDir::new().expect("test operation should succeed");
     let git_repo = temp_dir.path().to_path_buf();
     let envs = vec![
         ("GIT_CONFIG_GLOBAL", "/dev/null"),
@@ -399,7 +399,7 @@ async fn integration_git_info_unit_test() {
         .args(["init"])
         .current_dir(&git_repo)
         .output()
-        .unwrap();
+        .expect("test operation should succeed");
     assert!(init_output.status.success(), "git init failed");
 
     // Configure git user (required for commits)
@@ -408,32 +408,32 @@ async fn integration_git_info_unit_test() {
         .args(["config", "user.name", "Integration Test"])
         .current_dir(&git_repo)
         .output()
-        .unwrap();
+        .expect("test operation should succeed");
 
     std::process::Command::new("git")
         .envs(envs.clone())
         .args(["config", "user.email", "test@example.com"])
         .current_dir(&git_repo)
         .output()
-        .unwrap();
+        .expect("test operation should succeed");
 
     // Create a test file and commit it
     let test_file = git_repo.join("test.txt");
-    std::fs::write(&test_file, "integration test content").unwrap();
+    std::fs::write(&test_file, "integration test content").expect("test operation should succeed");
 
     std::process::Command::new("git")
         .envs(envs.clone())
         .args(["add", "."])
         .current_dir(&git_repo)
         .output()
-        .unwrap();
+        .expect("test operation should succeed");
 
     let commit_output = std::process::Command::new("git")
         .envs(envs.clone())
         .args(["commit", "-m", "Integration test commit"])
         .current_dir(&git_repo)
         .output()
-        .unwrap();
+        .expect("test operation should succeed");
     assert!(commit_output.status.success(), "git commit failed");
 
     // Create a branch to test branch detection
@@ -442,7 +442,7 @@ async fn integration_git_info_unit_test() {
         .args(["checkout", "-b", "integration-test-branch"])
         .current_dir(&git_repo)
         .output()
-        .unwrap();
+        .expect("test operation should succeed");
 
     // Add a remote to test repository URL detection
     std::process::Command::new("git")
@@ -455,7 +455,7 @@ async fn integration_git_info_unit_test() {
         ])
         .current_dir(&git_repo)
         .output()
-        .unwrap();
+        .expect("test operation should succeed");
 
     // 3. Test git info collection directly
     let git_info = codex_core::git_info::collect_git_info(&git_repo).await;
@@ -463,14 +463,14 @@ async fn integration_git_info_unit_test() {
     // 4. Verify git info is present and contains expected data
     assert!(git_info.is_some(), "Git info should be collected");
 
-    let git_info = git_info.unwrap();
+    let git_info = git_info.expect("test operation should succeed");
 
     // Check that we have a commit hash
     assert!(
         git_info.commit_hash.is_some(),
         "Git info should contain commit_hash"
     );
-    let commit_hash = git_info.commit_hash.as_ref().unwrap();
+    let commit_hash = git_info.commit_hash.as_ref().expect("test operation should succeed");
     assert_eq!(commit_hash.len(), 40, "Commit hash should be 40 characters");
     assert!(
         commit_hash.chars().all(|c| c.is_ascii_hexdigit()),
@@ -479,7 +479,7 @@ async fn integration_git_info_unit_test() {
 
     // Check that we have the correct branch
     assert!(git_info.branch.is_some(), "Git info should contain branch");
-    let branch = git_info.branch.as_ref().unwrap();
+    let branch = git_info.branch.as_ref().expect("test operation should succeed");
     assert_eq!(
         branch, "integration-test-branch",
         "Branch should match what we created"
@@ -490,16 +490,16 @@ async fn integration_git_info_unit_test() {
         git_info.repository_url.is_some(),
         "Git info should contain repository_url"
     );
-    let repo_url = git_info.repository_url.as_ref().unwrap();
+    let repo_url = git_info.repository_url.as_ref().expect("test operation should succeed");
     // Some hosts rewrite remotes (e.g., github.com → git@github.com), so assert against
     // the actual remote reported by git instead of a static URL.
     let expected_remote_url = std::process::Command::new("git")
         .args(["remote", "get-url", "origin"])
         .current_dir(&git_repo)
         .output()
-        .unwrap();
+        .expect("test operation should succeed");
     let expected_remote_url = String::from_utf8(expected_remote_url.stdout)
-        .unwrap()
+        .expect("test operation should succeed")
         .trim()
         .to_string();
     assert_eq!(
@@ -513,8 +513,8 @@ async fn integration_git_info_unit_test() {
     println!("   Repo: {repo_url}");
 
     // 5. Test serialization to ensure it works in SessionMeta
-    let serialized = serde_json::to_string(&git_info).unwrap();
-    let deserialized: GitInfo = serde_json::from_str(&serialized).unwrap();
+    let serialized = serde_json::to_string(&git_info).expect("test operation should succeed");
+    let deserialized: GitInfo = serde_json::from_str(&serialized).expect("test operation should succeed");
 
     assert_eq!(git_info.commit_hash, deserialized.commit_hash);
     assert_eq!(git_info.branch, deserialized.branch);

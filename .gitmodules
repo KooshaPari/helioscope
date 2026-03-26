@@ -7,3 +7,6 @@
 [submodule "portage"]
 	path = portage
 	url = ../portage
+[submodule "vendor/phenodocs"]
+	path = vendor/phenodocs
+	url = https://github.com/KooshaPari/phenodocs.git

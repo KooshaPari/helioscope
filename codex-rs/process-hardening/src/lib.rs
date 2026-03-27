@@ -124,7 +124,7 @@ fn set_core_file_size_limit_to_zero() {
 
 #[cfg(windows)]
 pub(crate) fn pre_main_hardening_windows() {
-    // TODO(mbolin): Perform the appropriate configuration for Windows.
+    // tracked: https://github.com/KooshaPari/heliosCLI/issues/121
 }
 
 #[cfg(unix)]

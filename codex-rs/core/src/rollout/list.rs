@@ -1178,7 +1178,7 @@ async fn find_thread_path_by_id_str_in_subdir(
     }
 
     // Prefer DB lookup, then fall back to rollout file search.
-    // TODO(jif): sqlite migration phase 1
+    // tracked: https://github.com/KooshaPari/heliosCLI/issues/110
     let archived_only = match subdir {
         SESSIONS_SUBDIR => Some(false),
         ARCHIVED_SESSIONS_SUBDIR => Some(true),

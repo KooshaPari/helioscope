@@ -335,7 +335,7 @@ impl ToolEmitter {
                 // We intentionally map all of them through the "rejected" event path for now,
                 // which means a subset of non-user failures may be reported as Declined.
                 //
-                // TODO: We should add a new ToolError variant for user-declined approvals.
+                // tracked: https://github.com/KooshaPari/heliosCLI/issues/103
                 let normalized = if msg == "rejected by user" {
                     match self {
                         Self::Shell { .. } | Self::UnifiedExec { .. } => {

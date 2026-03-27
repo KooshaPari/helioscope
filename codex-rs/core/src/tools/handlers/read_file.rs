@@ -19,7 +19,7 @@ pub struct ReadFileHandler;
 const MAX_LINE_LENGTH: usize = 500;
 const TAB_WIDTH: usize = 4;
 
-// TODO(jif) add support for block comments
+// tracked: https://github.com/KooshaPari/heliosCLI/issues/118
 const COMMENT_PREFIXES: &[&str] = &["#", "//", "--"];
 
 /// JSON arguments accepted by the `read_file` tool handler.

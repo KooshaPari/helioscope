@@ -262,7 +262,7 @@ async fn run_codex_tool_session_inner(
                         continue;
                     }
                     EventMsg::ElicitationRequest(_) => {
-                        // TODO: forward elicitation requests to the client?
+                        // tracked: https://github.com/KooshaPari/heliosCLI/issues/107
                         continue;
                     }
                     EventMsg::ApplyPatchApprovalRequest(ApplyPatchApprovalRequestEvent {
@@ -310,16 +310,16 @@ async fn run_codex_tool_session_inner(
                         // Ignore session metadata updates in MCP tool runner.
                     }
                     EventMsg::AgentMessageDelta(_) => {
-                        // TODO: think how we want to support this in the MCP
+                        // tracked: https://github.com/KooshaPari/heliosCLI/issues/108
                     }
                     EventMsg::AgentReasoningDelta(_) => {
-                        // TODO: think how we want to support this in the MCP
+                        // tracked: https://github.com/KooshaPari/heliosCLI/issues/108
                     }
                     EventMsg::McpStartupUpdate(_) | EventMsg::McpStartupComplete(_) => {
                         // Ignored in MCP tool runner.
                     }
                     EventMsg::AgentMessage(AgentMessageEvent { .. }) => {
-                        // TODO: think how we want to support this in the MCP
+                        // tracked: https://github.com/KooshaPari/heliosCLI/issues/108
                     }
                     EventMsg::AgentReasoningRawContent(_)
                     | EventMsg::AgentReasoningRawContentDelta(_)

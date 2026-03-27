@@ -1005,7 +1005,7 @@ impl BottomPaneView for RequestUserInputOverlay {
                 self.clear_notes_and_focus_options();
                 return;
             }
-            // TODO: Emit interrupted request_user_input results (including committed answers)
+            // tracked: https://github.com/KooshaPari/heliosCLI/issues/113
             // once core supports persisting them reliably without follow-up turn issues.
             self.app_event_tx.send(AppEvent::CodexOp(Op::Interrupt));
             self.done = true;
@@ -1221,7 +1221,7 @@ impl BottomPaneView for RequestUserInputOverlay {
     fn on_ctrl_c(&mut self) -> CancellationEvent {
         if self.confirm_unanswered_active() {
             self.close_unanswered_confirmation();
-            // TODO: Emit interrupted request_user_input results (including committed answers)
+            // tracked: https://github.com/KooshaPari/heliosCLI/issues/113
             // once core supports persisting them reliably without follow-up turn issues.
             self.app_event_tx.send(AppEvent::CodexOp(Op::Interrupt));
             self.done = true;
@@ -1232,7 +1232,7 @@ impl BottomPaneView for RequestUserInputOverlay {
             return CancellationEvent::Handled;
         }
 
-        // TODO: Emit interrupted request_user_input results (including committed answers)
+        // tracked: https://github.com/KooshaPari/heliosCLI/issues/113
         // once core supports persisting them reliably without follow-up turn issues.
         self.app_event_tx.send(AppEvent::CodexOp(Op::Interrupt));
         self.done = true;

@@ -92,7 +92,7 @@ impl AnalyticsEventsQueue {
 
     fn try_send(&self, job: TrackEventsJob) {
         if self.sender.try_send(job).is_err() {
-            //TODO: add a metric for this
+            // tracked: https://github.com/KooshaPari/heliosCLI/issues/115
             tracing::warn!("dropping analytics events: queue is full");
         }
     }

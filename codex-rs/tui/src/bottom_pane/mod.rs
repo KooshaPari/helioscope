@@ -105,6 +105,7 @@ mod selection_popup_common;
 mod submitter;
 mod text_manipulation;
 mod textarea;
+mod text_manipulation;
 mod unified_exec_footer;
 pub(crate) use feedback_view::FeedbackNoteView;
 pub(crate) use submitter::SubmissionGuard;

@@ -8,10 +8,10 @@
 //! - Newline normalization (CRLF → LF)
 //! - Text boundary detection for character clamping
 
-use codex_protocol::user_input::ByteRange;
-use codex_protocol::user_input::TextElement;
 use std::collections::HashMap;
 use std::collections::VecDeque;
+use codex_protocol::user_input::ByteRange;
+use codex_protocol::user_input::TextElement;
 
 /// Normalize newlines from various platforms to Unix-style LF.
 ///
@@ -213,20 +213,10 @@ mod tests {
 
     #[test]
     fn normalize_newlines_handles_crlf() {
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-        assert_eq!(normalize_newlines("hello\r\nworld"), "hello\nworld");
-=======
->>>>>>> origin/main
         assert_eq!(
             normalize_newlines("hello\r\nworld"),
             "hello\nworld"
         );
-<<<<<<< HEAD
-=======
->>>>>>> origin/main
->>>>>>> origin/main
     }
 
     #[test]
@@ -267,18 +257,7 @@ mod tests {
         let elements = vec![
             TextElement::new(ByteRange { start: 0, end: 2 }, Some("leading".to_string())),
             TextElement::new(ByteRange { start: 2, end: 7 }, Some("hello".to_string())),
-<<<<<<< HEAD
             TextElement::new(ByteRange { start: 13, end: 15 }, Some("trailing".to_string())),
-=======
-<<<<<<< HEAD
-            TextElement::new(
-                ByteRange { start: 13, end: 15 },
-                Some("trailing".to_string()),
-            ),
-=======
-            TextElement::new(ByteRange { start: 13, end: 15 }, Some("trailing".to_string())),
->>>>>>> origin/main
->>>>>>> origin/main
         ];
 
         let result = trim_text_elements(original, trimmed, elements);
@@ -314,25 +293,12 @@ mod tests {
     #[test]
     fn expand_pending_pastes_preserves_non_paste_elements() {
         let text = "text [Paste #1] more";
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-        let elements = vec![TextElement::new(
-            ByteRange { start: 5, end: 15 },
-            Some("[Paste #1]".to_string()),
-        )];
-=======
->>>>>>> origin/main
         let elements = vec![
             TextElement::new(
                 ByteRange { start: 5, end: 15 },
                 Some("[Paste #1]".to_string()),
             ),
         ];
-<<<<<<< HEAD
-=======
->>>>>>> origin/main
->>>>>>> origin/main
         let pending_pastes = vec![("[Paste #1]".to_string(), "EXPANDED".to_string())];
 
         let (expanded, new_elements) = expand_pending_pastes(&text, elements, &pending_pastes);

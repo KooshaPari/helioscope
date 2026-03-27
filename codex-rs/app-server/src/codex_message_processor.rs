@@ -2282,7 +2282,7 @@ impl CodexMessageProcessor {
         request_id: ConnectionRequestId,
         params: ThreadArchiveParams,
     ) {
-        // TODO(jif) mostly rewrite this using sqlite after phase 1
+        // tracked: https://github.com/KooshaPari/heliosCLI/issues/110
         let thread_id = match ThreadId::from_string(&params.thread_id) {
             Ok(id) => id,
             Err(err) => {
@@ -2373,7 +2373,7 @@ impl CodexMessageProcessor {
         request_id: ConnectionRequestId,
         params: ThreadUnarchiveParams,
     ) {
-        // TODO(jif) mostly rewrite this using sqlite after phase 1
+        // tracked: https://github.com/KooshaPari/heliosCLI/issues/110
         let thread_id = match ThreadId::from_string(&params.thread_id) {
             Ok(id) => id,
             Err(err) => {

@@ -38,7 +38,7 @@ pub struct ExecApprovalElicitRequestParams {
     pub codex_parsed_cmd: Vec<ParsedCommand>,
 }
 
-// TODO(mbolin): ExecApprovalResponse does not conform to ElicitResult. See:
+// tracked: https://github.com/KooshaPari/heliosCLI/issues/109 -- ExecApprovalResponse does not conform to ElicitResult. See:
 // - https://github.com/modelcontextprotocol/modelcontextprotocol/blob/f962dc1780fa5eed7fb7c8a0232f1fc83ef220cd/schema/2025-06-18/schema.json#L617-L636
 // - https://modelcontextprotocol.io/specification/draft/client/elicitation#protocol-messages
 // It should have "action" and "content" fields.

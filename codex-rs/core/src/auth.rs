@@ -92,7 +92,7 @@ impl PartialEq for CodexAuth {
     }
 }
 
-// TODO(pakrym): use token exp field to check for expiration instead
+// tracked: https://github.com/KooshaPari/heliosCLI/issues/104
 const TOKEN_REFRESH_INTERVAL: i64 = 8;
 
 const REFRESH_TOKEN_EXPIRED_MESSAGE: &str = "Your access token could not be refreshed because your refresh token has expired. Please log out and sign in again.";
@@ -1604,7 +1604,7 @@ mod tests {
     }
 
     /// Use sparingly.
-    /// TODO (gpeal): replace this with an injectable env var provider.
+    /// tracked: https://github.com/KooshaPari/heliosCLI/issues/117
     #[cfg(test)]
     struct EnvVarGuard {
         key: &'static str,

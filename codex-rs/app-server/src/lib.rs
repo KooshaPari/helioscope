@@ -401,7 +401,7 @@ pub async fn run_main_with_transport(
         }
         Err(err) => {
             warn!(error = %err, "Failed to preload config for cloud requirements");
-            // TODO(gt): Make cloud requirements preload failures blocking once we can fail-closed.
+            // tracked: https://github.com/KooshaPari/heliosCLI/issues/106
             CloudRequirementsLoader::default()
         }
     };

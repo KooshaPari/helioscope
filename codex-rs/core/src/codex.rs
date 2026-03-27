@@ -427,7 +427,7 @@ impl Codex {
             dynamic_tools
         };
 
-        // TODO (aibrahim): Consolidate config.model and config.model_reasoning_effort into config.collaboration_mode
+        // tracked: https://github.com/KooshaPari/heliosCLI/issues/111
         // to avoid extracting these fields separately and constructing CollaborationMode here.
         let collaboration_mode = CollaborationMode {
             mode: ModeKind::Default,
@@ -4327,7 +4327,7 @@ mod handlers {
         let turn_context = sess.new_default_turn_with_sub_id(sub_id).await;
 
         let mut history = sess.clone_history().await;
-        // TODO(ccunningham): Fix rollback/backtracking baseline handling.
+        // tracked: https://github.com/KooshaPari/heliosCLI/issues/112
         // We clear `reference_context_item` here, but should restore the
         // post-rollback baseline from the surviving history/rollout instead.
         // Truncating history should also invalidate/recompute `previous_model`

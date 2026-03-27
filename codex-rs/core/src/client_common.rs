@@ -166,7 +166,7 @@ pub(crate) mod tools {
         Function(ResponsesApiTool),
         #[serde(rename = "local_shell")]
         LocalShell {},
-        // TODO: Understand why we get an error on web_search although the API docs say it's supported.
+        // tracked: https://github.com/KooshaPari/heliosCLI/issues/116
         // https://platform.openai.com/docs/guides/tools-web-search?api-mode=responses#:~:text=%7B%20type%3A%20%22web_search%22%20%7D%2C
         // The `external_web_access` field determines whether the web search is over cached or live content.
         // https://platform.openai.com/docs/guides/tools-web-search#live-internet-access
@@ -208,7 +208,7 @@ pub(crate) mod tools {
     pub struct ResponsesApiTool {
         pub(crate) name: String,
         pub(crate) description: String,
-        /// TODO: Validation. When strict is set to true, the JSON schema,
+        /// tracked: https://github.com/KooshaPari/heliosCLI/issues/120
         /// `required` and `additional_properties` must be present. All fields in
         /// `properties` must be present in `required`.
         pub(crate) strict: bool,

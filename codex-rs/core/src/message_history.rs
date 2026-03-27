@@ -84,7 +84,7 @@ pub(crate) async fn append_entry(
         }
     }
 
-    // TODO: check `text` for sensitive patterns
+    // tracked: https://github.com/KooshaPari/heliosCLI/issues/105
 
     // Resolve `~/.codex/history.jsonl` and ensure the parent directory exists.
     let path = history_filepath(config);

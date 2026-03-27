@@ -613,7 +613,7 @@ async fn diff_against_sha(cwd: &Path, sha: &GitSha) -> Option<String> {
 pub fn resolve_root_git_project_for_trust(cwd: &Path) -> Option<PathBuf> {
     let base = if cwd.is_dir() { cwd } else { cwd.parent()? };
 
-    // TODO: we should make this async, but it's primarily used deep in
+    // tracked: https://github.com/KooshaPari/heliosCLI/issues/114
     // callstacks of sync code, and should almost always be fast
     let git_dir_out = std::process::Command::new("git")
         .args(["rev-parse", "--git-common-dir"])

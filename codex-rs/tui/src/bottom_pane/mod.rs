@@ -67,10 +67,7 @@ pub(crate) struct MentionBinding {
 }
 mod chat_composer;
 mod chat_composer_history;
-mod key_event_router;
-pub(crate) use key_event_router::KeyEventRouter;
 mod command_popup;
-mod history;
 pub mod custom_prompt_view;
 mod experimental_features_view;
 mod file_search_popup;
@@ -102,15 +99,10 @@ mod queued_user_messages;
 mod renderer;
 mod scroll_state;
 mod selection_popup_common;
-mod submitter;
 mod text_manipulation;
 mod textarea;
-mod text_manipulation;
 mod unified_exec_footer;
 pub(crate) use feedback_view::FeedbackNoteView;
-pub(crate) use submitter::SubmissionGuard;
-pub(crate) use submitter::SubmissionResult;
-pub(crate) use submitter::Submitter;
 
 /// How long the "press again to quit" hint stays visible.
 ///

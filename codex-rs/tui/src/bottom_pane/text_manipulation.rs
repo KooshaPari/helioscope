@@ -8,10 +8,10 @@
 //! - Newline normalization (CRLF → LF)
 //! - Text boundary detection for character clamping
 
-use std::collections::HashMap;
-use std::collections::VecDeque;
 use codex_protocol::user_input::ByteRange;
 use codex_protocol::user_input::TextElement;
+use std::collections::HashMap;
+use std::collections::VecDeque;
 
 /// Normalize newlines from various platforms to Unix-style LF.
 ///
@@ -213,10 +213,7 @@ mod tests {
 
     #[test]
     fn normalize_newlines_handles_crlf() {
-        assert_eq!(
-            normalize_newlines("hello\r\nworld"),
-            "hello\nworld"
-        );
+        assert_eq!(normalize_newlines("hello\r\nworld"), "hello\nworld");
     }
 
     #[test]
@@ -257,7 +254,10 @@ mod tests {
         let elements = vec![
             TextElement::new(ByteRange { start: 0, end: 2 }, Some("leading".to_string())),
             TextElement::new(ByteRange { start: 2, end: 7 }, Some("hello".to_string())),
-            TextElement::new(ByteRange { start: 13, end: 15 }, Some("trailing".to_string())),
+            TextElement::new(
+                ByteRange { start: 13, end: 15 },
+                Some("trailing".to_string()),
+            ),
         ];
 
         let result = trim_text_elements(original, trimmed, elements);
@@ -293,12 +293,10 @@ mod tests {
     #[test]
     fn expand_pending_pastes_preserves_non_paste_elements() {
         let text = "text [Paste #1] more";
-        let elements = vec![
-            TextElement::new(
-                ByteRange { start: 5, end: 15 },
-                Some("[Paste #1]".to_string()),
-            ),
-        ];
+        let elements = vec![TextElement::new(
+            ByteRange { start: 5, end: 15 },
+            Some("[Paste #1]".to_string()),
+        )];
         let pending_pastes = vec![("[Paste #1]".to_string(), "EXPANDED".to_string())];
 
         let (expanded, new_elements) = expand_pending_pastes(&text, elements, &pending_pastes);

@@ -224,11 +224,14 @@ Root-level markdown: only `README.md`, `CHANGELOG.md`, `AGENTS.md`, `CLAUDE.md`.
 | `cargo clippy --workspace`     | Rust linting            |
 | `pnpm --filter codex-cli test` | TypeScript CLI tests    |
 
-## Child-Agent and Delegation Policy
+## Shared Governance Protocols
 
-- Use child agents liberally for scoped discovery, audits, multi-repo scans, and implementation planning before direct parent-agent edits.
-- Prefer delegating high-context or high-churn tasks to subagents, and keep parent-agent changes focused on integration and finalization.
-- Reserve parent-agent direct writes for the narrowest, final decision layer.
+These governance blocks are maintained centrally:
+- Worktree discipline, reuse protocol, git delivery, stability, CI, child-agent delegation
+- Source: `KooshaPari/thegent` -> `templates/claude/governance-blocks/`
+- Do not duplicate these blocks here — reference the source instead.
+
+<!-- governance: see thegent/templates/claude/governance-blocks/ for shared protocols -->
 
 ## Child Agent Usage
 

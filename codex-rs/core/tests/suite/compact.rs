@@ -228,7 +228,10 @@ async fn summarize_context_three_requests_and_instructions() {
         set_test_compact_prompt(config);
         config.model_auto_compact_token_limit = Some(200_000);
     });
-    let test = builder.build(&server).await.expect("test operation should succeed");
+    let test = builder
+        .build(&server)
+        .await
+        .expect("test operation should succeed");
     let codex = test.codex.clone();
     let rollout_path = test.session_configured.rollout_path.expect("rollout path");
 
@@ -246,7 +249,10 @@ async fn summarize_context_three_requests_and_instructions() {
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
 
     // 2) Summarize – second hit should include the summarization prompt.
-    codex.submit(Op::Compact).await.expect("test operation should succeed");
+    codex
+        .submit(Op::Compact)
+        .await
+        .expect("test operation should succeed");
     let warning_event = wait_for_event(&codex, |ev| matches!(ev, EventMsg::Warning(_))).await;
     let EventMsg::Warning(WarningEvent { message }) = warning_event else {
         panic!("expected warning event after compact");
@@ -275,8 +281,14 @@ async fn summarize_context_three_requests_and_instructions() {
     let body3 = requests[2].body_json();
 
     // Manual compact should keep the baseline developer instructions.
-    let instr1 = body1.get("instructions").and_then(|v| v.as_str()).expect("test operation should succeed");
-    let instr2 = body2.get("instructions").and_then(|v| v.as_str()).expect("test operation should succeed");
+    let instr1 = body1
+        .get("instructions")
+        .and_then(|v| v.as_str())
+        .expect("test operation should succeed");
+    let instr2 = body2
+        .get("instructions")
+        .and_then(|v| v.as_str())
+        .expect("test operation should succeed");
     assert_eq!(
         instr1, instr2,
         "manual compact should keep the standard developer instructions"
@@ -284,7 +296,10 @@ async fn summarize_context_three_requests_and_instructions() {
 
     // The summarization request should include the injected user input marker.
     let body2_str = body2.to_string();
-    let input2 = body2.get("input").and_then(|v| v.as_array()).expect("test operation should succeed");
+    let input2 = body2
+        .get("input")
+        .and_then(|v| v.as_array())
+        .expect("test operation should succeed");
     let has_compact_prompt = body_contains_text(&body2_str, SUMMARIZATION_PROMPT);
     assert!(
         has_compact_prompt,
@@ -292,16 +307,35 @@ async fn summarize_context_three_requests_and_instructions() {
     );
     // The last item is the user message created from the injected input.
     let last2 = input2.last().expect("test operation should succeed");
-    assert_eq!(last2.get("type").expect("test operation should succeed").as_str().expect("test operation should succeed"), "message");
-    assert_eq!(last2.get("role").expect("test operation should succeed").as_str().expect("test operation should succeed"), "user");
-    let text2 = last2["content"][0]["text"].as_str().expect("test operation should succeed");
+    assert_eq!(
+        last2
+            .get("type")
+            .expect("test operation should succeed")
+            .as_str()
+            .expect("test operation should succeed"),
+        "message"
+    );
+    assert_eq!(
+        last2
+            .get("role")
+            .expect("test operation should succeed")
+            .as_str()
+            .expect("test operation should succeed"),
+        "user"
+    );
+    let text2 = last2["content"][0]["text"]
+        .as_str()
+        .expect("test operation should succeed");
     assert_eq!(
         text2, SUMMARIZATION_PROMPT,
         "expected summarize trigger, got `{text2}`"
     );
 
     // Third request must contain the refreshed instructions, compacted user history, and new user message.
-    let input3 = body3.get("input").and_then(|v| v.as_array()).expect("test operation should succeed");
+    let input3 = body3
+        .get("input")
+        .and_then(|v| v.as_array())
+        .expect("test operation should succeed");
 
     assert!(
         input3.len() >= 3,
@@ -359,7 +393,10 @@ async fn summarize_context_three_requests_and_instructions() {
     );
 
     // Shut down Codex to flush rollout entries before inspecting the file.
-    codex.submit(Op::Shutdown).await.expect("test operation should succeed");
+    codex
+        .submit(Op::Shutdown)
+        .await
+        .expect("test operation should succeed");
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::ShutdownComplete)).await;
 
     // Verify rollout contains user-turn TurnContext entries and a Compacted entry.
@@ -514,10 +551,17 @@ async fn manual_compact_emits_api_and_local_token_usage_events() {
         config.model_provider = model_provider;
         set_test_compact_prompt(config);
     });
-    let codex = builder.build(&server).await.expect("test operation should succeed").codex;
+    let codex = builder
+        .build(&server)
+        .await
+        .expect("test operation should succeed")
+        .codex;
 
     // Trigger manual compact and collect TokenCount events for the compact turn.
-    codex.submit(Op::Compact).await.expect("test operation should succeed");
+    codex
+        .submit(Op::Compact)
+        .await
+        .expect("test operation should succeed");
 
     // First TokenCount: from the compact API call (usage.total_tokens = 0).
     let first = wait_for_event_match(&codex, |ev| match ev {
@@ -573,7 +617,11 @@ async fn manual_compact_emits_context_compaction_items() {
         config.model_provider = model_provider;
         set_test_compact_prompt(config);
     });
-    let codex = builder.build(&server).await.expect("test operation should succeed").codex;
+    let codex = builder
+        .build(&server)
+        .await
+        .expect("test operation should succeed")
+        .codex;
 
     codex
         .submit(Op::UserInput {
@@ -587,7 +635,10 @@ async fn manual_compact_emits_context_compaction_items() {
         .expect("test operation should succeed");
     wait_for_event(&codex, |event| matches!(event, EventMsg::TurnComplete(_))).await;
 
-    codex.submit(Op::Compact).await.expect("test operation should succeed");
+    codex
+        .submit(Op::Compact)
+        .await
+        .expect("test operation should succeed");
 
     let mut started_item = None;
     let mut completed_item = None;
@@ -596,7 +647,10 @@ async fn manual_compact_emits_context_compaction_items() {
 
     while !saw_turn_complete || started_item.is_none() || completed_item.is_none() || !legacy_event
     {
-        let event = codex.next_event().await.expect("test operation should succeed");
+        let event = codex
+            .next_event()
+            .await
+            .expect("test operation should succeed");
         match event.msg {
             EventMsg::ItemStarted(ItemStartedEvent {
                 item: TurnItem::ContextCompaction(item),
@@ -753,7 +807,10 @@ async fn multiple_auto_compact_per_task_runs_after_token_limit_hit() {
     // collect the requests payloads from the model
     let requests_payloads = request_log.requests();
     let body = requests_payloads[0].body_json();
-    let input = body.get("input").and_then(|v| v.as_array()).expect("test operation should succeed");
+    let input = body
+        .get("input")
+        .and_then(|v| v.as_array())
+        .expect("test operation should succeed");
 
     fn strip_agents_parts_from_user_message(
         value: &serde_json::Value,
@@ -815,7 +872,9 @@ async fn multiple_auto_compact_per_task_runs_after_token_limit_hit() {
     }
 
     let initial_input = normalize_inputs(input);
-    let environment_message = initial_input[0]["content"][0]["text"].as_str().expect("test operation should succeed");
+    let environment_message = initial_input[0]["content"][0]["text"]
+        .as_str()
+        .expect("test operation should succeed");
 
     // test 1: after compaction, we should have one environment message, one user message, and one user message with summary prefix
     let compaction_indices = [2, 4, 6];
@@ -826,12 +885,21 @@ async fn multiple_auto_compact_per_task_runs_after_token_limit_hit() {
     ];
     for (i, expected_summary) in compaction_indices.into_iter().zip(expected_summaries) {
         let body = requests_payloads.clone()[i].body_json();
-        let input = body.get("input").and_then(|v| v.as_array()).expect("test operation should succeed");
+        let input = body
+            .get("input")
+            .and_then(|v| v.as_array())
+            .expect("test operation should succeed");
         let input = normalize_inputs(input);
         assert_eq!(input.len(), 3);
-        let environment_message = input[0]["content"][0]["text"].as_str().expect("test operation should succeed");
-        let user_message_received = input[1]["content"][0]["text"].as_str().expect("test operation should succeed");
-        let summary_message = input[2]["content"][0]["text"].as_str().expect("test operation should succeed");
+        let environment_message = input[0]["content"][0]["text"]
+            .as_str()
+            .expect("test operation should succeed");
+        let user_message_received = input[1]["content"][0]["text"]
+            .as_str()
+            .expect("test operation should succeed");
+        let summary_message = input[2]["content"][0]["text"]
+            .as_str()
+            .expect("test operation should succeed");
         assert_eq!(environment_message, environment_message);
         assert_eq!(user_message_received, user_message);
         assert_eq!(
@@ -1189,8 +1257,13 @@ async fn multiple_auto_compact_per_task_runs_after_token_limit_hit() {
 
     for (i, request) in requests_payloads.iter().enumerate() {
         let body = request.body_json();
-        let input = body.get("input").and_then(|v| v.as_array()).expect("test operation should succeed");
-        let expected_input = expected_requests_inputs[i].as_array().expect("test operation should succeed");
+        let input = body
+            .get("input")
+            .and_then(|v| v.as_array())
+            .expect("test operation should succeed");
+        let expected_input = expected_requests_inputs[i]
+            .as_array()
+            .expect("test operation should succeed");
         assert_eq!(normalize_inputs(input), normalize_inputs(expected_input));
     }
 
@@ -1235,7 +1308,11 @@ async fn auto_compact_runs_after_token_limit_hit() {
         set_test_compact_prompt(config);
         config.model_auto_compact_token_limit = Some(200_000);
     });
-    let codex = builder.build(&server).await.expect("test operation should succeed").codex;
+    let codex = builder
+        .build(&server)
+        .await
+        .expect("test operation should succeed")
+        .codex;
 
     codex
         .submit(Op::UserInput {
@@ -1333,7 +1410,10 @@ async fn auto_compact_runs_after_token_limit_hit() {
         "auto compact should keep the standard developer instructions",
     );
 
-    let input_auto = body_auto.get("input").and_then(|v| v.as_array()).expect("test operation should succeed");
+    let input_auto = body_auto
+        .get("input")
+        .and_then(|v| v.as_array())
+        .expect("test operation should succeed");
     let last_auto = input_auto
         .last()
         .expect("auto compact request should append a user message");
@@ -1424,7 +1504,11 @@ async fn auto_compact_emits_context_compaction_items() {
         set_test_compact_prompt(config);
         config.model_auto_compact_token_limit = Some(200_000);
     });
-    let codex = builder.build(&server).await.expect("test operation should succeed").codex;
+    let codex = builder
+        .build(&server)
+        .await
+        .expect("test operation should succeed")
+        .codex;
 
     let mut started_item = None;
     let mut completed_item = None;
@@ -1443,7 +1527,10 @@ async fn auto_compact_emits_context_compaction_items() {
             .expect("test operation should succeed");
 
         loop {
-            let event = codex.next_event().await.expect("test operation should succeed");
+            let event = codex
+                .next_event()
+                .await
+                .expect("test operation should succeed");
             match event.msg {
                 EventMsg::ItemStarted(ItemStartedEvent {
                     item: TurnItem::ContextCompaction(item),
@@ -1507,7 +1594,11 @@ async fn auto_compact_starts_after_turn_started() {
         set_test_compact_prompt(config);
         config.model_auto_compact_token_limit = Some(200_000);
     });
-    let codex = builder.build(&server).await.expect("test operation should succeed").codex;
+    let codex = builder
+        .build(&server)
+        .await
+        .expect("test operation should succeed")
+        .codex;
 
     codex
         .submit(Op::UserInput {
@@ -1600,7 +1691,10 @@ async fn auto_compact_runs_after_resume_when_token_usage_is_over_limit() {
         set_test_compact_prompt(config);
         config.model_auto_compact_token_limit = Some(limit);
     });
-    let initial = builder.build(&server).await.expect("test operation should succeed");
+    let initial = builder
+        .build(&server)
+        .await
+        .expect("test operation should succeed");
     let home = initial.home.clone();
     let rollout_path = initial
         .session_configured
@@ -1617,7 +1711,10 @@ async fn auto_compact_runs_after_resume_when_token_usage_is_over_limit() {
         ]),
     )
     .await;
-    initial.submit_turn("OVER_LIMIT_TURN").await.expect("test operation should succeed");
+    initial
+        .submit_turn("OVER_LIMIT_TURN")
+        .await
+        .expect("test operation should succeed");
 
     assert!(
         compact_mock.requests().is_empty(),
@@ -2011,7 +2108,10 @@ async fn auto_compact_persists_rollout_entries() {
         set_test_compact_prompt(config);
         config.model_auto_compact_token_limit = Some(200_000);
     });
-    let test = builder.build(&server).await.expect("test operation should succeed");
+    let test = builder
+        .build(&server)
+        .await
+        .expect("test operation should succeed");
     let codex = test.codex.clone();
     let session_configured = test.session_configured;
 
@@ -2051,7 +2151,10 @@ async fn auto_compact_persists_rollout_entries() {
         .expect("test operation should succeed");
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
 
-    codex.submit(Op::Shutdown).await.expect("test operation should succeed");
+    codex
+        .submit(Op::Shutdown)
+        .await
+        .expect("test operation should succeed");
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::ShutdownComplete)).await;
 
     let rollout_path = session_configured.rollout_path.expect("rollout path");
@@ -2123,7 +2226,11 @@ async fn manual_compact_retries_after_context_window_error() {
         set_test_compact_prompt(config);
         config.model_auto_compact_token_limit = Some(200_000);
     });
-    let codex = builder.build(&server).await.expect("test operation should succeed").codex;
+    let codex = builder
+        .build(&server)
+        .await
+        .expect("test operation should succeed")
+        .codex;
 
     codex
         .submit(Op::UserInput {
@@ -2137,7 +2244,10 @@ async fn manual_compact_retries_after_context_window_error() {
         .expect("test operation should succeed");
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
 
-    codex.submit(Op::Compact).await.expect("test operation should succeed");
+    codex
+        .submit(Op::Compact)
+        .await
+        .expect("test operation should succeed");
     let EventMsg::BackgroundEvent(event) =
         wait_for_event(&codex, |ev| matches!(ev, EventMsg::BackgroundEvent(_))).await
     else {
@@ -2326,7 +2436,11 @@ async fn manual_compact_twice_preserves_latest_user_messages() {
         config.model_provider = model_provider;
         set_test_compact_prompt(config);
     });
-    let codex = builder.build(&server).await.expect("test operation should succeed").codex;
+    let codex = builder
+        .build(&server)
+        .await
+        .expect("test operation should succeed")
+        .codex;
 
     codex
         .submit(Op::UserInput {
@@ -2340,7 +2454,10 @@ async fn manual_compact_twice_preserves_latest_user_messages() {
         .expect("test operation should succeed");
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
 
-    codex.submit(Op::Compact).await.expect("test operation should succeed");
+    codex
+        .submit(Op::Compact)
+        .await
+        .expect("test operation should succeed");
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
 
     codex
@@ -2355,7 +2472,10 @@ async fn manual_compact_twice_preserves_latest_user_messages() {
         .expect("test operation should succeed");
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
 
-    codex.submit(Op::Compact).await.expect("test operation should succeed");
+    codex
+        .submit(Op::Compact)
+        .await
+        .expect("test operation should succeed");
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
 
     codex
@@ -2515,7 +2635,11 @@ async fn auto_compact_allows_multiple_attempts_when_interleaved_with_other_turn_
         set_test_compact_prompt(config);
         config.model_auto_compact_token_limit = Some(200);
     });
-    let codex = builder.build(&server).await.expect("test operation should succeed").codex;
+    let codex = builder
+        .build(&server)
+        .await
+        .expect("test operation should succeed")
+        .codex;
 
     let mut auto_compact_lifecycle_events = Vec::new();
     for user in [MULTI_AUTO_MSG, follow_up_user, final_user] {
@@ -2531,7 +2655,10 @@ async fn auto_compact_allows_multiple_attempts_when_interleaved_with_other_turn_
             .expect("test operation should succeed");
 
         loop {
-            let event = codex.next_event().await.expect("test operation should succeed");
+            let event = codex
+                .next_event()
+                .await
+                .expect("test operation should succeed");
             if event.id.starts_with("auto-compact-")
                 && matches!(
                     event.msg,
@@ -2619,7 +2746,11 @@ async fn snapshot_request_shape_mid_turn_continuation_compaction() {
         config.model_context_window = Some(context_window);
         config.model_auto_compact_token_limit = Some(limit);
     });
-    let codex = builder.build(&server).await.expect("test operation should succeed").codex;
+    let codex = builder
+        .build(&server)
+        .await
+        .expect("test operation should succeed")
+        .codex;
 
     codex
         .submit(Op::UserInput {
@@ -2718,10 +2849,19 @@ async fn auto_compact_clamps_config_limit_to_context_window() {
         config.model_context_window = Some(context_window);
         config.model_auto_compact_token_limit = Some(config_limit);
     });
-    let codex = builder.build(&server).await.expect("test operation should succeed");
+    let codex = builder
+        .build(&server)
+        .await
+        .expect("test operation should succeed");
 
-    codex.submit_turn("OVER_LIMIT_TURN").await.expect("test operation should succeed");
-    codex.submit_turn("FOLLOW_UP_AFTER_CLAMP").await.expect("test operation should succeed");
+    codex
+        .submit_turn("OVER_LIMIT_TURN")
+        .await
+        .expect("test operation should succeed");
+    codex
+        .submit_turn("FOLLOW_UP_AFTER_CLAMP")
+        .await
+        .expect("test operation should succeed");
 
     assert!(
         first_turn_mock.single_request().input().iter().any(|item| {

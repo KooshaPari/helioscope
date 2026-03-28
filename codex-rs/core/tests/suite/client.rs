@@ -76,7 +76,12 @@ use wiremock::matchers::query_param;
 
 #[expect(clippy::unwrap_used)]
 fn assert_message_role(request_body: &serde_json::Value, role: &str) {
-    assert_eq!(request_body["role"].as_str().expect("role should be a string"), role);
+    assert_eq!(
+        request_body["role"]
+            .as_str()
+            .expect("role should be a string"),
+        role
+    );
 }
 
 #[expect(clippy::unwrap_used)]
@@ -138,6 +143,9 @@ fn write_auth_json(
     )
     .expect("auth json write should succeed");
 
+    fake_jwt
+}
+
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn resume_includes_initial_messages_and_sends_prior_items() {
     skip_if_no_network!();
@@ -147,7 +155,10 @@ async fn resume_includes_initial_messages_and_sends_prior_items() {
     let session_path = tmpdir.path().join("resume-session.jsonl");
     let mut f = std::fs::File::create(&session_path).expect("should create session file");
     let convo_id = Uuid::new_v4();
-    writeln!(f, "{}", json!({
+    writeln!(
+        f,
+        "{}",
+        json!({
             "timestamp": "2024-01-01T00:00:00.000Z",
             "type": "session_meta",
             "payload": {
@@ -159,7 +170,8 @@ async fn resume_includes_initial_messages_and_sends_prior_items() {
                 "cli_version": "test_version",
                 "model_provider": "test-provider"
             }
-        }))
+        })
+    )
     .expect("write session metadata line");
 
     // Prior item: user message (should be delivered)
@@ -194,7 +206,8 @@ async fn resume_includes_initial_messages_and_sends_prior_items() {
         end_turn: None,
         phase: None,
     };
-    let prior_system_json = serde_json::to_value(&prior_system).expect("prior system should serialize");
+    let prior_system_json =
+        serde_json::to_value(&prior_system).expect("prior system should serialize");
     writeln!(
         f,
         "{}",
@@ -216,7 +229,8 @@ async fn resume_includes_initial_messages_and_sends_prior_items() {
         end_turn: None,
         phase: Some(MessagePhase::Commentary),
     };
-    let prior_item_json = serde_json::to_value(&prior_item).expect("prior assistant should serialize");
+    let prior_item_json =
+        serde_json::to_value(&prior_item).expect("prior assistant should serialize");
     writeln!(
         f,
         "{}",
@@ -257,7 +271,8 @@ async fn resume_includes_initial_messages_and_sends_prior_items() {
         .initial_messages
         .clone()
         .expect("expected initial messages option for resumed session");
-    let initial_json = serde_json::to_value(&initial_msgs).expect("initial messages should serialize");
+    let initial_json =
+        serde_json::to_value(&initial_msgs).expect("initial messages should serialize");
     let expected_initial_json = json!([]);
     assert_eq!(initial_json, expected_initial_json);
 
@@ -404,8 +419,12 @@ async fn resume_replays_legacy_js_repl_image_rollout_shapes() {
         .join("resume-legacy-js-repl-image-rollout.jsonl");
     let mut f = std::fs::File::create(&session_path).expect("should create session file");
     for line in rollout {
-        writeln!(f, "{}", serde_json::to_string(&line).expect("rollout line should serialize"))
-            .expect("write rollout line");
+        writeln!(
+            f,
+            "{}",
+            serde_json::to_string(&line).expect("rollout line should serialize")
+        )
+        .expect("write rollout line");
     }
 
     let server = MockServer::start().await;
@@ -632,7 +651,11 @@ async fn chatgpt_auth_sends_correct_request() {
     assert_eq!(request_originator, originator().value);
     assert_eq!(request_authorization, "Bearer Access Token");
     assert_eq!(request_chatgpt_account_id, "account_id");
-    assert!(request_body["stream"].as_bool().expect("stream should be a bool"));
+    assert!(
+        request_body["stream"]
+            .as_bool()
+            .expect("stream should be a bool")
+    );
     assert_eq!(
         request_body["include"][0]
             .as_str()
@@ -1805,7 +1828,8 @@ async fn token_count_includes_rate_limits_snapshot() {
         _ => unreachable!(),
     };
 
-    let rate_limit_json = serde_json::to_value(&rate_limit_only).expect("rate limit should serialize");
+    let rate_limit_json =
+        serde_json::to_value(&rate_limit_only).expect("rate limit should serialize");
     pretty_assertions::assert_eq!(
         rate_limit_json,
         json!({
@@ -2172,7 +2196,8 @@ async fn azure_overrides_assign_properties_used_for_responses_url() {
             "Authorization",
             format!(
                 "Bearer {}",
-                std::env::var(existing_env_var_with_random_value).expect("expected environment variable to exist")
+                std::env::var(existing_env_var_with_random_value)
+                    .expect("expected environment variable to exist")
             )
             .as_str(),
         ))
@@ -2256,7 +2281,8 @@ async fn env_var_overrides_loaded_auth() {
             "Authorization",
             format!(
                 "Bearer {}",
-                std::env::var(existing_env_var_with_random_value).expect("expected environment variable to exist")
+                std::env::var(existing_env_var_with_random_value)
+                    .expect("expected environment variable to exist")
             )
             .as_str(),
         ))
@@ -2443,7 +2469,10 @@ async fn history_dedupes_streamed_and_final_messages_across_turns() {
         .cloned()
         .expect("r3 missing input array");
     // skipping earlier context and developer messages
-    let tail_len = r3_tail_expected.as_array().expect("tail expected should be array").len();
+    let tail_len = r3_tail_expected
+        .as_array()
+        .expect("tail expected should be array")
+        .len();
     let actual_tail = &r3_input_array[r3_input_array.len() - tail_len..];
     assert_eq!(
         serde_json::Value::Array(actual_tail.to_vec()),

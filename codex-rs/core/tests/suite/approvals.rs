@@ -586,10 +586,7 @@ fn parse_result(item: &Value) -> CommandResult {
                     .as_str()
                     .parse::<i64>()
                     .expect("structured exit code should parse");
-                let output = captures
-                    .get(2)
-                    .expect("structured output capture")
-                    .as_str();
+                let output = captures.get(2).expect("structured output capture").as_str();
                 CommandResult {
                     exit_code: Some(exit_code),
                     stdout: output.to_string(),
@@ -601,10 +598,7 @@ fn parse_result(item: &Value) -> CommandResult {
                     .as_str()
                     .parse::<i64>()
                     .expect("freeform exit code should parse");
-                let output = captures
-                    .get(2)
-                    .expect("freeform output capture")
-                    .as_str();
+                let output = captures.get(2).expect("freeform output capture").as_str();
                 CommandResult {
                     exit_code: Some(exit_code),
                     stdout: output.to_string(),

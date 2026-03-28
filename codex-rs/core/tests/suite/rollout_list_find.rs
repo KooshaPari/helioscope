@@ -60,7 +60,10 @@ async fn upsert_thread_metadata(codex_home: &Path, thread_id: ThreadId, rollout_
     let runtime = StateRuntime::init(codex_home.to_path_buf(), "test-provider".to_string(), None)
         .await
         .expect("test operation should succeed");
-    runtime.mark_backfill_complete(None).await.expect("test operation should succeed");
+    runtime
+        .mark_backfill_complete(None)
+        .await
+        .expect("test operation should succeed");
     let mut builder = ThreadMetadataBuilder::new(
         thread_id,
         rollout_path,
@@ -69,7 +72,10 @@ async fn upsert_thread_metadata(codex_home: &Path, thread_id: ThreadId, rollout_
     );
     builder.cwd = codex_home.to_path_buf();
     let metadata = builder.build("test-provider");
-    runtime.upsert_thread(&metadata).await.expect("test operation should succeed");
+    runtime
+        .upsert_thread(&metadata)
+        .await
+        .expect("test operation should succeed");
 }
 
 #[tokio::test]
@@ -90,7 +96,8 @@ async fn find_handles_gitignore_covering_codex_home_directory() {
     let repo = TempDir::new().expect("test operation should succeed");
     let codex_home = repo.path().join(".codex");
     std::fs::create_dir_all(&codex_home).expect("test operation should succeed");
-    std::fs::write(repo.path().join(".gitignore"), ".codex/**\n").expect("test operation should succeed");
+    std::fs::write(repo.path().join(".gitignore"), ".codex/**\n")
+        .expect("test operation should succeed");
     let id = Uuid::new_v4();
     let expected = write_minimal_rollout_with_id(&codex_home, id);
 
@@ -109,7 +116,8 @@ async fn find_prefers_sqlite_path_by_id() {
     let db_path = home.path().join(format!(
         "sessions/2030/12/30/rollout-2030-12-30T00-00-00-{id}.jsonl"
     ));
-    std::fs::create_dir_all(db_path.parent().expect("test operation should succeed")).expect("test operation should succeed");
+    std::fs::create_dir_all(db_path.parent().expect("test operation should succeed"))
+        .expect("test operation should succeed");
     std::fs::write(&db_path, "").expect("test operation should succeed");
     write_minimal_rollout_with_id(home.path(), id);
     upsert_thread_metadata(home.path(), thread_id, db_path.clone()).await;
@@ -127,7 +135,8 @@ async fn find_falls_back_to_filesystem_when_sqlite_has_no_match() {
     let id = Uuid::new_v4();
     let expected = write_minimal_rollout_with_id(home.path(), id);
     let unrelated_id = Uuid::new_v4();
-    let unrelated_thread_id = ThreadId::from_string(&unrelated_id.to_string()).expect("test operation should succeed");
+    let unrelated_thread_id =
+        ThreadId::from_string(&unrelated_id.to_string()).expect("test operation should succeed");
     let unrelated_path = home
         .path()
         .join("sessions/2030/12/30/rollout-2030-12-30T00-00-00-unrelated.jsonl");
@@ -145,7 +154,8 @@ async fn find_ignores_granular_gitignore_rules() {
     let home = TempDir::new().expect("test operation should succeed");
     let id = Uuid::new_v4();
     let expected = write_minimal_rollout_with_id(home.path(), id);
-    std::fs::write(home.path().join("sessions/.gitignore"), "*.jsonl\n").expect("test operation should succeed");
+    std::fs::write(home.path().join("sessions/.gitignore"), "*.jsonl\n")
+        .expect("test operation should succeed");
 
     let found = find_thread_path_by_id_str(home.path(), &id.to_string())
         .await

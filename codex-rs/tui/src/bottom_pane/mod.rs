@@ -97,6 +97,7 @@ mod paste_burst;
 mod pending_thread_approvals;
 pub mod popup_consts;
 mod queued_user_messages;
+mod renderer;
 mod scroll_state;
 mod selection_popup_common;
 mod submitter;

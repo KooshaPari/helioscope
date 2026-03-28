@@ -162,9 +162,9 @@ mod tests {
     async fn discovers_and_sorts_files() {
         let tmp = tempdir().expect("create TempDir");
         let dir = tmp.path();
-        fs::write(dir.join("b.md"), b"b").unwrap();
-        fs::write(dir.join("a.md"), b"a").unwrap();
-        fs::create_dir(dir.join("subdir")).unwrap();
+        fs::write(dir.join("b.md"), b"b").expect("write b.md");
+        fs::write(dir.join("a.md"), b"a").expect("write a.md");
+        fs::create_dir(dir.join("subdir")).expect("create subdir");
         let found = discover_prompts_in(dir).await;
         let names: Vec<String> = found.into_iter().map(|e| e.name).collect();
         assert_eq!(names, vec!["a", "b"]);
@@ -174,8 +174,8 @@ mod tests {
     async fn excludes_builtins() {
         let tmp = tempdir().expect("create TempDir");
         let dir = tmp.path();
-        fs::write(dir.join("init.md"), b"ignored").unwrap();
-        fs::write(dir.join("foo.md"), b"ok").unwrap();
+        fs::write(dir.join("init.md"), b"ignored").expect("write init.md");
+        fs::write(dir.join("foo.md"), b"ok").expect("write foo.md");
         let mut exclude = HashSet::new();
         exclude.insert("init".to_string());
         let found = discover_prompts_in_excluding(dir, &exclude).await;
@@ -188,9 +188,9 @@ mod tests {
         let tmp = tempdir().expect("create TempDir");
         let dir = tmp.path();
         // Valid UTF-8 file
-        fs::write(dir.join("good.md"), b"hello").unwrap();
+        fs::write(dir.join("good.md"), b"hello").expect("write good.md");
         // Invalid UTF-8 content in .md file (e.g., lone 0xFF byte)
-        fs::write(dir.join("bad.md"), vec![0xFF, 0xFE, b'\n']).unwrap();
+        fs::write(dir.join("bad.md"), vec![0xFF, 0xFE, b'\n']).expect("write bad.md");
         let found = discover_prompts_in(dir).await;
         let names: Vec<String> = found.into_iter().map(|e| e.name).collect();
         assert_eq!(names, vec!["good"]);
@@ -203,10 +203,11 @@ mod tests {
         let dir = tmp.path();
 
         // Create a real file
-        fs::write(dir.join("real.md"), b"real content").unwrap();
+        fs::write(dir.join("real.md"), b"real content").expect("write real.md");
 
         // Create a symlink to the real file
-        std::os::unix::fs::symlink(dir.join("real.md"), dir.join("link.md")).unwrap();
+        std::os::unix::fs::symlink(dir.join("real.md"), dir.join("link.md"))
+            .expect("create symlink");
 
         let found = discover_prompts_in(dir).await;
         let names: Vec<String> = found.into_iter().map(|e| e.name).collect();
@@ -221,7 +222,7 @@ mod tests {
         let dir = tmp.path();
         let file = dir.join("withmeta.md");
         let text = "---\nname: ignored\ndescription: \"Quick review command\"\nargument-hint: \"[file] [priority]\"\n---\nActual body with $1 and $ARGUMENTS";
-        fs::write(&file, text).unwrap();
+        fs::write(&file, text).expect("write withmeta.md");
 
         let found = discover_prompts_in(dir).await;
         assert_eq!(found.len(), 1);

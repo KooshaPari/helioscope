@@ -789,8 +789,8 @@ pub(crate) fn network_proxy_state_for_policy(
     network.enabled = true;
     network.mode = NetworkMode::Full;
     let config = NetworkProxyConfig { network };
-        let state = build_config_state(config, NetworkProxyConstraints::default())
-            .expect("failed to build initial network proxy config state");
+    let state = build_config_state(config, NetworkProxyConstraints::default())
+        .expect("failed to build initial network proxy config state");
 
     NetworkProxyState::with_reloader(state, Arc::new(NoopReloader))
 }
@@ -834,7 +834,10 @@ mod tests {
         });
 
         assert_eq!(
-            state.host_blocked("example.com", 80).await.expect("host_blocked should return a decision"),
+            state
+                .host_blocked("example.com", 80)
+                .await
+                .expect("host_blocked should return a decision"),
             HostBlockDecision::Blocked(HostBlockReason::Denied)
         );
     }
@@ -847,13 +850,19 @@ mod tests {
         });
 
         assert_eq!(
-            state.host_blocked("example.com", 80).await.expect("host_blocked should return a decision"),
+            state
+                .host_blocked("example.com", 80)
+                .await
+                .expect("host_blocked should return a decision"),
             HostBlockDecision::Allowed
         );
         assert_eq!(
             // Use a public IP literal to avoid relying on ambient DNS behavior (some networks
             // resolve unknown hostnames to private IPs, which would trigger `not_allowed_local`).
-            state.host_blocked("8.8.8.8", 80).await.expect("host_blocked should return a decision"),
+            state
+                .host_blocked("8.8.8.8", 80)
+                .await
+                .expect("host_blocked should return a decision"),
             HostBlockDecision::Blocked(HostBlockReason::NotAllowed)
         );
     }
@@ -865,13 +874,22 @@ mod tests {
             ..NetworkProxySettings::default()
         });
 
-        state.add_allowed_domain("ExAmPlE.CoM").await.expect("runtime test should succeed");
+        state
+            .add_allowed_domain("ExAmPlE.CoM")
+            .await
+            .expect("runtime test should succeed");
 
-        let (allowed, denied) = state.current_patterns().await.expect("runtime test should succeed");
+        let (allowed, denied) = state
+            .current_patterns()
+            .await
+            .expect("runtime test should succeed");
         assert_eq!(allowed, vec!["example.com".to_string()]);
         assert!(denied.is_empty());
         assert_eq!(
-            state.host_blocked("example.com", 80).await.expect("host_blocked should return a decision"),
+            state
+                .host_blocked("example.com", 80)
+                .await
+                .expect("host_blocked should return a decision"),
             HostBlockDecision::Allowed
         );
     }
@@ -883,13 +901,22 @@ mod tests {
             ..NetworkProxySettings::default()
         });
 
-        state.add_denied_domain("EXAMPLE.COM").await.expect("runtime test should succeed");
+        state
+            .add_denied_domain("EXAMPLE.COM")
+            .await
+            .expect("runtime test should succeed");
 
-        let (allowed, denied) = state.current_patterns().await.expect("runtime test should succeed");
+        let (allowed, denied) = state
+            .current_patterns()
+            .await
+            .expect("runtime test should succeed");
         assert!(allowed.is_empty());
         assert_eq!(denied, vec!["example.com".to_string()]);
         assert_eq!(
-            state.host_blocked("example.com", 80).await.expect("host_blocked should return a decision"),
+            state
+                .host_blocked("example.com", 80)
+                .await
+                .expect("host_blocked should return a decision"),
             HostBlockDecision::Blocked(HostBlockReason::Denied)
         );
     }
@@ -988,11 +1015,17 @@ mod tests {
         });
 
         assert_eq!(
-            state.host_blocked("api.openai.com", 80).await.expect("runtime test should succeed"),
+            state
+                .host_blocked("api.openai.com", 80)
+                .await
+                .expect("runtime test should succeed"),
             HostBlockDecision::Allowed
         );
         assert_eq!(
-            state.host_blocked("openai.com", 80).await.expect("runtime test should succeed"),
+            state
+                .host_blocked("openai.com", 80)
+                .await
+                .expect("runtime test should succeed"),
             HostBlockDecision::Blocked(HostBlockReason::NotAllowed)
         );
     }
@@ -1006,11 +1039,17 @@ mod tests {
         });
 
         assert_eq!(
-            state.host_blocked("127.0.0.1", 80).await.expect("runtime test should succeed"),
+            state
+                .host_blocked("127.0.0.1", 80)
+                .await
+                .expect("runtime test should succeed"),
             HostBlockDecision::Blocked(HostBlockReason::NotAllowedLocal)
         );
         assert_eq!(
-            state.host_blocked("localhost", 80).await.expect("runtime test should succeed"),
+            state
+                .host_blocked("localhost", 80)
+                .await
+                .expect("runtime test should succeed"),
             HostBlockDecision::Blocked(HostBlockReason::NotAllowedLocal)
         );
     }
@@ -1024,7 +1063,10 @@ mod tests {
         });
 
         assert_eq!(
-            state.host_blocked("127.0.0.1", 80).await.expect("runtime test should succeed"),
+            state
+                .host_blocked("127.0.0.1", 80)
+                .await
+                .expect("runtime test should succeed"),
             HostBlockDecision::Blocked(HostBlockReason::NotAllowedLocal)
         );
     }
@@ -1038,7 +1080,10 @@ mod tests {
         });
 
         assert_eq!(
-            state.host_blocked("10.0.0.1", 80).await.expect("runtime test should succeed"),
+            state
+                .host_blocked("10.0.0.1", 80)
+                .await
+                .expect("runtime test should succeed"),
             HostBlockDecision::Blocked(HostBlockReason::NotAllowedLocal)
         );
     }
@@ -1052,7 +1097,10 @@ mod tests {
         });
 
         assert_eq!(
-            state.host_blocked("localhost", 80).await.expect("runtime test should succeed"),
+            state
+                .host_blocked("localhost", 80)
+                .await
+                .expect("runtime test should succeed"),
             HostBlockDecision::Allowed
         );
     }
@@ -1066,7 +1114,10 @@ mod tests {
         });
 
         assert_eq!(
-            state.host_blocked("10.0.0.1", 80).await.expect("runtime test should succeed"),
+            state
+                .host_blocked("10.0.0.1", 80)
+                .await
+                .expect("runtime test should succeed"),
             HostBlockDecision::Allowed
         );
     }
@@ -1080,7 +1131,10 @@ mod tests {
         });
 
         assert_eq!(
-            state.host_blocked("fe80::1%lo0", 80).await.expect("runtime test should succeed"),
+            state
+                .host_blocked("fe80::1%lo0", 80)
+                .await
+                .expect("runtime test should succeed"),
             HostBlockDecision::Blocked(HostBlockReason::NotAllowedLocal)
         );
     }
@@ -1094,7 +1148,10 @@ mod tests {
         });
 
         assert_eq!(
-            state.host_blocked("fe80::1%lo0", 80).await.expect("runtime test should succeed"),
+            state
+                .host_blocked("fe80::1%lo0", 80)
+                .await
+                .expect("runtime test should succeed"),
             HostBlockDecision::Allowed
         );
     }
@@ -1108,7 +1165,10 @@ mod tests {
         });
 
         assert_eq!(
-            state.host_blocked("10.0.0.1", 80).await.expect("runtime test should succeed"),
+            state
+                .host_blocked("10.0.0.1", 80)
+                .await
+                .expect("runtime test should succeed"),
             HostBlockDecision::Blocked(HostBlockReason::NotAllowedLocal)
         );
     }
@@ -1122,7 +1182,10 @@ mod tests {
         });
 
         assert_eq!(
-            state.host_blocked("127.0.0.1", 80).await.expect("runtime test should succeed"),
+            state
+                .host_blocked("127.0.0.1", 80)
+                .await
+                .expect("runtime test should succeed"),
             HostBlockDecision::Blocked(HostBlockReason::NotAllowedLocal)
         );
     }
@@ -1418,7 +1481,12 @@ mod tests {
             ..NetworkProxySettings::default()
         });
 
-        assert!(state.is_unix_socket_allowed(&socket_path).await.expect("runtime test should succeed"));
+        assert!(
+            state
+                .is_unix_socket_allowed(&socket_path)
+                .await
+                .expect("runtime test should succeed")
+        );
         assert!(
             !state
                 .is_unix_socket_allowed("/tmp/not-allowed.sock")
@@ -1453,7 +1521,12 @@ mod tests {
             ..NetworkProxySettings::default()
         });
 
-        assert!(state.is_unix_socket_allowed(&link_s).await.expect("runtime test should succeed"));
+        assert!(
+            state
+                .is_unix_socket_allowed(&link_s)
+                .await
+                .expect("runtime test should succeed")
+        );
     }
 
     #[cfg(target_os = "macos")]
@@ -1465,8 +1538,18 @@ mod tests {
             ..NetworkProxySettings::default()
         });
 
-        assert!(state.is_unix_socket_allowed("/tmp/any.sock").await.expect("runtime test should succeed"));
-        assert!(!state.is_unix_socket_allowed("relative.sock").await.expect("runtime test should succeed"));
+        assert!(
+            state
+                .is_unix_socket_allowed("/tmp/any.sock")
+                .await
+                .expect("runtime test should succeed")
+        );
+        assert!(
+            !state
+                .is_unix_socket_allowed("relative.sock")
+                .await
+                .expect("runtime test should succeed")
+        );
     }
 
     #[cfg(not(target_os = "macos"))]
@@ -1480,6 +1563,11 @@ mod tests {
             ..NetworkProxySettings::default()
         });
 
-        assert!(!state.is_unix_socket_allowed(&socket_path).await.expect("runtime test should succeed"));
+        assert!(
+            !state
+                .is_unix_socket_allowed(&socket_path)
+                .await
+                .expect("runtime test should succeed")
+        );
     }
 }

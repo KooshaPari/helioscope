@@ -193,7 +193,7 @@ mod tests {
                 * phase_one::CONTEXT_WINDOW_PERCENT
                 / 100,
         )
-        .unwrap();
+        .expect("rollout token limit should fit in usize");
         let expected_truncated = truncate_text(
             &input,
             TruncationPolicy::Tokens(expected_rollout_token_limit),
@@ -204,7 +204,7 @@ mod tests {
             Path::new("/tmp"),
             &input,
         )
-        .unwrap();
+        .expect("build stage one input message");
 
         assert!(expected_truncated.contains("tokens truncated"));
         assert!(expected_truncated.starts_with('a'));
@@ -227,7 +227,7 @@ mod tests {
             Path::new("/tmp"),
             &input,
         )
-        .unwrap();
+        .expect("build stage one input message");
 
         assert!(message.contains(&expected_truncated));
     }

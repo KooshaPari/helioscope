@@ -614,7 +614,7 @@ Hannes
 
 Role icon, Roo Code Dev — 1/27/26, 4:17 PM
 Roo Code 3.44 Release Updates
-@everyone Worktrees ARE HERE!!!!! + parallel tool calls are back (experimental) and a whole slew of other improovements!!
+@everyone Worktrees ARE HERE!!!!! + parallel tool calls are back (experimental) and a whole slew of other improvements!!
 
 Worktrees
 Worktrees are easier to work with in chat. The Worktree selector is more prominent, creating a worktree takes fewer steps, and the Create Worktree flow is clearer (including a native folder picker), so it’s faster to spin up an isolated branch/workspace and switch between worktrees while you work.

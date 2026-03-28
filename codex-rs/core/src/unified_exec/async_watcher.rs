@@ -275,7 +275,7 @@ mod tests {
         let mut buf = "ééé".as_bytes().to_vec();
 
         let first = split_valid_utf8_prefix_with_max(&mut buf, 3).expect("expected prefix");
-        assert_eq!(std::str::from_utf8(&first).unwrap(), "é");
+        assert_eq!(std::str::from_utf8(&first).expect("utf8 prefix"), "é");
         assert_eq!(buf, "éé".as_bytes().to_vec());
     }
 

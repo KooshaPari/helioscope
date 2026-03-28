@@ -140,8 +140,8 @@ mod tests {
             RolloutItem::ResponseItem(items[2].clone()),
         ];
         assert_eq!(
-            serde_json::to_value(&truncated).unwrap(),
-            serde_json::to_value(&expected).unwrap()
+            serde_json::to_value(&truncated).expect("serialize truncated"),
+            serde_json::to_value(&expected).expect("serialize expected")
         );
 
         let truncated2 = truncate_rollout_before_nth_user_message_from_start(&rollout, 2);
@@ -159,8 +159,8 @@ mod tests {
         let truncated = truncate_rollout_before_nth_user_message_from_start(&rollout, usize::MAX);
 
         assert_eq!(
-            serde_json::to_value(&truncated).unwrap(),
-            serde_json::to_value(&rollout).unwrap()
+            serde_json::to_value(&truncated).expect("serialize truncated"),
+            serde_json::to_value(&rollout).expect("serialize rollout")
         );
     }
 
@@ -185,8 +185,8 @@ mod tests {
         let truncated = truncate_rollout_before_nth_user_message_from_start(&rollout_items, 2);
         let expected = rollout_items[..7].to_vec();
         assert_eq!(
-            serde_json::to_value(&truncated).unwrap(),
-            serde_json::to_value(&expected).unwrap()
+            serde_json::to_value(&truncated).expect("serialize truncated"),
+            serde_json::to_value(&expected).expect("serialize expected")
         );
     }
 
@@ -214,8 +214,8 @@ mod tests {
         ];
 
         assert_eq!(
-            serde_json::to_value(&truncated).unwrap(),
-            serde_json::to_value(&expected).unwrap()
+            serde_json::to_value(&truncated).expect("serialize truncated"),
+            serde_json::to_value(&expected).expect("serialize expected")
         );
     }
 }

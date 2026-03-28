@@ -67,7 +67,8 @@ async fn review_op_emits_lifecycle_and_review_output() {
             }},
             {"type":"response.completed", "response": {"id": "__ID__"}}
         ]"#;
-    let review_json_escaped = serde_json::to_string(&review_json).expect("test operation should succeed");
+    let review_json_escaped =
+        serde_json::to_string(&review_json).expect("test operation should succeed");
     let sse_raw = sse_template.replace("__REVIEW__", &review_json_escaped);
     let (server, _request_log) = start_responses_server_with_sse(&sse_raw, 1).await;
     let codex_home = Arc::new(TempDir::new().expect("test operation should succeed"));
@@ -332,7 +333,8 @@ async fn review_does_not_emit_agent_message_on_structured_output() {
             }},
             {"type":"response.completed", "response": {"id": "__ID__"}}
         ]"#;
-    let review_json_escaped = serde_json::to_string(&review_json).expect("test operation should succeed");
+    let review_json_escaped =
+        serde_json::to_string(&review_json).expect("test operation should succeed");
     let sse_raw = sse_template.replace("__REVIEW__", &review_json_escaped);
     let (server, _request_log) = start_responses_server_with_sse(&sse_raw, 1).await;
     let codex_home = Arc::new(TempDir::new().expect("test operation should succeed"));
@@ -427,7 +429,12 @@ async fn review_uses_custom_review_model_from_config() {
     let request = request_log.single_request();
     assert_eq!(request.path(), "/v1/responses");
     let body = request.body_json();
-    assert_eq!(body["model"].as_str().expect("test operation should succeed"), "gpt-5.1");
+    assert_eq!(
+        body["model"]
+            .as_str()
+            .expect("test operation should succeed"),
+        "gpt-5.1"
+    );
 
     let _codex_home_guard = codex_home;
     server.verify().await;
@@ -478,7 +485,12 @@ async fn review_uses_session_model_when_review_model_unset() {
     let request = request_log.single_request();
     assert_eq!(request.path(), "/v1/responses");
     let body = request.body_json();
-    assert_eq!(body["model"].as_str().expect("test operation should succeed"), "gpt-4.1");
+    assert_eq!(
+        body["model"]
+            .as_str()
+            .expect("test operation should succeed"),
+        "gpt-4.1"
+    );
 
     let _codex_home_guard = codex_home;
     server.verify().await;
@@ -504,7 +516,9 @@ async fn review_input_isolated_from_parent_history() {
 
     let session_file = codex_home.path().join("resume.jsonl");
     {
-        let mut f = tokio::fs::File::create(&session_file).await.expect("test operation should succeed");
+        let mut f = tokio::fs::File::create(&session_file)
+            .await
+            .expect("test operation should succeed");
         let convo_id = Uuid::new_v4();
         // Proper session_meta line (enveloped) with a conversation id
         let meta_line = serde_json::json!({
@@ -553,7 +567,8 @@ async fn review_input_isolated_from_parent_history() {
             end_turn: None,
             phase: None,
         };
-        let assistant_json = serde_json::to_value(&assistant).expect("test operation should succeed");
+        let assistant_json =
+            serde_json::to_value(&assistant).expect("test operation should succeed");
         let assistant_line = serde_json::json!({
             "timestamp": "2024-01-01T00:00:02.000Z",
             "type": "response_item",
@@ -735,8 +750,15 @@ async fn review_history_surfaces_in_parent_session() {
 
     // Must include the followup as the last item for this turn
     let last = input.last().expect("at least one item in input");
-    assert_eq!(last["role"].as_str().expect("test operation should succeed"), "user");
-    let last_text = last["content"][0]["text"].as_str().expect("test operation should succeed");
+    assert_eq!(
+        last["role"]
+            .as_str()
+            .expect("test operation should succeed"),
+        "user"
+    );
+    let last_text = last["content"][0]["text"]
+        .as_str()
+        .expect("test operation should succeed");
     assert_eq!(last_text, followup);
 
     // Ensure review-thread content is present for downstream turns.

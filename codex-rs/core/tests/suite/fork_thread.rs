@@ -120,7 +120,8 @@ async fn fork_thread_twice_drops_to_first_message() {
     let fork1_items = read_items(&fork1_path);
     assert!(fork1_items.len() > expected_after_first.len());
     pretty_assertions::assert_eq!(
-        serde_json::to_value(&fork1_items[..expected_after_first.len()]).expect("test operation should succeed"),
+        serde_json::to_value(&fork1_items[..expected_after_first.len()])
+            .expect("test operation should succeed"),
         serde_json::to_value(&expected_after_first).expect("test operation should succeed")
     );
 
@@ -145,7 +146,8 @@ async fn fork_thread_twice_drops_to_first_message() {
     let fork2_items = read_items(&fork2_path);
     assert!(fork2_items.len() > expected_after_second.len());
     pretty_assertions::assert_eq!(
-        serde_json::to_value(&fork2_items[..expected_after_second.len()]).expect("test operation should succeed"),
+        serde_json::to_value(&fork2_items[..expected_after_second.len()])
+            .expect("test operation should succeed"),
         serde_json::to_value(&expected_after_second).expect("test operation should succeed")
     );
 }

@@ -311,7 +311,7 @@ mod tests {
     /// value is cleared to mimic a scenario where no system instructions have
     /// been configured.
     async fn make_config(root: &TempDir, limit: usize, instructions: Option<&str>) -> Config {
-        let codex_home = TempDir::new().unwrap();
+        let codex_home = TempDir::new().expect("tempdir for test");
         let mut config = ConfigBuilder::default()
             .codex_home(codex_home.path().to_path_buf())
             .build()
@@ -345,7 +345,7 @@ mod tests {
         instructions: Option<&str>,
         markers: &[&str],
     ) -> Config {
-        let codex_home = TempDir::new().unwrap();
+        let codex_home = TempDir::new().expect("tempdir for test");
         let cli_overrides = vec![(
             "project_root_markers".to_string(),
             TomlValue::Array(
@@ -392,7 +392,7 @@ mod tests {
     #[tokio::test]
     async fn doc_smaller_than_limit_is_returned() {
         let tmp = tempfile::tempdir().expect("tempdir");
-        fs::write(tmp.path().join("AGENTS.md"), "hello world").unwrap();
+        fs::write(tmp.path().join("AGENTS.md"), "hello world").expect("write AGENTS.md");
 
         let res = get_user_instructions(&make_config(&tmp, 4096, None).await, None)
             .await
@@ -411,7 +411,7 @@ mod tests {
         let tmp = tempfile::tempdir().expect("tempdir");
 
         let huge = "A".repeat(LIMIT * 2); // 2 KiB
-        fs::write(tmp.path().join("AGENTS.md"), &huge).unwrap();
+        fs::write(tmp.path().join("AGENTS.md"), &huge).expect("write AGENTS.md");
 
         let res = get_user_instructions(&make_config(&tmp, LIMIT, None).await, None)
             .await
@@ -432,14 +432,14 @@ mod tests {
             repo.path().join(".git"),
             "gitdir: /path/to/actual/git/dir\n",
         )
-        .unwrap();
+        .expect("write .git marker");
 
         // Put the doc at the repo root.
-        fs::write(repo.path().join("AGENTS.md"), "root level doc").unwrap();
+        fs::write(repo.path().join("AGENTS.md"), "root level doc").expect("write AGENTS.md");
 
         // Now create a nested working directory: repo/workspace/crate_a
         let nested = repo.path().join("workspace/crate_a");
-        std::fs::create_dir_all(&nested).unwrap();
+        std::fs::create_dir_all(&nested).expect("create nested workspace");
 
         // Build config pointing at the nested dir.
         let mut cfg = make_config(&repo, 4096, None).await;
@@ -455,7 +455,7 @@ mod tests {
     #[tokio::test]
     async fn zero_byte_limit_disables_docs() {
         let tmp = tempfile::tempdir().expect("tempdir");
-        fs::write(tmp.path().join("AGENTS.md"), "something").unwrap();
+        fs::write(tmp.path().join("AGENTS.md"), "something").expect("write AGENTS.md");
 
         let res = get_user_instructions(&make_config(&tmp, 0, None).await, None).await;
         assert!(
@@ -497,7 +497,7 @@ mod tests {
     #[tokio::test]
     async fn merges_existing_instructions_with_project_doc() {
         let tmp = tempfile::tempdir().expect("tempdir");
-        fs::write(tmp.path().join("AGENTS.md"), "proj doc").unwrap();
+        fs::write(tmp.path().join("AGENTS.md"), "proj doc").expect("write AGENTS.md");
 
         const INSTRUCTIONS: &str = "base instructions";
 
@@ -535,15 +535,15 @@ mod tests {
             repo.path().join(".git"),
             "gitdir: /path/to/actual/git/dir\n",
         )
-        .unwrap();
+        .expect("write .git marker");
 
         // Repo root doc.
-        fs::write(repo.path().join("AGENTS.md"), "root doc").unwrap();
+        fs::write(repo.path().join("AGENTS.md"), "root doc").expect("write AGENTS.md");
 
         // Nested working directory with its own doc.
         let nested = repo.path().join("workspace/crate_a");
-        std::fs::create_dir_all(&nested).unwrap();
-        fs::write(nested.join("AGENTS.md"), "crate doc").unwrap();
+        std::fs::create_dir_all(&nested).expect("create nested workspace");
+        fs::write(nested.join("AGENTS.md"), "crate doc").expect("write AGENTS.md");
 
         let mut cfg = make_config(&repo, 4096, None).await;
         cfg.cwd = nested;
@@ -557,12 +557,12 @@ mod tests {
     #[tokio::test]
     async fn project_root_markers_are_honored_for_agents_discovery() {
         let root = tempfile::tempdir().expect("tempdir");
-        fs::write(root.path().join(".codex-root"), "").unwrap();
-        fs::write(root.path().join("AGENTS.md"), "parent doc").unwrap();
+        fs::write(root.path().join(".codex-root"), "").expect("write marker");
+        fs::write(root.path().join("AGENTS.md"), "parent doc").expect("write AGENTS.md");
 
         let nested = root.path().join("dir1");
-        fs::create_dir_all(nested.join(".git")).unwrap();
-        fs::write(nested.join("AGENTS.md"), "child doc").unwrap();
+        fs::create_dir_all(nested.join(".git")).expect("create .git dir");
+        fs::write(nested.join("AGENTS.md"), "child doc").expect("write AGENTS.md");
 
         let mut cfg =
             make_config_with_project_root_markers(&root, 4096, None, &[".codex-root"]).await;
@@ -587,8 +587,8 @@ mod tests {
     #[tokio::test]
     async fn agents_local_md_preferred() {
         let tmp = tempfile::tempdir().expect("tempdir");
-        fs::write(tmp.path().join(DEFAULT_PROJECT_DOC_FILENAME), "versioned").unwrap();
-        fs::write(tmp.path().join(LOCAL_PROJECT_DOC_FILENAME), "local").unwrap();
+        fs::write(tmp.path().join(DEFAULT_PROJECT_DOC_FILENAME), "versioned").expect("write AGENTS.md");
+        fs::write(tmp.path().join(LOCAL_PROJECT_DOC_FILENAME), "local").expect("write AGENTS.override.md");
 
         let cfg = make_config(&tmp, 4096, None).await;
 
@@ -601,7 +601,7 @@ mod tests {
         let discovery = discover_project_doc_paths(&cfg).expect("discover paths");
         assert_eq!(discovery.len(), 1);
         assert_eq!(
-            discovery[0].file_name().unwrap().to_string_lossy(),
+            discovery[0].file_name().expect("file name").to_string_lossy(),
             LOCAL_PROJECT_DOC_FILENAME
         );
     }
@@ -610,7 +610,7 @@ mod tests {
     #[tokio::test]
     async fn uses_configured_fallback_when_agents_missing() {
         let tmp = tempfile::tempdir().expect("tempdir");
-        fs::write(tmp.path().join("EXAMPLE.md"), "example instructions").unwrap();
+        fs::write(tmp.path().join("EXAMPLE.md"), "example instructions").expect("write fallback");
 
         let cfg = make_config_with_fallback(&tmp, 4096, None, &["EXAMPLE.md"]).await;
 
@@ -625,8 +625,8 @@ mod tests {
     #[tokio::test]
     async fn agents_md_preferred_over_fallbacks() {
         let tmp = tempfile::tempdir().expect("tempdir");
-        fs::write(tmp.path().join("AGENTS.md"), "primary").unwrap();
-        fs::write(tmp.path().join("EXAMPLE.md"), "secondary").unwrap();
+        fs::write(tmp.path().join("AGENTS.md"), "primary").expect("write AGENTS.md");
+        fs::write(tmp.path().join("EXAMPLE.md"), "secondary").expect("write EXAMPLE.md");
 
         let cfg = make_config_with_fallback(&tmp, 4096, None, &["EXAMPLE.md", ".example.md"]).await;
 
@@ -641,7 +641,7 @@ mod tests {
         assert!(
             discovery[0]
                 .file_name()
-                .unwrap()
+                .expect("file name")
                 .to_string_lossy()
                 .eq(DEFAULT_PROJECT_DOC_FILENAME)
         );
@@ -650,7 +650,7 @@ mod tests {
     #[tokio::test]
     async fn skills_are_appended_to_project_doc() {
         let tmp = tempfile::tempdir().expect("tempdir");
-        fs::write(tmp.path().join("AGENTS.md"), "base doc").unwrap();
+        fs::write(tmp.path().join("AGENTS.md"), "base doc").expect("write AGENTS.md");
 
         let cfg = make_config(&tmp, 4096, None).await;
         create_skill(
@@ -717,7 +717,7 @@ mod tests {
     #[tokio::test]
     async fn apps_feature_does_not_append_to_project_doc_user_instructions() {
         let tmp = tempfile::tempdir().expect("tempdir");
-        fs::write(tmp.path().join("AGENTS.md"), "base doc").unwrap();
+        fs::write(tmp.path().join("AGENTS.md"), "base doc").expect("write AGENTS.md");
 
         let mut cfg = make_config(&tmp, 4096, None).await;
         cfg.features.enable(Feature::Apps);
@@ -730,8 +730,8 @@ mod tests {
 
     fn create_skill(codex_home: PathBuf, name: &str, description: &str) {
         let skill_dir = codex_home.join(format!("skills/{name}"));
-        fs::create_dir_all(&skill_dir).unwrap();
+        fs::create_dir_all(&skill_dir).expect("create skill dir");
         let content = format!("---\nname: {name}\ndescription: {description}\n---\n\n# Body\n");
-        fs::write(skill_dir.join("SKILL.md"), content).unwrap();
+        fs::write(skill_dir.join("SKILL.md"), content).expect("write SKILL.md");
     }
 }

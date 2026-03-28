@@ -55,19 +55,36 @@ fn parse_result(item: &Value) -> CommandResult {
             CommandResult { exit_code, stdout }
         }
         Err(_) => {
-            let structured = Regex::new(r"(?s)^Exit code:\s*(-?\d+).*?Output:\n(.*)$").expect("test operation should succeed");
-            let regex =
-                Regex::new(r"(?s)^.*?Process exited with code (\d+)\n.*?Output:\n(.*)$").expect("test operation should succeed");
+            let structured = Regex::new(r"(?s)^Exit code:\s*(-?\d+).*?Output:\n(.*)$")
+                .expect("test operation should succeed");
+            let regex = Regex::new(r"(?s)^.*?Process exited with code (\d+)\n.*?Output:\n(.*)$")
+                .expect("test operation should succeed");
             if let Some(captures) = structured.captures(output_str) {
-                let exit_code = captures.get(1).expect("test operation should succeed").as_str().parse::<i64>().expect("test operation should succeed");
-                let output = captures.get(2).expect("test operation should succeed").as_str();
+                let exit_code = captures
+                    .get(1)
+                    .expect("test operation should succeed")
+                    .as_str()
+                    .parse::<i64>()
+                    .expect("test operation should succeed");
+                let output = captures
+                    .get(2)
+                    .expect("test operation should succeed")
+                    .as_str();
                 CommandResult {
                     exit_code: Some(exit_code),
                     stdout: output.to_string(),
                 }
             } else if let Some(captures) = regex.captures(output_str) {
-                let exit_code = captures.get(1).expect("test operation should succeed").as_str().parse::<i64>().expect("test operation should succeed");
-                let output = captures.get(2).expect("test operation should succeed").as_str();
+                let exit_code = captures
+                    .get(1)
+                    .expect("test operation should succeed")
+                    .as_str()
+                    .parse::<i64>()
+                    .expect("test operation should succeed");
+                let output = captures
+                    .get(2)
+                    .expect("test operation should succeed")
+                    .as_str();
                 CommandResult {
                     exit_code: Some(exit_code),
                     stdout: output.to_string(),

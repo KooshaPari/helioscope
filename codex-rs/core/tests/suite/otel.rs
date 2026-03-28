@@ -97,7 +97,10 @@ async fn responses_api_emits_api_request_event() {
 
     mount_sse_once(&server, sse(vec![ev_completed("done")])).await;
 
-    let TestCodex { codex, .. } = test_codex().build(&server).await.expect("test setup should succeed");
+    let TestCodex { codex, .. } = test_codex()
+        .build(&server)
+        .await
+        .expect("test setup should succeed");
 
     codex
         .submit(Op::UserInput {
@@ -140,7 +143,10 @@ async fn process_sse_emits_tracing_for_output_item() {
     )
     .await;
 
-    let TestCodex { codex, .. } = test_codex().build(&server).await.expect("test setup should succeed");
+    let TestCodex { codex, .. } = test_codex()
+        .build(&server)
+        .await
+        .expect("test setup should succeed");
 
     codex
         .submit(Op::UserInput {
@@ -494,7 +500,10 @@ async fn process_sse_emits_completed_telemetry() {
     )
     .await;
 
-    let TestCodex { codex, .. } = test_codex().build(&server).await.expect("test setup should succeed");
+    let TestCodex { codex, .. } = test_codex()
+        .build(&server)
+        .await
+        .expect("test setup should succeed");
 
     codex
         .submit(Op::UserInput {

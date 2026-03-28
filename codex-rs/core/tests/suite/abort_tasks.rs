@@ -58,7 +58,10 @@ async fn interrupt_long_running_tool_emits_turn_aborted() {
     // Wait until the exec begins to avoid a race, then interrupt.
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::ExecCommandBegin(_))).await;
 
-    codex.submit(Op::Interrupt).await.expect("interrupt should succeed");
+    codex
+        .submit(Op::Interrupt)
+        .await
+        .expect("interrupt should succeed");
 
     // Expect TurnAborted soon after.
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnAborted(_))).await;
@@ -112,7 +115,10 @@ async fn interrupt_tool_records_history_entries() {
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::ExecCommandBegin(_))).await;
 
     tokio::time::sleep(Duration::from_secs_f32(0.1)).await;
-    codex.submit(Op::Interrupt).await.expect("interrupt should succeed");
+    codex
+        .submit(Op::Interrupt)
+        .await
+        .expect("interrupt should succeed");
 
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnAborted(_))).await;
 
@@ -210,7 +216,10 @@ async fn interrupt_persists_turn_aborted_marker_in_next_request() {
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::ExecCommandBegin(_))).await;
 
     tokio::time::sleep(Duration::from_secs_f32(0.1)).await;
-    codex.submit(Op::Interrupt).await.expect("interrupt should succeed");
+    codex
+        .submit(Op::Interrupt)
+        .await
+        .expect("interrupt should succeed");
 
     wait_for_event(&codex, |ev| matches!(ev, EventMsg::TurnAborted(_))).await;
 

@@ -807,7 +807,9 @@ mod tests {
         store.set_error(&key, KeyringError::Invalid("error".into(), "delete".into()));
         super::save_oauth_tokens_to_file(&tokens).expect("save fallback file should succeed");
 
-        let fallback_exists = super::fallback_file_path().map(|p| p.exists()).unwrap_or(false);
+        let fallback_exists = super::fallback_file_path()
+            .map(|p| p.exists())
+            .unwrap_or(false);
         assert!(fallback_exists, "fallback file must exist after save");
         Ok(())
     }

@@ -1,0 +1,10 @@
+{
+  "feature_number": "002",
+  "slug": "002-chat-composer-decomposition",
+  "friendly_name": "Chat Composer God File Decomposition",
+  "mission": "refactor",
+  "source_description": "Decompose chat_composer.rs (9499 LOC) into focused trait-based modules: text_manipulation, history, submitter, renderer, key_event_router. Extract each as a dedicated submodule under codex-rs/tui/src/bottom_pane/chat_composer_submodules/ using trait-based decomposition pattern.",
+  "created_at": "2026-03-27T10:00:00Z",
+  "target_branch": "main",
+  "vcs": "git"
+}

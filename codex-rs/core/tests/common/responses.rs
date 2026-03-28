@@ -48,7 +48,10 @@ impl ResponseMock {
     }
 
     pub fn single_request(&self) -> ResponsesRequest {
-        let requests = self.requests.lock().expect("requests lock should not be poisoned");
+        let requests = self
+            .requests
+            .lock()
+            .expect("requests lock should not be poisoned");
         if requests.len() != 1 {
             panic!("expected 1 request, got {}", requests.len());
         }
@@ -493,7 +496,8 @@ impl WebSocketTestServer {
             .lock()
             .expect("handshakes lock should not be poisoned")
             .len()
-            >= expected {
+            >= expected
+        {
             return true;
         }
 
@@ -505,7 +509,8 @@ impl WebSocketTestServer {
                 .lock()
                 .expect("handshakes lock should not be poisoned")
                 .len()
-                >= expected {
+                >= expected
+            {
                 return true;
             }
             let now = tokio::time::Instant::now();
@@ -1252,8 +1257,8 @@ pub async fn start_websocket_server_with_headers(
             };
             let connection = {
                 let mut pending = connections
-            .lock()
-            .expect("connections lock should not be poisoned");
+                    .lock()
+                    .expect("connections lock should not be poisoned");
                 pending.pop_front()
             };
 
@@ -1320,8 +1325,8 @@ pub async fn start_websocket_server_with_headers(
                 };
                 if let Some(body) = parse_ws_request_body(message) {
                     let mut log = requests
-                    .lock()
-                    .expect("requests lock should not be poisoned");
+                        .lock()
+                        .expect("requests lock should not be poisoned");
                     if let Some(connection_log) = log.get_mut(connection_index) {
                         connection_log.push(WebSocketRequest { body });
                         let request_index = connection_log.len() - 1;

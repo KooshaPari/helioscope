@@ -73,7 +73,9 @@ fn assert_default_env_context(text: &str, cwd: &str, shell: &Shell) {
 }
 
 fn assert_tool_names(body: &serde_json::Value, expected_names: &[&str]) {
-    let tools = body["tools"].as_array().expect("tools array should be present");
+    let tools = body["tools"]
+        .as_array()
+        .expect("tools array should be present");
     assert_eq!(
         tools
             .iter()
@@ -397,7 +399,12 @@ async fn overrides_turn_context_but_keeps_cached_prefix_and_key_constant() -> an
 
     let writable = TempDir::new().expect("should create temp dir");
     let new_policy = SandboxPolicy::WorkspaceWrite {
-        writable_roots: vec![writable.path().try_into().expect("writable root path should convert into an absolute path")],
+        writable_roots: vec![
+            writable
+                .path()
+                .try_into()
+                .expect("writable root path should convert into an absolute path"),
+        ],
         read_only_access: Default::default(),
         network_access: true,
         exclude_tmpdir_env_var: true,
@@ -661,7 +668,10 @@ async fn per_turn_overrides_keep_cached_prefix_and_key_constant() -> anyhow::Res
     let new_cwd = TempDir::new().expect("should create temp dir");
     let writable = TempDir::new().expect("should create temp dir");
     let new_policy = SandboxPolicy::WorkspaceWrite {
-        writable_roots: vec![AbsolutePathBuf::try_from(writable.path()).expect("writable root path should convert into AbsolutePathBuf")],
+        writable_roots: vec![
+            AbsolutePathBuf::try_from(writable.path())
+                .expect("writable root path should convert into AbsolutePathBuf"),
+        ],
         read_only_access: Default::default(),
         network_access: true,
         exclude_tmpdir_env_var: true,

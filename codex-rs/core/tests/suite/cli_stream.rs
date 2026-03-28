@@ -470,7 +470,10 @@ async fn integration_git_info_unit_test() {
         git_info.commit_hash.is_some(),
         "Git info should contain commit_hash"
     );
-    let commit_hash = git_info.commit_hash.as_ref().expect("test operation should succeed");
+    let commit_hash = git_info
+        .commit_hash
+        .as_ref()
+        .expect("test operation should succeed");
     assert_eq!(commit_hash.len(), 40, "Commit hash should be 40 characters");
     assert!(
         commit_hash.chars().all(|c| c.is_ascii_hexdigit()),
@@ -479,7 +482,10 @@ async fn integration_git_info_unit_test() {
 
     // Check that we have the correct branch
     assert!(git_info.branch.is_some(), "Git info should contain branch");
-    let branch = git_info.branch.as_ref().expect("test operation should succeed");
+    let branch = git_info
+        .branch
+        .as_ref()
+        .expect("test operation should succeed");
     assert_eq!(
         branch, "integration-test-branch",
         "Branch should match what we created"
@@ -490,7 +496,10 @@ async fn integration_git_info_unit_test() {
         git_info.repository_url.is_some(),
         "Git info should contain repository_url"
     );
-    let repo_url = git_info.repository_url.as_ref().expect("test operation should succeed");
+    let repo_url = git_info
+        .repository_url
+        .as_ref()
+        .expect("test operation should succeed");
     // Some hosts rewrite remotes (e.g., github.com → git@github.com), so assert against
     // the actual remote reported by git instead of a static URL.
     let expected_remote_url = std::process::Command::new("git")
@@ -514,7 +523,8 @@ async fn integration_git_info_unit_test() {
 
     // 5. Test serialization to ensure it works in SessionMeta
     let serialized = serde_json::to_string(&git_info).expect("test operation should succeed");
-    let deserialized: GitInfo = serde_json::from_str(&serialized).expect("test operation should succeed");
+    let deserialized: GitInfo =
+        serde_json::from_str(&serialized).expect("test operation should succeed");
 
     assert_eq!(git_info.commit_hash, deserialized.commit_hash);
     assert_eq!(git_info.branch, deserialized.branch);

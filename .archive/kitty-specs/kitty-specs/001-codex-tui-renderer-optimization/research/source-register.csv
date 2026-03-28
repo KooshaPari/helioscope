@@ -1,0 +1,17 @@
+source_id,source_type,title_or_path,url_or_path,accessed_utc,relevance
+SRC-EXT-001,web,"How octorus Renders 300K Lines of Diff at High Speed",https://dev.to/ushironoko/how-octorus-renders-300k-lines-of-diff-at-high-speed-h4p,2026-02-28T00:00:00Z,high
+SRC-EXT-002,web,"Ratatui Rendering Concepts",https://ratatui.rs/concepts/rendering/,2026-02-28T00:00:00Z,high
+SRC-EXT-003,web,"ratatui::Terminal docs",https://docs.rs/ratatui/latest/ratatui/struct.Terminal.html,2026-02-28T00:00:00Z,high
+SRC-EXT-004,web,"crossterm poll docs",https://docs.rs/crossterm/latest/crossterm/event/fn.poll.html,2026-02-28T00:00:00Z,medium
+SRC-EXT-005,web,"tokio mpsc docs",https://docs.rs/tokio/latest/tokio/sync/mpsc/index.html,2026-02-28T00:00:00Z,high
+SRC-EXT-006,web,"tokio channels tutorial",https://tokio.rs/tokio/tutorial/channels,2026-02-28T00:00:00Z,medium
+SRC-EXT-007,web,"ropey Rope docs",https://docs.rs/ropey/latest/ropey/struct.Rope.html,2026-02-28T00:00:00Z,medium
+SRC-EXT-008,web,"lasso docs",https://docs.rs/lasso/latest/lasso/,2026-02-28T00:00:00Z,medium
+SRC-INT-001,code,"codex-rs/tui/src/app.rs",/Users/kooshapari/CodeProjects/Phenotype/repos/heliosCLI/codex-rs/tui/src/app.rs,2026-02-28T00:00:00Z,high
+SRC-INT-002,code,"codex-rs/tui/src/chatwidget.rs",/Users/kooshapari/CodeProjects/Phenotype/repos/heliosCLI/codex-rs/tui/src/chatwidget.rs,2026-02-28T00:00:00Z,high
+SRC-INT-003,code,"codex-rs/tui/src/tui.rs",/Users/kooshapari/CodeProjects/Phenotype/repos/heliosCLI/codex-rs/tui/src/tui.rs,2026-02-28T00:00:00Z,high
+SRC-INT-004,code,"codex-rs/tui/src/tui/frame_requester.rs",/Users/kooshapari/CodeProjects/Phenotype/repos/heliosCLI/codex-rs/tui/src/tui/frame_requester.rs,2026-02-28T00:00:00Z,high
+SRC-INT-005,code,"codex-rs/core/src/thread_manager.rs",/Users/kooshapari/CodeProjects/Phenotype/repos/heliosCLI/codex-rs/core/src/thread_manager.rs,2026-02-28T00:00:00Z,high
+SRC-INT-006,code,"codex-rs/core/src/client.rs",/Users/kooshapari/CodeProjects/Phenotype/repos/heliosCLI/codex-rs/core/src/client.rs,2026-02-28T00:00:00Z,high
+SRC-INT-007,code,"codex-rs/core/src/model_provider_info.rs",/Users/kooshapari/CodeProjects/Phenotype/repos/heliosCLI/codex-rs/core/src/model_provider_info.rs,2026-02-28T00:00:00Z,high
+SRC-INT-008,doc,"codex-rs/app-server/README.md",/Users/kooshapari/CodeProjects/Phenotype/repos/heliosCLI/codex-rs/app-server/README.md,2026-02-28T00:00:00Z,high

@@ -262,7 +262,7 @@ mod tests {
             ignored_untracked_files: Vec::new(),
         };
 
-        let message = format_large_untracked_warning(Some(200), &report).unwrap();
+        let message = format_large_untracked_warning(Some(200), &report).expect("warning should be Some");
         assert!(message.contains(">= 200 files"));
     }
 

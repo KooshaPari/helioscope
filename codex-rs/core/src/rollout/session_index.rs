@@ -238,7 +238,7 @@ mod tests {
     fn write_index(path: &Path, lines: &[SessionIndexEntry]) -> std::io::Result<()> {
         let mut out = String::new();
         for entry in lines {
-            out.push_str(&serde_json::to_string(entry).unwrap());
+            out.push_str(&serde_json::to_string(entry).expect("serialize index entry"));
             out.push('\n');
         }
         std::fs::write(path, out)

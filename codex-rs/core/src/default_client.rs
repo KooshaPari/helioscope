@@ -292,19 +292,19 @@ mod tests {
         let originator_header = headers
             .get("originator")
             .expect("originator header missing");
-        assert_eq!(originator_header.to_str().unwrap(), originator().value);
+        assert_eq!(originator_header.to_str().expect("originator header value"), originator().value);
 
         // User-Agent matches the computed Codex UA for that originator
         let expected_ua = get_codex_user_agent();
         let ua_header = headers
             .get("user-agent")
             .expect("user-agent header missing");
-        assert_eq!(ua_header.to_str().unwrap(), expected_ua);
+        assert_eq!(ua_header.to_str().expect("user-agent header value"), expected_ua);
 
         let residency_header = headers
             .get(RESIDENCY_HEADER_NAME)
             .expect("residency header missing");
-        assert_eq!(residency_header.to_str().unwrap(), "us");
+        assert_eq!(residency_header.to_str().expect("residency header value"), "us");
 
         set_default_client_residency_requirement(None);
     }
@@ -340,7 +340,7 @@ mod tests {
         let re = Regex::new(&format!(
             r"^{originator}/\d+\.\d+\.\d+ \(Mac OS \d+\.\d+\.\d+; (x86_64|arm64)\) (\S+)$"
         ))
-        .unwrap();
+        .expect("valid regex");
         assert!(re.is_match(&user_agent));
     }
 }

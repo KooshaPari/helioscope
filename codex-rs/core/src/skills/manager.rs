@@ -239,9 +239,9 @@ mod tests {
 
     fn write_user_skill(codex_home: &TempDir, dir: &str, name: &str, description: &str) {
         let skill_dir = codex_home.path().join("skills").join(dir);
-        fs::create_dir_all(&skill_dir).unwrap();
+        fs::create_dir_all(&skill_dir).expect("create skill dir");
         let content = format!("---\nname: {name}\ndescription: {description}\n---\n\n# Body\n");
-        fs::write(skill_dir.join("SKILL.md"), content).unwrap();
+        fs::write(skill_dir.join("SKILL.md"), content).expect("write SKILL.md");
     }
 
     #[tokio::test]

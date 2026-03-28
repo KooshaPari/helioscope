@@ -744,7 +744,7 @@ mod tests {
             .as_array()
             .expect("resources array")
             .iter()
-            .map(|entry| entry["uri"].as_str().unwrap().to_string())
+            .map(|entry| entry["uri"].as_str().expect("uri string").to_string())
             .collect();
 
         assert_eq!(
@@ -767,12 +767,12 @@ mod tests {
     #[test]
     fn parse_arguments_handles_empty_and_json() {
         assert!(
-            parse_arguments(" \n\t").unwrap().is_none(),
+            parse_arguments(" \n\t").expect("parse empty args").is_none(),
             "expected None for empty arguments"
         );
 
         assert!(
-            parse_arguments("null").unwrap().is_none(),
+            parse_arguments("null").expect("parse null").is_none(),
             "expected None for null arguments"
         );
 

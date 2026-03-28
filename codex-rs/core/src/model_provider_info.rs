@@ -357,7 +357,7 @@ base_url = "http://localhost:11434/v1"
             supports_websockets: false,
         };
 
-        let provider: ModelProviderInfo = toml::from_str(azure_provider_toml).unwrap();
+        let provider: ModelProviderInfo = toml::from_str(azure_provider_toml).expect("parse azure toml");
         assert_eq!(expected_provider, provider);
     }
 
@@ -388,7 +388,7 @@ query_params = { api-version = "2025-04-01-preview" }
             supports_websockets: false,
         };
 
-        let provider: ModelProviderInfo = toml::from_str(azure_provider_toml).unwrap();
+        let provider: ModelProviderInfo = toml::from_str(azure_provider_toml).expect("parse azure toml");
         assert_eq!(expected_provider, provider);
     }
 
@@ -422,7 +422,7 @@ env_http_headers = { "X-Example-Env-Header" = "EXAMPLE_ENV_VAR" }
             supports_websockets: false,
         };
 
-        let provider: ModelProviderInfo = toml::from_str(azure_provider_toml).unwrap();
+        let provider: ModelProviderInfo = toml::from_str(azure_provider_toml).expect("parse azure toml");
         assert_eq!(expected_provider, provider);
     }
 

@@ -7762,7 +7762,7 @@ mod tests {
                     "ok": true,
                     "value": 42
                 }))
-                .unwrap(),
+                .expect("serialize json value"),
             ),
             success: Some(true),
         };
@@ -7840,7 +7840,7 @@ mod tests {
         let got = FunctionCallOutputPayload::from(&ctr);
         let expected = FunctionCallOutputPayload {
             body: FunctionCallOutputBody::Text(
-                serde_json::to_string(&vec![text_block("hello"), text_block("world")]).unwrap(),
+                serde_json::to_string(&vec![text_block("hello"), text_block("world")]).expect("serialize text blocks"),
             ),
             success: Some(true),
         };
@@ -7860,7 +7860,7 @@ mod tests {
         let got = FunctionCallOutputPayload::from(&ctr);
         let expected = FunctionCallOutputPayload {
             body: FunctionCallOutputBody::Text(
-                serde_json::to_string(&json!({ "message": "bad" })).unwrap(),
+                serde_json::to_string(&json!({ "message": "bad" })).expect("serialize error message"),
             ),
             success: Some(false),
         };
@@ -7880,7 +7880,7 @@ mod tests {
         let got = FunctionCallOutputPayload::from(&ctr);
         let expected = FunctionCallOutputPayload {
             body: FunctionCallOutputBody::Text(
-                serde_json::to_string(&vec![text_block("alpha")]).unwrap(),
+                serde_json::to_string(&vec![text_block("alpha")]).expect("serialize text blocks"),
             ),
             success: Some(true),
         };
@@ -9128,7 +9128,8 @@ mod tests {
             "expected TurnAborted after abort"
         );
         assert!(
-            exited_review_mode_idx.unwrap() < turn_aborted_idx.unwrap(),
+            exited_review_mode_idx.expect("exited review mode")
+                < turn_aborted_idx.expect("turn aborted"),
             "expected ExitedReviewMode before TurnAborted"
         );
 

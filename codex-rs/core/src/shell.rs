@@ -349,7 +349,7 @@ mod tests {
     #[test]
     #[cfg(target_os = "macos")]
     fn detects_zsh() {
-        let zsh_shell = get_shell(ShellType::Zsh, None).unwrap();
+        let zsh_shell = get_shell(ShellType::Zsh, None).expect("get zsh shell");
 
         let shell_path = zsh_shell.shell_path;
 
@@ -368,7 +368,7 @@ mod tests {
 
     #[test]
     fn detects_bash() {
-        let bash_shell = get_shell(ShellType::Bash, None).unwrap();
+        let bash_shell = get_shell(ShellType::Bash, None).expect("get bash shell");
         let shell_path = bash_shell.shell_path;
 
         assert!(
@@ -379,7 +379,7 @@ mod tests {
 
     #[test]
     fn detects_sh() {
-        let sh_shell = get_shell(ShellType::Sh, None).unwrap();
+        let sh_shell = get_shell(ShellType::Sh, None).expect("get sh shell");
         let shell_path = sh_shell.shell_path;
         assert!(
             shell_path.file_name().and_then(|name| name.to_str()) == Some("sh"),
@@ -412,7 +412,7 @@ mod tests {
             let output = Command::new(args[0].clone())
                 .args(&args[1..])
                 .output()
-                .unwrap();
+                .expect("run shell test");
             assert!(output.status.success());
             assert!(String::from_utf8_lossy(&output.stdout).contains("Works"));
             true
@@ -472,7 +472,7 @@ mod tests {
             .arg("-c")
             .arg("echo $SHELL")
             .output()
-            .unwrap();
+            .expect("get current shell");
 
         let shell_path = String::from_utf8_lossy(&shell.stdout).trim().to_string();
         if shell_path.ends_with("/zsh") {
@@ -505,7 +505,7 @@ mod tests {
             return;
         }
 
-        let powershell_shell = get_shell(ShellType::PowerShell, None).unwrap();
+        let powershell_shell = get_shell(ShellType::PowerShell, None).expect("get powershell");
         let shell_path = powershell_shell.shell_path;
 
         assert!(shell_path.ends_with("pwsh.exe") || shell_path.ends_with("powershell.exe"));

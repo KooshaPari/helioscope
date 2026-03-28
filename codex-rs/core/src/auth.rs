@@ -299,7 +299,7 @@ impl CodexAuth {
             Self::ApiKey(_) => return None,
         };
         #[expect(clippy::unwrap_used)]
-        state.auth_dot_json.lock().unwrap().clone()
+        state.auth_dot_json.lock().expect("mutex lock").clone()
     }
 
     /// Returns `None` if `is_chatgpt_auth()` is false.
@@ -344,7 +344,7 @@ impl CodexAuth {
 impl ChatgptAuth {
     fn current_auth_json(&self) -> Option<AuthDotJson> {
         #[expect(clippy::unwrap_used)]
-        self.state.auth_dot_json.lock().unwrap().clone()
+        self.state.auth_dot_json.lock().expect("mutex lock").clone()
     }
 
     fn current_token_data(&self) -> Option<TokenData> {
@@ -1378,7 +1378,7 @@ mod tests {
 
     #[tokio::test]
     async fn refresh_without_id_token() {
-        let codex_home = tempdir().unwrap();
+        let codex_home = tempdir().expect("codex_home tempdir");
         let fake_jwt = write_auth_file(
             AuthFileParams {
                 openai_api_key: None,
@@ -1409,7 +1409,7 @@ mod tests {
 
     #[test]
     fn login_with_api_key_overwrites_existing_auth_json() {
-        let dir = tempdir().unwrap();
+        let dir = tempdir().expect("dir tempdir");
         let auth_path = dir.path().join("auth.json");
         let stale_auth = json!({
             "OPENAI_API_KEY": "sk-old",
@@ -1422,10 +1422,10 @@ mod tests {
         });
         std::fs::write(
             &auth_path,
-            serde_json::to_string_pretty(&stale_auth).unwrap(),
+            serde_json::to_string_pretty(&stale_auth).expect("serialize auth"),
         )
-        .unwrap();
-
+        .expect("write auth json")
+        .expect("flush auth json");
         super::login_with_api_key(dir.path(), "sk-new", AuthCredentialsStoreMode::File)
             .expect("login_with_api_key should succeed");
 
@@ -1439,7 +1439,7 @@ mod tests {
 
     #[test]
     fn missing_auth_json_returns_none() {
-        let dir = tempdir().unwrap();
+        let dir = tempdir().expect("dir tempdir");
         let auth = CodexAuth::from_auth_storage(dir.path(), AuthCredentialsStoreMode::File)
             .expect("call should succeed");
         assert_eq!(auth, None);
@@ -1448,7 +1448,7 @@ mod tests {
     #[tokio::test]
     #[serial(codex_api_key)]
     async fn pro_account_with_no_api_key_uses_chatgpt_auth() {
-        let codex_home = tempdir().unwrap();
+        let codex_home = tempdir().expect("codex_home tempdir");
         let fake_jwt = write_auth_file(
             AuthFileParams {
                 openai_api_key: None,
@@ -1460,8 +1460,8 @@ mod tests {
         .expect("failed to write auth file");
 
         let auth = super::load_auth(codex_home.path(), false, AuthCredentialsStoreMode::File)
-            .unwrap()
-            .unwrap();
+            .expect("load auth")
+            .expect("auth should exist");
         assert_eq!(None, auth.api_key());
         assert_eq!(AuthMode::Chatgpt, auth.auth_mode());
 
@@ -1497,17 +1497,17 @@ mod tests {
     #[tokio::test]
     #[serial(codex_api_key)]
     async fn loads_api_key_from_auth_json() {
-        let dir = tempdir().unwrap();
+        let dir = tempdir().expect("dir tempdir");
         let auth_file = dir.path().join("auth.json");
         std::fs::write(
             auth_file,
             r#"{"OPENAI_API_KEY":"sk-test-key","tokens":null,"last_refresh":null}"#,
         )
-        .unwrap();
-
+        .expect("write auth json")
+        .expect("flush auth json");
         let auth = super::load_auth(dir.path(), false, AuthCredentialsStoreMode::File)
-            .unwrap()
-            .unwrap();
+            .expect("load auth")
+            .expect("auth should exist");
         assert_eq!(auth.auth_mode(), AuthMode::ApiKey);
         assert_eq!(auth.api_key(), Some("sk-test-key"));
 
@@ -1636,7 +1636,7 @@ mod tests {
 
     #[tokio::test]
     async fn enforce_login_restrictions_logs_out_for_method_mismatch() {
-        let codex_home = tempdir().unwrap();
+        let codex_home = tempdir().expect("codex_home tempdir");
         login_with_api_key(codex_home.path(), "sk-test", AuthCredentialsStoreMode::File)
             .expect("seed api key");
 
@@ -1654,7 +1654,7 @@ mod tests {
     #[tokio::test]
     #[serial(codex_api_key)]
     async fn enforce_login_restrictions_logs_out_for_workspace_mismatch() {
-        let codex_home = tempdir().unwrap();
+        let codex_home = tempdir().expect("codex_home tempdir");
         let _jwt = write_auth_file(
             AuthFileParams {
                 openai_api_key: None,
@@ -1679,7 +1679,7 @@ mod tests {
     #[tokio::test]
     #[serial(codex_api_key)]
     async fn enforce_login_restrictions_allows_matching_workspace() {
-        let codex_home = tempdir().unwrap();
+        let codex_home = tempdir().expect("codex_home tempdir");
         let _jwt = write_auth_file(
             AuthFileParams {
                 openai_api_key: None,
@@ -1702,7 +1702,7 @@ mod tests {
     #[tokio::test]
     async fn enforce_login_restrictions_allows_api_key_if_login_method_not_set_but_forced_chatgpt_workspace_id_is_set()
      {
-        let codex_home = tempdir().unwrap();
+        let codex_home = tempdir().expect("codex_home tempdir");
         login_with_api_key(codex_home.path(), "sk-test", AuthCredentialsStoreMode::File)
             .expect("seed api key");
 
@@ -1719,7 +1719,7 @@ mod tests {
     #[serial(codex_api_key)]
     async fn enforce_login_restrictions_blocks_env_api_key_when_chatgpt_required() {
         let _guard = EnvVarGuard::set(CODEX_API_KEY_ENV_VAR, "sk-env");
-        let codex_home = tempdir().unwrap();
+        let codex_home = tempdir().expect("codex_home tempdir");
 
         let config = build_config(codex_home.path(), Some(ForcedLoginMethod::Chatgpt), None).await;
 
@@ -1733,7 +1733,7 @@ mod tests {
 
     #[test]
     fn plan_type_maps_known_plan() {
-        let codex_home = tempdir().unwrap();
+        let codex_home = tempdir().expect("codex_home tempdir");
         let _jwt = write_auth_file(
             AuthFileParams {
                 openai_api_key: None,
@@ -1753,7 +1753,7 @@ mod tests {
 
     #[test]
     fn plan_type_maps_unknown_to_unknown() {
-        let codex_home = tempdir().unwrap();
+        let codex_home = tempdir().expect("codex_home tempdir");
         let _jwt = write_auth_file(
             AuthFileParams {
                 openai_api_key: None,
@@ -1773,7 +1773,7 @@ mod tests {
 
     #[test]
     fn missing_plan_type_maps_to_unknown() {
-        let codex_home = tempdir().unwrap();
+        let codex_home = tempdir().expect("codex_home tempdir");
         let _jwt = write_auth_file(
             AuthFileParams {
                 openai_api_key: None,

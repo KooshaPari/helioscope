@@ -759,7 +759,7 @@ mod tests {
         let repo_path = create_test_git_repo(&temp_dir).await;
 
         // Make three distinct commits with small delays to ensure ordering by timestamp.
-        fs::write(repo_path.join("file.txt"), "one").unwrap();
+        fs::write(repo_path.join("file.txt"), "one").expect("write file.txt one");
         Command::new("git")
             .args(["add", "file.txt"])
             .current_dir(&repo_path)
@@ -775,7 +775,7 @@ mod tests {
 
         sleep(Duration::from_millis(1100)).await;
 
-        fs::write(repo_path.join("file.txt"), "two").unwrap();
+        fs::write(repo_path.join("file.txt"), "two").expect("write file.txt two");
         Command::new("git")
             .args(["add", "file.txt"])
             .current_dir(&repo_path)
@@ -791,7 +791,7 @@ mod tests {
 
         sleep(Duration::from_millis(1100)).await;
 
-        fs::write(repo_path.join("file.txt"), "three").unwrap();
+        fs::write(repo_path.join("file.txt"), "three").expect("write file.txt three");
         Command::new("git")
             .args(["add", "file.txt"])
             .current_dir(&repo_path)
@@ -822,13 +822,13 @@ mod tests {
         let remote_path = temp_dir.path().join("remote.git");
 
         Command::new("git")
-            .args(["init", "--bare", remote_path.to_str().unwrap()])
+            .args(["init", "--bare", remote_path.to_str().expect("remote path")])
             .output()
             .await
             .expect("Failed to init bare remote");
 
         Command::new("git")
-            .args(["remote", "add", "origin", remote_path.to_str().unwrap()])
+            .args(["remote", "add", "origin", remote_path.to_str().expect("remote path")])
             .current_dir(&repo_path)
             .output()
             .await
@@ -840,7 +840,7 @@ mod tests {
             .output()
             .await
             .expect("Failed to get branch");
-        let branch = String::from_utf8(output.stdout).unwrap().trim().to_string();
+        let branch = String::from_utf8(output.stdout).expect("branch utf8").trim().to_string();
 
         Command::new("git")
             .args(["push", "-u", "origin", &branch])
@@ -870,13 +870,13 @@ mod tests {
 
         // Should have commit hash
         assert!(git_info.commit_hash.is_some());
-        let commit_hash = git_info.commit_hash.unwrap();
+        let commit_hash = git_info.commit_hash.expect("commit hash");
         assert_eq!(commit_hash.len(), 40); // SHA-1 hash should be 40 characters
         assert!(commit_hash.chars().all(|c| c.is_ascii_hexdigit()));
 
         // Should have branch (likely "main" or "master")
         assert!(git_info.branch.is_some());
-        let branch = git_info.branch.unwrap();
+        let branch = git_info.branch.expect("branch");
         assert!(branch == "main" || branch == "master");
 
         // Repository URL might be None for local repos without remote
@@ -913,10 +913,7 @@ mod tests {
             .expect("Failed to read remote url");
         // Some dev environments rewrite remotes (e.g., force SSH), so compare against
         // whatever URL Git reports instead of a fixed placeholder.
-        let expected_remote = String::from_utf8(remote_url_output.stdout)
-            .unwrap()
-            .trim()
-            .to_string();
+        let expected_remote = String::from_utf8(remote_url_output.stdout).expect("remote url utf8").trim().to_string();
 
         // Should have repository URL
         assert_eq!(git_info.repository_url, Some(expected_remote));
@@ -934,7 +931,7 @@ mod tests {
             .output()
             .await
             .expect("Failed to get HEAD");
-        let commit_hash = String::from_utf8(output.stdout).unwrap().trim().to_string();
+        let commit_hash = String::from_utf8(output.stdout).expect("commit hash utf8").trim().to_string();
 
         // Checkout the commit directly (detached HEAD)
         Command::new("git")
@@ -1017,10 +1014,7 @@ mod tests {
             .output()
             .await
             .expect("Failed to rev-parse remote");
-        let remote_sha = String::from_utf8(remote_sha.stdout)
-            .unwrap()
-            .trim()
-            .to_string();
+        let remote_sha = String::from_utf8(remote_sha.stdout).expect("remote sha utf8").trim().to_string();
 
         let state = git_diff_to_remote(&repo_path)
             .await
@@ -1035,8 +1029,8 @@ mod tests {
         let (repo_path, branch) = create_test_git_repo_with_remote(&temp_dir).await;
 
         let tracked = repo_path.join("test.txt");
-        fs::write(&tracked, "modified").unwrap();
-        fs::write(repo_path.join("untracked.txt"), "new").unwrap();
+        fs::write(&tracked, "modified").expect("write tracked");
+        fs::write(repo_path.join("untracked.txt"), "new").expect("write untracked");
 
         let remote_sha = Command::new("git")
             .args(["rev-parse", &format!("origin/{branch}")])
@@ -1044,10 +1038,7 @@ mod tests {
             .output()
             .await
             .expect("Failed to rev-parse remote");
-        let remote_sha = String::from_utf8(remote_sha.stdout)
-            .unwrap()
-            .trim()
-            .to_string();
+        let remote_sha = String::from_utf8(remote_sha.stdout).expect("remote sha utf8").trim().to_string();
 
         let state = git_diff_to_remote(&repo_path)
             .await
@@ -1088,10 +1079,7 @@ mod tests {
             .output()
             .await
             .expect("Failed to rev-parse remote");
-        let remote_sha = String::from_utf8(remote_sha.stdout)
-            .unwrap()
-            .trim()
-            .to_string();
+        let remote_sha = String::from_utf8(remote_sha.stdout).expect("remote sha utf8").trim().to_string();
 
         let state = git_diff_to_remote(&repo_path)
             .await
@@ -1109,14 +1097,14 @@ mod tests {
     async fn resolve_root_git_project_for_trust_regular_repo_returns_repo_root() {
         let temp_dir = TempDir::new().expect("Failed to create temp dir");
         let repo_path = create_test_git_repo(&temp_dir).await;
-        let expected = std::fs::canonicalize(&repo_path).unwrap();
+        let expected = std::fs::canonicalize(&repo_path).expect("canonicalize repo");
 
         assert_eq!(
             resolve_root_git_project_for_trust(&repo_path),
             Some(expected.clone())
         );
         let nested = repo_path.join("sub/dir");
-        std::fs::create_dir_all(&nested).unwrap();
+        std::fs::create_dir_all(&nested).expect("create nested dir");
         assert_eq!(resolve_root_git_project_for_trust(&nested), Some(expected));
     }
 
@@ -1131,7 +1119,7 @@ mod tests {
             .args([
                 "worktree",
                 "add",
-                wt_root.to_str().unwrap(),
+                wt_root.to_str().expect("worktree root str"),
                 "-b",
                 "feature/x",
             ])
@@ -1144,7 +1132,7 @@ mod tests {
             .and_then(|p| std::fs::canonicalize(p).ok());
         assert_eq!(got, expected);
         let nested = wt_root.join("nested/sub");
-        std::fs::create_dir_all(&nested).unwrap();
+        std::fs::create_dir_all(&nested).expect("create nested dir");
         let got_nested =
             resolve_root_git_project_for_trust(&nested).and_then(|p| std::fs::canonicalize(p).ok());
         assert_eq!(got_nested, expected);
@@ -1154,7 +1142,7 @@ mod tests {
     fn resolve_root_git_project_for_trust_non_worktrees_gitdir_returns_none() {
         let tmp = TempDir::new().expect("tempdir");
         let proj = tmp.path().join("proj");
-        std::fs::create_dir_all(proj.join("nested")).unwrap();
+        std::fs::create_dir_all(proj.join("nested")).expect("create nested proj");
 
         // `.git` is a file but does not point to a worktrees path
         std::fs::write(
@@ -1164,7 +1152,7 @@ mod tests {
                 tmp.path().join("some/other/location").display()
             ),
         )
-        .unwrap();
+        .expect("write .git marker");
 
         assert!(resolve_root_git_project_for_trust(&proj).is_none());
         assert!(resolve_root_git_project_for_trust(&proj.join("nested")).is_none());
@@ -1181,12 +1169,9 @@ mod tests {
             .output()
             .await
             .expect("Failed to rev-parse remote");
-        let remote_sha = String::from_utf8(remote_sha.stdout)
-            .unwrap()
-            .trim()
-            .to_string();
+        let remote_sha = String::from_utf8(remote_sha.stdout).expect("remote sha utf8").trim().to_string();
 
-        fs::write(repo_path.join("test.txt"), "updated").unwrap();
+        fs::write(repo_path.join("test.txt"), "updated").expect("write test.txt");
         Command::new("git")
             .args(["add", "test.txt"])
             .current_dir(&repo_path)
@@ -1238,8 +1223,8 @@ mod tests {
         let parsed: serde_json::Value = serde_json::from_str(&json).expect("Should parse JSON");
 
         // Fields with None values should be omitted due to skip_serializing_if
-        assert!(!parsed.as_object().unwrap().contains_key("commit_hash"));
-        assert!(!parsed.as_object().unwrap().contains_key("branch"));
-        assert!(!parsed.as_object().unwrap().contains_key("repository_url"));
+        assert!(!parsed.as_object().expect("parse as object").contains_key("commit_hash"));
+        assert!(!parsed.as_object().expect("parse as object").contains_key("branch"));
+        assert!(!parsed.as_object().expect("parse as object").contains_key("repository_url"));
     }
 }

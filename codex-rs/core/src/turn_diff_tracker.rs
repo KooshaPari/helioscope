@@ -507,7 +507,7 @@ mod tests {
     fn accumulates_add_and_update() {
         let mut acc = TurnDiffTracker::new();
 
-        let dir = tempdir().unwrap();
+        let dir = tempdir().expect("tempdir");
         let file = dir.path().join("a.txt");
 
         // First patch: add file (baseline should be /dev/null).
@@ -520,8 +520,8 @@ mod tests {
         acc.on_patch_begin(&add_changes);
 
         // Simulate apply: create the file on disk.
-        fs::write(&file, "foo\n").unwrap();
-        let first = acc.get_unified_diff().unwrap().unwrap();
+        fs::write(&file, "foo\n").expect("write file");
+        let first = acc.get_unified_diff().expect("unified diff").expect("unified diff");
         let first = normalize_diff_for_test(&first, dir.path());
         let expected_first = {
             let mode = file_mode_for_path(&file).unwrap_or(FileMode::Regular);
@@ -550,8 +550,8 @@ index {ZERO_OID}..{right_oid}
         acc.on_patch_begin(&update_changes);
 
         // Simulate apply: append a new line.
-        fs::write(&file, "foo\nbar\n").unwrap();
-        let combined = acc.get_unified_diff().unwrap().unwrap();
+        fs::write(&file, "foo\nbar\n").expect("write file");
+        let combined = acc.get_unified_diff().expect("unified diff").expect("unified diff");
         let combined = normalize_diff_for_test(&combined, dir.path());
         let expected_combined = {
             let mode = file_mode_for_path(&file).unwrap_or(FileMode::Regular);
@@ -573,9 +573,9 @@ index {ZERO_OID}..{right_oid}
 
     #[test]
     fn accumulates_delete() {
-        let dir = tempdir().unwrap();
+        let dir = tempdir().expect("tempdir");
         let file = dir.path().join("b.txt");
-        fs::write(&file, "x\n").unwrap();
+        fs::write(&file, "x\n").expect("write b.txt");
 
         let mut acc = TurnDiffTracker::new();
         let del_changes = HashMap::from([(
@@ -588,8 +588,8 @@ index {ZERO_OID}..{right_oid}
 
         // Simulate apply: delete the file from disk.
         let baseline_mode = file_mode_for_path(&file).unwrap_or(FileMode::Regular);
-        fs::remove_file(&file).unwrap();
-        let diff = acc.get_unified_diff().unwrap().unwrap();
+        fs::remove_file(&file).expect("remove file");
+        let diff = acc.get_unified_diff().expect("get unified diff").expect("diff should be present");
         let diff = normalize_diff_for_test(&diff, dir.path());
         let expected = {
             let left_oid = git_blob_sha1_hex("x\n");
@@ -609,10 +609,10 @@ index {left_oid}..{ZERO_OID}
 
     #[test]
     fn accumulates_move_and_update() {
-        let dir = tempdir().unwrap();
+        let dir = tempdir().expect("tempdir");
         let src = dir.path().join("src.txt");
         let dest = dir.path().join("dst.txt");
-        fs::write(&src, "line\n").unwrap();
+        fs::write(&src, "line\n").expect("write src file");
 
         let mut acc = TurnDiffTracker::new();
         let mv_changes = HashMap::from([(
@@ -625,10 +625,10 @@ index {left_oid}..{ZERO_OID}
         acc.on_patch_begin(&mv_changes);
 
         // Simulate apply: move and update content.
-        fs::rename(&src, &dest).unwrap();
-        fs::write(&dest, "line2\n").unwrap();
+        fs::rename(&src, &dest).expect("rename file");
+        fs::write(&dest, "line2\n").expect("write dest file");
 
-        let out = acc.get_unified_diff().unwrap().unwrap();
+        let out = acc.get_unified_diff().expect("unified diff").expect("unified diff");
         let out = normalize_diff_for_test(&out, dir.path());
         let expected = {
             let left_oid = git_blob_sha1_hex("line\n");
@@ -649,10 +649,10 @@ index {left_oid}..{right_oid}
 
     #[test]
     fn move_without_1change_yields_no_diff() {
-        let dir = tempdir().unwrap();
+        let dir = tempdir().expect("tempdir");
         let src = dir.path().join("moved.txt");
         let dest = dir.path().join("renamed.txt");
-        fs::write(&src, "same\n").unwrap();
+        fs::write(&src, "same\n").expect("write src");
 
         let mut acc = TurnDiffTracker::new();
         let mv_changes = HashMap::from([(
@@ -665,15 +665,15 @@ index {left_oid}..{right_oid}
         acc.on_patch_begin(&mv_changes);
 
         // Simulate apply: move only, no content change.
-        fs::rename(&src, &dest).unwrap();
+        fs::rename(&src, &dest).expect("rename file");
 
-        let diff = acc.get_unified_diff().unwrap();
+        let diff = acc.get_unified_diff().expect("unified diff");
         assert_eq!(diff, None);
     }
 
     #[test]
     fn move_declared_but_file_only_appears_at_dest_is_add() {
-        let dir = tempdir().unwrap();
+        let dir = tempdir().expect("tempdir");
         let src = dir.path().join("src.txt");
         let dest = dir.path().join("dest.txt");
         let mut acc = TurnDiffTracker::new();
@@ -686,8 +686,8 @@ index {left_oid}..{right_oid}
         )]);
         acc.on_patch_begin(&mv);
         // No file existed initially; create only dest
-        fs::write(&dest, "hello\n").unwrap();
-        let diff = acc.get_unified_diff().unwrap().unwrap();
+        fs::write(&dest, "hello\n").expect("write dest");
+        let diff = acc.get_unified_diff().expect("get unified diff").expect("diff should be present");
         let diff = normalize_diff_for_test(&diff, dir.path());
         let expected = {
             let mode = file_mode_for_path(&dest).unwrap_or(FileMode::Regular);
@@ -708,11 +708,11 @@ index {ZERO_OID}..{right_oid}
 
     #[test]
     fn update_persists_across_new_baseline_for_new_file() {
-        let dir = tempdir().unwrap();
+        let dir = tempdir().expect("tempdir");
         let a = dir.path().join("a.txt");
         let b = dir.path().join("b.txt");
-        fs::write(&a, "foo\n").unwrap();
-        fs::write(&b, "z\n").unwrap();
+        fs::write(&a, "foo\n").expect("write a");
+        fs::write(&b, "z\n").expect("write b");
 
         let mut acc = TurnDiffTracker::new();
 
@@ -726,8 +726,8 @@ index {ZERO_OID}..{right_oid}
         )]);
         acc.on_patch_begin(&update_a);
         // Simulate apply: modify a.txt on disk.
-        fs::write(&a, "foo\nbar\n").unwrap();
-        let first = acc.get_unified_diff().unwrap().unwrap();
+        fs::write(&a, "foo\nbar\n").expect("write a");
+        let first = acc.get_unified_diff().expect("unified diff").expect("unified diff");
         let first = normalize_diff_for_test(&first, dir.path());
         let expected_first = {
             let left_oid = git_blob_sha1_hex("foo\n");
@@ -755,9 +755,9 @@ index {left_oid}..{right_oid}
         acc.on_patch_begin(&del_b);
         // Simulate apply: delete b.txt.
         let baseline_mode = file_mode_for_path(&b).unwrap_or(FileMode::Regular);
-        fs::remove_file(&b).unwrap();
+        fs::remove_file(&b).expect("remove b");
 
-        let combined = acc.get_unified_diff().unwrap().unwrap();
+        let combined = acc.get_unified_diff().expect("unified diff").expect("unified diff");
         let combined = normalize_diff_for_test(&combined, dir.path());
         let expected = {
             let left_oid_a = git_blob_sha1_hex("foo\n");
@@ -786,7 +786,7 @@ index {left_oid_b}..{ZERO_OID}
 
     #[test]
     fn binary_files_differ_update() {
-        let dir = tempdir().unwrap();
+        let dir = tempdir().expect("tempdir");
         let file = dir.path().join("bin.dat");
 
         // Initial non-UTF8 bytes
@@ -794,7 +794,7 @@ index {left_oid_b}..{ZERO_OID}
         // Updated non-UTF8 bytes
         let right_bytes: Vec<u8> = vec![0x01, 0x02, 0x03, 0x00];
 
-        fs::write(&file, &left_bytes).unwrap();
+        fs::write(&file, &left_bytes).expect("write left bytes");
 
         let mut acc = TurnDiffTracker::new();
         let update_changes = HashMap::from([(
@@ -807,9 +807,9 @@ index {left_oid_b}..{ZERO_OID}
         acc.on_patch_begin(&update_changes);
 
         // Apply update on disk
-        fs::write(&file, &right_bytes).unwrap();
+        fs::write(&file, &right_bytes).expect("write right bytes");
 
-        let diff = acc.get_unified_diff().unwrap().unwrap();
+        let diff = acc.get_unified_diff().expect("get unified diff").expect("diff should be present");
         let diff = normalize_diff_for_test(&diff, dir.path());
         let expected = {
             let left_oid = format!("{:x}", git_blob_sha1_hex_bytes(&left_bytes));
@@ -830,7 +830,7 @@ Binary files differ
     fn filenames_with_spaces_add_and_update() {
         let mut acc = TurnDiffTracker::new();
 
-        let dir = tempdir().unwrap();
+        let dir = tempdir().expect("tempdir");
         let file = dir.path().join("name with spaces.txt");
 
         // First patch: add file (baseline should be /dev/null).
@@ -843,8 +843,8 @@ Binary files differ
         acc.on_patch_begin(&add_changes);
 
         // Simulate apply: create the file on disk.
-        fs::write(&file, "foo\n").unwrap();
-        let first = acc.get_unified_diff().unwrap().unwrap();
+        fs::write(&file, "foo\n").expect("write file");
+        let first = acc.get_unified_diff().expect("unified diff").expect("unified diff");
         let first = normalize_diff_for_test(&first, dir.path());
         let expected_first = {
             let mode = file_mode_for_path(&file).unwrap_or(FileMode::Regular);
@@ -873,8 +873,8 @@ index {ZERO_OID}..{right_oid}
         acc.on_patch_begin(&update_changes);
 
         // Simulate apply: append a new line with a space.
-        fs::write(&file, "foo\nbar baz\n").unwrap();
-        let combined = acc.get_unified_diff().unwrap().unwrap();
+        fs::write(&file, "foo\nbar baz\n").expect("write file");
+        let combined = acc.get_unified_diff().expect("unified diff").expect("unified diff");
         let combined = normalize_diff_for_test(&combined, dir.path());
         let expected_combined = {
             let mode = file_mode_for_path(&file).unwrap_or(FileMode::Regular);

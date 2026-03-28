@@ -202,8 +202,8 @@ mod tests {
             base64::engine::general_purpose::URL_SAFE_NO_PAD.encode(bytes)
         }
 
-        let header_b64 = b64url_no_pad(&serde_json::to_vec(&header).unwrap());
-        let payload_b64 = b64url_no_pad(&serde_json::to_vec(&payload).unwrap());
+        let header_b64 = b64url_no_pad(&serde_json::to_vec(&header).expect("serialize test header"));
+        let payload_b64 = b64url_no_pad(&serde_json::to_vec(&payload).expect("serialize test payload"));
         let signature_b64 = b64url_no_pad(b"sig");
         let fake_jwt = format!("{header_b64}.{payload_b64}.{signature_b64}");
 
@@ -234,8 +234,8 @@ mod tests {
             base64::engine::general_purpose::URL_SAFE_NO_PAD.encode(bytes)
         }
 
-        let header_b64 = b64url_no_pad(&serde_json::to_vec(&header).unwrap());
-        let payload_b64 = b64url_no_pad(&serde_json::to_vec(&payload).unwrap());
+        let header_b64 = b64url_no_pad(&serde_json::to_vec(&header).expect("serialize test header"));
+        let payload_b64 = b64url_no_pad(&serde_json::to_vec(&payload).expect("serialize test payload"));
         let signature_b64 = b64url_no_pad(b"sig");
         let fake_jwt = format!("{header_b64}.{payload_b64}.{signature_b64}");
 
@@ -261,8 +261,8 @@ mod tests {
             base64::engine::general_purpose::URL_SAFE_NO_PAD.encode(bytes)
         }
 
-        let header_b64 = b64url_no_pad(&serde_json::to_vec(&header).unwrap());
-        let payload_b64 = b64url_no_pad(&serde_json::to_vec(&payload).unwrap());
+        let header_b64 = b64url_no_pad(&serde_json::to_vec(&header).expect("serialize test header"));
+        let payload_b64 = b64url_no_pad(&serde_json::to_vec(&payload).expect("serialize test payload"));
         let signature_b64 = b64url_no_pad(b"sig");
         let fake_jwt = format!("{header_b64}.{payload_b64}.{signature_b64}");
 

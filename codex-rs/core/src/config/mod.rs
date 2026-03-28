@@ -3010,7 +3010,7 @@ trust_level = "trusted"
             temp_dir.path().to_path_buf(),
         )?;
 
-        let expected_backend = AbsolutePathBuf::try_from(backend).unwrap();
+        let expected_backend = AbsolutePathBuf::try_from(backend).expect("backend path should be valid");
         if cfg!(target_os = "windows") {
             match config.permissions.sandbox_policy.get() {
                 SandboxPolicy::ReadOnly { .. } => {}
@@ -4784,13 +4784,13 @@ model_verbosity = "high"
 
         // Use a temporary directory for the cwd so it does not contain an
         // AGENTS.md file.
-        let cwd_temp_dir = TempDir::new().unwrap();
+        let cwd_temp_dir = TempDir::new().expect("tempdir");
         let cwd = cwd_temp_dir.path().to_path_buf();
         // Make it look like a Git repo so it does not search for AGENTS.md in
         // a parent folder, either.
         std::fs::write(cwd.join(".git"), "gitdir: nowhere")?;
 
-        let codex_home_temp_dir = TempDir::new().unwrap();
+        let codex_home_temp_dir = TempDir::new().expect("codex_home tempdir");
 
         let openai_custom_provider = ModelProviderInfo {
             name: "OpenAI custom".to_string(),

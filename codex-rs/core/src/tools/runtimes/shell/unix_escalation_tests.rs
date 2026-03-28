@@ -62,14 +62,14 @@ fn starlark_string(value: &str) -> String {
 #[test]
 fn extract_shell_script_preserves_login_flag() {
     assert_eq!(
-        extract_shell_script(&["/bin/zsh".into(), "-lc".into(), "echo hi".into()]).unwrap(),
+        extract_shell_script(&["/bin/zsh".into(), "-lc".into(), "echo hi".into()]).expect("parse zsh login shell command"),
         ParsedShellCommand {
             script: "echo hi".to_string(),
             login: true,
         }
     );
     assert_eq!(
-        extract_shell_script(&["/bin/zsh".into(), "-c".into(), "echo hi".into()]).unwrap(),
+        extract_shell_script(&["/bin/zsh".into(), "-c".into(), "echo hi".into()]).expect("parse zsh command"),
         ParsedShellCommand {
             script: "echo hi".to_string(),
             login: false,
@@ -87,7 +87,7 @@ fn extract_shell_script_supports_wrapped_command_prefixes() {
             "-lc".into(),
             "echo hello".into()
         ])
-        .unwrap(),
+        .expect("parse env-wrapped command"),
         ParsedShellCommand {
             script: "echo hello".to_string(),
             login: true,
@@ -103,7 +103,7 @@ fn extract_shell_script_supports_wrapped_command_prefixes() {
             "-c".into(),
             "pwd".into(),
         ])
-        .unwrap(),
+        .expect("parse sandbox-exec command"),
         ParsedShellCommand {
             script: "pwd".to_string(),
             login: false,
@@ -133,14 +133,14 @@ fn extract_shell_script_rejects_unsupported_shell_invocation() {
 fn join_program_and_argv_replaces_original_argv_zero() {
     assert_eq!(
         join_program_and_argv(
-            &AbsolutePathBuf::from_absolute_path("/tmp/tool").unwrap(),
+            &AbsolutePathBuf::from_absolute_path("/tmp/tool").expect("absolute path"),
             &["./tool".into(), "--flag".into(), "value".into()],
         ),
         vec!["/tmp/tool", "--flag", "value"]
     );
     assert_eq!(
         join_program_and_argv(
-            &AbsolutePathBuf::from_absolute_path("/tmp/tool").unwrap(),
+            &AbsolutePathBuf::from_absolute_path("/tmp/tool").expect("absolute path"),
             &["./tool".into()]
         ),
         vec!["/tmp/tool"]
@@ -149,7 +149,7 @@ fn join_program_and_argv_replaces_original_argv_zero() {
 
 #[test]
 fn commands_for_intercepted_exec_policy_parses_plain_shell_wrappers() {
-    let program = AbsolutePathBuf::try_from(host_absolute_path(&["bin", "bash"])).unwrap();
+    let program = AbsolutePathBuf::try_from(host_absolute_path(&["bin", "bash"])).expect("absolute bash path");
     let candidate_commands = commands_for_intercepted_exec_policy(
         &program,
         &["not-bash".into(), "-lc".into(), "git status && pwd".into()],
@@ -178,7 +178,7 @@ fn map_exec_result_preserves_stdout_and_stderr() {
             timed_out: false,
         },
     )
-    .unwrap();
+    .expect("prepare escalated exec");
 
     assert_eq!(out.stdout.text, "out");
     assert_eq!(out.stderr.text, "err");
@@ -191,13 +191,13 @@ fn shell_request_escalation_execution_is_explicit() {
         file_system: Some(FileSystemPermissions {
             read: None,
             write: Some(vec![
-                AbsolutePathBuf::from_absolute_path("/tmp/output").unwrap(),
+                AbsolutePathBuf::from_absolute_path("/tmp/output").expect("absolute path"),
             ]),
         }),
         ..Default::default()
     };
     let sandbox_policy = SandboxPolicy::WorkspaceWrite {
-        writable_roots: vec![AbsolutePathBuf::from_absolute_path("/tmp/original/output").unwrap()],
+        writable_roots: vec![AbsolutePathBuf::from_absolute_path("/tmp/original/output").expect("absolute path")],
         read_only_access: ReadOnlyAccess::FullAccess,
         network_access: false,
         exclude_tmpdir_env_var: false,
@@ -246,9 +246,9 @@ fn shell_request_escalation_execution_is_explicit() {
 fn evaluate_intercepted_exec_policy_uses_wrapper_command_when_shell_wrapper_parsing_disabled() {
     let policy_src = r#"prefix_rule(pattern = ["npm", "publish"], decision = "prompt")"#;
     let mut parser = PolicyParser::new();
-    parser.parse("test.rules", policy_src).unwrap();
+    parser.parse("test.rules", policy_src).expect("parse policy src");
     let policy = parser.build();
-    let program = AbsolutePathBuf::try_from(host_absolute_path(&["bin", "zsh"])).unwrap();
+    let program = AbsolutePathBuf::try_from(host_absolute_path(&["bin", "zsh"])).expect("absolute zsh path");
 
     let enable_intercepted_exec_policy_shell_wrapper_parsing = false;
     let evaluation = evaluate_intercepted_exec_policy(
@@ -294,9 +294,9 @@ ultimately intercept the `npm publish` command and apply the policy rules to it.
 fn evaluate_intercepted_exec_policy_matches_inner_shell_commands_when_enabled() {
     let policy_src = r#"prefix_rule(pattern = ["npm", "publish"], decision = "prompt")"#;
     let mut parser = PolicyParser::new();
-    parser.parse("test.rules", policy_src).unwrap();
+    parser.parse("test.rules", policy_src).expect("parse policy src");
     let policy = parser.build();
-    let program = AbsolutePathBuf::try_from(host_absolute_path(&["bin", "bash"])).unwrap();
+    let program = AbsolutePathBuf::try_from(host_absolute_path(&["bin", "bash"])).expect("absolute bash path");
 
     let enable_intercepted_exec_policy_shell_wrapper_parsing = true;
     let evaluation = evaluate_intercepted_exec_policy(
@@ -338,9 +338,9 @@ host_executable(name = "git", paths = ["{git_path_literal}"])
 "#
     );
     let mut parser = PolicyParser::new();
-    parser.parse("test.rules", &policy_src).unwrap();
+    parser.parse("test.rules", &policy_src).expect("parse starlark policy");
     let policy = parser.build();
-    let program = AbsolutePathBuf::try_from(git_path).unwrap();
+    let program = AbsolutePathBuf::try_from(git_path).expect("absolute git path");
 
     let evaluation = evaluate_intercepted_exec_policy(
         &policy,
@@ -382,9 +382,9 @@ host_executable(name = "git", paths = ["{allowed_git_literal}"])
 "#
     );
     let mut parser = PolicyParser::new();
-    parser.parse("test.rules", &policy_src).unwrap();
+    parser.parse("test.rules", &policy_src).expect("parse starlark policy");
     let policy = parser.build();
-    let program = AbsolutePathBuf::try_from(other_git.clone()).unwrap();
+    let program = AbsolutePathBuf::try_from(other_git.clone()).expect("absolute other git path");
 
     let evaluation = evaluate_intercepted_exec_policy(
         &policy,
@@ -410,7 +410,7 @@ host_executable(name = "git", paths = ["{allowed_git_literal}"])
 #[cfg(target_os = "macos")]
 #[tokio::test]
 async fn prepare_escalated_exec_turn_default_preserves_macos_seatbelt_extensions() {
-    let cwd = AbsolutePathBuf::from_absolute_path(std::env::temp_dir()).unwrap();
+    let cwd = AbsolutePathBuf::from_absolute_path(std::env::temp_dir()).expect("temp dir path");
     let executor = CoreShellCommandExecutor {
         command: vec!["echo".to_string(), "ok".to_string()],
         cwd: cwd.to_path_buf(),
@@ -433,14 +433,14 @@ async fn prepare_escalated_exec_turn_default_preserves_macos_seatbelt_extensions
 
     let prepared = executor
         .prepare_escalated_exec(
-            &AbsolutePathBuf::from_absolute_path("/bin/echo").unwrap(),
+            &AbsolutePathBuf::from_absolute_path("/bin/echo").expect("echo path"),
             &["echo".to_string(), "ok".to_string()],
             &cwd,
             HashMap::new(),
             EscalationExecution::TurnDefault,
         )
         .await
-        .unwrap();
+        .expect("prepare escalated exec");
 
     assert_eq!(
         prepared.command.first().map(String::as_str),
@@ -460,7 +460,7 @@ async fn prepare_escalated_exec_turn_default_preserves_macos_seatbelt_extensions
 #[cfg(target_os = "macos")]
 #[tokio::test]
 async fn prepare_escalated_exec_permissions_preserve_macos_seatbelt_extensions() {
-    let cwd = AbsolutePathBuf::from_absolute_path(std::env::temp_dir()).unwrap();
+    let cwd = AbsolutePathBuf::from_absolute_path(std::env::temp_dir()).expect("temp dir path");
     let executor = CoreShellCommandExecutor {
         command: vec!["echo".to_string(), "ok".to_string()],
         cwd: cwd.to_path_buf(),
@@ -493,7 +493,7 @@ async fn prepare_escalated_exec_permissions_preserve_macos_seatbelt_extensions()
 
     let prepared = executor
         .prepare_escalated_exec(
-            &AbsolutePathBuf::from_absolute_path("/bin/echo").unwrap(),
+            &AbsolutePathBuf::from_absolute_path("/bin/echo").expect("echo path"),
             &["echo".to_string(), "ok".to_string()],
             &cwd,
             HashMap::new(),
@@ -507,7 +507,7 @@ async fn prepare_escalated_exec_permissions_preserve_macos_seatbelt_extensions()
             )),
         )
         .await
-        .unwrap();
+        .expect("prepare escalated exec");
 
     assert_eq!(
         prepared.command.first().map(String::as_str),

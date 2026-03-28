@@ -880,7 +880,7 @@ mod tests {
             })
             .expect("serialize config"),
         )
-        .unwrap();
+        .expect("build config");
 
         let harness_overrides = ConfigOverrides {
             cwd: Some(cwd),
@@ -903,7 +903,7 @@ mod tests {
     fn mark_as_git_repo(dir: &Path) {
         // Config/project-root discovery only checks for the presence of `.git` (file or dir),
         // so we can avoid shelling out to `git init` in tests.
-        fs::write(dir.join(".git"), "gitdir: fake\n").unwrap();
+        fs::write(dir.join(".git"), "gitdir: fake\n").expect("write .git marker");
     }
 
     fn normalized(path: &Path) -> PathBuf {
@@ -1095,13 +1095,13 @@ mod tests {
 
     fn write_skill_at(root: &Path, dir: &str, name: &str, description: &str) -> PathBuf {
         let skill_dir = root.join(dir);
-        fs::create_dir_all(&skill_dir).unwrap();
+        fs::create_dir_all(&skill_dir).expect("create skill dir");
         let indented_description = description.replace('\n', "\n  ");
         let content = format!(
             "---\nname: {name}\ndescription: |-\n  {indented_description}\n---\n\n# Body\n"
         );
         let path = skill_dir.join(SKILLS_FILENAME);
-        fs::write(&path, content).unwrap();
+        fs::write(&path, content).expect("write skill file");
         path
     }
 
@@ -1110,9 +1110,9 @@ mod tests {
             .join(SKILLS_METADATA_DIR)
             .join(SKILLS_METADATA_FILENAME);
         if let Some(parent) = path.parent() {
-            fs::create_dir_all(parent).unwrap();
+            fs::create_dir_all(parent).expect("create metadata dir");
         }
-        fs::write(&path, contents).unwrap();
+        fs::write(&path, contents).expect("write skill metadata");
         path
     }
 
@@ -1773,12 +1773,12 @@ permissions:
 
     #[cfg(unix)]
     fn symlink_dir(target: &Path, link: &Path) {
-        std::os::unix::fs::symlink(target, link).unwrap();
+        std::os::unix::fs::symlink(target, link).expect("create symlink");
     }
 
     #[cfg(unix)]
     fn symlink_file(target: &Path, link: &Path) {
-        std::os::unix::fs::symlink(target, link).unwrap();
+        std::os::unix::fs::symlink(target, link).expect("create symlink");
     }
 
     #[tokio::test]
@@ -1789,7 +1789,7 @@ permissions:
 
         let shared_skill_path = write_skill_at(shared.path(), "demo", "linked-skill", "from link");
 
-        fs::create_dir_all(codex_home.path().join("skills")).unwrap();
+        fs::create_dir_all(codex_home.path().join("skills")).expect("create skills dir");
         symlink_dir(shared.path(), &codex_home.path().join("skills/shared"));
 
         let cfg = make_config(&codex_home).await;
@@ -1827,7 +1827,7 @@ permissions:
             write_skill_at(shared.path(), "demo", "linked-file-skill", "from link");
 
         let skill_dir = codex_home.path().join("skills/demo");
-        fs::create_dir_all(&skill_dir).unwrap();
+        fs::create_dir_all(&skill_dir).expect("create skill dir");
         symlink_file(&shared_skill_path, &skill_dir.join(SKILLS_FILENAME));
 
         let cfg = make_config(&codex_home).await;
@@ -1849,7 +1849,7 @@ permissions:
         // Create a cycle:
         //   $CODEX_HOME/skills/cycle/loop -> $CODEX_HOME/skills/cycle
         let cycle_dir = codex_home.path().join("skills/cycle");
-        fs::create_dir_all(&cycle_dir).unwrap();
+        fs::create_dir_all(&cycle_dir).expect("create cycle dir");
         symlink_dir(&cycle_dir, &cycle_dir.join("loop"));
 
         let skill_path = write_skill_at(&cycle_dir, "demo", "cycle-skill", "still loads");
@@ -1887,7 +1887,7 @@ permissions:
 
         let shared_skill_path =
             write_skill_at(shared.path(), "demo", "admin-linked-skill", "from link");
-        fs::create_dir_all(admin_root.path()).unwrap();
+        fs::create_dir_all(admin_root.path()).expect("create admin root");
         symlink_dir(shared.path(), &admin_root.path().join("shared"));
 
         let outcome = load_skills_from_roots([SkillRoot {
@@ -1931,7 +1931,7 @@ permissions:
             .path()
             .join(REPO_ROOT_CONFIG_DIR_NAME)
             .join(SKILLS_DIR_NAME);
-        fs::create_dir_all(&repo_skills_root).unwrap();
+        fs::create_dir_all(&repo_skills_root).expect("create repo skills root");
         symlink_dir(shared.path(), &repo_skills_root.join("shared"));
 
         let cfg = make_config_for_cwd(&codex_home, repo_dir.path().to_path_buf()).await;
@@ -1968,7 +1968,7 @@ permissions:
         write_skill_at(shared.path(), "demo", "system-linked-skill", "from link");
 
         let system_root = codex_home.path().join("skills/.system");
-        fs::create_dir_all(&system_root).unwrap();
+        fs::create_dir_all(&system_root).expect("create system root");
         symlink_dir(shared.path(), &system_root.join("shared"));
 
         let outcome = load_skills_from_roots([SkillRoot {
@@ -2061,10 +2061,10 @@ permissions:
     async fn loads_short_description_from_metadata() {
         let codex_home = tempfile::tempdir().expect("tempdir");
         let skill_dir = codex_home.path().join("skills/demo");
-        fs::create_dir_all(&skill_dir).unwrap();
+        fs::create_dir_all(&skill_dir).expect("create skill dir");
         let contents = "---\nname: demo-skill\ndescription: long description\nmetadata:\n  short-description: short summary\n---\n\n# Body\n";
         let skill_path = skill_dir.join(SKILLS_FILENAME);
-        fs::write(&skill_path, contents).unwrap();
+        fs::write(&skill_path, contents).expect("write short desc skill");
 
         let cfg = make_config(&codex_home).await;
         let outcome = load_skills_for_test(&cfg);
@@ -2094,12 +2094,12 @@ permissions:
     async fn enforces_short_description_length_limits() {
         let codex_home = tempfile::tempdir().expect("tempdir");
         let skill_dir = codex_home.path().join("skills/demo");
-        fs::create_dir_all(&skill_dir).unwrap();
+        fs::create_dir_all(&skill_dir).expect("create skill dir");
         let too_long = "x".repeat(MAX_SHORT_DESCRIPTION_LEN + 1);
         let contents = format!(
             "---\nname: demo-skill\ndescription: long description\nmetadata:\n  short-description: {too_long}\n---\n\n# Body\n"
         );
-        fs::write(skill_dir.join(SKILLS_FILENAME), contents).unwrap();
+        fs::write(skill_dir.join(SKILLS_FILENAME), contents).expect("write SKILL.md");
 
         let cfg = make_config(&codex_home).await;
         let outcome = load_skills_for_test(&cfg);
@@ -2118,17 +2118,17 @@ permissions:
     async fn skips_hidden_and_invalid() {
         let codex_home = tempfile::tempdir().expect("tempdir");
         let hidden_dir = codex_home.path().join("skills/.hidden");
-        fs::create_dir_all(&hidden_dir).unwrap();
+        fs::create_dir_all(&hidden_dir).expect("create hidden dir");
         fs::write(
             hidden_dir.join(SKILLS_FILENAME),
             "---\nname: hidden\ndescription: hidden\n---\n",
         )
-        .unwrap();
+        .expect("write hidden skill file");
 
         // Invalid because missing closing frontmatter.
         let invalid_dir = codex_home.path().join("skills/invalid");
-        fs::create_dir_all(&invalid_dir).unwrap();
-        fs::write(invalid_dir.join(SKILLS_FILENAME), "---\nname: bad").unwrap();
+        fs::create_dir_all(&invalid_dir).expect("create invalid dir");
+        fs::write(invalid_dir.join(SKILLS_FILENAME), "---\nname: bad").expect("write invalid skill");
 
         let cfg = make_config(&codex_home).await;
         let outcome = load_skills_for_test(&cfg);
@@ -2248,7 +2248,7 @@ permissions:
         mark_as_git_repo(repo_dir.path());
 
         let nested_dir = repo_dir.path().join("nested/inner");
-        fs::create_dir_all(&nested_dir).unwrap();
+        fs::create_dir_all(&nested_dir).expect("create nested dir");
 
         let root_skill_path = write_skill_at(
             &repo_dir
@@ -2451,7 +2451,7 @@ permissions:
         mark_as_git_repo(repo_dir.path());
 
         let nested_dir = repo_dir.path().join("nested/inner");
-        fs::create_dir_all(&nested_dir).unwrap();
+        fs::create_dir_all(&nested_dir).expect("create nested dir");
 
         let root_skill_path = write_skill_at(
             &repo_dir
@@ -2527,7 +2527,7 @@ permissions:
         let codex_home = tempfile::tempdir().expect("tempdir");
         let outer_dir = tempfile::tempdir().expect("tempdir");
         let repo_dir = outer_dir.path().join("repo");
-        fs::create_dir_all(&repo_dir).unwrap();
+        fs::create_dir_all(&repo_dir).expect("create repo dir");
 
         let _skill_path = write_skill_at(
             &outer_dir
@@ -2567,7 +2567,7 @@ permissions:
             "from repo",
         );
         let file_path = repo_dir.path().join("some-file.txt");
-        fs::write(&file_path, "contents").unwrap();
+        fs::write(&file_path, "contents").expect("write file path");
 
         let cfg = make_config_for_cwd(&codex_home, file_path).await;
 
@@ -2599,7 +2599,7 @@ permissions:
         let codex_home = tempfile::tempdir().expect("tempdir");
         let outer_dir = tempfile::tempdir().expect("tempdir");
         let nested_dir = outer_dir.path().join("nested/inner");
-        fs::create_dir_all(&nested_dir).unwrap();
+        fs::create_dir_all(&nested_dir).expect("create nested dir");
 
         write_skill_at(
             &outer_dir

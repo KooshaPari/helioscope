@@ -201,9 +201,9 @@ mod tests {
     fn test_writable_roots_constraint() {
         // Use a temporary directory as our workspace to avoid touching
         // the real current working directory.
-        let tmp = TempDir::new().unwrap();
+        let tmp = TempDir::new().expect("tempdir");
         let cwd = tmp.path().to_path_buf();
-        let parent = cwd.parent().unwrap().to_path_buf();
+        let parent = cwd.parent().expect("parent").to_path_buf();
 
         // Helper to build a single‑entry patch that adds a file at `p`.
         let make_add_change = |p: PathBuf| ApplyPatchAction::new_add_for_test(&p, "".to_string());
@@ -236,7 +236,7 @@ mod tests {
         // With the parent dir explicitly added as a writable root, the
         // outside write should be permitted.
         let policy_with_parent = SandboxPolicy::WorkspaceWrite {
-            writable_roots: vec![AbsolutePathBuf::try_from(parent).unwrap()],
+            writable_roots: vec![AbsolutePathBuf::try_from(parent).expect("absolute path")],
             read_only_access: Default::default(),
             network_access: false,
             exclude_tmpdir_env_var: true,
@@ -251,7 +251,7 @@ mod tests {
 
     #[test]
     fn external_sandbox_auto_approves_in_on_request() {
-        let tmp = TempDir::new().unwrap();
+        let tmp = TempDir::new().expect("tempdir");
         let cwd = tmp.path().to_path_buf();
         let add_inside = ApplyPatchAction::new_add_for_test(&cwd.join("inner.txt"), "".to_string());
 
@@ -276,9 +276,9 @@ mod tests {
 
     #[test]
     fn reject_with_all_flags_false_matches_on_request_for_out_of_root_patch() {
-        let tmp = TempDir::new().unwrap();
+        let tmp = TempDir::new().expect("tempdir");
         let cwd = tmp.path().to_path_buf();
-        let parent = cwd.parent().unwrap().to_path_buf();
+        let parent = cwd.parent().expect("parent").to_path_buf();
         let add_outside =
             ApplyPatchAction::new_add_for_test(&parent.join("outside.txt"), "".to_string());
         let policy_workspace_only = SandboxPolicy::WorkspaceWrite {
@@ -317,9 +317,9 @@ mod tests {
 
     #[test]
     fn reject_sandbox_approval_rejects_out_of_root_patch() {
-        let tmp = TempDir::new().unwrap();
+        let tmp = TempDir::new().expect("tempdir");
         let cwd = tmp.path().to_path_buf();
-        let parent = cwd.parent().unwrap().to_path_buf();
+        let parent = cwd.parent().expect("parent").to_path_buf();
         let add_outside =
             ApplyPatchAction::new_add_for_test(&parent.join("outside.txt"), "".to_string());
         let policy_workspace_only = SandboxPolicy::WorkspaceWrite {

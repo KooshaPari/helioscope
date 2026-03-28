@@ -699,8 +699,8 @@ mod tests {
             RolloutItem::ResponseItem(items[2].clone()),
         ];
         assert_eq!(
-            serde_json::to_value(&got_items).unwrap(),
-            serde_json::to_value(&expected_items).unwrap()
+            serde_json::to_value(&got_items).expect("serialize got_items"),
+            serde_json::to_value(&expected_items).expect("serialize expected_items")
         );
 
         let initial2: Vec<RolloutItem> = items
@@ -738,8 +738,8 @@ mod tests {
         ];
 
         assert_eq!(
-            serde_json::to_value(&got_items).unwrap(),
-            serde_json::to_value(&expected).unwrap()
+            serde_json::to_value(&got_items).expect("serialize got_items"),
+            serde_json::to_value(&expected).expect("serialize expected")
         );
     }
 }

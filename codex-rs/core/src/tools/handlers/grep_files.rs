@@ -203,9 +203,9 @@ mod tests {
         }
         let temp = tempdir().expect("create temp dir");
         let dir = temp.path();
-        std::fs::write(dir.join("match_one.txt"), "alpha beta gamma").unwrap();
-        std::fs::write(dir.join("match_two.txt"), "alpha delta").unwrap();
-        std::fs::write(dir.join("other.txt"), "omega").unwrap();
+        std::fs::write(dir.join("match_one.txt"), "alpha beta gamma").expect("write file");
+        std::fs::write(dir.join("match_two.txt"), "alpha delta").expect("write file");
+        std::fs::write(dir.join("other.txt"), "omega").expect("write file");
 
         let results = run_rg_search("alpha", None, dir, 10, dir).await?;
         assert_eq!(results.len(), 2);
@@ -221,8 +221,8 @@ mod tests {
         }
         let temp = tempdir().expect("create temp dir");
         let dir = temp.path();
-        std::fs::write(dir.join("match_one.rs"), "alpha beta gamma").unwrap();
-        std::fs::write(dir.join("match_two.txt"), "alpha delta").unwrap();
+        std::fs::write(dir.join("match_one.rs"), "alpha beta gamma").expect("write file");
+        std::fs::write(dir.join("match_two.txt"), "alpha delta").expect("write file");
 
         let results = run_rg_search("alpha", Some("*.rs"), dir, 10, dir).await?;
         assert_eq!(results.len(), 1);
@@ -237,9 +237,9 @@ mod tests {
         }
         let temp = tempdir().expect("create temp dir");
         let dir = temp.path();
-        std::fs::write(dir.join("one.txt"), "alpha one").unwrap();
-        std::fs::write(dir.join("two.txt"), "alpha two").unwrap();
-        std::fs::write(dir.join("three.txt"), "alpha three").unwrap();
+        std::fs::write(dir.join("one.txt"), "alpha one").expect("write file");
+        std::fs::write(dir.join("two.txt"), "alpha two").expect("write file");
+        std::fs::write(dir.join("three.txt"), "alpha three").expect("write file");
 
         let results = run_rg_search("alpha", None, dir, 2, dir).await?;
         assert_eq!(results.len(), 2);
@@ -253,7 +253,7 @@ mod tests {
         }
         let temp = tempdir().expect("create temp dir");
         let dir = temp.path();
-        std::fs::write(dir.join("one.txt"), "omega").unwrap();
+        std::fs::write(dir.join("one.txt"), "omega").expect("write file");
 
         let results = run_rg_search("alpha", None, dir, 5, dir).await?;
         assert!(results.is_empty());

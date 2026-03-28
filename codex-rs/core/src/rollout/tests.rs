@@ -91,7 +91,7 @@ async fn insert_state_db_thread(
 // TODO(jif) fix
 // #[tokio::test]
 // async fn list_threads_prefers_state_db_when_available() {
-//     let temp = TempDir::new().unwrap();
+//     let temp = TempDir::new().expect("tempdir");
 //     let home = temp.path();
 //     let fs_uuid = Uuid::from_u128(101);
 //     write_session_file(
@@ -134,7 +134,7 @@ async fn insert_state_db_thread(
 
 // #[tokio::test]
 // async fn list_threads_db_excludes_archived_entries() {
-//     let temp = TempDir::new().unwrap();
+//     let temp = TempDir::new().expect("tempdir");
 //     let home = temp.path();
 //     let sessions_root = home.join("sessions/2025/01/03");
 //     let archived_root = home.join("archived_sessions");
@@ -179,7 +179,7 @@ async fn insert_state_db_thread(
 
 // #[tokio::test]
 // async fn list_threads_falls_back_to_files_when_state_db_is_unavailable() {
-//     let temp = TempDir::new().unwrap();
+//     let temp = TempDir::new().expect("tempdir");
 //     let home = temp.path();
 //     let fs_uuid = Uuid::from_u128(301);
 //     write_session_file(
@@ -217,12 +217,12 @@ async fn insert_state_db_thread(
 
 #[tokio::test]
 async fn find_thread_path_falls_back_when_db_path_is_stale() {
-    let temp = TempDir::new().unwrap();
+    let temp = TempDir::new().expect("tempdir");
     let home = temp.path();
     let uuid = Uuid::from_u128(302);
     let thread_id = ThreadId::from_string(&uuid.to_string()).expect("valid thread id");
     let ts = "2025-01-03T13-00-00";
-    write_session_file(home, ts, uuid, 1, Some(SessionSource::Cli)).unwrap();
+    write_session_file(home, ts, uuid, 1, Some(SessionSource::Cli)).expect("write session file");
     let fs_rollout_path = home.join(format!("sessions/2025/01/03/rollout-{ts}-{uuid}.jsonl"));
 
     let stale_db_path = home.join(format!(
@@ -239,12 +239,12 @@ async fn find_thread_path_falls_back_when_db_path_is_stale() {
 
 #[tokio::test]
 async fn find_thread_path_repairs_missing_db_row_after_filesystem_fallback() {
-    let temp = TempDir::new().unwrap();
+    let temp = TempDir::new().expect("tempdir");
     let home = temp.path();
     let uuid = Uuid::from_u128(303);
     let thread_id = ThreadId::from_string(&uuid.to_string()).expect("valid thread id");
     let ts = "2025-01-03T13-00-00";
-    write_session_file(home, ts, uuid, 1, Some(SessionSource::Cli)).unwrap();
+    write_session_file(home, ts, uuid, 1, Some(SessionSource::Cli)).expect("write session file");
     let fs_rollout_path = home.join(format!("sessions/2025/01/03/rollout-{ts}-{uuid}.jsonl"));
 
     // Create an empty state DB so lookup takes the DB-first path and then falls back to files.
@@ -318,7 +318,7 @@ fn write_session_file_with_provider(
     let format: &[FormatItem] =
         format_description!("[year]-[month]-[day]T[hour]-[minute]-[second]");
     let dt = PrimitiveDateTime::parse(ts_str, format)
-        .unwrap()
+        .expect("parse timestamp")
         .assume_utc();
     let dir = root
         .join("sessions")
@@ -341,7 +341,7 @@ fn write_session_file_with_provider(
     });
 
     if let Some(source) = source {
-        payload["source"] = serde_json::to_value(source).unwrap();
+        payload["source"] = serde_json::to_value(source).expect("serialize source");
     }
     if let Some(provider) = model_provider {
         payload["model_provider"] = serde_json::Value::String(provider.to_string());
@@ -387,7 +387,7 @@ fn write_session_file_with_delayed_user_event(
     let format: &[FormatItem] =
         format_description!("[year]-[month]-[day]T[hour]-[minute]-[second]");
     let dt = PrimitiveDateTime::parse(ts_str, format)
-        .unwrap()
+        .expect("parse timestamp")
         .assume_utc();
     let dir = root
         .join("sessions")
@@ -444,7 +444,7 @@ fn write_session_file_with_meta_payload(
     let format: &[FormatItem] =
         format_description!("[year]-[month]-[day]T[hour]-[minute]-[second]");
     let dt = PrimitiveDateTime::parse(ts_str, format)
-        .unwrap()
+        .expect("parse timestamp")
         .assume_utc();
     let dir = root
         .join("sessions")
@@ -479,7 +479,7 @@ fn write_session_file_with_meta_payload(
 
 #[tokio::test]
 async fn test_list_conversations_latest_first() {
-    let temp = TempDir::new().unwrap();
+    let temp = TempDir::new().expect("tempdir");
     let home = temp.path();
 
     // Fixed UUIDs for deterministic expectations
@@ -495,7 +495,7 @@ async fn test_list_conversations_latest_first() {
         3,
         Some(SessionSource::VSCode),
     )
-    .unwrap();
+    .expect("write session file");
     write_session_file(
         home,
         "2025-01-02T12-00-00",
@@ -503,7 +503,7 @@ async fn test_list_conversations_latest_first() {
         3,
         Some(SessionSource::VSCode),
     )
-    .unwrap();
+    .expect("write session file");
     write_session_file(
         home,
         "2025-01-03T12-00-00",
@@ -511,7 +511,7 @@ async fn test_list_conversations_latest_first() {
         3,
         Some(SessionSource::VSCode),
     )
-    .unwrap();
+    .expect("write session file");
 
     let provider_filter = provider_vec(&[TEST_PROVIDER]);
     let page = get_threads(
@@ -524,7 +524,7 @@ async fn test_list_conversations_latest_first() {
         TEST_PROVIDER,
     )
     .await
-    .unwrap();
+    .expect("get threads");
 
     // Build expected objects
     let p1 = home
@@ -610,7 +610,7 @@ async fn test_list_conversations_latest_first() {
 
 #[tokio::test]
 async fn test_pagination_cursor() {
-    let temp = TempDir::new().unwrap();
+    let temp = TempDir::new().expect("tempdir");
     let home = temp.path();
 
     // Fixed UUIDs for deterministic expectations
@@ -628,7 +628,7 @@ async fn test_pagination_cursor() {
         1,
         Some(SessionSource::VSCode),
     )
-    .unwrap();
+    .expect("write session file");
     write_session_file(
         home,
         "2025-03-02T09-00-00",
@@ -636,7 +636,7 @@ async fn test_pagination_cursor() {
         1,
         Some(SessionSource::VSCode),
     )
-    .unwrap();
+    .expect("write session file");
     write_session_file(
         home,
         "2025-03-03T09-00-00",
@@ -644,7 +644,7 @@ async fn test_pagination_cursor() {
         1,
         Some(SessionSource::VSCode),
     )
-    .unwrap();
+    .expect("write session file");
     write_session_file(
         home,
         "2025-03-04T09-00-00",
@@ -652,7 +652,7 @@ async fn test_pagination_cursor() {
         1,
         Some(SessionSource::VSCode),
     )
-    .unwrap();
+    .expect("write session file");
     write_session_file(
         home,
         "2025-03-05T09-00-00",
@@ -660,7 +660,7 @@ async fn test_pagination_cursor() {
         1,
         Some(SessionSource::VSCode),
     )
-    .unwrap();
+    .expect("write session file");
 
     let provider_filter = provider_vec(&[TEST_PROVIDER]);
     let page1 = get_threads(
@@ -673,7 +673,7 @@ async fn test_pagination_cursor() {
         TEST_PROVIDER,
     )
     .await
-    .unwrap();
+    .expect("get threads");
     let p5 = home
         .join("sessions")
         .join("2025")
@@ -689,7 +689,7 @@ async fn test_pagination_cursor() {
     let updated_page1: Vec<Option<String>> =
         page1.items.iter().map(|i| i.updated_at.clone()).collect();
     let expected_cursor1: Cursor =
-        serde_json::from_str(&format!("\"2025-03-04T09-00-00|{u4}\"")).unwrap();
+        serde_json::from_str(&format!("\"2025-03-04T09-00-00|{u4}\"")).expect("parse cursor");
     let expected_page1 = ThreadsPage {
         items: vec![
             ThreadItem {
@@ -741,7 +741,7 @@ async fn test_pagination_cursor() {
         TEST_PROVIDER,
     )
     .await
-    .unwrap();
+    .expect("get threads");
     let p3 = home
         .join("sessions")
         .join("2025")
@@ -757,7 +757,7 @@ async fn test_pagination_cursor() {
     let updated_page2: Vec<Option<String>> =
         page2.items.iter().map(|i| i.updated_at.clone()).collect();
     let expected_cursor2: Cursor =
-        serde_json::from_str(&format!("\"2025-03-02T09-00-00|{u2}\"")).unwrap();
+        serde_json::from_str(&format!("\"2025-03-02T09-00-00|{u2}\"")).expect("parse cursor");
     let expected_page2 = ThreadsPage {
         items: vec![
             ThreadItem {
@@ -809,7 +809,7 @@ async fn test_pagination_cursor() {
         TEST_PROVIDER,
     )
     .await
-    .unwrap();
+    .expect("get threads");
     let p1 = home
         .join("sessions")
         .join("2025")
@@ -844,12 +844,12 @@ async fn test_pagination_cursor() {
 
 #[tokio::test]
 async fn test_list_threads_scans_past_head_for_user_event() {
-    let temp = TempDir::new().unwrap();
+    let temp = TempDir::new().expect("tempdir");
     let home = temp.path();
 
     let uuid = Uuid::from_u128(99);
     let ts = "2025-05-01T10-30-00";
-    write_session_file_with_delayed_user_event(home, ts, uuid, 12).unwrap();
+    write_session_file_with_delayed_user_event(home, ts, uuid, 12).expect("write session file");
 
     let provider_filter = provider_vec(&[TEST_PROVIDER]);
     let page = get_threads(
@@ -862,7 +862,7 @@ async fn test_list_threads_scans_past_head_for_user_event() {
         TEST_PROVIDER,
     )
     .await
-    .unwrap();
+    .expect("get threads");
 
     assert_eq!(page.items.len(), 1);
     assert_eq!(page.items[0].thread_id, Some(thread_id_from_uuid(uuid)));
@@ -870,12 +870,12 @@ async fn test_list_threads_scans_past_head_for_user_event() {
 
 #[tokio::test]
 async fn test_get_thread_contents() {
-    let temp = TempDir::new().unwrap();
+    let temp = TempDir::new().expect("tempdir");
     let home = temp.path();
 
     let uuid = Uuid::new_v4();
     let ts = "2025-04-01T10-30-00";
-    write_session_file(home, ts, uuid, 2, Some(SessionSource::VSCode)).unwrap();
+    write_session_file(home, ts, uuid, 2, Some(SessionSource::VSCode)).expect("write session file");
 
     let provider_filter = provider_vec(&[TEST_PROVIDER]);
     let page = get_threads(
@@ -888,10 +888,10 @@ async fn test_get_thread_contents() {
         TEST_PROVIDER,
     )
     .await
-    .unwrap();
+    .expect("get threads");
     let path = &page.items[0].path;
 
-    let content = tokio::fs::read_to_string(path).await.unwrap();
+    let content = tokio::fs::read_to_string(path).await.expect("read file");
 
     // Page equality (single item)
     let expected_path = home
@@ -951,7 +951,7 @@ async fn test_get_thread_contents() {
 
 #[tokio::test]
 async fn test_base_instructions_missing_in_meta_defaults_to_null() {
-    let temp = TempDir::new().unwrap();
+    let temp = TempDir::new().expect("tempdir");
     let home = temp.path();
 
     let ts = "2025-04-02T10-30-00";
@@ -965,7 +965,7 @@ async fn test_base_instructions_missing_in_meta_defaults_to_null() {
         "source": "vscode",
         "model_provider": "test-provider",
     });
-    write_session_file_with_meta_payload(home, ts, uuid, payload).unwrap();
+    write_session_file_with_meta_payload(home, ts, uuid, payload).expect("write session file");
 
     let provider_filter = provider_vec(&[TEST_PROVIDER]);
     let page = get_threads(
@@ -978,7 +978,7 @@ async fn test_base_instructions_missing_in_meta_defaults_to_null() {
         TEST_PROVIDER,
     )
     .await
-    .unwrap();
+    .expect("get threads");
 
     let head = read_head_for_summary(&page.items[0].path)
         .await
@@ -992,7 +992,7 @@ async fn test_base_instructions_missing_in_meta_defaults_to_null() {
 
 #[tokio::test]
 async fn test_base_instructions_present_in_meta_is_preserved() {
-    let temp = TempDir::new().unwrap();
+    let temp = TempDir::new().expect("tempdir");
     let home = temp.path();
 
     let ts = "2025-04-03T10-30-00";
@@ -1008,7 +1008,7 @@ async fn test_base_instructions_present_in_meta_is_preserved() {
         "model_provider": "test-provider",
         "base_instructions": {"text": base_text},
     });
-    write_session_file_with_meta_payload(home, ts, uuid, payload).unwrap();
+    write_session_file_with_meta_payload(home, ts, uuid, payload).expect("write session file");
 
     let provider_filter = provider_vec(&[TEST_PROVIDER]);
     let page = get_threads(
@@ -1021,7 +1021,7 @@ async fn test_base_instructions_present_in_meta_is_preserved() {
         TEST_PROVIDER,
     )
     .await
-    .unwrap();
+    .expect("get threads");
 
     let head = read_head_for_summary(&page.items[0].path)
         .await
@@ -1036,12 +1036,12 @@ async fn test_base_instructions_present_in_meta_is_preserved() {
 
 #[tokio::test]
 async fn test_created_at_sort_uses_file_mtime_for_updated_at() -> Result<()> {
-    let temp = TempDir::new().unwrap();
+    let temp = TempDir::new().expect("tempdir");
     let home = temp.path();
 
     let ts = "2025-06-01T08-00-00";
     let uuid = Uuid::from_u128(43);
-    write_session_file(home, ts, uuid, 0, Some(SessionSource::VSCode)).unwrap();
+    write_session_file(home, ts, uuid, 0, Some(SessionSource::VSCode)).expect("write session file");
 
     let created = PrimitiveDateTime::parse(
         ts,
@@ -1082,7 +1082,7 @@ async fn test_created_at_sort_uses_file_mtime_for_updated_at() -> Result<()> {
 
 #[tokio::test]
 async fn test_updated_at_uses_file_mtime() -> Result<()> {
-    let temp = TempDir::new().unwrap();
+    let temp = TempDir::new().expect("tempdir");
     let home = temp.path();
 
     let ts = "2025-06-01T08-00-00";
@@ -1172,7 +1172,7 @@ async fn test_updated_at_uses_file_mtime() -> Result<()> {
 
 #[tokio::test]
 async fn test_stable_ordering_same_second_pagination() {
-    let temp = TempDir::new().unwrap();
+    let temp = TempDir::new().expect("tempdir");
     let home = temp.path();
 
     let ts = "2025-07-01T00-00-00";
@@ -1180,9 +1180,9 @@ async fn test_stable_ordering_same_second_pagination() {
     let u2 = Uuid::from_u128(2);
     let u3 = Uuid::from_u128(3);
 
-    write_session_file(home, ts, u1, 0, Some(SessionSource::VSCode)).unwrap();
-    write_session_file(home, ts, u2, 0, Some(SessionSource::VSCode)).unwrap();
-    write_session_file(home, ts, u3, 0, Some(SessionSource::VSCode)).unwrap();
+    write_session_file(home, ts, u1, 0, Some(SessionSource::VSCode)).expect("write session file");
+    write_session_file(home, ts, u2, 0, Some(SessionSource::VSCode)).expect("write session file");
+    write_session_file(home, ts, u3, 0, Some(SessionSource::VSCode)).expect("write session file");
 
     let provider_filter = provider_vec(&[TEST_PROVIDER]);
     let page1 = get_threads(
@@ -1195,7 +1195,7 @@ async fn test_stable_ordering_same_second_pagination() {
         TEST_PROVIDER,
     )
     .await
-    .unwrap();
+    .expect("get threads");
 
     let p3 = home
         .join("sessions")
@@ -1211,7 +1211,7 @@ async fn test_stable_ordering_same_second_pagination() {
         .join(format!("rollout-2025-07-01T00-00-00-{u2}.jsonl"));
     let updated_page1: Vec<Option<String>> =
         page1.items.iter().map(|i| i.updated_at.clone()).collect();
-    let expected_cursor1: Cursor = serde_json::from_str(&format!("\"{ts}|{u2}\"")).unwrap();
+    let expected_cursor1: Cursor = serde_json::from_str(&format!("\"{ts}|{u2}\"")).expect("parse cursor");
     let expected_page1 = ThreadsPage {
         items: vec![
             ThreadItem {
@@ -1263,7 +1263,7 @@ async fn test_stable_ordering_same_second_pagination() {
         TEST_PROVIDER,
     )
     .await
-    .unwrap();
+    .expect("get threads");
     let p1 = home
         .join("sessions")
         .join("2025")
@@ -1298,7 +1298,7 @@ async fn test_stable_ordering_same_second_pagination() {
 
 #[tokio::test]
 async fn test_source_filter_excludes_non_matching_sessions() {
-    let temp = TempDir::new().unwrap();
+    let temp = TempDir::new().expect("tempdir");
     let home = temp.path();
 
     let interactive_id = Uuid::from_u128(42);
@@ -1311,7 +1311,7 @@ async fn test_source_filter_excludes_non_matching_sessions() {
         2,
         Some(SessionSource::Cli),
     )
-    .unwrap();
+    .expect("write session file");
     write_session_file(
         home,
         "2025-08-01T10-00-00",
@@ -1319,7 +1319,7 @@ async fn test_source_filter_excludes_non_matching_sessions() {
         2,
         Some(SessionSource::Exec),
     )
-    .unwrap();
+    .expect("write session file");
 
     let provider_filter = provider_vec(&[TEST_PROVIDER]);
     let interactive_only = get_threads(
@@ -1332,7 +1332,7 @@ async fn test_source_filter_excludes_non_matching_sessions() {
         TEST_PROVIDER,
     )
     .await
-    .unwrap();
+    .expect("get threads");
     let paths: Vec<_> = interactive_only
         .items
         .iter()
@@ -1354,7 +1354,7 @@ async fn test_source_filter_excludes_non_matching_sessions() {
         TEST_PROVIDER,
     )
     .await
-    .unwrap();
+    .expect("get threads");
     let all_paths: Vec<_> = all_sessions
         .items
         .into_iter()
@@ -1371,7 +1371,7 @@ async fn test_source_filter_excludes_non_matching_sessions() {
 
 #[tokio::test]
 async fn test_model_provider_filter_selects_only_matching_sessions() -> Result<()> {
-    let temp = TempDir::new().unwrap();
+    let temp = TempDir::new().expect("tempdir");
     let home = temp.path();
 
     let openai_id = Uuid::from_u128(1);

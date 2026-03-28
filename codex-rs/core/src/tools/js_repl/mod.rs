@@ -1685,7 +1685,7 @@ mod tests {
 
     #[test]
     fn node_version_parses_v_prefix_and_suffix() {
-        let version = NodeVersion::parse("v25.1.0-nightly.2024").unwrap();
+        let version = NodeVersion::parse("v25.1.0-nightly.2024").expect("parse test version");
         assert_eq!(
             version,
             NodeVersion {

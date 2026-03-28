@@ -148,14 +148,14 @@ mod tests {
 
     #[test]
     fn resume_command_prefers_name_over_id() {
-        let thread_id = ThreadId::from_string("123e4567-e89b-12d3-a456-426614174000").unwrap();
+        let thread_id = ThreadId::from_string("123e4567-e89b-12d3-a456-426614174000").expect("parse test thread id");
         let command = resume_command(Some("my-thread"), Some(thread_id));
         assert_eq!(command, Some("codex resume my-thread".to_string()));
     }
 
     #[test]
     fn resume_command_with_only_id() {
-        let thread_id = ThreadId::from_string("123e4567-e89b-12d3-a456-426614174000").unwrap();
+        let thread_id = ThreadId::from_string("123e4567-e89b-12d3-a456-426614174000").expect("parse test thread id");
         let command = resume_command(None, Some(thread_id));
         assert_eq!(
             command,

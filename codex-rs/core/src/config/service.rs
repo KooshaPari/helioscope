@@ -868,11 +868,11 @@ personality = true
     async fn read_includes_origins_and_layers() {
         let tmp = tempdir().expect("tempdir");
         let user_path = tmp.path().join(CONFIG_TOML_FILE);
-        std::fs::write(&user_path, "model = \"user\"").unwrap();
+        std::fs::write(&user_path, "model = \"user\"").expect("write user config");
         let user_file = AbsolutePathBuf::try_from(user_path.clone()).expect("user file");
 
         let managed_path = tmp.path().join("managed_config.toml");
-        std::fs::write(&managed_path, "approval_policy = \"never\"").unwrap();
+        std::fs::write(&managed_path, "approval_policy = \"never\"").expect("write managed config");
         let managed_file = AbsolutePathBuf::try_from(managed_path.clone()).expect("managed file");
 
         let service = ConfigService::new(
@@ -920,19 +920,19 @@ personality = true
         };
         assert_eq!(layers.len(), 3, "expected three layers");
         assert_eq!(
-            layers.first().unwrap().name,
+            layers.first().expect("layer 0").name,
             ConfigLayerSource::LegacyManagedConfigTomlFromFile {
                 file: managed_file.clone()
             }
         );
         assert_eq!(
-            layers.get(1).unwrap().name,
+            layers.get(1).expect("layer 1").name,
             ConfigLayerSource::User {
                 file: user_file.clone()
             }
         );
         assert!(matches!(
-            layers.get(2).unwrap().name,
+            layers.get(2).expect("layer 2").name,
             ConfigLayerSource::System { .. }
         ));
     }
@@ -944,10 +944,10 @@ personality = true
             tmp.path().join(CONFIG_TOML_FILE),
             "approval_policy = \"on-request\"",
         )
-        .unwrap();
+        .expect("write approval config");
 
         let managed_path = tmp.path().join("managed_config.toml");
-        std::fs::write(&managed_path, "approval_policy = \"never\"").unwrap();
+        std::fs::write(&managed_path, "approval_policy = \"never\"").expect("write managed config");
         let managed_file = AbsolutePathBuf::try_from(managed_path.clone()).expect("managed file");
 
         let service = ConfigService::new(
@@ -1002,7 +1002,7 @@ personality = true
     async fn version_conflict_rejected() {
         let tmp = tempdir().expect("tempdir");
         let user_path = tmp.path().join(CONFIG_TOML_FILE);
-        std::fs::write(&user_path, "model = \"user\"").unwrap();
+        std::fs::write(&user_path, "model = \"user\"").expect("write user config");
 
         let service = ConfigService::new_with_defaults(tmp.path().to_path_buf());
         let error = service
@@ -1025,7 +1025,7 @@ personality = true
     #[tokio::test]
     async fn write_value_defaults_to_user_config_path() {
         let tmp = tempdir().expect("tempdir");
-        std::fs::write(tmp.path().join(CONFIG_TOML_FILE), "").unwrap();
+        std::fs::write(tmp.path().join(CONFIG_TOML_FILE), "").expect("write empty config");
 
         let service = ConfigService::new_with_defaults(tmp.path().to_path_buf());
         service
@@ -1050,10 +1050,10 @@ personality = true
     #[tokio::test]
     async fn invalid_user_value_rejected_even_if_overridden_by_managed() {
         let tmp = tempdir().expect("tempdir");
-        std::fs::write(tmp.path().join(CONFIG_TOML_FILE), "model = \"user\"").unwrap();
+        std::fs::write(tmp.path().join(CONFIG_TOML_FILE), "model = \"user\"").expect("write config");
 
         let managed_path = tmp.path().join("managed_config.toml");
-        std::fs::write(&managed_path, "approval_policy = \"never\"").unwrap();
+        std::fs::write(&managed_path, "approval_policy = \"never\"").expect("write managed config");
 
         let service = ConfigService::new(
             tmp.path().to_path_buf(),
@@ -1092,11 +1092,11 @@ personality = true
     async fn read_reports_managed_overrides_user_and_session_flags() {
         let tmp = tempdir().expect("tempdir");
         let user_path = tmp.path().join(CONFIG_TOML_FILE);
-        std::fs::write(&user_path, "model = \"user\"").unwrap();
+        std::fs::write(&user_path, "model = \"user\"").expect("write user config");
         let user_file = AbsolutePathBuf::try_from(user_path.clone()).expect("user file");
 
         let managed_path = tmp.path().join("managed_config.toml");
-        std::fs::write(&managed_path, "model = \"system\"").unwrap();
+        std::fs::write(&managed_path, "model = \"system\"").expect("write managed model config");
         let managed_file = AbsolutePathBuf::try_from(managed_path.clone()).expect("managed file");
 
         let cli_overrides = vec![(
@@ -1143,12 +1143,12 @@ personality = true
             layers.as_slice()
         };
         assert_eq!(
-            layers.first().unwrap().name,
+            layers.first().expect("layer 0").name,
             ConfigLayerSource::LegacyManagedConfigTomlFromFile { file: managed_file }
         );
-        assert_eq!(layers.get(1).unwrap().name, ConfigLayerSource::SessionFlags);
+        assert_eq!(layers.get(1).expect("layer 1").name, ConfigLayerSource::SessionFlags);
         assert_eq!(
-            layers.get(2).unwrap().name,
+            layers.get(2).expect("layer 2").name,
             ConfigLayerSource::User { file: user_file }
         );
     }
@@ -1156,10 +1156,10 @@ personality = true
     #[tokio::test]
     async fn write_value_reports_managed_override() {
         let tmp = tempdir().expect("tempdir");
-        std::fs::write(tmp.path().join(CONFIG_TOML_FILE), "").unwrap();
+        std::fs::write(tmp.path().join(CONFIG_TOML_FILE), "").expect("write empty config");
 
         let managed_path = tmp.path().join("managed_config.toml");
-        std::fs::write(&managed_path, "approval_policy = \"never\"").unwrap();
+        std::fs::write(&managed_path, "approval_policy = \"never\"").expect("write managed config");
         let managed_file = AbsolutePathBuf::try_from(managed_path.clone()).expect("managed file");
 
         let service = ConfigService::new(

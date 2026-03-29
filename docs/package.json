@@ -1,20 +1,19 @@
 {
-  "name": "helioscli-docs",
+  "name": "docs",
   "private": true,
   "type": "module",
   "scripts": {
-    "postinstall": "cd ../vendor/phenodocs/packages/docs && bun install",
-    "dev": "vitepress dev .",
-    "build": "vitepress build .",
-    "preview": "vitepress preview .",
-    "docs:build": "vitepress build",
-    "docs:dev": "vitepress dev"
-  },
-  "dependencies": {
-    "@phenotype/docs": "file:../vendor/phenodocs/packages/docs"
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs",
+    "docs:test:unit": "node --test docs/tests/unit/*.test.mjs",
+    "docs:test:component": "node --test docs/tests/component/*.test.mjs",
+    "docs:test:e2e": "playwright test --config docs/tests/playwright.config.ts",
+    "docs:test": "npm run docs:test:unit && npm run docs:test:component && npm run docs:test:e2e",
+    "docs:check": "npm run docs:build && npm run docs:test"
   },
   "devDependencies": {
-    "vitepress": "^1.6.4",
-    "vue": "^3.5.0"
+    "@playwright/test": "^1.53.2",
+    "vitepress": "^1.6.3"
   }
 }

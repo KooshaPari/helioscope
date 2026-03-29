@@ -7,11 +7,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.1.0] - 2026-03-29
 
 ### Added
 - Release channel framework (stage-gates CI, CodeRabbit, gatekeeper)
 - phenotype-config SDK integration
+- Docs-site scaffold and verification harness with VitePress integration
+- AgilePlus spec format migration for kitty-specs
+
+### Fixed
+- Syntax errors and dependency version issues
+- Replace unwrap with expect for file search limit
+- Replace deprecated criterion::black_box with std::hint::black_box (#126, #127)
+- Rust CI, codespell, and cargo-deny failures on main (#125)
+
+### Changed
+- Migrate kitty-specs to docs/specs (AgilePlus format) (#128)
+- Extract trait-based architecture from chat_composer (KeyEventRouter, Renderable, Submitter, HistoryNavigator traits)
+- Text manipulation utilities extraction to dedicated module
+- Migrate top 20 TODOs to GitHub Issues
+
+### Chore
+- Branch cleanup and removal of broken symlink member references
+- Integration of @phenotype/docs into VitePress docs
 
 ## [0.1.0-codex.105.0] - 2026-02-25
 

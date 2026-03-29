@@ -1,2 +1,9 @@
+/* impeccable CSS baseline — github.com/pbakaus/impeccable */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
+img, video { max-width: 100%; height: auto; }
+input, button, textarea, select { font: inherit; }
+p, h1, h2, h3, h4, h5, h6 { overflow-wrap: break-word; }
+
 .category-switcher { display: flex; align-items: center; gap: 0.5rem; margin: 1rem 0 1.5rem; }
 .category-switcher select { min-width: 220px; padding: 0.4rem 0.5rem; }

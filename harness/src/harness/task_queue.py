@@ -4,12 +4,11 @@ Provides priority queue with backpressure, persistence, and rate limiting.
 """
 
 import asyncio
-import threading
 import time
 from dataclasses import dataclass, field
 from enum import Enum
-from heapq import heappush, heappop
-from typing import Any, Callable, Optional
+from heapq import heappop, heappush
+from typing import Any
 
 from .id_utils import new_id
 
@@ -34,15 +33,15 @@ class Task:
     priority: TaskPriority = TaskPriority.NORMAL
     created_at: float = field(default_factory=time.time)
     scheduled_at: float = 0.0
-    started_at: Optional[float] = None
-    completed_at: Optional[float] = None
+    started_at: float | None = None
+    completed_at: float | None = None
     result: Any = None
-    error: Optional[str] = None
+    error: str | None = None
     retry_count: int = 0
     max_retries: int = 3
     metadata: dict = field(default_factory=dict)
 
-    def __lt__(self, other: "Task") -> bool:
+    def __lt__(self, other: Task) -> bool:
         """Compare for heap ordering (lower priority number = higher priority)."""
         if self.priority != other.priority:
             return self.priority.value < other.priority.value
@@ -95,7 +94,7 @@ class TaskQueue:
         payload: Any,
         priority: TaskPriority = TaskPriority.NORMAL,
         max_retries: int = 3,
-        metadata: Optional[dict] = None,
+        metadata: dict | None = None,
     ) -> str:
         """Submit a task to the queue."""
         async with self._lock:
@@ -136,7 +135,7 @@ class TaskQueue:
         self._rate_timestamps.append(now)
         return True
 
-    async def get(self, timeout: Optional[float] = None) -> Optional[Task]:
+    async def get(self, timeout: float | None = None) -> Task | None:
         """Get next task from queue."""
         start = time.time()
 
@@ -221,7 +220,7 @@ class TaskQueue:
             "rate_limit": self._rate_limit,
         }
 
-    def get_task(self, task_id: str) -> Optional[Task]:
+    def get_task(self, task_id: str) -> Task | None:
         """Get task by ID."""
         return self._tasks.get(task_id) or self._running.get(task_id) or self._completed.get(task_id)
 

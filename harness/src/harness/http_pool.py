@@ -4,10 +4,11 @@ Provides a shared httpx.Client with connection pooling that can be reused
 across all HTTP requests to reduce latency and connection overhead.
 """
 
-import httpx
 import threading
-from typing import Optional, Any
-from dataclasses import dataclass, field
+from dataclasses import dataclass
+from typing import Any
+
+import httpx
 
 
 @dataclass
@@ -35,17 +36,17 @@ class HTTPConnectionPool:
             response = client.get(url)
     """
 
-    _instance: Optional["HTTPConnectionPool"] = None
+    _instance: HTTPConnectionPool | None = None
     _lock = threading.Lock()
 
-    def __init__(self, config: Optional[PoolConfig] = None):
+    def __init__(self, config: PoolConfig | None = None):
         self._config = config or PoolConfig()
-        self._client: Optional[httpx.Client] = None
-        self._async_client: Optional[httpx.AsyncClient] = None
+        self._client: httpx.Client | None = None
+        self._async_client: httpx.AsyncClient | None = None
         self._client_lock = threading.Lock()
 
     @classmethod
-    def get_instance(cls, config: Optional[PoolConfig] = None) -> "HTTPConnectionPool":
+    def get_instance(cls, config: PoolConfig | None = None) -> HTTPConnectionPool:
         """Get singleton instance."""
         if cls._instance is None:
             with cls._lock:
@@ -139,7 +140,7 @@ class HTTPConnectionPool:
                 self._async_client = None
 
 
-def get_http_client(config: Optional[PoolConfig] = None) -> httpx.Client:
+def get_http_client(config: PoolConfig | None = None) -> httpx.Client:
     """Get a shared HTTP client with connection pooling.
 
     Usage:
@@ -149,7 +150,7 @@ def get_http_client(config: Optional[PoolConfig] = None) -> httpx.Client:
     return HTTPConnectionPool.get_instance(config).get_client()
 
 
-def get_async_http_client(config: Optional[PoolConfig] = None) -> httpx.AsyncClient:
+def get_async_http_client(config: PoolConfig | None = None) -> httpx.AsyncClient:
     """Get a shared async HTTP client with connection pooling.
 
     Usage:

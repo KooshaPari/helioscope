@@ -7,10 +7,11 @@ resource-intensive operations to prevent leaks.
 import os
 import subprocess
 import threading
-from contextlib import contextmanager
-from typing import Any, Callable, Generator, Optional
-from dataclasses import dataclass, field
 import time
+from collections.abc import Generator
+from contextlib import contextmanager
+from dataclasses import dataclass
+from typing import Any
 
 
 @dataclass
@@ -34,7 +35,7 @@ class SubprocessManager:
             stdout, stderr = proc.communicate()
     """
 
-    _instance: Optional["SubprocessManager"] = None
+    _instance: SubprocessManager | None = None
     _lock = threading.Lock()
 
     def __init__(self):
@@ -42,7 +43,7 @@ class SubprocessManager:
         self._metrics: list[ProcessMetrics] = []
 
     @classmethod
-    def get_instance(cls) -> "SubprocessManager":
+    def get_instance(cls) -> SubprocessManager:
         """Get singleton instance."""
         if cls._instance is None:
             with cls._lock:
@@ -55,7 +56,7 @@ class SubprocessManager:
         if proc and proc.pid:
             self._processes[proc.pid] = proc
 
-    def unregister(self, pid: int) -> Optional[subprocess.Popen]:
+    def unregister(self, pid: int) -> subprocess.Popen | None:
         """Unregister a process."""
         return self._processes.pop(pid, None)
 
@@ -90,7 +91,7 @@ class SubprocessManager:
 
 
 @contextmanager
-def safe_popen(*args: Any, **kwargs: Any) -> Generator[subprocess.Popen, None, None]:
+def safe_popen(*args: Any, **kwargs: Any) -> Generator[subprocess.Popen]:
     """Context manager for subprocess.Popen with automatic cleanup.
 
     Ensures all file handles are closed and processes are terminated
@@ -129,9 +130,9 @@ def safe_popen(*args: Any, **kwargs: Any) -> Generator[subprocess.Popen, None, N
 
 def run_command(
     cmd: list[str],
-    cwd: Optional[str] = None,
-    env: Optional[dict] = None,
-    timeout: Optional[float] = None,
+    cwd: str | None = None,
+    env: dict | None = None,
+    timeout: float | None = None,
     check: bool = True,
 ) -> tuple[int, str, str]:
     """Run a command with proper resource management.
@@ -159,7 +160,7 @@ def run_command(
 
 
 @contextmanager
-def fd_tracker() -> Generator[dict[str, int], None, None]:
+def fd_tracker() -> Generator[dict[str, int]]:
     """Context manager to track file descriptor usage.
 
     Usage:
@@ -201,7 +202,7 @@ class ResourceMonitor:
         self.start_fd = 0
         self.metrics: dict[str, Any] = {}
 
-    def __enter__(self) -> "ResourceMonitor":
+    def __enter__(self) -> ResourceMonitor:
         self.start_time = time.perf_counter()
         try:
             self.start_fd = _get_fd_count(os.getpid())

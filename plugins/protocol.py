@@ -119,7 +119,7 @@ class ExtensionRegistry:
     """Registry for extension points."""
     
     def __init__(self):
-        self._extensions: dict[str, list[type] = {}
+        self._extensions: dict[str, list[type]] = {}
     
     def register(self, extension_point: str, extension: type):
         """Register an extension for a point."""

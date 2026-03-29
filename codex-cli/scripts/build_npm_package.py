@@ -260,7 +260,7 @@ def stage_sources(staging_dir: Path, version: str, package: str) -> None:
         if readme_src.exists():
             shutil.copy2(readme_src, staging_dir / "README.md")
 
-        with open(CODEX_CLI_ROOT / "package.json", "r", encoding="utf-8") as fh:
+        with open(CODEX_CLI_ROOT / "package.json", encoding="utf-8") as fh:
             codex_package_json = json.load(fh)
 
         package_json = {
@@ -298,7 +298,7 @@ def stage_sources(staging_dir: Path, version: str, package: str) -> None:
         raise RuntimeError(f"Unknown package '{package}'.")
 
     if package_json_path is not None:
-        with open(package_json_path, "r", encoding="utf-8") as fh:
+        with open(package_json_path, encoding="utf-8") as fh:
             package_json = json.load(fh)
         package_json["version"] = version
 

@@ -7,10 +7,10 @@ specializations, and resource limits.
 import json
 import threading
 import time
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 from enum import Enum
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 
 class TeammateType(Enum):
@@ -55,12 +55,12 @@ class TeammateStatus:
 
     name: str
     state: TeammateState = TeammateState.IDLE
-    current_task: Optional[str] = None
+    current_task: str | None = None
     tasks_completed: int = 0
     tasks_failed: int = 0
     avg_latency_ms: float = 0.0
     last_used: float = 0.0
-    error_message: Optional[str] = None
+    error_message: str | None = None
 
 
 class TeammateRegistry:
@@ -80,7 +80,7 @@ class TeammateRegistry:
         teammate = registry.get_available(TeammateType.CODER)
     """
 
-    def __init__(self, persist_path: Optional[Path] = None):
+    def __init__(self, persist_path: Path | None = None):
         self._persist_path = persist_path
         self._configs: dict[str, TeammateConfig] = {}
         self._status: dict[str, TeammateStatus] = {}
@@ -110,7 +110,7 @@ class TeammateRegistry:
                 return True
             return False
 
-    def get(self, name: str) -> Optional[TeammateConfig]:
+    def get(self, name: str) -> TeammateConfig | None:
         """Get teammate config by name."""
         return self._configs.get(name)
 
@@ -122,7 +122,7 @@ class TeammateRegistry:
         """Get all teammates of a specific type."""
         return [c for c in self._configs.values() if c.type == type]
 
-    def get_available(self, type: Optional[TeammateType] = None) -> Optional[TeammateConfig]:
+    def get_available(self, type: TeammateType | None = None) -> TeammateConfig | None:
         """Get an available teammate (idle state)."""
         with self._lock:
             candidates = []
@@ -151,7 +151,7 @@ class TeammateRegistry:
             if name in self._status:
                 self._status[name] = status
 
-    def get_status(self, name: str) -> Optional[TeammateStatus]:
+    def get_status(self, name: str) -> TeammateStatus | None:
         """Get teammate status."""
         return self._status.get(name)
 

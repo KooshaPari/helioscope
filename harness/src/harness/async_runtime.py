@@ -6,9 +6,10 @@ overhead from creating new event loops.
 
 import asyncio
 import threading
-from typing import Optional, Any, Callable, Awaitable
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from functools import wraps
+from typing import Any
 
 
 @dataclass
@@ -35,18 +36,18 @@ class AsyncRuntime:
             await do_something()
     """
 
-    _instance: Optional["AsyncRuntime"] = None
+    _instance: AsyncRuntime | None = None
     _lock = threading.Lock()
 
-    def __init__(self, config: Optional[AsyncConfig] = None):
+    def __init__(self, config: AsyncConfig | None = None):
         self._config = config or AsyncConfig()
-        self._loop: Optional[asyncio.AbstractEventLoop] = None
-        self._thread: Optional[threading.Thread] = None
+        self._loop: asyncio.AbstractEventLoop | None = None
+        self._thread: threading.Thread | None = None
         self._running = False
         self._loop_lock = threading.Lock()
 
     @classmethod
-    def get_instance(cls, config: Optional[AsyncConfig] = None) -> "AsyncRuntime":
+    def get_instance(cls, config: AsyncConfig | None = None) -> AsyncRuntime:
         """Get singleton instance."""
         if cls._instance is None:
             with cls._lock:
@@ -169,10 +170,10 @@ class AsyncRuntime:
 
 
 # Global instance
-_default_runtime: Optional[AsyncRuntime] = None
+_default_runtime: AsyncRuntime | None = None
 
 
-def get_async_runtime(config: Optional[AsyncConfig] = None) -> AsyncRuntime:
+def get_async_runtime(config: AsyncConfig | None = None) -> AsyncRuntime:
     """Get the default async runtime."""
     global _default_runtime
     if _default_runtime is None:
@@ -214,7 +215,7 @@ async def run_with_timeout(
     """Run coroutine with timeout."""
     try:
         return await asyncio.wait_for(coro, timeout=timeout)
-    except asyncio.TimeoutError:
+    except TimeoutError:
         raise TimeoutError(f"Operation timed out after {timeout}s")
 
 
@@ -226,7 +227,7 @@ class AsyncBatch:
         self._flush_timeout = flush_timeout
         self._queue: asyncio.Queue = asyncio.Queue()
         self._running = False
-        self._task: Optional[asyncio.Task] = None
+        self._task: asyncio.Task | None = None
 
     async def _processor(self) -> None:
         """Process batches."""
@@ -242,7 +243,7 @@ class AsyncBatch:
                             timeout=self._flush_timeout,
                         )
                         batch.append(item)
-                    except asyncio.TimeoutError:
+                    except TimeoutError:
                         break
             except Exception:
                 pass

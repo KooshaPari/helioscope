@@ -6,13 +6,13 @@ and analyzing memory usage patterns.
 
 import gc
 import os
-import sys
 import threading
 import time
 import tracemalloc
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Any, Optional, Callable
 from functools import wraps
+from typing import Any
 
 
 @dataclass
@@ -56,7 +56,7 @@ class MemoryProfiler:
         self._interval = interval
         self._track_allocations = track_allocations
         self._running = False
-        self._thread: Optional[threading.Thread] = None
+        self._thread: threading.Thread | None = None
         self._snapshots: list[MemorySnapshot] = []
         self._start_time = 0.0
         self._start_rss = 0.0
@@ -182,7 +182,7 @@ class MemoryProfiler:
 
         return report
 
-    def get_current_snapshot(self) -> Optional[MemorySnapshot]:
+    def get_current_snapshot(self) -> MemorySnapshot | None:
         """Get current memory snapshot."""
         if self._running:
             return self._take_snapshot()

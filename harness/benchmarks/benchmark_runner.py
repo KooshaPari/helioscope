@@ -33,13 +33,11 @@ import shutil
 import subprocess
 import tempfile
 import time
+from dataclasses import asdict, dataclass, field
+
 import httpx
-from dataclasses import dataclass, field, asdict
-from typing import Any
 
-import psutil
-from harness.src.harness.resources import safe_popen, ResourceMonitor, fd_tracker
-
+from harness.src.harness.resources import ResourceMonitor, safe_popen
 
 # ============================================================================
 # Configuration
@@ -422,7 +420,7 @@ def print_matrix_report(matrix: BenchmarkMatrix) -> None:
             break
 
     if baseline:
-        print(f"\nDelta from cliproxy baseline:")
+        print("\nDelta from cliproxy baseline:")
         for r in matrix.results:
             if r.success and r.harness != "cliproxy":
                 delta = r.sla_p50 - baseline.sla_p50

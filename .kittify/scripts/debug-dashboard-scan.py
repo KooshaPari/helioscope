@@ -7,7 +7,8 @@ from pathlib import Path
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from specify_cli.dashboard.scanner import scan_all_features, gather_feature_paths
+from specify_cli.dashboard.scanner import gather_feature_paths, scan_all_features
+
 
 def main():
     if len(sys.argv) > 1:

@@ -6,9 +6,10 @@ import hashlib
 import json
 import os
 import platform
-from datetime import datetime, timezone
-from pathlib import Path
 import sys
+from datetime import UTC, datetime
+from pathlib import Path
+
 from jsonschema import validate
 
 ROOT = Path(__file__).resolve().parents[1] / "src"
@@ -102,8 +103,8 @@ def run_discovery(root: str, out: str, max_scan_depth: int) -> None:
 def run_runner(repo: str, profile: str, out: str, args) -> None:
     from harness.discoverer import Discoverer
     from harness.interfaces import DiscoverInput
-    from harness.runner import Runner, RunnerConfig
     from harness.normalizer import QualityNormalizer
+    from harness.runner import Runner, RunnerConfig
     from harness.schema import evidence_payload
 
     discoverer = Discoverer()
@@ -158,7 +159,7 @@ def run_runner(repo: str, profile: str, out: str, args) -> None:
     result = {
         "repo": repo,
         "profile": profile,
-        "created_at": datetime.now(tz=timezone.utc).isoformat(),
+        "created_at": datetime.now(tz=UTC).isoformat(),
         "plan_hash": command_hash,
         "plan": commands,
         "command_count": len(commands),
@@ -192,7 +193,7 @@ def run_runner(repo: str, profile: str, out: str, args) -> None:
     payload = evidence_payload(discovery, runs, normalization)
     payload["plan_hash"] = command_hash
     payload["reproducibility"] = _reproducibility_metadata(profile, args)
-    payload["created_at"] = datetime.now(tz=timezone.utc).isoformat()
+    payload["created_at"] = datetime.now(tz=UTC).isoformat()
     payload["command_count"] = len(commands)
 
     if args.replay:
@@ -244,8 +245,8 @@ def run_runner(repo: str, profile: str, out: str, args) -> None:
 
 def normalize_run(input_file: str, out: str) -> None:
     payload = json.loads(Path(input_file).read_text())
-    from harness.normalizer import QualityNormalizer
     from harness.interfaces import RunResult
+    from harness.normalizer import QualityNormalizer
 
     raw_runs = payload.get("runs", [])
     if not raw_runs:
@@ -305,7 +306,8 @@ def cmd_teammates_list(agents_dir: str) -> None:
 
 def cmd_teammates_delegate(teammate_id: str, task: str, timeout: int, profile: str) -> None:
     import asyncio
-    from harness import TeammateRegistry, DelegationRequest, DelegationProtocol, CodexExecutor, Priority
+
+    from harness import CodexExecutor, DelegationProtocol, DelegationRequest, Priority, TeammateRegistry
 
     async def run():
         registry = TeammateRegistry()
@@ -356,7 +358,7 @@ def cmd_teammates_status(delegation_id: str) -> None:
 
 
 def cmd_scaling_status() -> None:
-    from harness import ScalingConfig, DynamicLimitController, ResourceSampler
+    from harness import DynamicLimitController, ResourceSampler
 
     sampler = ResourceSampler()
     controller = DynamicLimitController()

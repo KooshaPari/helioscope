@@ -1,5 +1,5 @@
-from harness.normalizer import QualityNormalizer
 from harness.interfaces import RunResult
+from harness.normalizer import QualityNormalizer
 
 
 def test_quality_infer_schema():

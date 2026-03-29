@@ -27,7 +27,7 @@ class RetryConfig:
 
 def calculate_delay(attempt: int, config: RetryConfig) -> float:
     """Calculate delay with exponential backoff and jitter."""
-    delay = min(config.initial_delay * (config.exponential_base ** attempt, config.max_delay)
+    delay = min(config.initial_delay * (config.exponential_base ** attempt), config.max_delay)
     
     if config.jitter:
         # Add random jitter between 0-25%

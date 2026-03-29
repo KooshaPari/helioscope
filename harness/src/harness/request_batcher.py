@@ -4,13 +4,13 @@ Provides utilities to batch multiple requests together to reduce network overhea
 """
 
 import asyncio
-import time
-import threading
-from dataclasses import dataclass, field
-from typing import Any, Callable, Generic, TypeVar, Optional
-from collections import deque
 import logging
-
+import threading
+import time
+from collections import deque
+from collections.abc import Callable
+from dataclasses import dataclass, field
+from typing import Generic, TypeVar
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +26,7 @@ class BatchRequest(Generic[T]):
     id: str
     args: tuple = field(default_factory=tuple)
     kwargs: dict = field(default_factory=dict)
-    future: Optional[asyncio.Future] = None
+    future: asyncio.Future | None = None
     timestamp: float = field(default_factory=time.time)
 
 
@@ -35,8 +35,8 @@ class BatchResponse(Generic[R]):
     """Response for a batched request."""
 
     request_id: str
-    result: Optional[R] = None
-    error: Optional[Exception] = None
+    result: R | None = None
+    error: Exception | None = None
     latency_ms: float = 0.0
 
 

@@ -1,14 +1,14 @@
 from __future__ import annotations
 
+from collections.abc import Iterable
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from subprocess import Popen, TimeoutExpired
 from time import sleep
-from typing import Iterable
 
-from .interfaces import CanonicalCommand
 from .id_utils import artifact_slug
+from .interfaces import CanonicalCommand
 
 
 class RunnerConfig:
@@ -65,8 +65,8 @@ class Runner:
                         returncode=0,
                         attempts=0,
                         timed_out=False,
-                        started_at=datetime.now(tz=timezone.utc).isoformat(),
-                        finished_at=datetime.now(tz=timezone.utc).isoformat(),
+                        started_at=datetime.now(tz=UTC).isoformat(),
+                        finished_at=datetime.now(tz=UTC).isoformat(),
                         stdout_file="",
                         stderr_file="",
                         duration_ms=0,
@@ -96,7 +96,7 @@ class Runner:
         stdout_path = artifact_dir / f"{self._slug(cmd.command)}.stdout.log"
         stderr_path = artifact_dir / f"{self._slug(cmd.command)}.stderr.log"
 
-        started = datetime.now(timezone.utc)
+        started = datetime.now(UTC)
         attempts = 0
         timed_out = False
         last_error: str | None = None
@@ -132,7 +132,7 @@ class Runner:
             else:
                 break
 
-        finished = datetime.now(timezone.utc)
+        finished = datetime.now(UTC)
         duration_ms = int((finished - started).total_seconds() * 1000)
 
         return RunResult(

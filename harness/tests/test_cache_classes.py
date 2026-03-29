@@ -1,7 +1,6 @@
 """Tests for cache module - using correct class names."""
 
-import pytest
-from harness.cache import L1Cache, L2Cache, RequestCoalescer, CachePreWarmer
+from harness.cache import L1Cache, L2Cache, RequestCoalescer
 
 
 class TestL1CacheSimple:

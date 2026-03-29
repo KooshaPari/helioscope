@@ -20,12 +20,12 @@ import tempfile
 import textwrap
 import threading
 import time
+import xml.etree.ElementTree as ET
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Any
-import xml.etree.ElementTree as ET
 
 QUEUE_CANCEL_RE = re.compile(r"queue|queued|cancel|cancelled|interrupt|abort")
 TURN_LATENCY_RE = re.compile(r"turn.*(duration|latency)|codex\.turn", re.IGNORECASE)
@@ -157,7 +157,7 @@ class CollectorHandler(BaseHTTPRequestHandler):
 
         self.state.append(
             {
-                "timestamp": dt.datetime.now(dt.timezone.utc).isoformat(),
+                "timestamp": dt.datetime.now(dt.UTC).isoformat(),
                 "path": self.path,
                 "headers": {k.lower(): v for k, v in self.headers.items()},
                 "body": parsed,
@@ -715,13 +715,13 @@ def copy_account_auth(src_home: Path, dst_home: Path) -> bool:
         return False
     dst_home.mkdir(parents=True, exist_ok=True)
     shutil.copy2(src_auth, dst_auth)
-    
+
     # Also copy config.toml for custom model providers/profiles
     src_config = src_home / "config.toml"
     dst_config = dst_home / "config.toml"
     if src_config.exists():
         shutil.copy2(src_config, dst_config)
-    
+
     return True
 
 
@@ -1164,7 +1164,7 @@ def summarize_results(
     )[:10]
 
     return {
-        "generated_at": dt.datetime.now(dt.timezone.utc).isoformat(),
+        "generated_at": dt.datetime.now(dt.UTC).isoformat(),
         "run_dir": str(run_dir),
         "command": cmd,
         "config_path": str(config_path),

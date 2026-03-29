@@ -2,7 +2,6 @@ import json
 import subprocess
 from pathlib import Path
 
-
 SCRIPT = Path("harness/scripts/run-harness.py").resolve()
 # Alternative path for running from harness directory
 if not SCRIPT.exists():

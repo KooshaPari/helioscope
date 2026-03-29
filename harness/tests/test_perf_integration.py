@@ -4,14 +4,11 @@ Tests cross-module interactions and combined functionality.
 These tests run against the modules in main branch.
 """
 
-import asyncio
-import tempfile
-import time
-import pytest
-from pathlib import Path
-
 # Import from harness.src.harness
 import sys
+import time
+
+import pytest
 
 sys.path.insert(0, "harness/src")
 
@@ -59,7 +56,7 @@ class TestContextCompaction:
 
     def test_compactor_priority(self):
         """Test priority-based compaction."""
-        from harness.context_compactor import ContextCompactor, ContextMessage, CompactionStrategy, CompactionConfig
+        from harness.context_compactor import CompactionConfig, CompactionStrategy, ContextCompactor, ContextMessage
 
         config = CompactionConfig(
             max_tokens=100,
@@ -188,7 +185,7 @@ class TestTeammates:
 
     def test_teammates_import(self):
         """Test teammates module imports."""
-        from harness.teammates import TeammateRegistry, DelegationProtocol
+        from harness.teammates import DelegationProtocol, TeammateRegistry
 
         # Just verify imports work
         assert TeammateRegistry is not None
@@ -221,7 +218,7 @@ class TestRunner:
 
     def test_runner_import(self):
         """Test runner module imports."""
-        from harness.runner import Runner, RunResult
+        from harness.runner import Runner
 
         assert Runner is not None
 
@@ -231,7 +228,7 @@ class TestResources:
 
     def test_resources_import(self):
         """Test resources module imports."""
-        from harness.resources import SubprocessManager, ResourceMonitor
+        from harness.resources import ResourceMonitor, SubprocessManager
 
         assert SubprocessManager is not None
         assert ResourceMonitor is not None
@@ -264,7 +261,7 @@ class TestMemoryProfiler:
 
     def test_memory_profiler_import(self):
         """Test memory profiler imports."""
-        from harness.memory_profiler import MemoryProfiler, LeakDetector
+        from harness.memory_profiler import LeakDetector, MemoryProfiler
 
         assert MemoryProfiler is not None
         assert LeakDetector is not None
@@ -275,7 +272,7 @@ class TestCPUProfiler:
 
     def test_cpu_profiler_import(self):
         """Test CPU profiler imports."""
-        from harness.cpu_profiler import CPUSampler, PerfProfiler
+        from harness.cpu_profiler import CPUSampler
 
         assert CPUSampler is not None
 
@@ -285,7 +282,7 @@ class TestAsyncRuntime:
 
     def test_async_runtime_import(self):
         """Test async runtime imports."""
-        from harness.async_runtime import AsyncRuntime, AsyncConfig
+        from harness.async_runtime import AsyncConfig, AsyncRuntime
 
         assert AsyncRuntime is not None
         assert AsyncConfig is not None
@@ -307,7 +304,7 @@ class TestInterfaces:
 
     def test_interfaces_import(self):
         """Test interfaces imports."""
-        from harness.interfaces import TaskStatus, QualityProfile
+        from harness.interfaces import QualityProfile, TaskStatus
 
         assert TaskStatus is not None
         assert QualityProfile is not None

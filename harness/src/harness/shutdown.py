@@ -4,16 +4,15 @@ Provides signal handling and cleanup utilities for clean shutdown of
 long-running processes.
 """
 
-import os
+import atexit
+import logging
 import signal
 import sys
 import threading
-import atexit
-from typing import Callable, Optional, Any
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
-import logging
-
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +31,7 @@ class ShutdownState:
     """Current shutdown state."""
 
     stage: ShutdownStage = ShutdownStage.INITIATED
-    signal_received: Optional[int] = None
+    signal_received: int | None = None
     cleanups_run: int = 0
     errors: list[str] = field(default_factory=list)
 
@@ -54,7 +53,7 @@ class GracefulShutdown:
             pass
     """
 
-    _instance: Optional["GracefulShutdown"] = None
+    _instance: GracefulShutdown | None = None
 
     def __init__(self):
         self._handlers: list[Callable[[], None]] = []
@@ -63,7 +62,7 @@ class GracefulShutdown:
         self._registered = False
 
     @classmethod
-    def get_instance(cls) -> "GracefulShutdown":
+    def get_instance(cls) -> GracefulShutdown:
         """Get singleton instance."""
         if cls._instance is None:
             cls._instance = cls()

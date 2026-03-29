@@ -4,13 +4,13 @@ Provides a cache implementation that enforces maximum size limits
 to prevent unbounded memory growth.
 """
 
-import time
 import threading
-from typing import TypeVar, Generic, Optional, Any, Callable
-from dataclasses import dataclass, field
+import time
 from collections import OrderedDict
+from collections.abc import Callable
+from dataclasses import dataclass, field
 from enum import Enum
-
+from typing import Any, Generic, TypeVar
 
 T = TypeVar("T")
 
@@ -33,7 +33,7 @@ class CacheEntry(Generic[T]):
     created_at: float = field(default_factory=time.time)
     last_accessed: float = field(default_factory=time.time)
     access_count: int = 0
-    expires_at: Optional[float] = None
+    expires_at: float | None = None
 
     def touch(self) -> None:
         """Update access time and count."""
@@ -65,9 +65,9 @@ class BoundedCache(Generic[T]):
     def __init__(
         self,
         max_size: int = 1000,
-        ttl: Optional[float] = None,
+        ttl: float | None = None,
         policy: EvictionPolicy = EvictionPolicy.LRU,
-        on_evict: Optional[Callable[[str, T], None]] = None,
+        on_evict: Callable[[str, T], None] | None = None,
     ):
         self._max_size = max_size
         self._ttl = ttl
@@ -90,7 +90,7 @@ class BoundedCache(Generic[T]):
             self._max_size = value
             self._evict_if_needed()
 
-    def set(self, key: str, value: T, ttl: Optional[float] = None) -> None:
+    def set(self, key: str, value: T, ttl: float | None = None) -> None:
         """Set a cache entry."""
         with self._lock:
             # Check if we need to evict
@@ -108,7 +108,7 @@ class BoundedCache(Generic[T]):
             )
             self._cache[key] = entry
 
-    def get(self, key: str, default: Optional[T] = None) -> Optional[T]:
+    def get(self, key: str, default: T | None = None) -> T | None:
         """Get a cache entry."""
         with self._lock:
             entry = self._cache.get(key)
@@ -230,7 +230,7 @@ class BoundedCache(Generic[T]):
 
 def bounded_cache(
     max_size: int = 1000,
-    ttl: Optional[float] = 300,
+    ttl: float | None = 300,
     policy: EvictionPolicy = EvictionPolicy.LRU,
 ):
     """Decorator for caching function results.

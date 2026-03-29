@@ -2,19 +2,19 @@
 """Install Codex native binaries (Rust CLI plus ripgrep helpers)."""
 
 import argparse
-from contextlib import contextmanager
 import json
 import os
 import shutil
 import subprocess
+import sys
 import tarfile
 import tempfile
 import zipfile
-from dataclasses import dataclass
+from collections.abc import Sequence
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from contextlib import contextmanager
+from dataclasses import dataclass
 from pathlib import Path
-import sys
-from typing import Iterable, Sequence
 from urllib.parse import urlparse
 from urllib.request import urlopen
 

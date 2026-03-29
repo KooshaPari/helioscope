@@ -6,14 +6,13 @@ Supports harness detection and model variant selection:
 """
 
 import asyncio
-import os
-import sys
 import json
+import os
 import time
-import httpx
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional
+
+import httpx
 
 CONFIG_PATH = Path.home() / ".factory" / "config.json"
 CLIPROXY_URL = os.environ.get("CLIPROXY_URL", "http://localhost:8317")
@@ -54,7 +53,7 @@ def detect_harness() -> str:
     return "unknown"
 
 
-def select_model_for_harness(models: list, harness: str) -> Optional[dict]:
+def select_model_for_harness(models: list, harness: str) -> dict | None:
     """Select optimal model variant based on harness type."""
     if not models:
         return None
@@ -119,7 +118,7 @@ async def run_model(model_cfg: dict, prompt: str = "hi") -> Result:
             )
             if r.status_code == 200:
                 return Result(model, 100, True, "cliproxy")
-    except Exception as e:
+    except Exception:
         pass
 
     # Direct

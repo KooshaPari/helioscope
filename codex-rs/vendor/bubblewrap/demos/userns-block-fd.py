@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 
-import os, select, subprocess, sys, json
+import json
+import os
+import select
+import subprocess
 
 pipe_info = os.pipe()
 userns_block = os.pipe()

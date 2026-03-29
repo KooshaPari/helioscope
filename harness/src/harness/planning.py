@@ -7,9 +7,10 @@ dynamic plan updates.
 import json
 import threading
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Callable, Optional
+from typing import Any
 
 from .id_utils import new_id
 
@@ -43,9 +44,9 @@ class PlanStep:
     description: str
     status: StepState = StepState.PENDING
     result: Any = None
-    error: Optional[str] = None
-    started_at: Optional[float] = None
-    completed_at: Optional[float] = None
+    error: str | None = None
+    started_at: float | None = None
+    completed_at: float | None = None
     dependencies: list[str] = field(default_factory=list)
     metadata: dict = field(default_factory=dict)
 
@@ -60,7 +61,7 @@ class ExecutionPlan:
     state: PlanState = PlanState.DRAFT
     created_at: float = field(default_factory=time.time)
     updated_at: float = field(default_factory=time.time)
-    current_step: Optional[str] = None
+    current_step: str | None = None
     metadata: dict = field(default_factory=dict)
 
 
@@ -94,7 +95,7 @@ class PlanExecutor:
         self,
         goal: str,
         steps: list[dict],
-        metadata: Optional[dict] = None,
+        metadata: dict | None = None,
     ) -> ExecutionPlan:
         """Create a new execution plan."""
         plan_id = new_id().replace("-", "")
@@ -121,7 +122,7 @@ class PlanExecutor:
 
         return plan
 
-    def update_plan(self, plan_id: str, new_steps: list[dict]) -> Optional[ExecutionPlan]:
+    def update_plan(self, plan_id: str, new_steps: list[dict]) -> ExecutionPlan | None:
         """Update plan with new steps (dynamic re-planning)."""
         with self._lock:
             plan = self._plans.get(plan_id)
@@ -147,7 +148,7 @@ class PlanExecutor:
     async def execute(
         self,
         plan_id: str,
-        on_step_complete: Optional[Callable] = None,
+        on_step_complete: Callable | None = None,
     ) -> ExecutionPlan:
         """Execute a plan step by step."""
         with self._lock:
@@ -209,7 +210,7 @@ class PlanExecutor:
 
         return True
 
-    def get_plan(self, plan_id: str) -> Optional[ExecutionPlan]:
+    def get_plan(self, plan_id: str) -> ExecutionPlan | None:
         """Get a plan by ID."""
         return self._plans.get(plan_id)
 
@@ -240,7 +241,7 @@ class DynamicPlanner:
             plan = await planner.update_plan(plan.id, context)
     """
 
-    def __init__(self, llm_handler: Optional[Callable] = None):
+    def __init__(self, llm_handler: Callable | None = None):
         self._llm_handler = llm_handler
         self._executor = PlanExecutor()
 
@@ -280,7 +281,7 @@ Respond with JSON:
         self,
         plan_id: str,
         context: dict,
-    ) -> Optional[ExecutionPlan]:
+    ) -> ExecutionPlan | None:
         """Update plan based on execution context."""
         if not self._llm_handler:
             return None

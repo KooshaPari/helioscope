@@ -1,6 +1,5 @@
 """Tests for utils module."""
 
-import pytest
 from harness.utils import is_palindrome
 
 

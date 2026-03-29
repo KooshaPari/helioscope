@@ -7,9 +7,10 @@ timeout handling, and escalation paths.
 import asyncio
 import threading
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Callable, Optional
+from typing import Any
 
 from .id_utils import new_id
 
@@ -47,7 +48,7 @@ class DelegationResult:
     request_id: str
     state: DelegationState
     result: Any = None
-    error: Optional[str] = None
+    error: str | None = None
     started_at: float = 0.0
     completed_at: float = 0.0
     latency_ms: float = 0.0
@@ -95,10 +96,10 @@ class DelegationProtocol:
         from_agent: str,
         to_agent: str,
         task: str,
-        context: Optional[dict] = None,
+        context: dict | None = None,
         priority: int = 5,
         timeout_seconds: float = 300.0,
-        metadata: Optional[dict] = None,
+        metadata: dict | None = None,
     ) -> DelegationRequest:
         """Delegate a task to another agent."""
         request = DelegationRequest(
@@ -150,7 +151,7 @@ class DelegationProtocol:
                 timeout=request.timeout_seconds,
             )
             result.state = DelegationState.COMPLETED
-        except asyncio.TimeoutError:
+        except TimeoutError:
             result.state = DelegationState.TIMEOUT
             result.error = f"Task timed out after {request.timeout_seconds}s"
         except Exception as e:
@@ -161,7 +162,7 @@ class DelegationProtocol:
             result.latency_ms = (result.completed_at - result.started_at) * 1000
             self._notify(result.state, result)
 
-    async def wait_result(self, request_id: str, timeout: Optional[float] = None) -> DelegationResult:
+    async def wait_result(self, request_id: str, timeout: float | None = None) -> DelegationResult:
         """Wait for a delegation result."""
         lock = self._locks.get(request_id)
         if not lock:
@@ -182,7 +183,7 @@ class DelegationProtocol:
 
             return self._results[request_id]
 
-    def get_result(self, request_id: str) -> Optional[DelegationResult]:
+    def get_result(self, request_id: str) -> DelegationResult | None:
         """Get result without waiting."""
         return self._results.get(request_id)
 

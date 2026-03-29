@@ -5,10 +5,9 @@ from __future__ import annotations
 
 import argparse
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
-
 
 TABLE_HEADER = (
     "| Date | Run folder | Workload profile | Latency p50 (ms) | Latency p95 (ms) | "
@@ -71,7 +70,7 @@ def build_row(summary: dict[str, Any], summary_path: Path, workload: str, delta:
     throughput = stats.get("throughput_runs_per_sec", {})
     rss = stats.get("max_rss_kb", {})
 
-    date = datetime.now(timezone.utc).date().isoformat()
+    date = datetime.now(UTC).date().isoformat()
     run_folder = f"`{run_folder_name(summary_path)}`"
     workload_cell = workload.replace("|", "\\|")
     return (

@@ -21,17 +21,13 @@ Usage:
 import asyncio
 import json
 import os
+import statistics
 import subprocess
 import time
+from dataclasses import asdict, dataclass, field
+
 import httpx
-import psutil
 import requests
-from dataclasses import dataclass, field, asdict
-from typing import Any
-
-from harness.src.harness.memory_profiler import MemoryProfiler, get_memory_usage
-import statistics
-
 
 # ============================================================================
 # Preflight & Startup Management
@@ -173,7 +169,7 @@ async def _call_direct_minimax(
                 tokens = len(content) // 4
 
                 return latency, ttft, tokens
-    except Exception as e:
+    except Exception:
         return time.perf_counter() - start, 0, 0
 
 
@@ -450,7 +446,7 @@ async def _call_llm(
             latency = time.perf_counter() - start
             tokens = len("".join(content_parts)) // 4
             return latency, ttft, tokens
-    except Exception as e:
+    except Exception:
         return time.perf_counter() - start, 0, 0
 
 
@@ -467,12 +463,12 @@ def print_extended_report(result: ExtendedBenchmarkResult) -> None:
     print(f"Timestamp: {result.timestamp}")
     print(f"{'=' * 70}")
 
-    print(f"\n[QUALITY - Baseline]")
+    print("\n[QUALITY - Baseline]")
     print(f"  Resolution Rate:  {result.quality.resolution_rate:.1f}%")
     print(f"  Successful:       {result.quality.successful_tasks}/{result.quality.total_tasks}")
     print(f"  Avg Time/Task:    {result.quality.avg_time_per_task:.3f}s")
 
-    print(f"\n[SPEED - Latency & Throughput]")
+    print("\n[SPEED - Latency & Throughput]")
     print(f"  TTFT:             {result.speed.ttft:.3f}s")
     print(f"  Total Latency:    {result.speed.total_latency:.3f}s")
     print(f"  P50 Latency:      {result.speed.p50_latency:.3f}s")
@@ -480,18 +476,18 @@ def print_extended_report(result: ExtendedBenchmarkResult) -> None:
     print(f"  P99 Latency:      {result.speed.p99_latency:.3f}s")
     print(f"  Tokens/sec:       {result.speed.tokens_per_second:.1f}")
 
-    print(f"\n[SWARM - Multi-Agent]")
+    print("\n[SWARM - Multi-Agent]")
     print(f"  Agents:           {result.swarm.num_agents}")
     print(f"  Parallel Eff:     {result.swarm.parallel_efficiency:.2%}")
     print(f"  Coord Overhead:   {result.swarm.coordination_overhead:.3f}s")
 
-    print(f"\n[CONCISENESS - Efficiency]")
+    print("\n[CONCISENESS - Efficiency]")
     print(f"  Total Tokens:     {result.conciseness.total_tokens}")
     print(f"  Tokens/Task:      {result.conciseness.tokens_per_task:.1f}")
     print(f"  Quality/Token:   {result.conciseness.quality_per_token:.4f}")
     print(f"  Efficiency:       {result.conciseness.efficiency_score:.2f}")
 
-    print(f"\n[SYSTEM - Resources]")
+    print("\n[SYSTEM - Resources]")
     print(f"  CPU Avg:         {result.system.cpu_percent_avg:.1f}%")
     print(f"  CPU Peak:        {result.system.cpu_percent_peak:.1f}%")
     print(f"  Memory Avg:      {result.system.memory_mb_avg:.1f}MB")

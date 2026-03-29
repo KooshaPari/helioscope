@@ -5,28 +5,27 @@ Provides consistent JSON logging with correlation IDs for distributed tracing.
 
 import json
 import logging
-import sys
 import os
-from datetime import datetime
-from typing import Any, Dict, Optional
-from dataclasses import dataclass, field
-from contextvars import ContextVar
+import sys
 import traceback
-
+from contextvars import ContextVar
+from dataclasses import dataclass, field
+from datetime import datetime
+from typing import Any
 
 # Context variable for correlation ID
-correlation_id_var: ContextVar[Optional[str]] = ContextVar("correlation_id", default=None)
+correlation_id_var: ContextVar[str | None] = ContextVar("correlation_id", default=None)
 
 
 @dataclass
 class LogContext:
     """Additional context for logging."""
 
-    correlation_id: Optional[str] = None
-    user_id: Optional[str] = None
-    session_id: Optional[str] = None
-    request_id: Optional[str] = None
-    extra: Dict[str, Any] = field(default_factory=dict)
+    correlation_id: str | None = None
+    user_id: str | None = None
+    session_id: str | None = None
+    request_id: str | None = None
+    extra: dict[str, Any] = field(default_factory=dict)
 
 
 # Global context
@@ -80,7 +79,7 @@ class JSONFormatter(logging.Formatter):
         return json.dumps(log_data)
 
 
-def get_logger(name: str, level: Optional[str] = None) -> logging.Logger:
+def get_logger(name: str, level: str | None = None) -> logging.Logger:
     """Get a configured logger with JSON formatting."""
     logger = logging.getLogger(name)
 
@@ -100,7 +99,7 @@ def set_correlation_id(corr_id: str):
     correlation_id_var.set(corr_id)
 
 
-def get_correlation_id() -> Optional[str]:
+def get_correlation_id() -> str | None:
     """Get correlation ID from current context."""
     return correlation_id_var.get()
 

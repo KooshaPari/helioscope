@@ -3,13 +3,14 @@
 Provides environment-based config with validation.
 """
 
-import os
 import json
-import yaml
-from dataclasses import dataclass, field
-from typing import Any, Dict, Optional, Union
-from pathlib import Path
+import os
+from dataclasses import dataclass
 from enum import Enum
+from pathlib import Path
+from typing import Any
+
+import yaml
 
 
 class ConfigSource(Enum):
@@ -24,7 +25,7 @@ class ConfigSource(Enum):
 class Config:
     """Base configuration class."""
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         result = {}
         for key, value in self.__dict__.items():
@@ -37,7 +38,7 @@ class Config:
         return result
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "Config":
+    def from_dict(cls, data: dict[str, Any]) -> Config:
         """Create from dictionary."""
         return cls(**{k: v for k, v in data.items() if hasattr(cls, k)})
 
@@ -52,30 +53,30 @@ def get_env(key: str, default: Any = None, required: bool = False) -> Any:
     value = os.environ.get(key, default)
 
     if required and value is None:
-        raise EnvironmentError(f"Required environment variable {key} is not set")
+        raise OSError(f"Required environment variable {key} is not set")
 
     return value
 
 
-def load_yaml(path: str) -> Dict[str, Any]:
+def load_yaml(path: str) -> dict[str, Any]:
     """Load YAML configuration file."""
-    with open(path, "r") as f:
+    with open(path) as f:
         return yaml.safe_load(f)
 
 
-def load_json(path: str) -> Dict[str, Any]:
+def load_json(path: str) -> dict[str, Any]:
     """Load JSON configuration file."""
-    with open(path, "r") as f:
+    with open(path) as f:
         return json.load(f)
 
 
 class ConfigManager:
     """Centralized configuration management."""
 
-    def __init__(self, base_path: Optional[str] = None):
+    def __init__(self, base_path: str | None = None):
         self.base_path = Path(base_path) if base_path else Path.cwd()
-        self._config: Dict[str, Any] = {}
-        self._sources: Dict[str, ConfigSource] = {}
+        self._config: dict[str, Any] = {}
+        self._sources: dict[str, ConfigSource] = {}
 
     def load_env_prefix(self, prefix: str = "HELIOS_"):
         """Load all environment variables with given prefix."""
@@ -135,7 +136,7 @@ class ConfigManager:
         # Return as string
         return value
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Export configuration as dictionary."""
         return self._config.copy()
 
@@ -145,10 +146,10 @@ class ConfigManager:
 
 
 # Global config manager
-_config_manager: Optional[ConfigManager] = None
+_config_manager: ConfigManager | None = None
 
 
-def get_config_manager(base_path: Optional[str] = None) -> ConfigManager:
+def get_config_manager(base_path: str | None = None) -> ConfigManager:
     """Get or create the global config manager."""
     global _config_manager
     if _config_manager is None:

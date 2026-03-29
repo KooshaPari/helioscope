@@ -7,10 +7,10 @@ import os
 import subprocess
 import threading
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Optional, Any, Callable
 from pathlib import Path
-import json
+from typing import Any
 
 
 @dataclass
@@ -21,8 +21,8 @@ class CPUProfileResult:
     duration_seconds: float = 0.0
     samples: int = 0
     hot_functions: list[dict] = field(default_factory=list)
-    flamegraph_path: Optional[str] = None
-    error: Optional[str] = None
+    flamegraph_path: str | None = None
+    error: str | None = None
 
 
 class PerfProfiler:
@@ -46,8 +46,8 @@ class PerfProfiler:
         self._duration = duration
         self._output_dir = Path(output_dir)
         self._running = False
-        self._proc: Optional[subprocess.Popen] = None
-        self._output_file: Optional[Path] = None
+        self._proc: subprocess.Popen | None = None
+        self._output_file: Path | None = None
 
     def is_available(self) -> bool:
         """Check if perf is available."""
@@ -61,7 +61,7 @@ class PerfProfiler:
         except FileNotFoundError, subprocess.TimeoutExpired:
             return False
 
-    def start(self, pid: Optional[int] = None) -> bool:
+    def start(self, pid: int | None = None) -> bool:
         """Start profiling."""
         if self._running:
             return False
@@ -85,7 +85,7 @@ class PerfProfiler:
             )
             self._running = True
             return True
-        except Exception as e:
+        except Exception:
             return False
 
     def stop(self) -> CPUProfileResult:
@@ -141,7 +141,7 @@ class PerfProfiler:
         self._running = False
         return result
 
-    def generate_flamegraph(self) -> Optional[str]:
+    def generate_flamegraph(self) -> str | None:
         """Generate flamegraph SVG."""
         if not self._output_file or not self._output_file.exists():
             return None
@@ -173,7 +173,7 @@ class CPUSampler:
     def __init__(self, interval: float = 0.01):
         self._interval = interval
         self._running = False
-        self._thread: Optional[threading.Thread] = None
+        self._thread: threading.Thread | None = None
         self._samples: list[dict] = []
         self._lock = threading.Lock()
 

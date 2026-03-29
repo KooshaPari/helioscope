@@ -1,13 +1,12 @@
 """Tests for schema module."""
 
-import pytest
-from datetime import datetime
 import sys
+from datetime import datetime
 
 sys.path.insert(0, "src")
 
-from harness.schema import evidence_payload, _result_code
-from harness.interfaces import DiscoverOutput, RepoManifest, RunResult, QualityNormalization
+from harness.interfaces import DiscoverOutput, QualityNormalization, RepoManifest, RunResult
+from harness.schema import _result_code, evidence_payload
 
 
 class TestResultCode:

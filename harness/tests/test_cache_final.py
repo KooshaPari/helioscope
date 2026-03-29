@@ -1,6 +1,5 @@
 """Final tests for cache."""
 
-import pytest
 from harness.cache import L1Cache, L2Cache
 
 

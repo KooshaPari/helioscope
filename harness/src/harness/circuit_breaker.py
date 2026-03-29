@@ -3,12 +3,13 @@
 Provides circuit breaker implementation to prevent cascade failures.
 """
 
-import time
 import threading
-from enum import Enum
+import time
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Callable, Any, Optional
+from enum import Enum
 from functools import wraps
+from typing import Any
 
 
 class CircuitState(Enum):
@@ -49,7 +50,7 @@ class CircuitBreaker:
             # Handle fallback
     """
 
-    def __init__(self, config: Optional[CircuitBreakerConfig] = None):
+    def __init__(self, config: CircuitBreakerConfig | None = None):
         self.config = config or CircuitBreakerConfig()
         self._state = CircuitState.CLOSED
         self._failure_count = 0
@@ -76,7 +77,7 @@ class CircuitBreaker:
             result = fn(*args, **kwargs)
             self._on_success()
             return result
-        except Exception as e:
+        except Exception:
             self._on_failure()
             raise
 

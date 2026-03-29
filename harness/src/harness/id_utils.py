@@ -26,7 +26,7 @@ def short_alias(canonical_id: str, namespace: str = "id", length: int = 12) -> s
     if length <= len(namespace) + 1:
         raise ValueError("short alias length must be greater than namespace prefix")
 
-    digest = hashlib.blake2b(f"{namespace}:{canonical_id}".encode("utf-8"), digest_size=16).hexdigest()
+    digest = hashlib.blake2b(f"{namespace}:{canonical_id}".encode(), digest_size=16).hexdigest()
     return f"{namespace}_{digest[: length - len(namespace) - 1]}"
 
 

@@ -3,13 +3,13 @@
 # Requires: Python 3.8+ on Windows. No pip requirements.
 
 import os
-import sys
 import shutil
 import subprocess
+import sys
 from pathlib import Path
-from typing import List, Optional, Tuple
 
-def _resolve_codex_cmd() -> List[str]:
+
+def _resolve_codex_cmd() -> list[str]:
     """Resolve the Codex CLI to invoke `codex sandbox windows`.
 
     Prefer local builds (debug first), then fall back to PATH.
@@ -60,11 +60,11 @@ class CaseResult:
 
 def run_sbx(
     policy: str,
-    cmd_argv: List[str],
+    cmd_argv: list[str],
     cwd: Path,
-    env_extra: Optional[dict] = None,
-    additional_root: Optional[Path] = None,
-) -> Tuple[int, str, str]:
+    env_extra: dict | None = None,
+    additional_root: Path | None = None,
+) -> tuple[int, str, str]:
     env = os.environ.copy()
     env.update(ENV_BASE)
     if env_extra:
@@ -73,9 +73,9 @@ def run_sbx(
     # read-only => default; workspace-write => --full-auto
     if policy not in ("read-only", "workspace-write"):
         raise ValueError(f"unknown policy: {policy}")
-    policy_flags: List[str] = ["--full-auto"] if policy == "workspace-write" else []
+    policy_flags: list[str] = ["--full-auto"] if policy == "workspace-write" else []
 
-    overrides: List[str] = []
+    overrides: list[str] = []
     if policy == "workspace-write" and additional_root is not None:
         # Use config override to inject an additional writable root.
         overrides = [
@@ -135,7 +135,7 @@ def make_symlink(link: Path, target: Path) -> bool:
     cp = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     return cp.returncode == 0 and link.exists()
 
-def summarize(results: List[CaseResult]) -> int:
+def summarize(results: list[CaseResult]) -> int:
     ok = sum(1 for r in results if r.ok)
     total = len(results)
     print("\n" + "=" * 72)
@@ -146,7 +146,7 @@ def summarize(results: List[CaseResult]) -> int:
     return 0 if ok == total else 1
 
 def main() -> int:
-    results: List[CaseResult] = []
+    results: list[CaseResult] = []
     make_dir_clean(WS_ROOT)
     OUTSIDE.mkdir(exist_ok=True)
     EXTRA_ROOT.mkdir(exist_ok=True)

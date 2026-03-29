@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass, field, asdict
-from datetime import datetime, timezone
+from dataclasses import asdict, dataclass, field
+from datetime import UTC, datetime
 from enum import Enum
 from pathlib import Path
 from typing import Any
@@ -52,7 +52,7 @@ class RepoManifest:
     branch: str | None = None
 
     @classmethod
-    def from_repo(cls, repo_root: Path, repo_id: str) -> "RepoManifest":
+    def from_repo(cls, repo_root: Path, repo_id: str) -> RepoManifest:
         from subprocess import CalledProcessError, check_output
 
         root = str(repo_root.resolve())
@@ -72,7 +72,7 @@ class RepoManifest:
             root=root,
             remote_url=remote,
             default_branch=default_branch,
-            discovered_at=datetime.now(tz=timezone.utc).isoformat(),
+            discovered_at=datetime.now(tz=UTC).isoformat(),
             commit=commit,
             branch=branch,
         )

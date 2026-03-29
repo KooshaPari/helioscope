@@ -1,6 +1,6 @@
-import pytest
-import pandas as pd
 import sys
+
+import pandas as pd
 
 sys.path.insert(0, "src")
 from helios_router_ui.pareto.engine import pareto_front_mask

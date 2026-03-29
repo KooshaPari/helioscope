@@ -4,12 +4,10 @@ Provides context compaction strategies to handle long sessions without
 overflowing the context window.
 """
 
-import json
 import threading
 import time
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Callable, Optional
 
 
 class CompactionStrategy(Enum):
@@ -60,7 +58,7 @@ class ContextCompactor:
         compacted = compactor.get_compacted_context()
     """
 
-    def __init__(self, config: Optional[CompactionConfig] = None):
+    def __init__(self, config: CompactionConfig | None = None):
         self._config = config or CompactionConfig()
         self._messages: list[ContextMessage] = []
         self._lock = threading.RLock()
@@ -259,7 +257,7 @@ class ContextWindowManager:
 
             return self._compactor.get_compacted_context()
 
-    def clear(self, source: Optional[str] = None) -> None:
+    def clear(self, source: str | None = None) -> None:
         """Clear context."""
         with self._lock:
             if source:

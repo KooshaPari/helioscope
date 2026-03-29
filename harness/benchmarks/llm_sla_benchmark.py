@@ -19,18 +19,16 @@ TOTAL         │ 4.20s    │ 100%
 import asyncio
 import json
 import os
-import psutil
-import re
-import shutil
 import subprocess
 import tempfile
 import time
-import httpx
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from harness.src.harness.resources import safe_popen, ResourceMonitor
-from typing import Any
 
+import httpx
+import psutil
+
+from harness.src.harness.resources import safe_popen
 
 # ============================================================================
 # Data Classes
@@ -184,7 +182,7 @@ async def _monitor_system_resources(pid: int, interval: float = 0.1) -> SystemMe
                 samples.append(proc.cpu_percent())
                 mem_samples.append(proc.memory_info().rss / 1024 / 1024)
                 await asyncio.sleep(interval)
-            except psutil.NoSuchProcess, psutil.AccessDenied:
+            except (psutil.NoSuchProcess, psutil.AccessDenied):
                 break
 
         if samples:
@@ -460,7 +458,7 @@ def print_sla_report(result: BenchmarkResult) -> None:
     print(f"{'=' * 70}")
 
     # Timing breakdown
-    print(f"\n[TIMING BREAKDOWN]")
+    print("\n[TIMING BREAKDOWN]")
     print(f"  {'Component':<20} │ {'Time':>10} │ {'% of Total':>10}")
     print(f"  {'-' * 20}─┼{'-' * 12}─┼{'-' * 12}")
 
@@ -480,32 +478,32 @@ def print_sla_report(result: BenchmarkResult) -> None:
     print(f"  {'TOTAL':<20} │ {total:>9.3f}s │ {'100.0%':>10}")
 
     # SLA metrics
-    print(f"\n[SLA METRICS]")
+    print("\n[SLA METRICS]")
     print(f"  P50 (median):  {result.sla_p50:.3f}s")
     print(f"  P95:           {result.sla_p95:.3f}s")
     print(f"  P99:           {result.sla_p99:.3f}s")
     print(f"  Total Wall:    {result.total_wall_time:.3f}s")
 
     # Token metrics
-    print(f"\n[TOKEN METRICS]")
+    print("\n[TOKEN METRICS]")
     print(f"  Completion tokens: {result.llm.completion_tokens}")
     print(f"  Tokens/sec:       {result.llm.tokens_per_second:.1f}")
     print(f"  Conciseness:      {result.llm.conciseness_ratio:.2f}x")
 
     # Cost
-    print(f"\n[COST ESTIMATE]")
+    print("\n[COST ESTIMATE]")
     print(f"  Total cost:       ${result.llm.total_cost:.4f}")
     print(f"  Prompt cost:      ${result.llm.prompt_cost:.4f}")
     print(f"  Completion cost:   ${result.llm.completion_cost:.4f}")
 
     # Per-agent
-    print(f"\n[PER-AGENT TIMES]")
+    print("\n[PER-AGENT TIMES]")
     for i, t in enumerate(result.agent_times):
         print(f"  Agent {i}: {t:.2f}s")
 
     # Errors
     if result.errors:
-        print(f"\n[ERRORS]")
+        print("\n[ERRORS]")
         for err in set(result.errors):
             print(f"  - {err[:80]}")
 

@@ -3,15 +3,14 @@
 Provides in-memory and distributed caching with TTL support.
 """
 
-import time
-import threading
 import hashlib
-import json
-from dataclasses import dataclass, field
-from typing import Any, Optional, Callable, Dict
+import threading
+import time
 from collections import OrderedDict
+from collections.abc import Callable
+from dataclasses import dataclass
 from functools import wraps
-import pickle
+from typing import Any
 
 
 @dataclass
@@ -30,7 +29,7 @@ class LRUCache:
         self.max_size = max_size
         self.default_ttl = default_ttl
         self._cache: OrderedDict = OrderedDict()
-        self._expiry: Dict[str, float] = {}
+        self._expiry: dict[str, float] = {}
         self._lock = threading.RLock()
         self._hits = 0
         self._misses = 0
@@ -41,7 +40,7 @@ class LRUCache:
             return hashlib.sha256(key.encode()).hexdigest()
         return key
 
-    def get(self, key: str) -> Optional[Any]:
+    def get(self, key: str) -> Any | None:
         """Get value from cache."""
         key = self._make_key(key)
         with self._lock:
@@ -61,7 +60,7 @@ class LRUCache:
             self._hits += 1
             return self._cache[key]
 
-    def set(self, key: str, value: Any, ttl: Optional[float] = None):
+    def set(self, key: str, value: Any, ttl: float | None = None):
         """Set value in cache."""
         key = self._make_key(key)
         ttl = ttl or self.default_ttl
@@ -94,7 +93,7 @@ class LRUCache:
             self._cache.clear()
             self._expiry.clear()
 
-    def stats(self) -> Dict[str, Any]:
+    def stats(self) -> dict[str, Any]:
         """Get cache statistics."""
         with self._lock:
             total = self._hits + self._misses
@@ -118,11 +117,11 @@ class LRUCache:
 
 
 # Global cache instance
-_cache: Optional[LRUCache] = None
-_cache_config: Optional[CacheConfig] = None
+_cache: LRUCache | None = None
+_cache_config: CacheConfig | None = None
 
 
-def get_cache(config: Optional[CacheConfig] = None) -> LRUCache:
+def get_cache(config: CacheConfig | None = None) -> LRUCache:
     """Get or create the global cache."""
     global _cache, _cache_config
     if _cache is None or config != _cache_config:
@@ -133,7 +132,7 @@ def get_cache(config: Optional[CacheConfig] = None) -> LRUCache:
     return _cache
 
 
-def cached(ttl: Optional[float] = None, key_func: Optional[Callable] = None):
+def cached(ttl: float | None = None, key_func: Callable | None = None):
     """Decorator to cache function results.
 
     Usage:

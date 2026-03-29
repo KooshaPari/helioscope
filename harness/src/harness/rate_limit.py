@@ -3,13 +3,12 @@
 Provides token bucket and sliding window rate limiters.
 """
 
-import time
 import threading
-from dataclasses import dataclass, field
-from typing import Dict, Optional, Callable
+import time
 from collections import deque
+from collections.abc import Callable
+from dataclasses import dataclass
 from functools import wraps
-import hashlib
 
 
 @dataclass
@@ -92,8 +91,8 @@ class RateLimiter:
     """Main rate limiter with multiple strategies."""
 
     def __init__(self):
-        self._limiters: Dict[str, TokenBucketLimiter] = {}
-        self._sliding_limiters: Dict[str, SlidingWindowLimiter] = {}
+        self._limiters: dict[str, TokenBucketLimiter] = {}
+        self._sliding_limiters: dict[str, SlidingWindowLimiter] = {}
         self._lock = threading.Lock()
 
     def get_token_bucket(self, key: str, rate: float = 10.0, burst: int = 20) -> TokenBucketLimiter:
@@ -134,7 +133,7 @@ class RateLimiter:
 
 
 # Global rate limiter
-_rate_limiter: Optional[RateLimiter] = None
+_rate_limiter: RateLimiter | None = None
 
 
 def get_rate_limiter() -> RateLimiter:

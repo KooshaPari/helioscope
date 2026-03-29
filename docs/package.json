@@ -6,7 +6,9 @@
     "postinstall": "cd ../vendor/phenodocs/packages/docs && bun install",
     "dev": "vitepress dev .",
     "build": "vitepress build .",
-    "preview": "vitepress preview ."
+    "preview": "vitepress preview .",
+    "docs:build": "vitepress build",
+    "docs:dev": "vitepress dev"
   },
   "dependencies": {
     "@phenotype/docs": "file:../vendor/phenodocs/packages/docs"

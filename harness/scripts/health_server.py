@@ -13,7 +13,7 @@ Endpoints:
 import argparse
 import json
 import sys
-from http.server import HTTPServer, BaseHTTPRequestHandler
+from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import urlparse
 
 # Add harness to path
@@ -22,8 +22,6 @@ sys.path.insert(0, "/Users/kooshapari/temp-PRODVERCEL-485/kush/heliosHarness-inf
 from harness.health import (
     get_health_checker,
     get_metrics_collector,
-    HealthChecker,
-    MetricsCollector,
 )
 
 

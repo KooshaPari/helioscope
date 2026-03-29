@@ -2,10 +2,10 @@ import sys
 
 sys.path.insert(0, "src")
 
+from pathlib import Path
+
 from harness.discoverer import Discoverer
 from harness.interfaces import DiscoverInput
-from pathlib import Path
-import pytest
 
 
 def test_discover_minimal():

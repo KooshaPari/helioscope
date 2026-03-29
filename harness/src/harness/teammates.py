@@ -6,17 +6,12 @@ Implements teammate registry, delegation protocol, and execution for heliosHarne
 from __future__ import annotations
 
 import asyncio
-import hashlib
-import json
 import logging
-import os
-import subprocess
 import tempfile
-from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 # Lazy psutil - only load when needed for process monitoring
 _psutil = None
@@ -187,7 +182,7 @@ class DelegationProtocol:
     async def delegate(
         self,
         request: DelegationRequest,
-        executor: "CodexExecutor",
+        executor: CodexExecutor,
     ) -> DelegationResult:
         """Execute delegation with timeout and retry."""
         delegation_id = new_id().replace("-", "")
@@ -196,7 +191,7 @@ class DelegationProtocol:
         self._delegations[delegation_id] = request
 
         # Track start time
-        start_time = datetime.now(timezone.utc)
+        start_time = datetime.now(UTC)
 
         try:
             # Execute with timeout
@@ -208,17 +203,17 @@ class DelegationProtocol:
                 teammate_id=request.teammate_id,
                 status=DelegationStatus.COMPLETED,
                 result=result.get("output", ""),
-                duration_ms=int((datetime.now(timezone.utc) - start_time).total_seconds() * 1000),
+                duration_ms=int((datetime.now(UTC) - start_time).total_seconds() * 1000),
                 evidence=result.get("evidence", []),
             )
 
-        except asyncio.TimeoutError:
+        except TimeoutError:
             delegation_result = DelegationResult(
                 delegation_id=delegation_id,
                 teammate_id=request.teammate_id,
                 status=DelegationStatus.FAILED,
                 error="Timeout",
-                duration_ms=int((datetime.now(timezone.utc) - start_time).total_seconds() * 1000),
+                duration_ms=int((datetime.now(UTC) - start_time).total_seconds() * 1000),
             )
 
         except Exception as e:
@@ -227,7 +222,7 @@ class DelegationProtocol:
                 teammate_id=request.teammate_id,
                 status=DelegationStatus.FAILED,
                 error=str(e),
-                duration_ms=int((datetime.now(timezone.utc) - start_time).total_seconds() * 1000),
+                duration_ms=int((datetime.now(UTC) - start_time).total_seconds() * 1000),
             )
 
         self._results[delegation_id] = delegation_result
@@ -340,7 +335,7 @@ class HealthMonitor:
         self._agents[agent_id] = {
             "pid": pid,
             "last_response_time": 0,
-            "registered_at": datetime.now(timezone.utc),
+            "registered_at": datetime.now(UTC),
         }
 
     def unregister_agent(self, agent_id: str):

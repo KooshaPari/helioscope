@@ -3,14 +3,13 @@
 Provides thread pool and async worker management.
 """
 
-import asyncio
 import threading
-from concurrent.futures import ThreadPoolExecutor, Future
-from dataclasses import dataclass, field
-from typing import Callable, Any, Optional, Dict, List
-from queue import Queue, Empty
-from enum import Enum
 import time
+from collections.abc import Callable
+from concurrent.futures import Future, ThreadPoolExecutor
+from dataclasses import dataclass
+from enum import Enum
+from queue import Empty, Queue
 
 
 class WorkerState(Enum):
@@ -48,11 +47,11 @@ class WorkerPool:
         self.queue_size = queue_size
         self._executor = ThreadPoolExecutor(max_workers=num_workers)
         self._task_queue: Queue = Queue(maxsize=queue_size)
-        self._workers: List[threading.Thread] = []
+        self._workers: list[threading.Thread] = []
         self._running = False
         self._metrics = WorkerMetrics()
         self._lock = threading.Lock()
-        self._callbacks: Dict[str, Callable] = {}
+        self._callbacks: dict[str, Callable] = {}
 
     def start(self):
         """Start the worker pool."""
@@ -82,7 +81,7 @@ class WorkerPool:
 
                     with self._lock:
                         self._metrics.completed_tasks += 1
-                except Exception as e:
+                except Exception:
                     with self._lock:
                         self._metrics.failed_tasks += 1
 
@@ -93,10 +92,10 @@ class WorkerPool:
 
             except Empty:
                 continue
-            except Exception as e:
+            except Exception:
                 pass
 
-    def submit(self, func: Callable, *args, task_id: Optional[str] = None, **kwargs) -> Future:
+    def submit(self, func: Callable, *args, task_id: str | None = None, **kwargs) -> Future:
         """Submit a task to the pool."""
         if not self._running:
             raise RuntimeError("Pool not started")
@@ -148,7 +147,7 @@ class WorkerPool:
                 active_workers=len([t for t in self._workers if t.is_alive()]),
             )
 
-    def wait_completion(self, timeout: Optional[float] = None) -> bool:
+    def wait_completion(self, timeout: float | None = None) -> bool:
         """Wait for all tasks to complete."""
         start = time.time()
         while self._task_queue.qsize() > 0:
@@ -159,7 +158,7 @@ class WorkerPool:
 
 
 # Global worker pool
-_worker_pool: Optional[WorkerPool] = None
+_worker_pool: WorkerPool | None = None
 
 
 def get_worker_pool(num_workers: int = 4) -> WorkerPool:

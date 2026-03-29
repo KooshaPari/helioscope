@@ -1,10 +1,9 @@
 """Unit tests for harness runner module."""
 
-import pytest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
-from src.harness.runner import Runner, RunnerConfig, RunResult
 from src.harness.interfaces import CanonicalCommand, EvidenceBucket
+from src.harness.runner import Runner, RunnerConfig, RunResult
 
 
 class TestRunnerConfig:

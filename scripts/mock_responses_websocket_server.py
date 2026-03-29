@@ -9,7 +9,6 @@ from typing import Any
 
 import websockets
 
-
 HOST = "127.0.0.1"
 DEFAULT_PORT = 8765
 PATH = "/v1/responses"
@@ -22,7 +21,7 @@ ASSISTANT_TEXT = "done"
 
 
 def _utc_iso() -> str:
-    return dt.datetime.now(tz=dt.timezone.utc).isoformat(timespec="milliseconds")
+    return dt.datetime.now(tz=dt.UTC).isoformat(timespec="milliseconds")
 
 
 def _default_usage() -> dict[str, Any]:

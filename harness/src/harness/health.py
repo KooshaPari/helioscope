@@ -7,13 +7,12 @@ This module provides infrastructure endpoints for monitoring and observability:
 - /live - Liveness probe
 """
 
-import time
 import os
-import sys
 import platform
+import time
 from dataclasses import dataclass, field
-from typing import Dict, Any, Optional, List
 from enum import Enum
+from typing import Any
 
 
 class HealthStatus(Enum):
@@ -32,7 +31,7 @@ class ComponentHealth:
     status: HealthStatus
     message: str = ""
     latency_ms: float = 0.0
-    details: Dict[str, Any] = field(default_factory=dict)
+    details: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -43,9 +42,9 @@ class HealthResponse:
     timestamp: float
     uptime_seconds: float
     version: str
-    components: List[ComponentHealth] = field(default_factory=list)
+    components: list[ComponentHealth] = field(default_factory=list)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "status": self.status.value,
             "timestamp": self.timestamp,
@@ -164,13 +163,13 @@ class HealthChecker:
         # For now, readiness = health
         return health
 
-    def check_liveness(self) -> Dict[str, str]:
+    def check_liveness(self) -> dict[str, str]:
         """Simple liveness probe."""
         return {"status": "alive"}
 
 
 # Global health checker instance
-_health_checker: Optional[HealthChecker] = None
+_health_checker: HealthChecker | None = None
 
 
 def get_health_checker() -> HealthChecker:
@@ -186,9 +185,9 @@ class MetricsCollector:
     """Collects and exposes Prometheus-style metrics."""
 
     def __init__(self):
-        self._counters: Dict[str, float] = {}
-        self._gauges: Dict[str, float] = {}
-        self._histograms: Dict[str, List[float]] = {}
+        self._counters: dict[str, float] = {}
+        self._gauges: dict[str, float] = {}
+        self._histograms: dict[str, list[float]] = {}
 
     def inc_counter(self, name: str, value: float = 1.0):
         """Increment a counter."""
@@ -240,19 +239,19 @@ def get_metrics_collector() -> MetricsCollector:
 
 
 # FastAPI/Flask route handlers (for integration)
-def health_handler() -> Dict[str, Any]:
+def health_handler() -> dict[str, Any]:
     """Health check endpoint handler."""
     checker = get_health_checker()
     return checker.check_health().to_dict()
 
 
-def ready_handler() -> Dict[str, Any]:
+def ready_handler() -> dict[str, Any]:
     """Readiness check endpoint handler."""
     checker = get_health_checker()
     return checker.check_readiness().to_dict()
 
 
-def live_handler() -> Dict[str, str]:
+def live_handler() -> dict[str, str]:
     """Liveness probe handler."""
     return get_health_checker().check_liveness()
 

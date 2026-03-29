@@ -6,12 +6,11 @@ overflow the context window.
 
 import json
 import os
-import shutil
 import tempfile
 import threading
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 from .id_utils import new_id
 
@@ -47,7 +46,7 @@ class ScratchpadFileSystem:
         # -> \"Use file_id:abc123 - Query results for session-123\"
     """
 
-    def __init__(self, session_id: str, base_dir: Optional[Path] = None):
+    def __init__(self, session_id: str, base_dir: Path | None = None):
         self.session_id = session_id
         self._base_dir = base_dir or Path(tempfile.gettempdir()) / "helios_scratchpad" / session_id
         self._base_dir.mkdir(parents=True, exist_ok=True)
@@ -62,7 +61,7 @@ class ScratchpadFileSystem:
         name: str,
         content: Any,
         description: str = "",
-        metadata: Optional[dict] = None,
+        metadata: dict | None = None,
     ) -> str:
         """Write content to scratchpad."""
         entry_id = new_id().replace("-", "")
@@ -104,7 +103,7 @@ class ScratchpadFileSystem:
 
         return entry_id
 
-    async def read(self, entry_id: str) -> Optional[bytes]:
+    async def read(self, entry_id: str) -> bytes | None:
         """Read content from scratchpad."""
         with self._lock:
             entry = self._entries.get(entry_id)

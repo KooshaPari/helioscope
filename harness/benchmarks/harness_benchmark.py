@@ -17,18 +17,17 @@ Usage:
 import asyncio
 import json
 import os
-import psutil
-import re
 import shutil
 import subprocess
 import tempfile
 import time
-import httpx
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import Any
-from harness.src.harness.resources import safe_popen, ResourceMonitor
 
+import httpx
+import psutil
+
+from harness.src.harness.resources import safe_popen
 
 # ============================================================================
 # Data Classes
@@ -428,18 +427,18 @@ def print_harness_report(result: BenchmarkResult) -> None:
     print(f"Model: {result.model} | Agents: {result.agent_count}")
     print(f"{'=' * 65}")
 
-    print(f"\n[TIMING]")
+    print("\n[TIMING]")
     print(f"  Total Wall:    {result.total_wall_time:.3f}s")
     print(f"  SLA P50:       {result.sla_p50:.3f}s")
     print(f"  SLA P95:       {result.sla_p95:.3f}s")
     print(f"  SLA P99:       {result.sla_p99:.3f}s")
 
-    print(f"\n[BREAKDOWN %]")
+    print("\n[BREAKDOWN %]")
     print(f"  TTFT:         {result.ttft_percent:>5.1f}%")
     print(f"  Generation:   {result.generation_percent:>5.1f}%")
     print(f"  Overhead:     {result.overhead_percent:>5.1f}%")
 
-    print(f"\n[LLM METRICS]")
+    print("\n[LLM METRICS]")
     print(f"  TTFT:          {result.llm.ttft:.3f}s")
     print(f"  Gen Time:     {result.llm.generation_time:.3f}s")
     print(f"  Tokens:        {result.llm.completion_tokens}")
@@ -447,7 +446,7 @@ def print_harness_report(result: BenchmarkResult) -> None:
     print(f"  Cost:         ${result.llm.total_cost:.4f}")
 
     if result.system.cpu_percent_avg > 0 or result.system.memory_mb_peak > 0:
-        print(f"\n[SYSTEM]")
+        print("\n[SYSTEM]")
         if result.system.cpu_percent_avg > 0:
             print(f"  CPU %:         {result.system.cpu_percent_avg:.1f}%")
         if result.system.memory_mb_peak > 0:
@@ -457,7 +456,7 @@ def print_harness_report(result: BenchmarkResult) -> None:
             print(f"  IO Write:      {result.system.io_write_bytes / 1024:.1f}KB")
 
     if result.errors:
-        print(f"\n[ERRORS]")
+        print("\n[ERRORS]")
         for err in set(result.errors):
             print(f"  - {err[:60]}")
 

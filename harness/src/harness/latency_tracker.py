@@ -3,12 +3,12 @@
 Provides utilities to track network latency, throughput, and performance metrics.
 """
 
-import time
-import threading
-from dataclasses import dataclass, field
-from typing import Optional, Any
-from collections import deque
 import statistics
+import threading
+import time
+from collections import deque
+from dataclasses import dataclass
+from typing import Any
 
 
 @dataclass
@@ -57,7 +57,7 @@ class LatencyTracker:
         self._snapshots: dict[str, deque] = {}
         self._lock = threading.Lock()
 
-    def track(self, endpoint: str = "default") -> "_LatencyContext":
+    def track(self, endpoint: str = "default") -> _LatencyContext:
         """Context manager for tracking latency."""
         return _LatencyContext(self, endpoint)
 
@@ -110,7 +110,7 @@ class LatencyTracker:
         with self._lock:
             return {ep: self.get_stats(ep) for ep in self._snapshots.keys()}
 
-    def reset(self, endpoint: Optional[str] = None) -> None:
+    def reset(self, endpoint: str | None = None) -> None:
         """Reset latency data."""
         with self._lock:
             if endpoint:
@@ -197,7 +197,7 @@ class NetworkMetrics:
 
 
 # Global metrics instance
-_global_metrics: Optional[NetworkMetrics] = None
+_global_metrics: NetworkMetrics | None = None
 _metrics_lock = threading.Lock()
 
 
@@ -227,7 +227,7 @@ def track_latency(endpoint: str = "default"):
             success = True
             try:
                 return func(*args, **kwargs)
-            except Exception as e:
+            except Exception:
                 success = False
                 raise
             finally:

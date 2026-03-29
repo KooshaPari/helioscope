@@ -4,11 +4,11 @@ Provides middleware for generating and propagating trace IDs across service call
 """
 
 import time
+from collections.abc import Callable
 from contextvars import ContextVar
 from dataclasses import dataclass, field
-from typing import Optional, Dict, Any, Callable
 from functools import wraps
-from enum import Enum
+from typing import Any
 
 from .id_utils import new_id
 
@@ -17,9 +17,9 @@ class TraceContext:
     """Trace context for distributed tracing."""
 
     # Context variable for trace ID
-    trace_id_var: ContextVar[Optional[str]] = ContextVar("trace_id", default=None)
-    span_id_var: ContextVar[Optional[str]] = ContextVar("span_id", default=None)
-    parent_span_var: ContextVar[Optional[str]] = ContextVar("parent_span", default=None)
+    trace_id_var: ContextVar[str | None] = ContextVar("trace_id", default=None)
+    span_id_var: ContextVar[str | None] = ContextVar("span_id", default=None)
+    parent_span_var: ContextVar[str | None] = ContextVar("parent_span", default=None)
 
     @classmethod
     def generate_id(cls) -> str:
@@ -27,7 +27,7 @@ class TraceContext:
         return new_id().replace("-", "")
 
     @classmethod
-    def start_trace(cls, parent_span: Optional[str] = None) -> Dict[str, str]:
+    def start_trace(cls, parent_span: str | None = None) -> dict[str, str]:
         """Start a new trace."""
         trace_id = cls.generate_id()
         span_id = cls.generate_id()
@@ -39,12 +39,12 @@ class TraceContext:
         return {"trace_id": trace_id, "span_id": span_id, "parent_span": parent_span or ""}
 
     @classmethod
-    def get_trace_id(cls) -> Optional[str]:
+    def get_trace_id(cls) -> str | None:
         """Get current trace ID."""
         return cls.trace_id_var.get()
 
     @classmethod
-    def get_span_id(cls) -> Optional[str]:
+    def get_span_id(cls) -> str | None:
         """Get current span ID."""
         return cls.span_id_var.get()
 
@@ -63,10 +63,10 @@ class Span:
     name: str
     trace_id: str
     span_id: str
-    parent_span_id: Optional[str]
+    parent_span_id: str | None
     start_time: float = field(default_factory=time.time)
-    end_time: Optional[float] = None
-    tags: Dict[str, Any] = field(default_factory=dict)
+    end_time: float | None = None
+    tags: dict[str, Any] = field(default_factory=dict)
     logs: list = field(default_factory=list)
 
     def finish(self):
@@ -87,7 +87,7 @@ class Span:
         """Add a log event to the span."""
         self.logs.append({"timestamp": time.time(), "message": message, **kwargs})
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert span to dictionary."""
         return {
             "name": self.name,
@@ -107,9 +107,9 @@ class Tracer:
 
     def __init__(self, service_name: str = "helios"):
         self.service_name = service_name
-        self._spans: Dict[str, Span] = {}
+        self._spans: dict[str, Span] = {}
 
-    def start_span(self, name: str, tags: Optional[Dict[str, Any]] = None) -> Span:
+    def start_span(self, name: str, tags: dict[str, Any] | None = None) -> Span:
         """Start a new span."""
         parent_span = TraceContext.get_span_id()
         context = TraceContext.start_trace(parent_span)
@@ -130,7 +130,7 @@ class Tracer:
         span.finish()
         TraceContext.clear()
 
-    def get_span(self, span_id: str) -> Optional[Span]:
+    def get_span(self, span_id: str) -> Span | None:
         """Get a span by ID."""
         return self._spans.get(span_id)
 
@@ -144,7 +144,7 @@ class Tracer:
 
 
 # Global tracer
-_tracer: Optional[Tracer] = None
+_tracer: Tracer | None = None
 
 
 def get_tracer(service_name: str = "helios") -> Tracer:
@@ -155,7 +155,7 @@ def get_tracer(service_name: str = "helios") -> Tracer:
     return _tracer
 
 
-def trace(name: str, tags: Optional[Dict[str, Any]] = None):
+def trace(name: str, tags: dict[str, Any] | None = None):
     """Decorator to trace a function."""
 
     def decorator(func: Callable):
@@ -182,11 +182,11 @@ def trace(name: str, tags: Optional[Dict[str, Any]] = None):
 class TraceContextManager:
     """Context manager for tracing."""
 
-    def __init__(self, name: str, tags: Optional[Dict[str, Any]] = None):
+    def __init__(self, name: str, tags: dict[str, Any] | None = None):
         self.name = name
         self.tags = tags or {}
         self.tracer = get_tracer()
-        self.span: Optional[Span] = None
+        self.span: Span | None = None
 
     def __enter__(self):
         """Enter context."""

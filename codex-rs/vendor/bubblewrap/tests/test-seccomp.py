@@ -244,7 +244,7 @@ class Test(unittest.TestCase):
 
     def test_no_seccomp(self) -> None:
         for syscall in TRY_SYSCALLS:
-            print('# {} without seccomp'.format(syscall))
+            print(f'# {syscall} without seccomp')
             completed = subprocess.run(
                 [
                     self.bwrap,
@@ -288,12 +288,12 @@ class Test(unittest.TestCase):
                 try:
                     allowlist.add_rule(seccomp.ALLOW, syscall)
                 except Exception as e:
-                    print('# Cannot add {} to allowlist: {!r}'.format(syscall, e))
+                    print(f'# Cannot add {syscall} to allowlist: {e!r}')
 
             allowlist.export_bpf(allowlist_temp)
 
             for syscall in TRY_SYSCALLS:
-                print('# allowlist vs. {}'.format(syscall))
+                print(f'# allowlist vs. {syscall}')
                 allowlist_temp.seek(0, os.SEEK_SET)
 
                 completed = subprocess.run(
@@ -352,7 +352,7 @@ class Test(unittest.TestCase):
             denylist.export_bpf(denylist_temp)
 
             for syscall in TRY_SYSCALLS:
-                print('# denylist vs. {}'.format(syscall))
+                print(f'# denylist vs. {syscall}')
                 denylist_temp.seek(0, os.SEEK_SET)
 
                 completed = subprocess.run(
@@ -408,7 +408,7 @@ class Test(unittest.TestCase):
                 try:
                     allowlist.add_rule(seccomp.ALLOW, syscall)
                 except Exception as e:
-                    print('# Cannot add {} to allowlist: {!r}'.format(syscall, e))
+                    print(f'# Cannot add {syscall} to allowlist: {e!r}')
 
             denylist.add_rule(seccomp.ERRNO(errno.ECONNREFUSED), 'chmod')
             denylist.add_rule(seccomp.ERRNO(errno.ECONNREFUSED), 'chroot')
@@ -428,7 +428,7 @@ class Test(unittest.TestCase):
             denylist.export_bpf(denylist_temp)
 
             for syscall in TRY_SYSCALLS:
-                print('# stacked vs. {}'.format(syscall))
+                print(f'# stacked vs. {syscall}')
                 allowlist_temp.seek(0, os.SEEK_SET)
                 denylist_temp.seek(0, os.SEEK_SET)
 

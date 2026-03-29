@@ -1,20 +1,18 @@
 """Tests for teammates module."""
 
-import pytest
 from pathlib import Path
-from unittest.mock import Mock, AsyncMock, patch
 
+import pytest
 from harness.teammates import (
+    CodexExecutor,
+    DelegationProtocol,
+    DelegationRequest,
+    DelegationStatus,
+    HealthMonitor,
+    HealthStatus,
+    Priority,
     Teammate,
     TeammateRegistry,
-    DelegationRequest,
-    DelegationResult,
-    DelegationProtocol,
-    CodexExecutor,
-    Priority,
-    DelegationStatus,
-    HealthStatus,
-    HealthMonitor,
 )
 
 

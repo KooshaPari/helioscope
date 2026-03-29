@@ -18,15 +18,14 @@ import importlib.util
 import os
 import re
 import sys
+from collections.abc import Mapping
 from pathlib import Path
 from types import ModuleType
-from typing import Mapping, Optional
 
 from task_helpers import (
     TaskCliError,
     run_git,
 )
-
 
 # ---------------------------------------------------------------------------
 # Core module import resolution
@@ -100,8 +99,8 @@ normalize_feature_encoding = _core.normalize_feature_encoding
 def detect_feature_slug(
     repo_root: Path,
     *,
-    env: Optional[Mapping[str, str]] = None,
-    cwd: Optional[Path] = None,
+    env: Mapping[str, str] | None = None,
+    cwd: Path | None = None,
 ) -> str:
     """Detect feature slug from environment, git branch, or current directory.
 

@@ -8,11 +8,10 @@ rewrites the file to update the ToC.
 """
 
 import argparse
-import sys
-import re
 import difflib
+import re
+import sys
 from pathlib import Path
-from typing import List
 
 # Markers for the Table of Contents section
 BEGIN_TOC: str = "<!-- Begin ToC -->"
@@ -34,7 +33,7 @@ def main() -> int:
     return check_or_fix(path, args.fix)
 
 
-def generate_toc_lines(content: str) -> List[str]:
+def generate_toc_lines(content: str) -> list[str]:
     """
     Generate markdown list lines for headings (## to ######) in content.
     """

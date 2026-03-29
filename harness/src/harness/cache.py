@@ -5,17 +5,15 @@ Implements L1-L4 cache layers with pre-warming and coalescing."""
 from __future__ import annotations
 
 import asyncio
-import hashlib
 import json
 import logging
-import os
 import sys
 import threading
 import time
-from collections import deque
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -26,8 +24,8 @@ if str(_rust_path) not in sys.path:
     sys.path.insert(0, str(_rust_path))
 
 try:
-    from helios_harness_rs import LruCache as RustLruCache
     from helios_harness_rs import CacheStats as RustCacheStats
+    from helios_harness_rs import LruCache as RustLruCache
 
     RUST_AVAILABLE = True
 except ImportError:

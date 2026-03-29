@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import asdict
 from typing import Any
 
-from .interfaces import DiscoverOutput, RunResult, QualityNormalization
+from .interfaces import DiscoverOutput, QualityNormalization, RunResult
 
 
 def evidence_payload(manifest: DiscoverOutput, runs: list[RunResult], quality: QualityNormalization) -> dict[str, Any]:

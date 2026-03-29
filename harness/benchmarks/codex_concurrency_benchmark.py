@@ -21,10 +21,10 @@ import shutil
 import subprocess
 import tempfile
 import time
-import httpx
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import Any
+
+import httpx
 
 
 @dataclass
@@ -335,16 +335,16 @@ def print_granular_report(result: BenchmarkResult, name: str = "CODEX") -> None:
     print(f"GRANULAR BENCHMARK REPORT: {name}")
     print(f"{'=' * 70}")
 
-    print(f"\n[Overview]")
+    print("\n[Overview]")
     print(f"  Agents:           {result.agent_count}")
     print(f"  Total Wall Time:  {result.total_time:.3f}s")
 
-    print(f"\n[Timing Percentiles]")
+    print("\n[Timing Percentiles]")
     print(f"  P50 (median):     {result.p50_time:.3f}s")
     print(f"  P95:              {result.p95_time:.3f}s")
     print(f"  P99:              {result.p99_time:.3f}s")
 
-    print(f"\n[Per-Agent Averages]")
+    print("\n[Per-Agent Averages]")
     print(f"  Turns/agent:      {result.avg_turns:.1f}")
     print(f"  Thinking time:    {result.avg_thinking_time:.3f}s")
     print(f"  Tool calls:       {result.avg_tool_calls:.1f}")
@@ -352,7 +352,7 @@ def print_granular_report(result: BenchmarkResult, name: str = "CODEX") -> None:
     print(f"  File writes:      {result.avg_file_writes:.1f}")
 
     # Per-agent breakdown
-    print(f"\n[Individual Agent Times]")
+    print("\n[Individual Agent Times]")
     for i, m in enumerate(result.agent_metrics):
         status = "OK" if m.returncode == 0 else f"ERR({m.returncode})"
         print(
@@ -364,7 +364,7 @@ def print_granular_report(result: BenchmarkResult, name: str = "CODEX") -> None:
     for m in result.agent_metrics:
         all_errors.extend(m.errors)
     if all_errors:
-        print(f"\n[Errors]")
+        print("\n[Errors]")
         for err in list(set(all_errors))[:5]:
             print(f"  - {err[:80]}")
 

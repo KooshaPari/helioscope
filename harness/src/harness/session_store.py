@@ -5,12 +5,10 @@ that span multiple sessions.
 """
 
 import json
-import os
 import threading
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Optional
 
 from .id_utils import new_id
 
@@ -23,7 +21,7 @@ class SessionState:
     goal: str
     created_at: float
     updated_at: float
-    completed_at: Optional[float] = None
+    completed_at: float | None = None
     status: str = "running"  # running, completed, failed, cancelled
 
     # Progress tracking
@@ -36,7 +34,7 @@ class SessionState:
     metadata: dict = field(default_factory=dict)
 
     # Checkpoints
-    checkpoint_id: Optional[str] = None
+    checkpoint_id: str | None = None
 
 
 @dataclass
@@ -65,13 +63,13 @@ class SessionStore:
         session = store.load(session.session_id)
     """
 
-    def __init__(self, base_dir: Optional[Path] = None):
+    def __init__(self, base_dir: Path | None = None):
         self._base_dir = base_dir or Path.home() / ".helios" / "sessions"
         self._base_dir.mkdir(parents=True, exist_ok=True)
         self._lock = threading.RLock()
         self._cache: dict[str, SessionState] = {}
 
-    def create(self, goal: str, metadata: Optional[dict] = None) -> SessionState:
+    def create(self, goal: str, metadata: dict | None = None) -> SessionState:
         """Create a new session."""
         session_id = new_id().replace("-", "")
 
@@ -93,12 +91,12 @@ class SessionStore:
     def update(
         self,
         session_id: str,
-        progress: Optional[float] = None,
-        context: Optional[list] = None,
-        artifacts: Optional[dict] = None,
-        metadata: Optional[dict] = None,
-        milestone: Optional[dict] = None,
-    ) -> Optional[SessionState]:
+        progress: float | None = None,
+        context: list | None = None,
+        artifacts: dict | None = None,
+        metadata: dict | None = None,
+        milestone: dict | None = None,
+    ) -> SessionState | None:
         """Update session state."""
         with self._lock:
             session = self._cache.get(session_id) or self._load(session_id)
@@ -127,7 +125,7 @@ class SessionStore:
 
             return session
 
-    def load(self, session_id: str) -> Optional[SessionState]:
+    def load(self, session_id: str) -> SessionState | None:
         """Load session state."""
         with self._lock:
             # Check cache first
@@ -136,7 +134,7 @@ class SessionStore:
 
             return self._load(session_id)
 
-    def _load(self, session_id: str) -> Optional[SessionState]:
+    def _load(self, session_id: str) -> SessionState | None:
         """Load from disk."""
         session_file = self._base_dir / f"{session_id}.json"
 
@@ -210,7 +208,7 @@ class SessionStore:
             self._cache.pop(session_id, None)
             return True
 
-    def list_sessions(self, status: Optional[str] = None) -> list[SessionState]:
+    def list_sessions(self, status: str | None = None) -> list[SessionState]:
         """List all sessions."""
         sessions = []
 
@@ -234,7 +232,7 @@ class SessionStore:
         sessions.sort(key=lambda s: s.updated_at, reverse=True)
         return sessions
 
-    def create_checkpoint(self, session_id: str, data: dict) -> Optional[str]:
+    def create_checkpoint(self, session_id: str, data: dict) -> str | None:
         """Create a checkpoint."""
         with self._lock:
             session = self._cache.get(session_id) or self._load(session_id)
@@ -253,7 +251,7 @@ class SessionStore:
 
             return checkpoint_id
 
-    def load_checkpoint(self, session_id: str, checkpoint_id: str) -> Optional[dict]:
+    def load_checkpoint(self, session_id: str, checkpoint_id: str) -> dict | None:
         """Load a checkpoint."""
         checkpoint_file = self._base_dir / session_id / "checkpoints" / f"{checkpoint_id}.json"
 
@@ -280,11 +278,11 @@ class SessionStore:
 
 
 # Global store instance
-_session_store: Optional[SessionStore] = None
+_session_store: SessionStore | None = None
 _store_lock = threading.Lock()
 
 
-def get_session_store(base_dir: Optional[Path] = None) -> SessionStore:
+def get_session_store(base_dir: Path | None = None) -> SessionStore:
     """Get the global session store."""
     global _session_store
 

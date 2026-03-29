@@ -9,7 +9,6 @@ import subprocess
 import sys
 from pathlib import Path
 
-
 PROFILE_ARGS_BASE: dict[str, list[str]] = {
     "cold": [
         "--max-failed-runs",

@@ -5,11 +5,11 @@ Provides async queue with priority levels and backpressure.
 
 import asyncio
 import time
-from dataclasses import dataclass, field
-from typing import Any, Optional, Callable, Dict
-from enum import Enum
 from collections import deque
-import heapq
+from collections.abc import Callable
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Any
 
 from .id_utils import new_id
 
@@ -32,7 +32,7 @@ class QueuedRequest:
     timestamp: float = field(compare=True)
     request_id: str = field(compare=False, default_factory=lambda: new_id())
     payload: Any = field(compare=False, default=None)
-    callback: Optional[Callable] = field(compare=False, default=None)
+    callback: Callable | None = field(compare=False, default=None)
 
 
 class RequestQueue:
@@ -53,7 +53,7 @@ class RequestQueue:
         self._metrics = {"enqueued": 0, "dequeued": 0, "rejected": 0, "expired": 0}
 
     async def enqueue(
-        self, payload: Any, priority: Priority = Priority.NORMAL, callback: Optional[Callable] = None
+        self, payload: Any, priority: Priority = Priority.NORMAL, callback: Callable | None = None
     ) -> str:
         """Enqueue a request."""
         request = QueuedRequest(priority=priority.value, timestamp=time.time(), payload=payload, callback=callback)
@@ -66,7 +66,7 @@ class RequestQueue:
             self._metrics["rejected"] += 1
             raise QueueFull(f"Queue at capacity ({self.max_size})")
 
-    async def dequeue(self, timeout: Optional[float] = None) -> Optional[QueuedRequest]:
+    async def dequeue(self, timeout: float | None = None) -> QueuedRequest | None:
         """Dequeue a request."""
         timeout = timeout or self.max_wait
 
@@ -74,7 +74,7 @@ class RequestQueue:
             request = await asyncio.wait_for(self._queue.get(), timeout=timeout)
             self._metrics["dequeued"] += 1
             return request
-        except asyncio.TimeoutError:
+        except TimeoutError:
             return None
 
     async def size(self) -> int:
@@ -89,7 +89,7 @@ class RequestQueue:
         """Check if queue is empty."""
         return self._queue.empty()
 
-    def metrics(self) -> Dict[str, int]:
+    def metrics(self) -> dict[str, int]:
         """Get queue metrics."""
         return self._metrics.copy()
 
@@ -101,7 +101,7 @@ class QueueFull(Exception):
 
 
 # Global queue
-_queue: Optional[RequestQueue] = None
+_queue: RequestQueue | None = None
 
 
 def get_queue(max_size: int = 1000) -> RequestQueue:

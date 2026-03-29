@@ -8,6 +8,19 @@ If you want Codex in your code editor (VS Code, Cursor, Windsurf), <a href="http
 </br>If you want the desktop app experience, run <code>codex app</code> or visit <a href="https://chatgpt.com/codex?app-landing-page=true">the Codex App page</a>.
 </br>If you are looking for the <em>cloud-based agent</em> from OpenAI, <strong>Codex Web</strong>, go to <a href="https://chatgpt.com/codex">chatgpt.com/codex</a>.</p>
 
+## Phenotype Fork Differentiation
+
+This is the **Phenotype community fork** of `openai/codex` (`rust-v0.105.0`). Key enhancements:
+
+- **Full spec documentation**: TUI architecture decomposition, renderer optimization, and chat composer refactoring tracked in `docs/specs/` (AgilePlus format)
+- **Multi-crate harness system**: 20+ harness crates for validation, caching, checkpointing, discovery, and resilience (via `heliosHarness` workspace)
+- **Trait-based TDD refactoring**: Extracted `Renderable`, `Submitter`, `HistoryNavigator`, and `KeyEventRouter` traits to enable modular testing (kitty-specs Phase 1-6)
+- **Phenotype governance integration**: Full ADR, FR, and code entity mapping in `docs/` with @phenotype/docs integration
+- **VitePress docsite**: Self-hosted documentation with architecture guides and validation harness reference
+
+**Syncing upstream**: Rebase against `openai/codex` main branch using `git pull --rebase origin main` and resolve conflicts in `harness_*` crates.
+
+
 ---
 
 ## Quickstart

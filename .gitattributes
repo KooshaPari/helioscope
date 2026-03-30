@@ -1,0 +1,152 @@
+# Auto-detect text files and normalize line endings to LF
+* text=auto
+
+# ============================================================================
+# Language-specific settings with diff drivers
+# ============================================================================
+
+# Rust
+*.rs text diff=rust
+*.toml text eol=lf
+Cargo.lock text -diff merge=binary
+
+# Python
+*.py text diff=python
+*.pyi text diff=python
+requirements*.txt text eol=lf
+pyproject.toml text eol=lf
+
+# TypeScript/JavaScript
+*.ts text diff=typescript
+*.tsx text diff=typescript
+*.js text diff=javascript
+*.jsx text diff=javascript
+*.json text eol=lf
+package-lock.json text -diff merge=binary
+bun.lock text -diff merge=binary
+*.lock text -diff merge=binary
+
+# Go
+*.go text diff=golang
+go.mod text eol=lf
+go.sum text -diff merge=binary
+
+# Bash/Shell
+*.sh text eol=lf
+*.bash text eol=lf
+.bashrc text eol=lf
+.bash_profile text eol=lf
+
+# Markdown & Documentation
+*.md text diff=markdown eol=lf
+*.mdx text diff=markdown eol=lf
+*.rst text eol=lf
+*.adoc text eol=lf
+
+# YAML & Config files
+*.yml text eol=lf
+*.yaml text eol=lf
+*.toml text eol=lf
+*.ini text eol=lf
+*.cfg text eol=lf
+.env* text eol=lf
+
+# ============================================================================
+# Binary files (no diff, no merge)
+# ============================================================================
+
+# Images
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.svg binary
+
+# Fonts
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+*.otf binary
+
+# Archives
+*.zip binary
+*.tar binary
+*.gz binary
+*.rar binary
+*.7z binary
+
+# Compiled/built artifacts
+*.so binary
+*.dylib binary
+*.dll binary
+*.exe binary
+*.o binary
+
+# ============================================================================
+# Lock files — treat as binary to prevent merge conflicts
+# ============================================================================
+
+Cargo.lock merge=binary
+package-lock.json merge=binary
+pnpm-lock.yaml merge=binary
+bun.lock merge=binary
+go.sum merge=binary
+yarn.lock merge=binary
+Gemfile.lock merge=binary
+poetry.lock merge=binary
+composer.lock merge=binary
+
+# ============================================================================
+# Generated/compiled files — don't diff
+# ============================================================================
+
+# Minified files
+*.min.js -diff
+*.min.css -diff
+*.min.mjs -diff
+
+# Build outputs
+dist/** -diff
+build/** -diff
+out/** -diff
+target/** -diff
+coverage/** -diff
+
+# Node/package manager
+node_modules/** -diff
+.pnp -diff
+.pnp.js -diff
+
+# Python
+__pycache__/** -diff
+*.egg-info/** -diff
+.pytest_cache/** -diff
+.tox/** -diff
+htmlcov/** -diff
+
+# Go
+vendor/** -diff
+
+# Rust
+target/** -diff
+
+# IDE
+.idea/** -diff
+.vscode/** -diff
+*.swp -diff
+*.swo -diff
+*~ -diff
+
+# ============================================================================
+# Special handling for archives and generated content
+# ============================================================================
+
+.archive/** -diff linguist-vendored
+.benchmarks/** -diff linguist-vendored
+docs-dist/** -diff linguist-vendored
+
+# Vendored third-party code
+vendor/** -diff linguist-vendored
+node_modules/** -diff linguist-vendored

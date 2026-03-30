@@ -75,7 +75,7 @@ impl SpecGenerator {
             .entities
             .first()
             .map(|e| e.value.clone())
-            .unwrap_or_else(|| " unspecified".to_string());
+            .unwrap_or_else(|| "unspecified".to_string());
 
         format!("{}-{}", action, entity.replace(['/', '.'], "_"))
     }

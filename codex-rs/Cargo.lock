@@ -1722,6 +1722,7 @@ dependencies = [
  "codex-execpolicy",
  "codex-protocol",
  "codex-utils-absolute-path",
+ "derive_more 2.1.1",
  "futures",
  "multimap",
  "pretty_assertions",
@@ -1975,6 +1976,7 @@ name = "codex-git"
 version = "0.0.0"
 dependencies = [
  "assert_matches",
+ "derive_more 2.1.1",
  "once_cell",
  "pretty_assertions",
  "regex",
@@ -2006,6 +2008,7 @@ name = "codex-keyring-store"
 version = "0.0.0"
 dependencies = [
  "keyring",
+ "thiserror 2.0.18",
  "tracing",
 ]
 
@@ -2191,6 +2194,7 @@ dependencies = [
  "codex-git",
  "codex-utils-absolute-path",
  "codex-utils-image",
+ "derive_more 2.1.1",
  "icu_decimal",
  "icu_locale_core",
  "icu_provider",
@@ -2264,6 +2268,7 @@ dependencies = [
  "anyhow",
  "base64 0.22.1",
  "codex-keyring-store",
+ "derive_more 2.1.1",
  "keyring",
  "pretty_assertions",
  "rand 0.9.2",
@@ -2614,6 +2619,7 @@ name = "codex-utils-stream-parser"
 version = "0.0.0"
 dependencies = [
  "pretty_assertions",
+ "thiserror 2.0.18",
 ]
 
 [[package]]

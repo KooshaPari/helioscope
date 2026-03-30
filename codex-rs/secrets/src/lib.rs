@@ -6,6 +6,7 @@ use std::sync::Arc;
 use anyhow::Result;
 use codex_keyring_store::DefaultKeyringStore;
 use codex_keyring_store::KeyringStore;
+use derive_more::Display;
 use schemars::JsonSchema;
 use serde::Deserialize;
 use serde::Serialize;
@@ -20,7 +21,9 @@ pub use sanitizer::redact_secrets;
 
 const KEYRING_SERVICE: &str = "codex";
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+/// A validated secret name.
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Display)]
+#[display("SecretName({_0})")]
 pub struct SecretName(String);
 
 impl SecretName {
@@ -38,12 +41,6 @@ impl SecretName {
 
     pub fn as_str(&self) -> &str {
         self.0.as_str()
-    }
-}
-
-impl fmt::Display for SecretName {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.0)
     }
 }
 

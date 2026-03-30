@@ -8,22 +8,15 @@ use serde::Deserialize;
 use serde::Serialize;
 use ts_rs::TS;
 
+use derive_more::Display;
+
 /// ID of a request, which can be either a string or an integer.
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, JsonSchema, TS)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, JsonSchema, TS, Display)]
 #[serde(untagged)]
 pub enum RequestId {
     String(String),
     #[ts(type = "number")]
     Integer(i64),
-}
-
-impl std::fmt::Display for RequestId {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            RequestId::String(s) => f.write_str(s),
-            RequestId::Integer(i) => i.fmt(f),
-        }
-    }
 }
 
 /// Definition for a tool the client can call.

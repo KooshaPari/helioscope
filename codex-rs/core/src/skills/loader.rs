@@ -29,6 +29,7 @@ use std::fs;
 use std::path::Component;
 use std::path::Path;
 use std::path::PathBuf;
+use thiserror::Error;
 use toml::Value as TomlValue;
 use tracing::error;
 

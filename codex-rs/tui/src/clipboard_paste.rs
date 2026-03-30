@@ -1,44 +1,28 @@
 use std::path::Path;
 use std::path::PathBuf;
 use tempfile::Builder;
+use thiserror::Error;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Error)]
 pub enum PasteImageError {
+    #[error("clipboard unavailable: {0}")]
     ClipboardUnavailable(String),
+    #[error("no image on clipboard: {0}")]
     NoImage(String),
+    #[error("could not encode image: {0}")]
     EncodeFailed(String),
+    #[error("io error: {0}")]
     IoError(String),
 }
 
-impl std::fmt::Display for PasteImageError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            PasteImageError::ClipboardUnavailable(msg) => write!(f, "clipboard unavailable: {msg}"),
-            PasteImageError::NoImage(msg) => write!(f, "no image on clipboard: {msg}"),
-            PasteImageError::EncodeFailed(msg) => write!(f, "could not encode image: {msg}"),
-            PasteImageError::IoError(msg) => write!(f, "io error: {msg}"),
-        }
-    }
-}
-impl std::error::Error for PasteImageError {}
-
 #[allow(dead_code)]
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Error)]
 pub enum PasteTextError {
+    #[error("clipboard unavailable: {0}")]
     ClipboardUnavailable(String),
+    #[error("no text on clipboard: {0}")]
     NoText(String),
 }
-
-impl std::fmt::Display for PasteTextError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            PasteTextError::ClipboardUnavailable(msg) => write!(f, "clipboard unavailable: {msg}"),
-            PasteTextError::NoText(msg) => write!(f, "no text on clipboard: {msg}"),
-        }
-    }
-}
-
-impl std::error::Error for PasteTextError {}
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum EncodedImageFormat {

@@ -230,18 +230,13 @@ impl CodexErr {
     }
 }
 
-#[derive(Debug)]
+#[derive(Error, Debug)]
+#[error("Connection failed: {source}")]
 pub struct ConnectionFailedError {
     pub source: reqwest::Error,
 }
 
-impl std::fmt::Display for ConnectionFailedError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "Connection failed: {}", self.source)
-    }
-}
-
-#[derive(Debug)]
+#[derive(Error, Debug)]
 pub struct ResponseStreamFailed {
     pub source: reqwest::Error,
     pub request_id: Option<String>,

@@ -59,11 +59,15 @@ pub enum HostBlockReason {
 }
 
 impl HostBlockReason {
-    pub const fn as_str(self) -> &'static str {
+    pub fn is_allowed(&self) -> bool {
+        matches!(self, HostBlockReason::Denied)
+    }
+
+    pub fn as_str(&self) -> &'static str {
         match self {
-            Self::Denied => REASON_DENIED,
-            Self::NotAllowed => REASON_NOT_ALLOWED,
-            Self::NotAllowedLocal => REASON_NOT_ALLOWED_LOCAL,
+            HostBlockReason::Denied => REASON_DENIED,
+            HostBlockReason::NotAllowed => REASON_NOT_ALLOWED,
+            HostBlockReason::NotAllowedLocal => REASON_NOT_ALLOWED_LOCAL,
         }
     }
 }

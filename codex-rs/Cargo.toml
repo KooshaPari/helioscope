@@ -189,6 +189,16 @@ image = { version = "^0.25.9", default-features = false }
 iana-time-zone = "0.1.64"
 include_dir = "0.7.4"
 indexmap = "2.12.0"
+itoa = "1.0"                    # Fast integer to string (3x faster)
+utoa = "0.5"                    # Fast unsigned integer to string
+
+mockall = "0.13"               # Trait mocking
+rstest = "0.23"                # Parametric testing
+proptest = "1.5"               # Property-based testing
+
+derive_builder = "0.20"         # Builder pattern derive
+derive_getters = "0.14"         # Automatic getters
+
 insta = "1.46.3"
 inventory = "0.3.19"
 itertools = "0.14.0"

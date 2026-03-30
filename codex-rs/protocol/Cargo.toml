@@ -1,6 +1,6 @@
 [package]
 edition.workspace = true
-license.workspace = true
+derive_more = { workspace = true, features = ["display"] }
 name = "codex-protocol"
 version.workspace = true
 
@@ -16,6 +16,7 @@ codex-execpolicy = { workspace = true }
 codex-git = { workspace = true }
 codex-utils-absolute-path = { workspace = true }
 codex-utils-image = { workspace = true }
+derive_more = { workspace = true, features = ["display"] }
 icu_decimal = { workspace = true }
 icu_locale_core = { workspace = true }
 icu_provider = { workspace = true, features = ["sync"] }

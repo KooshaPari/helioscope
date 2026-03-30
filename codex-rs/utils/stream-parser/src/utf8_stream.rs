@@ -1,13 +1,14 @@
-use std::error::Error;
 use std::fmt;
+use thiserror::Error;
 
 use crate::StreamTextChunk;
 use crate::StreamTextParser;
 
 /// Error returned by [`Utf8StreamParser`] when streamed bytes are not valid UTF-8.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Error)]
 pub enum Utf8StreamParserError {
     /// The provided bytes contain an invalid UTF-8 sequence.
+    #[error("invalid UTF-8 in streamed bytes at offset {valid_up_to} (error length {error_len})")]
     InvalidUtf8 {
         /// Byte offset in the parser's buffered bytes where decoding failed.
         valid_up_to: usize,
@@ -15,27 +16,9 @@ pub enum Utf8StreamParserError {
         error_len: usize,
     },
     /// EOF was reached with a buffered partial UTF-8 code point.
+    #[error("incomplete UTF-8 code point at end of stream")]
     IncompleteUtf8AtEof,
 }
-
-impl fmt::Display for Utf8StreamParserError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            Self::InvalidUtf8 {
-                valid_up_to,
-                error_len,
-            } => write!(
-                f,
-                "invalid UTF-8 in streamed bytes at offset {valid_up_to} (error length {error_len})"
-            ),
-            Self::IncompleteUtf8AtEof => {
-                write!(f, "incomplete UTF-8 code point at end of stream")
-            }
-        }
-    }
-}
-
-impl Error for Utf8StreamParserError {}
 
 /// Wraps a [`StreamTextParser`] and accepts raw bytes, buffering partial UTF-8 code points.
 ///

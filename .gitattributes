@@ -1,0 +1,60 @@
+# Auto-detect text files and normalize line endings
+* text=auto
+
+# Rust
+*.rs text diff=rust
+*.toml text
+Cargo.lock text -diff
+
+# Python
+*.py text diff=python
+*.pyi text diff=python
+requirements*.txt text
+pyproject.toml text
+
+# TypeScript/JavaScript
+*.ts text diff=typescript
+*.tsx text diff=typescript
+*.js text diff=javascript
+*.json text
+package-lock.json text -diff
+bun.lock text -diff
+
+# Go
+*.go text diff=golang
+go.sum text -diff
+
+# Shell
+*.sh text eol=lf
+*.bash text eol=lf
+
+# Markdown & docs
+*.md text diff=markdown
+*.yml text
+*.yaml text
+
+# Binary files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+
+# Lock files
+Cargo.lock merge=binary
+package-lock.json merge=binary
+bun.lock merge=binary
+go.sum merge=binary
+
+# Generated files
+*.min.js -diff
+*.min.css -diff
+dist/** -diff
+target/** -diff
+node_modules/** -diff
+
+# Archives
+.archive/** -diff linguist-vendored

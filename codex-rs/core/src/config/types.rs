@@ -848,7 +848,8 @@ pub struct ShellEnvironmentPolicy {
     pub inherit: ShellEnvironmentPolicyInherit,
 
     /// True to skip the check to exclude default environment variables that
-    /// contain "KEY", "SECRET", or "TOKEN" in their name. Defaults to true.
+    /// contain "KEY", "SECRET", or "TOKEN" in their name. Defaults to false
+    /// so that secret-containing env vars are excluded by default.
     pub ignore_default_excludes: bool,
 
     /// Environment variable names to exclude from the environment.
@@ -868,7 +869,7 @@ impl From<ShellEnvironmentPolicyToml> for ShellEnvironmentPolicy {
     fn from(toml: ShellEnvironmentPolicyToml) -> Self {
         // Default to inheriting the full environment when not specified.
         let inherit = toml.inherit.unwrap_or(ShellEnvironmentPolicyInherit::All);
-        let ignore_default_excludes = toml.ignore_default_excludes.unwrap_or(true);
+        let ignore_default_excludes = toml.ignore_default_excludes.unwrap_or(false);
         let exclude = toml
             .exclude
             .unwrap_or_default()
@@ -899,7 +900,7 @@ impl Default for ShellEnvironmentPolicy {
     fn default() -> Self {
         Self {
             inherit: ShellEnvironmentPolicyInherit::All,
-            ignore_default_excludes: true,
+            ignore_default_excludes: false,
             exclude: Vec::new(),
             r#set: HashMap::new(),
             include_only: Vec::new(),

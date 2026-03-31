@@ -119,6 +119,106 @@ pub fn parse_shell_lc_plain_commands(command: &[String]) -> Option<Vec<Vec<Strin
     try_parse_word_only_commands_sequence(&tree, script)
 }
 
+/// Returns true if the command is a `bash -lc "..."` or `zsh -lc "..."` invocation
+/// whose script contains redirections, command substitutions, or other complex
+/// constructs that prevent safe parsing.
+///
+/// When this returns true, the caller should treat the command as potentially
+/// dangerous and require user approval, because the inner script content cannot
+/// be reliably analyzed for safety.
+pub fn shell_lc_script_has_complex_constructs(command: &[String]) -> bool {
+    let Some((_, script)) = extract_bash_command(command) else {
+        return false;
+    };
+
+    let Some(tree) = try_parse_shell(script) else {
+        return false;
+    };
+
+    if tree.root_node().has_error() {
+        return false;
+    }
+
+    let complex_kinds = [
+        "redirected_statement",
+        "file_redirect",
+        "heredoc_redirect",
+        "herestring_redirect",
+        "command_substitution",
+        "process_substitution",
+        "expansion",
+        "variable_assignment",
+        "if_statement",
+        "for_statement",
+        "while_statement",
+        "case_statement",
+        "function_definition",
+        "subshell",
+    ];
+
+    let mut cursor = tree.root_node().walk();
+    let mut stack = vec![tree.root_node()];
+    while let Some(node) = stack.pop() {
+        if node.is_named() && complex_kinds.contains(&node.kind()) {
+            return true;
+        }
+        for child in node.children(&mut cursor) {
+            stack.push(child);
+        }
+    }
+    false
+}
+
+/// Returns true if the command is a `bash -lc "..."` or `zsh -lc "..."` invocation
+/// whose script contains redirections, command substitutions, or other complex
+/// constructs that prevent safe parsing.
+///
+/// When this returns true, the caller should treat the command as potentially
+/// dangerous and require user approval, because the inner script content cannot
+/// be reliably analyzed for safety.
+pub fn shell_lc_script_has_complex_constructs(command: &[String]) -> bool {
+    let Some((_, script)) = extract_bash_command(command) else {
+        return false;
+    };
+
+    let Some(tree) = try_parse_shell(script) else {
+        return false;
+    };
+
+    if tree.root_node().has_error() {
+        return false;
+    }
+
+    let complex_kinds = [
+        "redirected_statement",
+        "file_redirect",
+        "heredoc_redirect",
+        "herestring_redirect",
+        "command_substitution",
+        "process_substitution",
+        "expansion",
+        "variable_assignment",
+        "if_statement",
+        "for_statement",
+        "while_statement",
+        "case_statement",
+        "function_definition",
+        "subshell",
+    ];
+
+    let mut cursor = tree.root_node().walk();
+    let mut stack = vec![tree.root_node()];
+    while let Some(node) = stack.pop() {
+        if node.is_named() && complex_kinds.contains(&node.kind()) {
+            return true;
+        }
+        for child in node.children(&mut cursor) {
+            stack.push(child);
+        }
+    }
+    false
+}
+
 /// Returns the parsed argv for a single shell command in a here-doc style
 /// script (`<<`), as long as the script contains exactly one command node.
 pub fn parse_shell_lc_single_command_prefix(command: &[String]) -> Option<Vec<String>> {

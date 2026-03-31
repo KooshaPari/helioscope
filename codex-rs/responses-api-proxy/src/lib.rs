@@ -157,10 +157,17 @@ fn forward_request(
         return Ok(());
     }
 
-    // Read request body
+    // Read request body with a 64 MiB limit to prevent memory exhaustion.
+    const MAX_BODY_SIZE: usize = 64 * 1024 * 1024;
     let mut body = Vec::new();
     let mut reader = req.as_reader();
-    std::io::Read::read_to_end(&mut reader, &mut body)?;
+    let mut limited = (&mut reader).take(MAX_BODY_SIZE as u64);
+    std::io::Read::read_to_end(&mut limited, &mut body)?;
+    if body.len() == MAX_BODY_SIZE {
+        let resp = Response::new_empty(StatusCode(413));
+        let _ = req.respond(resp);
+        return Err(anyhow!("request body exceeds {MAX_BODY_SIZE} byte limit"));
+    }
 
     // Build headers for upstream, forwarding everything from the incoming
     // request except Authorization (we replace it below).

@@ -649,12 +649,12 @@ async fn request_chatgpt_token_refresh(
         Ok(refresh_response)
     } else {
         let body = response.text().await.unwrap_or_default();
-        tracing::error!("Failed to refresh token: {status}: {body}");
+        let message = try_parse_error_message(&body);
+        tracing::error!("Failed to refresh token: {status}: {message}");
         if status == StatusCode::UNAUTHORIZED {
             let failed = classify_refresh_token_failure(&body);
             Err(RefreshTokenError::Permanent(failed))
         } else {
-            let message = try_parse_error_message(&body);
             Err(RefreshTokenError::Transient(std::io::Error::other(
                 format!("Failed to refresh token: {status}: {message}"),
             )))

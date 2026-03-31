@@ -5,10 +5,10 @@
 //! - `AsyncCache`: Async-aware cache backed by Moka's future cache
 //!
 //! Both support TTL, size-based eviction, and atomic metrics tracking.
-
-pub mod adapters;
-pub mod domain;
-pub mod ports;
+//!
+//! Legacy hexagonal architecture modules (adapters, domain, ports) are
+//! retained for reference but are not used by the primary Moka-based
+//! implementations above.
 
 use std::time::Duration;
 use thiserror::Error;

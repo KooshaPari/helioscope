@@ -87,47 +87,60 @@ impl<T> Channel<T> {
     }
 }
 
-/// Ring buffer for single producer/consumer
-#[allow(dead_code)]
+/// Ring buffer for single producer/consumer with O(1) push/pop
 pub struct RingBuffer<T> {
-    data: Vec<T>,
+    data: Vec<Option<T>>,
     read: usize,
     write: usize,
     capacity: usize,
+    count: usize,
 }
 
 impl<T> RingBuffer<T> {
     pub fn new(capacity: usize) -> Self {
+        assert!(capacity > 0, "RingBuffer capacity must be > 0");
+        let mut data = Vec::with_capacity(capacity);
+        data.resize_with(capacity, || None);
         Self {
-            data: Vec::with_capacity(capacity),
+            data,
             read: 0,
             write: 0,
             capacity,
+            count: 0,
         }
     }
 
     pub fn push(&mut self, item: T) -> bool {
-        if self.data.len() >= self.capacity {
+        if self.count >= self.capacity {
             return false;
         }
-        self.data.push(item);
+        self.data[self.write] = Some(item);
+        self.write = (self.write + 1) % self.capacity;
+        self.count += 1;
         true
     }
 
     pub fn pop(&mut self) -> Option<T> {
-        if self.read >= self.data.len() {
+        if self.count == 0 {
             return None;
         }
-        let item = self.data.remove(self.read);
-        self.read += 1;
-        Some(item)
+        let item = self.data[self.read].take();
+        self.read = (self.read + 1) % self.capacity;
+        self.count -= 1;
+        item
     }
 
     pub fn len(&self) -> usize {
-        self.data.len().saturating_sub(self.read)
+        self.count
     }
     pub fn is_empty(&self) -> bool {
-        self.len() == 0
+        self.count == 0
+    }
+    pub fn is_full(&self) -> bool {
+        self.count >= self.capacity
+    }
+    pub fn remaining(&self) -> usize {
+        self.capacity - self.count
     }
 }
 
@@ -174,5 +187,176 @@ impl<T> WorkQueue<T> {
 impl<T> Default for WorkQueue<T> {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_channel_send_recv() {
+        let ch = Channel::new(10);
+        ch.send(42).unwrap();
+        assert_eq!(ch.recv(), Some(42));
+        assert!(ch.recv().is_none());
+    }
+
+    #[test]
+    fn test_channel_full() {
+        let ch = Channel::new(2);
+        ch.send(1).unwrap();
+        ch.send(2).unwrap();
+        assert!(ch.send(3).is_err());
+    }
+
+    #[test]
+    fn test_channel_close() {
+        let ch = Channel::new(10);
+        ch.send(1).unwrap();
+        ch.close();
+        assert!(ch.send(2).is_err());
+        assert_eq!(ch.recv(), Some(1));
+    }
+
+    #[test]
+    fn test_ring_buffer_push_pop() {
+        let mut rb = RingBuffer::new(4);
+        assert!(rb.push(1));
+        assert!(rb.push(2));
+        assert_eq!(rb.pop(), Some(1));
+        assert_eq!(rb.pop(), Some(2));
+        assert_eq!(rb.pop(), None);
+    }
+
+    #[test]
+    fn test_ring_buffer_full() {
+        let mut rb = RingBuffer::new(2);
+        assert!(rb.push(1));
+        assert!(rb.push(2));
+        assert!(!rb.push(3));
+        assert_eq!(rb.len(), 2);
+        assert!(rb.is_full());
+    }
+
+    #[test]
+    fn test_ring_buffer_wrap_around() {
+        let mut rb = RingBuffer::new(3);
+        assert!(rb.push(1));
+        assert!(rb.push(2));
+        assert_eq!(rb.pop(), Some(1));
+        assert!(rb.push(3));
+        assert!(rb.push(4));
+        assert_eq!(rb.pop(), Some(2));
+        assert_eq!(rb.pop(), Some(3));
+        assert_eq!(rb.pop(), Some(4));
+        assert_eq!(rb.pop(), None);
+    }
+
+    #[test]
+    fn test_ring_buffer_remaining() {
+        let mut rb = RingBuffer::new(5);
+        assert_eq!(rb.remaining(), 5);
+        rb.push(1);
+        rb.push(2);
+        assert_eq!(rb.remaining(), 3);
+        rb.pop();
+        assert_eq!(rb.remaining(), 4);
+    }
+
+    #[test]
+    fn test_work_queue_push_pop() {
+        let wq = WorkQueue::new();
+        wq.push(1);
+        wq.push(2);
+        assert_eq!(wq.pop(), Some(1));
+        assert_eq!(wq.pop(), Some(2));
+        assert_eq!(wq.pop(), None);
+    }
+}
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_channel_send_recv() {
+        let ch = Channel::new(10);
+        ch.send(42).unwrap();
+        assert_eq!(ch.recv(), Some(42));
+        assert!(ch.recv().is_none());
+    }
+
+    #[test]
+    fn test_channel_full() {
+        let ch = Channel::new(2);
+        ch.send(1).unwrap();
+        ch.send(2).unwrap();
+        assert!(ch.send(3).is_err());
+    }
+
+    #[test]
+    fn test_channel_close() {
+        let ch = Channel::new(10);
+        ch.send(1).unwrap();
+        ch.close();
+        assert!(ch.send(2).is_err());
+        assert_eq!(ch.recv(), Some(1));
+    }
+
+    #[test]
+    fn test_ring_buffer_push_pop() {
+        let mut rb = RingBuffer::new(4);
+        assert!(rb.push(1));
+        assert!(rb.push(2));
+        assert_eq!(rb.pop(), Some(1));
+        assert_eq!(rb.pop(), Some(2));
+        assert_eq!(rb.pop(), None);
+    }
+
+    #[test]
+    fn test_ring_buffer_full() {
+        let mut rb = RingBuffer::new(2);
+        assert!(rb.push(1));
+        assert!(rb.push(2));
+        assert!(!rb.push(3));
+        assert_eq!(rb.len(), 2);
+        assert!(rb.is_full());
+    }
+
+    #[test]
+    fn test_ring_buffer_wrap_around() {
+        let mut rb = RingBuffer::new(3);
+        assert!(rb.push(1));
+        assert!(rb.push(2));
+        assert_eq!(rb.pop(), Some(1));
+        assert!(rb.push(3));
+        assert!(rb.push(4));
+        assert_eq!(rb.pop(), Some(2));
+        assert_eq!(rb.pop(), Some(3));
+        assert_eq!(rb.pop(), Some(4));
+        assert_eq!(rb.pop(), None);
+    }
+
+    #[test]
+    fn test_ring_buffer_remaining() {
+        let mut rb = RingBuffer::new(5);
+        assert_eq!(rb.remaining(), 5);
+        rb.push(1);
+        rb.push(2);
+        assert_eq!(rb.remaining(), 3);
+        rb.pop();
+        assert_eq!(rb.remaining(), 4);
+    }
+
+    #[test]
+    fn test_work_queue_push_pop() {
+        let wq = WorkQueue::new();
+        wq.push(1);
+        wq.push(2);
+        assert_eq!(wq.pop(), Some(1));
+        assert_eq!(wq.pop(), Some(2));
+        assert_eq!(wq.pop(), None);
     }
 }

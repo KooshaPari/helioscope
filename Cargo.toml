@@ -9,7 +9,6 @@ members = [
     "crates/harness_interfaces",
     "crates/harness_normalizer",
     "crates/harness_orchestrator",
-    "crates/harness_pyo3",
     "crates/harness_queue",
     "crates/harness_rollback",
     "crates/harness_runner",
@@ -19,6 +18,9 @@ members = [
     "crates/harness_teammates",
     "crates/harness_utils",
     "crates/harness_verify",
+]
+exclude = [
+    "crates/harness_pyo3",
 ]
 
 [workspace.package]

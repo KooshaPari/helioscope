@@ -8,6 +8,7 @@ tokio = { version = "1", features = ["sync", "rt"] }
 thiserror = "2"
 tracing = "0.1"
 moka = { version = "0.12", features = ["sync", "future"] }
+bytes = "1"
 
 [dev-dependencies]
 criterion = "0.8.2"

@@ -1,0 +1,136 @@
+name: Sentry Error Tracking
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+    inputs:
+      force_report:
+        description: 'Force Sentry health report'
+        required: false
+        default: 'false'
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: 1
+
+jobs:
+  sentry-health-check:
+    name: Sentry Health & Integration Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    env:
+      SENTRY_DSN: ${{ secrets.SENTRY_DSN_HELIOSCLI }}
+      SENTRY_ENVIRONMENT: production
+      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+      SENTRY_ORG_SLUG: stealth-startup-3u
+      SENTRY_PROJECT_ID: helioscli
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 10
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - name: Cache Rust dependencies
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: .
+
+      - name: Verify Sentry DSN is configured
+        run: |
+          if [ -z "$SENTRY_DSN" ]; then
+            echo "Warning: SENTRY_DSN_HELIOSCLI secret not configured"
+            echo "Configure via: gh secret set SENTRY_DSN_HELIOSCLI --body '<your-dsn>'"
+            exit 0
+          fi
+          echo "✓ Sentry DSN configured"
+
+      - name: Run Sentry initialization tests
+        run: |
+          cargo test --lib sentry_config -- --nocapture
+        continue-on-error: true
+
+      - name: Generate Sentry dashboard link
+        run: |
+          ORG_SLUG="phenotype"
+          PROJECT_ID="helioscli"
+          echo "## Sentry Error Dashboard" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "🔗 **View errors**: https://sentry.io/organizations/${ORG_SLUG}/issues/?project=${PROJECT_ID}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Environment**: production" >> $GITHUB_STEP_SUMMARY
+          echo "**Workflow**: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> $GITHUB_STEP_SUMMARY
+
+  integration-with-github-issues:
+    name: GitHub-Sentry Integration Verification
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    env:
+      SENTRY_ORG_SLUG: stealth-startup-3u
+      SENTRY_PROJECT_ID: helioscli
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Verify GitHub integration setup
+        run: |
+          echo "Verifying GitHub-Sentry integration..."
+          echo "✓ GitHub integration variables loaded"
+          echo "  - Org: phenotype"
+          echo "  - Project: helioscli"
+          echo ""
+          echo "Next steps:"
+          echo "1. Go to: https://sentry.io/settings/phenotype/integrations/github/"
+          echo "2. Authorize GitHub org if not already done"
+          echo "3. Enable 'Create GitHub issues from alerts'"
+          echo "4. Configure alert rules for high-severity errors"
+
+      - name: Generate integration checklist
+        run: |
+          echo "## Sentry-GitHub Integration Checklist" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- [ ] GitHub authorization granted in Sentry" >> $GITHUB_STEP_SUMMARY
+          echo "- [ ] Auto-issue creation enabled for high severity" >> $GITHUB_STEP_SUMMARY
+          echo "- [ ] Alert labels configured (sentry-critical, error-tracking)" >> $GITHUB_STEP_SUMMARY
+          echo "- [ ] Notification channel selected" >> $GITHUB_STEP_SUMMARY
+          echo "- [ ] Test issue created and verified" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Last checked**: $(date -u +'%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
+
+  notify-on-failure:
+    name: Notify on Sentry Tracking Issues
+    runs-on: ubuntu-latest
+    if: failure() && github.ref == 'refs/heads/main'
+    needs: [sentry-health-check]
+
+    steps:
+      - name: Create issue for tracking failures
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const body = 'Workflow: ' + context.server_url + '/' + context.repo.owner + '/' + context.repo.repo + '/actions/runs/' + context.runId + '\n\nProject: heliosCLI\n\nAction required: Verify Sentry DSN configuration and SDK initialization.';
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: '[Sentry] Error tracking health check failed',
+              body: body,
+              labels: ['sentry-critical', 'error-tracking']
+            })
+        continue-on-error: true

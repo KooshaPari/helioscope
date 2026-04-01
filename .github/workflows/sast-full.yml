@@ -41,9 +41,18 @@ jobs:
           output: trivy-results.sarif
         continue-on-error: true
 
+      - name: Check Trivy SARIF
+        id: trivy_check
+        run: |
+          if [ -f "trivy-results.sarif" ]; then
+            echo "found=true" >> $GITHUB_OUTPUT
+          else
+            echo "found=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Upload Trivy SARIF
         uses: github/codeql-action/upload-sarif@v3
-        if: always()
+        if: steps.trivy_check.outputs.found == 'true'
         with:
           sarif_file: trivy-results.sarif
           category: trivy
@@ -64,9 +73,18 @@ jobs:
             .semgrep-rules/
           generateSarif: true
 
+      - name: Check Semgrep SARIF
+        id: semgrep_check
+        run: |
+          if [ -f "semgrep.sarif" ]; then
+            echo "found=true" >> $GITHUB_OUTPUT
+          else
+            echo "found=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Upload SARIF
         uses: github/codeql-action/upload-sarif@v3
-        if: always()
+        if: steps.semgrep_check.outputs.found == 'true'
         with:
           sarif_file: semgrep.sarif
           category: semgrep-full

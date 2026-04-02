@@ -31,9 +31,6 @@ jobs:
       - name: Install Snyk CLI
         run: npm install -g snyk
 
-      - name: Authenticate with Snyk
-        run: snyk auth "$SNYK_TOKEN"
-
       - name: Run Snyk test
         id: snyk_test
         continue-on-error: true
@@ -48,7 +45,7 @@ jobs:
 
       - name: Upload SARIF to GitHub Code Scanning
         if: always()
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: snyk.sarif
           category: snyk-security-scan
@@ -82,5 +79,4 @@ jobs:
       - name: Monitor dependencies
         run: |
           npm install -g snyk
-          snyk auth "$SNYK_TOKEN"
           snyk monitor --all-projects --detection-depth=3 || true

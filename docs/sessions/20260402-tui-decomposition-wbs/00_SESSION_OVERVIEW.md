@@ -24,6 +24,8 @@ into a dependency-aware work breakdown structure for non-PR local execution.
 
 - Initial TUI decomposition work has started in `chat_composer` with a new
   `bottom_pane/chat_composer_images.rs` helper module.
+- The shared `chatwidget` test harness and exec/history helper block now lives in
+  `codex-rs/tui/src/chatwidget/tests/support.rs`, with `chatwidget/tests.rs` delegating to it.
 - The WBS artifact captures the next dependency-ordered cuts for `chat_composer`,
   `chatwidget`, `chatwidget/tests`, and shared `bottom_pane` surfaces.
 - Full cargo validation remains open because targeted TUI crate builds exceeded the available shell

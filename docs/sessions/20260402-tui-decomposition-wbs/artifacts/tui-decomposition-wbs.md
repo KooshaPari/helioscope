@@ -18,6 +18,9 @@ Audit complete enough to sequence the next decomposition wave.
   `codex-rs/tui/src/bottom_pane/chat_composer_images.rs`.
 - Continued the submission decomposition in `codex-rs/tui/src/bottom_pane/chat_composer/submission.rs`
   by centralizing draft restore-state capture and restore helpers there.
+- Extracted the reusable `chatwidget` test harness, rate-limit fixtures, and exec/history helper
+  block into `codex-rs/tui/src/chatwidget/tests/support.rs` so future `chatwidget/tests/*` splits
+  can share one stable helper surface.
 - `chat_composer.rs` now delegates pending-paste expansion, local image extraction, remote image
   row rendering, placeholder relabeling, and recent-submission image capture to that helper.
 - `chat_composer.rs` also now delegates text trimming and pending-paste expansion to the shared
@@ -80,7 +83,7 @@ Audit complete enough to sequence the next decomposition wave.
 
 - Priority: `P1`
 - First mandatory cut:
-  - extract shared harness/builders into `chatwidget/tests/support.rs`
+  - extracted shared harness/builders into `chatwidget/tests/support.rs`
 - Coherent test groups:
   - `history_restore.rs`
   - `rate_limits_and_plan.rs`
@@ -92,12 +95,11 @@ Audit complete enough to sequence the next decomposition wave.
   - helper leakage from the current god-file pattern
   - snapshot churn if visual groups are interleaved instead of split by rendered surface
 - Safest staged order:
-  1. `support.rs`
-  2. `history_restore.rs`
-  3. `rate_limits_and_plan.rs`
-  4. `apps_and_popups.rs`
-  5. `exec_and_running_turn.rs`
-  6. `layout_snapshots.rs`
+  1. `history_restore.rs`
+  2. `rate_limits_and_plan.rs`
+  3. `apps_and_popups.rs`
+  4. `exec_and_running_turn.rs`
+  5. `layout_snapshots.rs`
 
 ### Shared `bottom_pane` surfaces
 
@@ -139,7 +141,7 @@ Audit complete enough to sequence the next decomposition wave.
 4. Extract `chat_composer_voice.rs`.
    - keep late because it is OS-gated and easier once core input routing is thinner
 5. Create `chatwidget/tests/support.rs`.
-   - required before splitting `chatwidget/tests.rs` to avoid duplicate harness code
+   - completed; future test splits should import from the shared helper surface
 6. Split `chatwidget/tests.rs` by concern.
    - start with history/bootstrap support, then rate-limit and popup groups
 7. Extract `chatwidget/status.rs` and `chatwidget/model_controls.rs`.
@@ -164,9 +166,9 @@ Audit complete enough to sequence the next decomposition wave.
 
 ## Recommended Next Execution
 
-1. Finish the `chat_composer_images` extraction by moving any remaining remote-image-only methods
+1. Split `chatwidget/tests.rs` starting with history/bootstrap coverage, reusing
+   `chatwidget/tests/support.rs`.
+2. Finish the `chat_composer_images` extraction by moving any remaining remote-image-only methods
    into the helper or a dedicated remote-image helper.
-2. Finish and validate the local `chat_composer/submission.rs` extraction with no behavior changes.
-3. Add `chatwidget/tests/support.rs`.
-4. Split `chatwidget/tests.rs` starting with history/bootstrap coverage.
-5. Extract `chatwidget/status.rs` and `chatwidget/model_controls.rs`.
+3. Finish and validate the local `chat_composer/submission.rs` extraction with no behavior changes.
+4. Extract `chatwidget/status.rs` and `chatwidget/model_controls.rs`.

@@ -47,6 +47,7 @@ checked-in surfaces that must stay aligned are:
 - `.github/pull_request_template.md`
 - `.github/workflows/policy-gate.yml`
 - `.github/workflows/pr-governance-gate.yml`
+- `docs/sessions/2026-04-02-governance-pr-prep/`
 
 ---
 

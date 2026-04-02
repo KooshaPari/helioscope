@@ -23,7 +23,6 @@ jobs:
         env:
           HEAD_REF: ${{ github.head_ref }}
           BASE_REF: ${{ github.base_ref }}
-          PR_HEAD: ${{ github.event.pull_request.head.sha }}
           PR_LABELS: ${{ toJson(github.event.pull_request.labels.*.name) }}
         run: |
           set -euo pipefail
@@ -47,12 +46,33 @@ jobs:
             fi
           fi
 
-          git fetch origin "$BASE_REF" --depth=1 || true
-          MERGES=$(git rev-list --merges "origin/$BASE_REF..$PR_HEAD" || true)
-          if [[ -n "$MERGES" ]]; then
-            echo "ERROR: merge commits detected in PR diff range:"
-            echo "$MERGES"
-            exit 1
-          fi
+          echo "Branch and label policy checks passed."
 
-          echo "Policy gate passed."
+      - name: Enforce linear PR commit history
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const commits = await github.paginate(
+              github.rest.pulls.listCommits,
+              {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: context.payload.pull_request.number,
+                per_page: 100,
+              },
+            );
+
+            const mergeCommits = commits.filter(
+              (commit) => Array.isArray(commit.parents) && commit.parents.length > 1,
+            );
+
+            if (mergeCommits.length > 0) {
+              core.setFailed(
+                `Merge commits detected in PR commit list: ${mergeCommits
+                  .map((commit) => commit.sha)
+                  .join(", ")}`,
+              );
+              return;
+            }
+
+            core.info(`PR commit list is linear across ${commits.length} commit(s).`);

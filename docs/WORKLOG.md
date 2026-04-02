@@ -8,11 +8,9 @@ Active work tracking for **heliosCLI**.
 
 | Lane | Branch | Worktree | Status | Notes |
 | --- | --- | --- | --- | --- |
-| Rollout limit safety fix | `fix/rollout-limit-expect` | `/Users/kooshapari/CodeProjects/Phenotype/repos/heliosCLI` | Draft PR open | PR [#130](https://github.com/KooshaPari/heliosCLI/pull/130), base `main` |
-| Codex core parked work | `wip/codex-rs-core` | `/Users/kooshapari/CodeProjects/Phenotype/repos/heliosCLI-wtrees/codex-rs-core` | Active | Parked WIP lane, not merged |
-| CI failures lane | `fix/ci-failures` | `/Users/kooshapari/CodeProjects/Phenotype/repos/heliosCLI-wtrees/fix-ci-failures` | Active | Side lane in progress |
-| Key router decomposition | `refactor/decompose-key-router` | `/Users/kooshapari/CodeProjects/Phenotype/repos/heliosCLI/heliosCLI-wtrees/decompose-key-router` | Active | Refactor lane in progress |
-
+| Governance baseline review | `chore/governance-migration-hc` | `/Users/kooshapari/CodeProjects/Phenotype/repos/heliosCLI/.worktrees/chore-govern-pi` | PR in review (PR #184) | Clean governance docs/commands branch; apply all doc validation fixes here before merging. |
+| Governance-pr-ready companion | `chore/governance-pr-ready` | same | Companion review (PR #182) | Shares the same clean baseline; keep this lane reserved for status-check adjustments and bin any unrelated files. |
+| Canonical `main` (do not author here) | `main` | `/Users/kooshapari/CodeProjects/Phenotype/repos/heliosCLI` | Dirty | Root checkout contains extra `.worktrees/`, docs, and temporary state; do not push from this state. |
 ---
 
 ## Merged Baseline on `main`
@@ -29,11 +27,10 @@ Recent merged commits already on `origin/main`:
 
 ## Remaining Work
 
-1. Resolve and merge draft PR `#130` (`fix/rollout-limit-expect`).
-2. Decide disposition of `wip/codex-rs-core`: split into reviewable PRs or continue as parked WIP.
-3. Finish or close `fix/ci-failures` and `refactor/decompose-key-router` lanes.
-4. Reconcile current root worktree drift (`package.json` modified) with the intended lane before further merges.
+1. Keep all governance doc changes within `chore/governance-migration-hc` (PR #184) so the clean branch remains reviewable, and mirror any shared updates to its companion `#182` lane only when the doc is ready.
+2. Avoid editing `main`; treat it as the polluted base and route any new PR work into the clean worktree above.
+3. Once both governance PRs merge, decide whether to restart subsidiary lanes (`fix/ci-failures`, `refactor/decompose-key-router`) from new clean branches rather than the canonical root.
 
 ---
 
-_Last updated: 2026-03-28_
+_Last updated: 2026-04-02_

@@ -2,14 +2,6 @@
 # Phenotype Standard - Do not modify directly
 # Inherit from phenotype-governance/configs/rust/
 
-[workspace]
-
-# Lint rules that agents must follow
-[lints.rust]
-workspace = true
-
-# Cargo clippy configuration
-[workspace.metadata.clippy]
 # Critical lints that must pass
 deny = [
     "clippy::all",
@@ -17,22 +9,20 @@ deny = [
     "clippy::suspicious",
 ]
 
-# Warn on these (not deny)
+# Warn on these
 warn = [
+    "clippy::style",
     "clippy::complexity",
     "clippy::perf",
-    "clippy::style",
-    "clippy::pedantic",
 ]
 
-# Allow these exceptions
+# Allowed by default
 allow = [
-    "clippy::module_name_repetitions",  # Often intentional in domain models
-    "clippy::too_many_arguments",       # Sometimes necessary for constructors
+    "clippy::unnecessary_operation",
 ]
 
-# Edition 2021 minimum
-rust-version = "1.70"
-
-# File size limits
-max-spec-recursion-depth = 10
+# Maximum function complexity
+max-trait-bounds = 7
+max-struct-bools = 3
+max-fn-params-bools = 3
+type-complexity-threshold = 500

@@ -9,15 +9,15 @@ Extends thegent governance base. See `platforms/thegent/dotfiles/governance/CLAU
 
 - **Name**: heliosCLI
 - **Description**: Rust-based CLI for managing Helioscope applications with multi-backend support and sandboxing
-- **Location**: `/Users/kooshapari/CodeProjects/Phenotype/repos/heliosCLI`
+- **Location**: `repos/heliosCLI`
 - **Language Stack**: Rust (edition 2021)
 - **Published**: Internal
 
 ## AgilePlus Mandate
 
 All work MUST be tracked in AgilePlus:
-- Reference: `/Users/kooshapari/CodeProjects/Phenotype/repos/AgilePlus`
-- CLI: `cd /Users/kooshapari/CodeProjects/Phenotype/repos/AgilePlus && agileplus <command>`
+- Reference: `repos/AgilePlus`
+- CLI: `cd repos/AgilePlus && agileplus <command>`
 
 ## Work Requirements
 

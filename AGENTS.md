@@ -11,14 +11,14 @@ Extends thegent governance base. See `platforms/thegent/governance/AGENTS.base.m
 
 - **Name**: heliosCLI
 - **Description**: Rust-based CLI for managing Helioscope applications with multi-backend support and sandboxing
-- **Location**: `/Users/kooshapari/CodeProjects/Phenotype/repos/heliosCLI`
+- **Location**: `repos/heliosCLI`
 - **Language Stack**: Rust (edition 2021)
 - **Published**: Internal
 
 ### AgilePlus Integration
 
 All work MUST be tracked in AgilePlus:
-- Reference: `/Users/kooshapari/CodeProjects/Phenotype/repos/AgilePlus`
+- Reference: `repos/AgilePlus`
 - CLI: `cd AgilePlus && agileplus <command>`
 - Specs: `AgilePlus/kitty-specs/<feature-id>/`
 - Worklog: `AgilePlus/.work-audit/worklog.md`

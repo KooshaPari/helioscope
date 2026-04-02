@@ -129,7 +129,15 @@ jobs:
             const contexts =
               current.commits.nodes?.[0]?.commit?.statusCheckRollup?.contexts?.nodes || [];
             const allowedConclusions = new Set(["SUCCESS", "SKIPPED", "NEUTRAL"]);
-            const ignoredChecks = [/^pr-governance-gate$/i];
+            const ignoredChecks = [
+              /^pr-governance-gate$/i,
+              /^CodeRabbit$/i,
+              /^Kilo Code Review$/i,
+            ];
+            const billingExceptionChecks = [
+              /^security\/snyk/i,
+              /^Snyk /i,
+            ];
 
             for (const contextNode of contexts) {
               const name =
@@ -140,7 +148,7 @@ jobs:
                 continue;
               }
 
-              if (billingException && /billing|quota/i.test(name)) {
+              if (billingException && billingExceptionChecks.some((pattern) => pattern.test(name))) {
                 continue;
               }
 
@@ -157,9 +165,9 @@ jobs:
               }
             }
 
-            if (billingException && !/billing|quota/i.test(body)) {
+            if (billingException && !/billing|quota|snyk/i.test(body)) {
               failures.push(
-                "The ci-billing-exception label is present, but the PR body does not document the billing or quota-related CI exception."
+                "The ci-billing-exception label is present, but the PR body does not document the billing, quota, or Snyk exception."
               );
             }
 

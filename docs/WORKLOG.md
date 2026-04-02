@@ -1,39 +1,43 @@
 # Worklog
 
-Active work tracking for **heliosCLI**.
+Active work tracking for `heliosCLI`.
 
----
+Updated: 2026-04-02
 
 ## Current Lanes
 
 | Lane | Branch | Worktree | Status | Notes |
 | --- | --- | --- | --- | --- |
-| Rollout limit safety fix | `fix/rollout-limit-expect` | `/Users/kooshapari/CodeProjects/Phenotype/repos/heliosCLI` | Draft PR open | PR [#130](https://github.com/KooshaPari/heliosCLI/pull/130), base `main` |
-| Codex core parked work | `wip/codex-rs-core` | `/Users/kooshapari/CodeProjects/Phenotype/repos/heliosCLI-wtrees/codex-rs-core` | Active | Parked WIP lane, not merged |
-| CI failures lane | `fix/ci-failures` | `/Users/kooshapari/CodeProjects/Phenotype/repos/heliosCLI-wtrees/fix-ci-failures` | Active | Side lane in progress |
-| Key router decomposition | `refactor/decompose-key-router` | `/Users/kooshapari/CodeProjects/Phenotype/repos/heliosCLI/heliosCLI-wtrees/decompose-key-router` | Active | Refactor lane in progress |
+| Governance PR prep | `chore/governance-pr-ready` | `/Users/kooshapari/CodeProjects/Phenotype/repos/heliosCLI/heliosCLI/.worktrees/governance-pr-ready` | Active | Clean prep lane for repo-local governance docs and ruleset baseline |
+| Governance migration side lane | `chore/governance-migration-hc` | `/Users/kooshapari/CodeProjects/Phenotype/repos/heliosCLI/.worktrees/chore-govern-pi` | Clean / parked | Existing side worktree, not currently carrying new diff |
+| Canonical checkout | `main` | `/Users/kooshapari/CodeProjects/Phenotype/repos/heliosCLI` | Mixed local state | Untracked nested `.worktrees/`, `docs/phenodocs/`, and accidental nested `heliosCLI/` path |
 
----
+## PR-Prep Assessment
 
-## Merged Baseline on `main`
+- The earlier story that `heliosCLI` had no active PR lane was wrong.
+- The repo does have a clean governance-only lane now, but it lives in the dedicated
+  `chore/governance-pr-ready` worktree rather than the root checkout.
+- The root checkout should not be used as the review branch because its local state is polluted by
+  nested and untracked surfaces.
 
-Recent merged commits already on `origin/main`:
+## Merge Policy Baseline
 
-1. `#126` Deprecated criterion cleanup
-2. `#128` kitty-specs to docs/specs migration
-3. `#125` rust-ci/codespell/cargo-deny fixes
-4. `#127` Additional deprecated criterion cleanup
-5. `#124` KeyEventRouter extraction refactor
+The intended merge blockers for active governance work are:
 
----
+- `policy-gate`
+- stable Rust CI jobs from `rust-ci`
+- `Stage Gates / detect-stage`
+- fast security checks from `sast-quick`
 
-## Remaining Work
+See:
 
-1. Resolve and merge draft PR `#130` (`fix/rollout-limit-expect`).
-2. Decide disposition of `wip/codex-rs-core`: split into reviewable PRs or continue as parked WIP.
-3. Finish or close `fix/ci-failures` and `refactor/decompose-key-router` lanes.
-4. Reconcile current root worktree drift (`package.json` modified) with the intended lane before further merges.
+- [../../GOVERNANCE.md](../../GOVERNANCE.md)
+- [../../.github/RULESET_BASELINE.md](../../.github/RULESET_BASELINE.md)
+- [governance/GOVERNANCE_SUMMARY.md](./governance/GOVERNANCE_SUMMARY.md)
 
----
+## Follow-Up
 
-_Last updated: 2026-03-28_
+1. Keep governance-only edits in `chore/governance-pr-ready`.
+2. Leave unrelated root-checkout untracked surfaces out of the PR.
+3. Reconcile or remove the accidental nested worktree path only after the governance PR branch is
+   safely captured elsewhere.

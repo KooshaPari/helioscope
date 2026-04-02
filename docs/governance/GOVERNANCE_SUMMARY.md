@@ -1,45 +1,37 @@
-# heliosHarness Governance Summary
+# heliosCLI Governance Summary
 
-> **Status**: Research project. Production at `clones/helios-cli/`.
+> Status: Active delivery repo with workflow-backed PR policy and a documented ruleset baseline.
 
-## Project Type
+## Repo Type
 
-- **Classification**: Research/POC
-- **Production Code**: `clones/helios-cli/`
-- **This Directory**: Experiments, prototypes, benchmarks
+- Classification: active engineering repo
+- Primary branch: `main`
+- Current governance prep lane: `chore/governance-pr-ready`
+- Canonical governance files:
+  - [`GOVERNANCE.md`](../../GOVERNANCE.md)
+  - [`.github/RULESET_BASELINE.md`](../../.github/RULESET_BASELINE.md)
+  - [`.github/workflows/policy-gate.yml`](../../.github/workflows/policy-gate.yml)
 
-## Architecture
+## Active Enforcement Surface
 
-```
-heliosHarness/
-├── harness/src/harness/  # Python research
-├── crates/               # Rust experiments  
-├── clones/               # Reference implementations
-│   └── helios-cli/       # PRODUCTION
-└── docs/                # Research docs
-```
+- `policy-gate` blocks direct `fix/* -> main` PRs unless explicitly exempted
+- `policy-gate` blocks merge commits in PR diff ranges
+- `rust-ci` provides the main Rust build and drift checks
+- `stage-gates` adds branch-class-based gate expectations
+- `sast-quick` provides fast security and secret-scan coverage on PRs
 
-## Governance
+## Current PR-Prep Reality
 
-Since this is a research project:
-- Lighter governance than production
-- Focus on experimentation and learning
-- Production rules apply in `clones/helios-cli/`
+- root checkout is on `main`
+- linked worktree `chore/governance-migration-hc` is clean
+- clean PR-prep branch `chore/governance-pr-ready` is the intended governance-only lane
+- root checkout still carries untracked nested surfaces, so PR prep should stay isolated to the
+  dedicated worktree branch
 
-## Commands
+## Immediate Next Step
 
-```bash
-# Python research
-task py:test
+Use `chore/governance-pr-ready` to ship only:
 
-# Rust experiments
-task rust:test
-
-# Check
-task check
-```
-
-## References
-
-- Production: `clones/helios-cli/`
-- Taskfile: Standard (see Taskfile.yml)
+1. corrected governance docs
+2. ruleset baseline documentation
+3. any minimal CI-policy wiring needed to make the branch reviewable

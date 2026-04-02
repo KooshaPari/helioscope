@@ -521,21 +521,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "harness_verify"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "harness_spec",
- "serde",
- "serde_json",
- "thiserror 1.0.69",
- "tokio",
- "tokio-test",
- "tracing",
- "uuid",
-]
-
-[[package]]
 name = "hashbrown"
 version = "0.12.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"

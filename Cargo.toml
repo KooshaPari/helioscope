@@ -6,10 +6,8 @@ members = [
     "crates/harness_runner",
     "crates/harness_scaling",
     "crates/harness_schema",
-    "crates/harness_spec",
     "crates/harness_teammates",
     "crates/harness_utils",
-    "crates/harness_verify",
 ]
 
 [profile.release]

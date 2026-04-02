@@ -1,6 +1,7 @@
 name: Stage Gates
 
 on:
+  workflow_dispatch:
   pull_request:
     branches: ["**"]
 
@@ -15,7 +16,8 @@ env:
 
 jobs:
   detect-stage:
-    runs-on: ubuntu-latest
+    runs-on:
+  workflow_dispatch: ubuntu-latest
     outputs:
       stage: ${{ steps.detect.outputs.stage }}
       gates: ${{ steps.detect.outputs.gates }}
@@ -92,7 +94,8 @@ jobs:
   format-check:
     needs: detect-stage
     if: contains(needs.detect-stage.outputs.gates, 'format')
-    runs-on: ubuntu-latest
+    runs-on:
+  workflow_dispatch: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Format check (Rust)
@@ -111,7 +114,8 @@ jobs:
   lint:
     needs: detect-stage
     if: contains(needs.detect-stage.outputs.gates, 'lint')
-    runs-on: ubuntu-latest
+    runs-on:
+  workflow_dispatch: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Install Linux build dependencies (Rust)
@@ -135,7 +139,8 @@ jobs:
   secret-scan:
     needs: detect-stage
     if: contains(needs.detect-stage.outputs.gates, 'secrets')
-    runs-on: ubuntu-latest
+    runs-on:
+  workflow_dispatch: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
@@ -150,7 +155,8 @@ jobs:
   unit-tests:
     needs: detect-stage
     if: contains(needs.detect-stage.outputs.gates, 'unit')
-    runs-on: ubuntu-latest
+    runs-on:
+  workflow_dispatch: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Install Linux build dependencies (Rust)
@@ -174,7 +180,8 @@ jobs:
   integration-tests:
     needs: detect-stage
     if: contains(needs.detect-stage.outputs.gates, 'integration')
-    runs-on: ubuntu-latest
+    runs-on:
+  workflow_dispatch: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Install Linux build dependencies (Rust)
@@ -198,7 +205,8 @@ jobs:
   coverage-check:
     needs: detect-stage
     if: contains(needs.detect-stage.outputs.gates, 'coverage-')
-    runs-on: ubuntu-latest
+    runs-on:
+  workflow_dispatch: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Install Linux build dependencies (Rust)
@@ -240,7 +248,8 @@ jobs:
   sast-scan:
     needs: detect-stage
     if: contains(needs.detect-stage.outputs.gates, 'sast')
-    runs-on: ubuntu-latest
+    runs-on:
+  workflow_dispatch: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: SAST (Rust)
@@ -259,7 +268,8 @@ jobs:
   dependency-audit:
     needs: detect-stage
     if: contains(needs.detect-stage.outputs.gates, 'dep-audit')
-    runs-on: ubuntu-latest
+    runs-on:
+  workflow_dispatch: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Dep audit (Rust)
@@ -278,7 +288,8 @@ jobs:
   license-check:
     needs: detect-stage
     if: contains(needs.detect-stage.outputs.gates, 'license') && secrets.FOSSA_API_KEY != ''
-    runs-on: ubuntu-latest
+    runs-on:
+  workflow_dispatch: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: License scan
@@ -289,7 +300,8 @@ jobs:
   e2e-smoke:
     needs: detect-stage
     if: contains(needs.detect-stage.outputs.gates, 'e2e-smoke')
-    runs-on: ubuntu-latest
+    runs-on:
+  workflow_dispatch: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Run smoke E2E tests
@@ -303,7 +315,8 @@ jobs:
   e2e-full:
     needs: detect-stage
     if: contains(needs.detect-stage.outputs.gates, 'e2e-full')
-    runs-on: ubuntu-latest
+    runs-on:
+  workflow_dispatch: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Run full E2E tests
@@ -317,7 +330,8 @@ jobs:
   perf-benchmark:
     needs: detect-stage
     if: contains(needs.detect-stage.outputs.gates, 'perf')
-    runs-on: ubuntu-latest
+    runs-on:
+  workflow_dispatch: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Run performance benchmarks
@@ -329,9 +343,11 @@ jobs:
           fi
 
   sla-validation:
+  workflow_dispatch:
     needs: detect-stage
     if: contains(needs.detect-stage.outputs.gates, 'sla-validation')
-    runs-on: ubuntu-latest
+    runs-on:
+  workflow_dispatch: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Validate SLA compliance
@@ -345,7 +361,8 @@ jobs:
   coderabbit:
     needs: detect-stage
     if: contains(needs.detect-stage.outputs.gates, 'coderabbit')
-    runs-on: ubuntu-latest
+    runs-on:
+  workflow_dispatch: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Trigger CodeRabbit review
@@ -358,7 +375,8 @@ jobs:
   gca-review:
     needs: detect-stage
     if: contains(needs.detect-stage.outputs.gates, 'gca-review')
-    runs-on: ubuntu-latest
+    runs-on:
+  workflow_dispatch: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: GCA review gate
@@ -367,7 +385,8 @@ jobs:
   manual-security:
     needs: detect-stage
     if: contains(needs.detect-stage.outputs.gates, 'manual-security')
-    runs-on: ubuntu-latest
+    runs-on:
+  workflow_dispatch: ubuntu-latest
     environment: security-review
     steps:
       - name: Manual security review gate
@@ -376,7 +395,8 @@ jobs:
   sbom:
     needs: detect-stage
     if: contains(needs.detect-stage.outputs.gates, 'sbom')
-    runs-on: ubuntu-latest
+    runs-on:
+  workflow_dispatch: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Generate SBOM
@@ -387,7 +407,8 @@ jobs:
   artifact-checksum:
     needs: detect-stage
     if: contains(needs.detect-stage.outputs.gates, 'artifact-checksum')
-    runs-on: ubuntu-latest
+    runs-on:
+  workflow_dispatch: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Build and checksum artifacts
@@ -406,9 +427,11 @@ jobs:
           path: checksums.sha256
 
   targeted-regression:
+  workflow_dispatch:
     needs: detect-stage
     if: contains(needs.detect-stage.outputs.gates, 'targeted-regression')
-    runs-on: ubuntu-latest
+    runs-on:
+  workflow_dispatch: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Run targeted regression tests

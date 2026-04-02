@@ -1,0 +1,20 @@
+# Rust Formatting Configuration
+# Phenotype Standard
+
+# Basic formatting
+edition = "2021"
+tab_spaces = 4
+hard_tabs = false
+max_width = 100
+
+# Import settings
+group_imports = "StdExternalCrate"
+use_small_heuristics = "Max"
+
+# Reorder settings
+reorder_imports = true
+reorder_modules = true
+
+# Other settings
+newline_style = "Unix"
+indent_style = "Block"

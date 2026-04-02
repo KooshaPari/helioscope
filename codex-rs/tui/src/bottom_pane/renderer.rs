@@ -55,13 +55,9 @@ impl Renderable for ChatComposer {
             + 2
             + match &self.active_popup {
                 super::chat_composer::ActivePopup::None => footer_total_height,
-                super::chat_composer::ActivePopup::Command(c) => {
-                    c.calculate_required_height(width)
-                }
+                super::chat_composer::ActivePopup::Command(c) => c.calculate_required_height(width),
                 super::chat_composer::ActivePopup::File(c) => c.calculate_required_height(),
-                super::chat_composer::ActivePopup::Skill(c) => {
-                    c.calculate_required_height(width)
-                }
+                super::chat_composer::ActivePopup::Skill(c) => c.calculate_required_height(width),
             }
     }
 

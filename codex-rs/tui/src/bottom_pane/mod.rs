@@ -67,6 +67,7 @@ pub(crate) struct MentionBinding {
 }
 mod chat_composer;
 mod chat_composer_history;
+mod chat_composer_images;
 mod command_popup;
 pub mod custom_prompt_view;
 mod experimental_features_view;

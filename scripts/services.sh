@@ -9,6 +9,9 @@ LOGS_DIR="${SCRIPT_DIR}/.process-compose/logs"
 LOCKS_DIR="${SCRIPT_DIR}/.process-compose/locks"
 NATSD_PID_FILE="${LOCKS_DIR}/nats.pid"
 STREAMLIT_PID_FILE="${LOCKS_DIR}/streamlit.pid"
+NATS_PORT="${HELIOS_NATS_PORT:-4222}"
+NATS_HTTP_PORT="${HELIOS_NATS_HTTP_PORT:-8222}"
+STREAMLIT_PORT="${HELIOS_STREAMLIT_PORT:-8501}"
 
 # Colors
 RED='\033[0;31m'
@@ -61,7 +64,7 @@ start_nats() {
     fi
     
     log_info "Starting NATS server..."
-    nats-server -c /dev/null >> "$LOGS_DIR/nats.log" 2>&1 &
+    nats-server -js -p "$NATS_PORT" -m "$NATS_HTTP_PORT" >> "$LOGS_DIR/nats.log" 2>&1 &
     NATS_PID=$!
     echo "$NATS_PID" > "$NATSD_PID_FILE"
     
@@ -110,11 +113,11 @@ start_streamlit() {
     cd "$SCRIPT_DIR"
     
     PYTHONPATH="$SCRIPT_DIR/src:$PYTHONPATH" \
-        python3 -m streamlit run app.py --server.port 8501 >> "$LOGS_DIR/streamlit.log" 2>&1 &
+        python3 -m streamlit run app.py --server.port "$STREAMLIT_PORT" >> "$LOGS_DIR/streamlit.log" 2>&1 &
     STREAMLIT_PID=$!
     echo "$STREAMLIT_PID" > "$STREAMLIT_PID_FILE"
     
-    log_info "Streamlit started on http://localhost:8501 (PID: $STREAMLIT_PID)"
+    log_info "Streamlit started on http://localhost:${STREAMLIT_PORT} (PID: $STREAMLIT_PID)"
 }
 
 # Stop Streamlit
@@ -149,7 +152,7 @@ status() {
     # Streamlit
     echo -n "Streamlit: "
     if pgrep -f "streamlit" > /dev/null 2>&1; then
-        echo -e "${GREEN}running${NC} (http://localhost:8501)"
+        echo -e "${GREEN}running${NC} (http://localhost:${STREAMLIT_PORT})"
     else
         echo -e "${RED}stopped${NC}"
     fi
@@ -157,10 +160,10 @@ status() {
     # Health checks
     echo ""
     echo "=== Health ==="
-    if nc -z localhost 4222 2>/dev/null; then
-        echo -e "NATS port 4222: ${GREEN}OK${NC}"
+    if nc -z localhost "$NATS_PORT" 2>/dev/null; then
+        echo -e "NATS port ${NATS_PORT}: ${GREEN}OK${NC}"
     else
-        echo -e "NATS port 4222: ${RED}DOWN${NC}"
+        echo -e "NATS port ${NATS_PORT}: ${RED}DOWN${NC}"
     fi
 }
 

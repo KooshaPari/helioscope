@@ -1,0 +1,172 @@
+name: PR Governance Gate
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened, edited, ready_for_review, labeled, unlabeled]
+  pull_request_review:
+    types: [submitted, edited, dismissed]
+
+permissions:
+  contents: read
+  checks: read
+  pull-requests: read
+  statuses: read
+
+jobs:
+  pr-governance-gate:
+    name: pr-governance-gate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Evaluate PR governance policy
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prNumber =
+              context.payload.pull_request?.number ?? context.payload.review?.pull_request?.number;
+            if (!prNumber) {
+              core.setFailed("No pull request number was provided.");
+              return;
+            }
+
+            const query = `
+              query($owner: String!, $repo: String!, $number: Int!) {
+                repository(owner: $owner, name: $repo) {
+                  pullRequest(number: $number) {
+                    number
+                    isDraft
+                    body
+                    headRefName
+                    baseRefName
+                    reviewDecision
+                    labels(first: 50) {
+                      nodes { name }
+                    }
+                    reviewThreads(first: 100) {
+                      nodes {
+                        isResolved
+                      }
+                    }
+                    commits(last: 1) {
+                      nodes {
+                        commit {
+                          oid
+                          statusCheckRollup {
+                            contexts(first: 100) {
+                              nodes {
+                                __typename
+                                ... on CheckRun {
+                                  name
+                                  status
+                                  conclusion
+                                }
+                                ... on StatusContext {
+                                  context
+                                  state
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            `;
+
+            const result = await github.graphql(query, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              number: prNumber,
+            });
+
+            const current = result.repository.pullRequest;
+            const failures = [];
+            const body = current.body || "";
+            const labels = new Set((current.labels.nodes || []).map((node) => node.name));
+            const unresolvedThreads =
+              (current.reviewThreads.nodes || []).filter((node) => !node.isResolved).length;
+            const billingException = labels.has("ci-billing-exception");
+            const headRef = current.headRefName || "";
+            const baseRef = current.baseRefName || "";
+
+            for (const section of [
+              "## Summary",
+              "## Stack Topology",
+              "## Validation",
+              "## Governance",
+              "## CI Exception",
+            ]) {
+              if (!body.includes(section)) {
+                failures.push(`PR body is missing required section: ${section}`);
+              }
+            }
+
+            if (current.isDraft) {
+              failures.push("PR must be ready for review before governance gate can pass.");
+            }
+
+            if (current.reviewDecision === "CHANGES_REQUESTED") {
+              failures.push("There is an outstanding 'changes requested' review.");
+            }
+
+            if (unresolvedThreads > 0) {
+              failures.push(`${unresolvedThreads} unresolved review thread(s) remain.`);
+            }
+
+            const layeredPrefix = /^(stack|layer|feat|fix|docs|refactor|ci|chore|preview|release)\//;
+            if (!layeredPrefix.test(headRef)) {
+              failures.push(`Head branch '${headRef}' does not use an approved layered prefix.`);
+            }
+            if (/^(fix|feat|docs|refactor|ci|chore)\//.test(headRef) &&
+                ["main", "master"].includes(baseRef) &&
+                !labels.has("layered-pr-exception")) {
+              failures.push(
+                `Branch '${headRef}' targets '${baseRef}' directly without the layered-pr-exception label.`
+              );
+            }
+
+            const contexts =
+              current.commits.nodes?.[0]?.commit?.statusCheckRollup?.contexts?.nodes || [];
+            const allowedConclusions = new Set(["SUCCESS", "SKIPPED", "NEUTRAL"]);
+            const ignoredChecks = [/^pr-governance-gate$/i];
+
+            for (const contextNode of contexts) {
+              const name =
+                contextNode.__typename === "CheckRun"
+                  ? contextNode.name
+                  : contextNode.context;
+              if (!name || ignoredChecks.some((pattern) => pattern.test(name))) {
+                continue;
+              }
+
+              if (billingException && /billing|quota/i.test(name)) {
+                continue;
+              }
+
+              if (contextNode.__typename === "CheckRun") {
+                if (contextNode.status !== "COMPLETED") {
+                  failures.push(`Check '${name}' is still ${contextNode.status}.`);
+                  continue;
+                }
+                if (!allowedConclusions.has(contextNode.conclusion || "")) {
+                  failures.push(`Check '${name}' concluded with ${contextNode.conclusion || "UNKNOWN"}.`);
+                }
+              } else if (contextNode.state !== "SUCCESS") {
+                failures.push(`Status '${name}' is ${contextNode.state}.`);
+              }
+            }
+
+            if (billingException && !/billing|quota/i.test(body)) {
+              failures.push(
+                "The ci-billing-exception label is present, but the PR body does not document the billing or quota-related CI exception."
+              );
+            }
+
+            if (failures.length > 0) {
+              await core.summary.addHeading("PR Governance Gate").addList(failures).write();
+              core.setFailed(failures.join("\\n"));
+              return;
+            }
+
+            await core.summary.addHeading("PR Governance Gate").addRaw("All governance checks passed.").write();

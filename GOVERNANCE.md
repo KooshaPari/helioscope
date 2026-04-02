@@ -1,122 +1,49 @@
-# heliosHarness Governance Model
+# heliosCLI Governance Model
 
 ## Purpose
 
-**heliosHarness** is a private research & planning monorepo for developing, analyzing, and organizing the heliosCLI system architecture. It does **not** contain production code - instead, it researches, prototypes, and defines how to extend other projects.
+`heliosCLI` is an active production repository. Governance here is for protected-branch delivery,
+stacked PR operation, and CI-backed merge safety, not for research-only experimentation.
 
-## Project Shelf Model
+## Protected Branch Baseline
 
-Like `kush/` - heliosHarness serves as a **project shelf** for organizing dependencies and research.
+- Pull requests are required for the default branch.
+- Force pushes and branch deletion are disallowed on protected branches.
+- At least one approval is required before merge.
+- Review threads must be resolved before merge.
+- CODEOWNERS review is required for governed paths.
 
-## Module Categories
+## PR Policy
 
-### 1. Clones (forked external projects)
+- Stacked PRs are first-class and must declare dependency order in the PR body.
+- `fix/*` branches must not target `main` directly unless the PR carries `layered-pr-exception`.
+- Merge commits inside PR branch history are disallowed.
+- Local `--no-verify` usage does not justify bypassing server-side checks.
 
-```
-clones/
-├── codex/          # Forked Codex CLI research
-├── goose/           # Forked Goose research
-├── cline/           # Forked Cline research
-├── aider/           # Forked Aider research
-├── opencode/         # Forked OpenCode research
-└── [other forks/]
-```
+## CI Policy
 
-### 2. Extensions (plugin systems)
+- Non-billing PR checks are expected to pass before merge.
+- Billing-only exceptions must be explicitly documented in the PR body.
+- The checked-in ruleset baseline lives at `.github/rulesets/main.json`.
+- The checked-in PR template lives at `.github/pull_request_template.md`.
+- The required-check contract is documented in `.github/RULESET_BASELINE.md` and enforced in CI
+  through `policy-gate.yml`, `pr-governance-gate.yml`, and `stage-gates.yml`.
 
-```
-extensions/
-├── codex-plugins/      # Codex CLI extensibility
-├── harbor-plugins/      # Harbor framework plugins
-├── portage-plugins/     # Portage module system
-└── [project]-plugins/
-```
+## Canonical Surfaces
 
-### 3. Plugins (modular extension system)
+- `.github/rulesets/main.json`
+- `.github/RULESET_BASELINE.md`
+- `.github/CODEOWNERS`
+- `.github/pull_request_template.md`
+- `.github/workflows/policy-gate.yml`
+- `.github/workflows/pr-governance-gate.yml`
+- `.github/workflows/stage-gates.yml`
+- `docs/phenodocs/docs/governance/stacked-prs/`
 
-```
-plugins/
-├── protocol/        # Plugin protocol definitions
-├── loader/          # Plugin loader/runtimes
-├── registry/         # Plugin registry
-└── templates/       # Plugin templates
-```
+## Current PR-Prep Status
 
-### 4. Submodules (component definitions)
-
-```
-modules/
-├── harness_core/    # Core harness interfaces
-├── adapters/        # Adapter definitions
-├── handlers/        # Handler specs
-└── validators/      # Validation contracts
-```
-
-### 5. Research & Analysis
-
-```
-research/
-├── [domain]-analysis/   # Research documents
-├── [project]-specs/     # Specification documents
-└── prototypes/           # Prototype code/tests
-```
-
-## Extension Pattern
-
-### Plugin Contract
-
-```python
-# plugins/protocol/base.py
-class Plugin(Protocol):
-    name: str
-    version: str
-
-    def initialize(self, config: dict) -> None: ...
-    def execute(self, ctx: Context) -> Result: ...
-    def shutdown(self) -> None: ...
-```
-
-### Extension Points
-
-- **codex extensions** → Extend heliosCLI
-- **harbor plugins** → Harbor framework integration
-- **portage modules** → Portage package system
-- **custom adapters** → External system connectors
-
-## Governance Rules
-
-1. **No production code** - Research/prototypes only
-2. **Clear provenance** - Document source projects
-3. **Plugin-first** - Use extension patterns over hardcoded deps
-4. **Modular** - Independent, composable components
-5. **Documented** - ADRs for architectural decisions
-
-## Directory Structure
-
-```
-heliosHarness/
-├── clones/           # Forked external projects
-├── plugins/          # Plugin system
-├── extensions/       # Extension definitions
-├── modules/          # Component interfaces
-├── research/         # Analysis documents
-├── prototypes/       # Experimental code
-├── specs/            # Specification documents
-└── artifacts/        # Generated artifacts
-```
-
-## Plugin Registry Example
-
-```yaml
-# plugins/registry.yaml
-plugins:
-  - name: codex-extension
-    type: helioscli-extension
-    source: clones/codex
-    path: extensions/codex-plugins/
-
-  - name: harbor-adapter
-    type: harbor-plugin
-    source: portage/harbor
-    path: extensions/harbor-plugins/
-```
+- Primary governance PR-prep lane is the root checkout on `refactor/decouple-harness-crates`.
+- The linked worktree `chore/governance-migration-hc` is currently clean, so the active governance
+  delta now lives primarily in the root checkout.
+- The older `chore/fix-dep-drift-python` entry should still be treated as stale metadata until it
+  is removed from the worklog and no longer referenced as a live lane.

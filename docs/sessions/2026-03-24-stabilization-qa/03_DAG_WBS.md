@@ -45,3 +45,19 @@
 - **Testing**: 4 min
 - **Dependencies**: 18 min
 - **Analysis**: 9 min
+
+## 4. Current Follow-Up DAG
+
+```
+[Verify rollout limit behavior] → [Reconcile parked worktrees] → [Prune stale metadata]
+                ↓                         ↓                         ↓
+           fix/rollout-limit-expect   wip/codex-rs-core       chore/fix-dep-drift-python
+```
+
+### 4.1 Current WBS
+| Task | ID | Effort | Status |
+|------|----|--------|--------|
+| Re-verify `fix/rollout-limit-expect` | 4.1 | 15 min | In progress |
+| Decide `wip/codex-rs-core` disposition | 4.2 | 10 min | Open |
+| Close or prune `fix/ci-failures` and `refactor/decompose-key-router` | 4.3 | 20 min | Open |
+| Reconcile prunable worktree metadata | 4.4 | 10 min | Open |

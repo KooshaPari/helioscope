@@ -2,7 +2,7 @@ name: Policy Gate
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened, edited, labeled, unlabeled]
+    types: [opened, synchronize, reopened, edited, labeled, unlabeled, ready_for_review]
 
 permissions:
   contents: read
@@ -23,6 +23,7 @@ jobs:
         env:
           HEAD_REF: ${{ github.head_ref }}
           BASE_REF: ${{ github.base_ref }}
+          PR_HEAD: ${{ github.event.pull_request.head.sha }}
           PR_LABELS: ${{ toJson(github.event.pull_request.labels.*.name) }}
         run: |
           set -euo pipefail
@@ -30,6 +31,11 @@ jobs:
           echo "HEAD_REF=$HEAD_REF"
           echo "BASE_REF=$BASE_REF"
           echo "PR_LABELS=$PR_LABELS"
+
+          if [[ "$HEAD_REF" == "main" || "$HEAD_REF" == "master" ]]; then
+            echo "ERROR: shared branches cannot be used as PR head branches."
+            exit 1
+          fi
 
           if [[ "$HEAD_REF" == fix/* ]]; then
             if [[ "$BASE_REF" == "main" || "$BASE_REF" == "master" ]]; then
@@ -41,14 +47,7 @@ jobs:
             fi
           fi
 
-          # Integration sync branches may intentionally contain merge commits.
-          if [[ "$HEAD_REF" == merge/* || "$HEAD_REF" == sync/* ]]; then
-            echo "Skipping merge-commit policy check for integration branch: $HEAD_REF"
-            exit 0
-          fi
-
           git fetch origin "$BASE_REF" --depth=1 || true
-          PR_HEAD="${{ github.event.pull_request.head.sha }}"
           MERGES=$(git rev-list --merges "origin/$BASE_REF..$PR_HEAD" || true)
           if [[ -n "$MERGES" ]]; then
             echo "ERROR: merge commits detected in PR diff range:"

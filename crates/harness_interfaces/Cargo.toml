@@ -1,5 +1,3 @@
-[workspace]
-
 [package]
 name = "harness_interfaces"
 version = "0.1.0"

@@ -1,0 +1,10 @@
+{
+  "default_branch_required_checks": [
+    "policy-gate",
+    "pr-governance-gate"
+  ],
+  "notes": [
+    "policy-gate is the stable branch-shape and merge-commit guard.",
+    "pr-governance-gate blocks merge until all non-billing CI contexts are green and review threads are resolved."
+  ]
+}

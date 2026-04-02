@@ -2,9 +2,9 @@ services:
   nats:
     image: nats:latest
     ports:
-      - "4222:4222"
-      - "8222:8222"
-    command: ["-js", "-max_payload=8MB"]
+      - "${HELIOS_NATS_PORT:-4222}:4222"
+      - "${HELIOS_NATS_HTTP_PORT:-8222}:8222"
+    command: ["-js", "-m", "8222", "-max_payload=8MB"]
     volumes:
       - nats_data:/data
     healthcheck:
@@ -16,11 +16,11 @@ services:
   app:
     build: .
     ports:
-      - "8501:8501"
+      - "${HELIOS_STREAMLIT_PORT:-8501}:${HELIOS_STREAMLIT_PORT:-8501}"
     environment:
       - NATS_URL=nats://nats:4222
       - DB_PATH=/data/helios.db
-      - STREAMLIT_SERVER_PORT=8501
+      - STREAMLIT_SERVER_PORT=${HELIOS_STREAMLIT_PORT:-8501}
       - STREAMLIT_SERVER_ENABLE_CORS=true
       - STREAMLIT_SERVER_ENABLE_XSRF_PROTECTION=false
     volumes:
@@ -30,7 +30,7 @@ services:
     depends_on:
       nats:
         condition: service_healthy
-    command: streamlit run app.py --server.port 8501 --server.address 0.0.0.0
+    command: streamlit run app.py --server.port ${HELIOS_STREAMLIT_PORT:-8501} --server.address 0.0.0.0
 
 volumes:
   nats_data:

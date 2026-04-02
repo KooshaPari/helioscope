@@ -1,12 +1,15 @@
 # heliosCLI Stabilization Report
 
 Date: 2026-03-24
-Branch: fix/stabilize
-Worktree: /Users/kooshapari/CodeProjects/Phenotype/repos/heliosCLI-wtrees/stabilize
+Updated: 2026-04-01
+Branch: refactor/decouple-harness-crates
+Worktree: /Users/kooshapari/CodeProjects/Phenotype/repos/heliosCLI
 
 ## Summary
 
-heliosCLI repository has been verified for stability across JavaScript/TypeScript and Rust stacks.
+heliosCLI was verified stable in the 2026-03-24 pass, but the live checkout has since moved to
+`refactor/decouple-harness-crates`. This session now serves as a stabilized baseline plus a pointer
+to the active refactor and parked lanes that still need closure.
 
 ## Quality Gates Passed
 
@@ -75,6 +78,12 @@ The repository is now stable and ready for:
 2. CI/CD pipeline execution
 3. Release preparation
 4. Upstream synchronization
+
+Current active follow-ups:
+
+1. Re-verify `fix/rollout-limit-expect` before merge.
+2. Decide whether `wip/codex-rs-core` should stay parked or be split into reviewable PRs.
+3. Close or prune `fix/ci-failures`, `refactor/decompose-key-router`, and stale worktree metadata.
 
 ## Notes
 

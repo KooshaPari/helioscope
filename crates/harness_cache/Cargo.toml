@@ -1,5 +1,3 @@
-[workspace]
-
 [package]
 name = "harness_cache"
 version = "0.3.0"

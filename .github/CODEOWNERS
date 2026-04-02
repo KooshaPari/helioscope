@@ -1,1 +1,9 @@
 * @KooshaPari
+
+.github/workflows/ @KooshaPari
+.github/actions/ @KooshaPari
+.github/pull_request_template.md @KooshaPari
+.github/RULESET_BASELINE.md @KooshaPari
+scripts/ @KooshaPari
+src/commands/ @KooshaPari
+codex-rs/ @KooshaPari

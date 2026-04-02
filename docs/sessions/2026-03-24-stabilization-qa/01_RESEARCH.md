@@ -14,6 +14,13 @@
 - **clippy**: Rust linting (strict config)
 - **pytest equivalent**: TypeScript test suite
 
+### 1.3 Live Checkout State
+- **Current branch**: `refactor/decouple-harness-crates`
+- **Primary worktree**: `/Users/kooshapari/CodeProjects/Phenotype/repos/heliosCLI`
+- **Additional worktrees**:
+  - `/Users/kooshapari/CodeProjects/Phenotype/repos/heliosCLI/.worktrees/chore-govern-pi`
+  - `/Users/kooshapari/CodeProjects/Phenotype/repos/heliosCLI/worktrees/chore/fix-dep-drift-python` (prunable)
+
 ## 2. Key Findings
 
 ### 2.1 Formatting
@@ -34,6 +41,12 @@
 ### 2.4 Static Analysis
 - rustfmt: No violations with strict clippy
 - Encoding: UTF-8 verified across all files
+
+### 2.5 Audit Findings
+- `docs/WORKLOG.md` was stale and still described an older stabilization snapshot.
+- The active checkout has moved onto `refactor/decouple-harness-crates`, so the lane ledger must be read
+  as the source of truth for current in-progress work.
+- One worktree entry is marked prunable and should be reconciled before reuse.
 
 ## 3. CLI Commands Used
 

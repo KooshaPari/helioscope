@@ -5,18 +5,21 @@ version: "1.0"
 
 environment:
   - PYTHONPATH=./src
-  - NATS_URL=nats://localhost:4222
+  - HELIOS_NATS_PORT=${HELIOS_NATS_PORT:-4222}
+  - HELIOS_NATS_HTTP_PORT=${HELIOS_NATS_HTTP_PORT:-8222}
+  - HELIOS_STREAMLIT_PORT=${HELIOS_STREAMLIT_PORT:-8501}
+  - NATS_URL=nats://localhost:${HELIOS_NATS_PORT:-4222}
 
 log_dir: .process-compose/logs
 lock_dir: .process-compose/locks
 
 services:
   nats-server:
-    command: nats-server -c /dev/null
+    command: nats-server -js -p ${HELIOS_NATS_PORT:-4222} -m ${HELIOS_NATS_HTTP_PORT:-8222}
     info:
       description: NATS Server for event bus and KV cache
-      port: 4222
-      health_endpoint: ""
+      port: ${HELIOS_NATS_PORT:-4222}
+      health_endpoint: http://localhost:${HELIOS_NATS_HTTP_PORT:-8222}/healthz
     preflight:
       command: which nats-server
       required: true
@@ -29,12 +32,12 @@ services:
       - NATS__KV_STORE_DIR=/tmp/nats-kv
 
   streamlit:
-    command: python3 -m streamlit run app.py --server.port 8501
+    command: python3 -m streamlit run app.py --server.port ${HELIOS_STREAMLIT_PORT:-8501}
     working_dir: .
     info:
       description: Helios Router Dashboard
-      port: 8501
-      health_endpoint: http://localhost:8501/_stcore/health
+      port: ${HELIOS_STREAMLIT_PORT:-8501}
+      health_endpoint: http://localhost:${HELIOS_STREAMLIT_PORT:-8501}/_stcore/health
     depends_on:
       - nats-server
     preflight:
@@ -45,16 +48,5 @@ services:
     restart_delay: 5s
     env:
       - PYTHONPATH=./src
+      - STREAMLIT_SERVER_PORT=${HELIOS_STREAMLIT_PORT:-8501}
     ready_line: "You can now view your Streamlit app"
-
-  # Optional: NATS monitor (nats-top alternative)
-  nats-monitor:
-    command: nats-server --profile monitor :8222
-    info:
-      description: NATS monitoring server
-      port: 8222
-    depends_on:
-      - nats-server
-    log_file: .process-compose/logs/nats-monitor.log
-    restart_policy: on-failure
-    optional: true

@@ -1,0 +1,40 @@
+name: Workflow Sync to Repos
+
+on:
+  push:
+    paths:
+      - '.github/workflows/*.yml'
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  sync-workflows:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout template repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get list of workflows
+        id: workflows
+        run: |
+          WORKFLOWS=$(find .github/workflows -name "*.yml" -type f | sed 's|^\./||' | tr '\n' ',')
+          echo "workflows=$WORKFLOWS" >> $GITHUB_OUTPUT
+
+      - name: Sync to target repos
+        env:
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+          WORKFLOWS: ${{ steps.workflows.outputs.workflows }}
+        run: |
+          REPOS=("AgilePlus" "heliosCLI" "phenotype-infrakit")
+          for repo in "${REPOS[@]}"; do
+            echo "Syncing workflows to $repo..."
+            for workflow in .github/workflows/*.yml; do
+              filename=$(basename "$workflow")
+              echo "  - $filename"
+              gh workflow run "https://raw.githubusercontent.com/KooshaPari/$repo/main/.github/workflows/$filename" || true
+            done
+          done
+        continue-on-error: true

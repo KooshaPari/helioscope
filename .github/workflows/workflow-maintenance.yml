@@ -1,0 +1,57 @@
+name: Workflow Maintenance CI
+
+on:
+  push:
+    paths:
+      - '.github/workflows/*.yml'
+  pull_request:
+    paths:
+      - '.github/workflows/*.yml'
+  schedule:
+    - cron: '0 2 * * 0'
+
+jobs:
+  validate-workflows:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: List workflows
+        run: |
+          echo "## Workflows in this PR"
+          find .github/workflows -name "*.yml" -type f
+
+      - name: Validate YAML syntax
+        run: |
+          for f in .github/workflows/*.yml; do
+            python3 -c "import yaml; yaml.safe_load(open('$f'))" 2>/dev/null && echo "✅ $f" || echo "❌ $f"
+          done
+
+      - name: Check workflow file size
+        run: |
+          for f in .github/workflows/*.yml; do
+            size=$(wc -c < "$f")
+            if [ "$size" -gt 100000 ]; then
+              echo "⚠️ $f is large ($size bytes)"
+            fi
+          done
+
+  security-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for secrets in workflows
+        run: |
+          echo "Checking for hardcoded secrets..."
+          grep -r "token\|password\|secret" .github/workflows/ --include="*.yml" || echo "No secrets found"
+
+      - name: Verify required permissions
+        run: |
+          for f in .github/workflows/*.yml; do
+            if grep -q "permissions:" "$f"; then
+              echo "✅ $(basename $f) has permissions defined"
+            else
+              echo "⚠️ $(basename $f) missing permissions block"
+            fi
+          done

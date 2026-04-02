@@ -1,7 +1,6 @@
 name: PR Governance Gate
 
 on:
-  workflow_dispatch:
   pull_request:
     branches: ["**"]
   workflow_dispatch:
@@ -12,10 +11,9 @@ permissions:
 
 jobs:
   governance-check:
-    runs-on:
-  workflow_dispatch: ubuntu-latest
+    runs-on: ubuntu-latest
     steps:
-      - name: Check PR size
+      - name: Check PR
         run: |
           echo "PR Governance Gate passed"
           echo "This PR meets governance standards"

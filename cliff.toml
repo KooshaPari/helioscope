@@ -1,46 +1,52 @@
-# https://git-cliff.org/docs/configuration
+# Configuration for git-cliff: https://git-cliff.org/
+# Generates CHANGELOG from conventional commits
 
 [changelog]
 header = """
 # Changelog
 
-You can install any of these versions: `npm install -g @openai/codex@<version>`
+All notable changes to this project will be documented in this file.
 """
 
 body = """
-{% if version -%}
-## [{{ version | trim_start_matches(pat="v") }}] - {{ timestamp | date(format="%Y-%m-%d") }}
-{%- else %}
-## [unreleased]
-{% endif %}
-
 {%- for group, commits in commits | group_by(attribute="group") %}
-### {{ group | striptags | trim }}
+## {{ group | replace(from="Features", to="✨ Features") | replace(from="Bug Fixes", to="🐛 Bug Fixes") | replace(from="Documentation", to="📚 Documentation") | replace(from="Performance", to="⚡ Performance") }}
 
-{% for commit in commits %}- {% if commit.scope %}*({{ commit.scope }})* {% endif %}{% if commit.breaking %}[**breaking**] {% endif %}{{ commit.message | upper_first }}
-{% endfor %}
-
-{%- endfor -%}
+{%- for commit in commits %}
+- {% if commit.breaking %}**BREAKING** {% endif %}{{ commit.message | upper_first }} ([`{{ commit.id | truncate(length=7, end="") }}`]({{ commit.link }}))
+  {%- if commit.body %}
+  {{ commit.body | indent(prefix="  > ") }}
+  {%- endif %}
+{%- endfor %}
+{%- endfor %}
 """
 
 footer = """
-<!-- generated - do not edit -->
+---
+
+**Release Date:** {{ now | date(format="%Y-%m-%d") }}
 """
 
 trim = true
-postprocessors = []
 
 [git]
 conventional_commits = true
 
 commit_parsers = [
-  { message = "^feat", group = "<!-- 0 -->🚀 Features" },
-  { message = "^fix",  group = "<!-- 1 -->🪲 Bug Fixes" },
-  { message = "^bump", group = "<!-- 6 -->🛳️ Release" },
-  # Fallback – skip anything that didn't match the above rules.
-  { message = ".*",  group = "<!-- 10 -->💼 Other" },
+  {message = "^feat", group = "Features"},
+  {message = "^fix", group = "Bug Fixes"},
+  {message = "^doc", group = "Documentation"},
+  {message = "^perf", group = "Performance"},
+  {message = "^refactor", group = "Refactoring"},
+  {message = "^test", group = "Testing"},
+  {message = "^chore", skip = true},
+  {message = "^ci", skip = true},
 ]
 
-filter_unconventional = false
-sort_commits = "oldest"
-topo_order = false
+commit_filters = [
+  {remove_if_matches = ".*skip.*changelog.*"},
+]
+
+tag_pattern = "v[0-9].*"
+skip_tags = ""
+sort_commits = "newest"

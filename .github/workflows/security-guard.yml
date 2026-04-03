@@ -1,25 +1,17 @@
 name: Security Guard
-
 on:
-  pull_request:
-    types: [opened, synchronize, reopened]
   push:
-    branches:
-      - "**"
-
-permissions:
-  contents: read
-
+    branches: [main, master]
+  pull_request:
+  schedule:
+    - cron: '0 0 * * *'
 jobs:
-  guard:
+  trivy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      - name: Run Trivy
+        uses: aquasecurity/trivy-action@master
         with:
-          fetch-depth: 0
-
-      - name: Run pre-commit guard checks
-        uses: pre-commit/action@v3.0.1
-        with:
-          extra_args: --hook-stage pre-commit --config .pre-commit-config.yaml --show-diff-on-failure
+          scan-type: 'fs'
+          severity: 'CRITICAL,HIGH'

@@ -1,0 +1,65 @@
+# Health Dashboard Configuration for heliosCLI
+# Traceability: HD-002
+---
+project:
+  name: heliosCLI
+  language: rust
+  description: Helios CLI Core - Core CLI functionality
+  tier: tier1
+
+dimensions:
+  documentation:
+    weight: 15
+    files:
+      - CLAUDE.md
+      - README.md
+      - CONTRIBUTING.md
+      - LICENSE
+      - CHANGELOG.md
+    required: true
+  
+  test_coverage:
+    weight: 20
+    thresholds:
+      min_line_coverage: 80
+      min_branch_coverage: 70
+    codecov: true
+  
+  security:
+    weight: 25
+    scanners:
+      - cargo-audit
+      - cargo-deny
+      - trivy
+    alert_severity: high
+  
+  dependencies:
+    weight: 15
+    freshness_threshold_days: 90
+    outdated_tolerance: 5
+  
+  compliance:
+    weight: 15
+    required_files:
+      - deny.toml
+      - clippy.toml
+      - .pre-commit-config.yaml
+      - codecov.yml
+      - nextest.toml
+    github_workflows_required: true
+  
+  code_quality:
+    weight: 10
+    linters:
+      - clippy
+      - rustfmt
+    max_complexity: 15
+
+alerts:
+  critical_threshold: 0
+  poor_threshold: 60
+  frequency_hours: 24
+
+integration:
+  github_repo: KooshaPari/heliosCLI
+  codecov_repo: KooshaPari/heliosCLI

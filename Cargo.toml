@@ -30,3 +30,7 @@ license = "MIT"
 
 [workspace.metadata]
 rustfmt.exclude = []
+
+[[bench]]
+name = "perf"
+harness = false

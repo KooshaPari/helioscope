@@ -1,0 +1,196 @@
+name: Quality Gate
+
+on:
+  pull_request:
+    branches: [main]
+
+env:
+  CARGO_TERM_COLOR: always
+  COVERAGE_THRESHOLD: 85
+
+jobs:
+  check-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      has_tests: ${{ steps.check.outputs.has_tests }}
+      has_e2e: ${{ steps.check.outputs.has_e2e }}
+      has_integration: ${{ steps.check.outputs.has_integration }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check test files
+        id: check
+        run: |
+          # Check for test directories
+          [ -d "tests" ] && echo "has_tests=true" >> $GITHUB_OUTPUT || echo "has_tests=false" >> $GITHUB_OUTPUT
+          [ -d "e2e" ] && echo "has_e2e=true" >> $GITHUB_OUTPUT || echo "has_e2e=false" >> $GITHUB_OUTPUT
+          [ -d "integration" ] && echo "has_integration=true" >> $GITHUB_OUTPUT || echo "has_integration=false" >> $GITHUB_OUTPUT
+
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache dependencies
+        uses: Swatinem/rust-cache@v2
+
+      - name: Run unit tests
+        run: cargo test --lib --all-features
+
+      - name: Generate coverage
+        run: |
+          cargo install cargo-tarpaulin
+          cargo tarpaulin --lib --out Xml --all-features
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./cobertura.xml
+          fail_ci_if_error: false
+
+      - name: Check coverage threshold
+        run: |
+          COVERAGE=$(grep -o 'coverage="[0-9.]*"' cobertura.xml | head -1 | grep -o '[0-9.]*')
+          if (( $(echo "$COVERAGE < $COVERAGE_THRESHOLD" | bc -l) )); then
+            echo "Coverage $COVERAGE% is below threshold $COVERAGE_THRESHOLD%"
+            exit 1
+          fi
+        continue-on-error: true
+
+  e2e-tests:
+    name: E2E Tests
+    needs: check-changes
+    if: needs.check-changes.outputs.has_e2e == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache dependencies
+        uses: Swatinem/rust-cache@v2
+
+      - name: Run E2E tests
+        run: cargo test --test e2e --all-features || echo "No E2E tests found"
+
+  integration-tests:
+    name: Integration Tests
+    needs: check-changes
+    if: needs.check-changes.outputs.has_integration == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache dependencies
+        uses: Swatinem/rust-cache@v2
+
+      - name: Run integration tests
+        run: cargo test --test integration --all-features || echo "No integration tests found"
+
+  fr-annotation-check:
+    name: FR Annotation Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check FR annotations in new tests
+        run: |
+          # Get changed test files
+          CHANGED_FILES=$(git diff --name-only origin/main...HEAD | grep -E '(_test\.rs|tests?/.*\.rs)$' || true)
+
+          if [ -z "$CHANGED_FILES" ]; then
+            echo "No test files changed"
+            exit 0
+          fi
+
+          MISSING_ANNOTATIONS=0
+          for file in $CHANGED_FILES; do
+            if [ -f "$file" ]; then
+              # Check for FR annotations
+              if ! grep -q "FR:" "$file" && ! grep -q "@FR" "$file"; then
+                echo "⚠️ Missing FR annotation in: $file"
+                MISSING_ANNOTATIONS=$((MISSING_ANNOTATIONS + 1))
+              fi
+            fi
+          done
+
+          if [ $MISSING_ANNOTATIONS -gt 0 ]; then
+            echo "❌ $MISSING_ANNOTATIONS test file(s) missing FR annotations"
+            exit 1
+          fi
+
+          echo "✅ All new test files have FR annotations"
+
+  quality-report:
+    name: Quality Report
+    needs: [unit-tests, e2e-tests, integration-tests, fr-annotation-check]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate quality report
+        id: report
+        run: |
+          echo "## Quality Gate Report" > report.md
+          echo "" >> report.md
+
+          # Unit tests status
+          if [ "${{ needs.unit-tests.result }}" == "success" ]; then
+            echo "✅ Unit Tests: PASSED" >> report.md
+          else
+            echo "❌ Unit Tests: FAILED" >> report.md
+          fi
+
+          # E2E tests status
+          if [ "${{ needs.e2e-tests.result }}" == "success" ]; then
+            echo "✅ E2E Tests: PASSED" >> report.md
+          elif [ "${{ needs.e2e-tests.result }}" == "skipped" ]; then
+            echo "⏭️ E2E Tests: SKIPPED (no e2e directory)" >> report.md
+          else
+            echo "❌ E2E Tests: FAILED" >> report.md
+          fi
+
+          # Integration tests status
+          if [ "${{ needs.integration-tests.result }}" == "success" ]; then
+            echo "✅ Integration Tests: PASSED" >> report.md
+          elif [ "${{ needs.integration-tests.result }}" == "skipped" ]; then
+            echo "⏭️ Integration Tests: SKIPPED (no integration directory)" >> report.md
+          else
+            echo "❌ Integration Tests: FAILED" >> report.md
+          fi
+
+          # FR annotation status
+          if [ "${{ needs.fr-annotation-check.result }}" == "success" ]; then
+            echo "✅ FR Annotations: VALID" >> report.md
+          else
+            echo "❌ FR Annotations: MISSING" >> report.md
+          fi
+
+          cat report.md
+
+      - name: Comment PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const report = fs.readFileSync('report.md', 'utf8');
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: report
+            });

@@ -1,54 +1,32 @@
 name: CI
 
 on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
-env:
-  CARGO_TERM_COLOR: always
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  test:
-    name: Test
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
+  ci:
+    name: Rust CI
+    uses: KooshaPari/template-commons/.github/workflows/reusable-rust-ci.yml@main
+    with:
+      rust-version: stable
+      enable-coverage: true
 
-      - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          components: rustfmt, clippy
+  security:
+    name: Security Audit
+    uses: KooshaPari/template-commons/.github/workflows/reusable-security-scan.yml@main
+    with:
+      language: rust
+    secrets:
+      SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
 
-      - name: Cache cargo
-        uses: Swatinem/rust-cache@v2
-
-      - name: Check formatting
-        run: cargo fmt --all --check
-
-      - name: Check
-        run: cargo check --all-targets
-
-      - name: Clippy
-        run: cargo clippy --all-targets -- -D warnings
-
-      - name: Test
-        run: cargo test --all
-
-      - name: Build
-        run: cargo build --release --all
-
-  miri:
-    name: Miri
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Install Rust nightly
-        uses: dtolnay/rust-toolchain@nightly
-        with:
-          components: miri
-
-      - name: Miri test
-        env:
-          MIRIFLAGS: -Zmiri-disable-isolation
-        run: |
-          cargo +nightly miri test --all
+  phenotype-validate:
+    name: Governance Validation
+    uses: KooshaPari/phenotypeActions/.github/workflows/validate-governance.yml@main

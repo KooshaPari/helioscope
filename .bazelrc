@@ -23,8 +23,9 @@ common --@toolchains_llvm_bootstrapped//config:experimental_stub_libgcc_s
 # We need to use the sh toolchain on windows so we don't send host bash paths to the linux executor.
 common:windows --@rules_rust//rust/settings:experimental_use_sh_toolchain_for_bootstrap_process_wrapper
 
-# TODO(zbarsky): rules_rust doesn't implement this flag properly with remote exec...
-# common --@rules_rust//rust/settings:pipelined_compilation
+# Pipelined compilation for faster local builds
+# Disabled for remote execution due to rules_rust limitations
+common:local --@rules_rust//rust/settings:pipelined_compilation
 
 common --incompatible_strict_action_env
 # Not ideal, but We need to allow dotslash to be found
@@ -51,8 +52,10 @@ common --grpc_keepalive_time=30s
 # This limits both in-flight executions and concurrent downloads. Even with high number
 # of jobs execution will still be limited by CPU cores, so this just pays a bit of
 # memory in exchange for higher download concurrency.
-common --jobs=30
+# Local: Use more jobs for faster builds on modern hardware
+common:local --jobs=64
 
+# Remote: Higher parallelism for BuildBuddy RBE
 common:remote --extra_execution_platforms=//:rbe
 common:remote --remote_executor=grpcs://remote.buildbuddy.io
 common:remote --jobs=800

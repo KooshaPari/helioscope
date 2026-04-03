@@ -93,10 +93,6 @@ crate.annotation(
         "AWS_LC_SYS_NO_JITTER_ENTROPY": "1",
     },
     crate = "aws-lc-sys",
-    patch_args = ["-p1"],
-    patches = [
-        "//patches:aws-lc-sys_memcmp_check.patch",
-    ],
 )
 
 inject_repo(crate, "zstd")

@@ -20,7 +20,7 @@ jobs:
       - uses: actions/checkout@v6
 
       - id: codex
-        uses: openai/codex-action@main
+        uses: openai/codex-action@48c4212272635ce5c50529ae1f6516040f84dc35  # was: @main
         with:
           openai-api-key: ${{ secrets.CODEX_OPENAI_API_KEY }}
           allow-users: "*"

@@ -145,7 +145,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: trufflesecurity/trufflehog@main
+      - uses: trufflesecurity/trufflehog@3fc0c2aa6648d54242e4af6fbfde0701796e4fb0  # was: @main
         with:
           path: ./
           base: main
@@ -293,7 +293,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: License scan
-        uses: fossas/fossa-action@main
+        uses: fossas/fossa-action@29693cc50323968e039056be419b32989fc5880c  # was: @main
         with:
           api-key: ${{ secrets.FOSSA_API_KEY }}
 

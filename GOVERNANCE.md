@@ -1,122 +1,68 @@
-# heliosHarness Governance Model
+# heliosCLI Governance Model
 
 ## Purpose
 
-**heliosHarness** is a private research & planning monorepo for developing, analyzing, and organizing the heliosCLI system architecture. It does **not** contain production code - instead, it researches, prototypes, and defines how to extend other projects.
+`heliosCLI` is an active Rust CLI repo. Governance here is delivery-focused, not research-only:
 
-## Project Shelf Model
+- changes land through reviewable pull requests
+- protected branches do not accept force-pushes or direct fixes
+- CI and policy gates must be green before merge
+- stacked PRs are allowed only when each layer is independently reviewable
 
-Like `kush/` - heliosHarness serves as a **project shelf** for organizing dependencies and research.
+This file is the repo-local control surface for branch and merge discipline. It complements
+[`AGENTS.md`](./AGENTS.md), the workflow files under [`.github/workflows`](./.github/workflows), and
+the repo-local ruleset baseline at [`.github/RULESET_BASELINE.md`](./.github/RULESET_BASELINE.md).
 
-## Module Categories
+## Protected Branch Posture
 
-### 1. Clones (forked external projects)
+- Treat `main` as protected.
+- Do not force-push shared branches.
+- Do not merge with unresolved review threads or failing checks.
+- Do not use `--no-verify` as normal workflow on active lanes.
+- Use personal feature branches or worktree branches for intermediate cleanup.
 
-```
-clones/
-├── codex/          # Forked Codex CLI research
-├── goose/           # Forked Goose research
-├── cline/           # Forked Cline research
-├── aider/           # Forked Aider research
-├── opencode/         # Forked OpenCode research
-└── [other forks/]
-```
+## Active Governance Gates
 
-### 2. Extensions (plugin systems)
+The repo currently has these live governance and CI surfaces:
 
-```
-extensions/
-├── codex-plugins/      # Codex CLI extensibility
-├── harbor-plugins/      # Harbor framework plugins
-├── portage-plugins/     # Portage module system
-└── [project]-plugins/
-```
+- [`.github/workflows/policy-gate.yml`](./.github/workflows/policy-gate.yml)
+- [`.github/actions/policy-gate/action.yml`](./.github/actions/policy-gate/action.yml)
+- [`.github/workflows/rust-ci.yml`](./.github/workflows/rust-ci.yml)
+- [`.github/workflows/stage-gates.yml`](./.github/workflows/stage-gates.yml)
+- [`.github/workflows/sast-quick.yml`](./.github/workflows/sast-quick.yml)
 
-### 3. Plugins (modular extension system)
+These are the real local enforcement surfaces. This branch does not currently expose a tracked
+`.github/rulesets/` directory, so repo settings must be synchronized against the documented
+baseline rather than inferred from missing local JSON.
 
-```
-plugins/
-├── protocol/        # Plugin protocol definitions
-├── loader/          # Plugin loader/runtimes
-├── registry/         # Plugin registry
-└── templates/       # Plugin templates
-```
+## Pull Request Rules
 
-### 4. Submodules (component definitions)
+- `fix/*` branches must not target `main` directly unless the PR carries the explicit
+  `layered-pr-exception` label.
+- Merge commits inside a PR branch diff are blocked by `policy-gate`.
+- Prefer a short stack over one oversized mixed PR.
+- Every PR should map to one logical lane: governance, CI/bootstrap, docs, runtime, or product.
+- Helper automation workflows are not themselves merge policy; the merge blockers should stay tied
+  to stable CI and policy jobs.
 
-```
-modules/
-├── harness_core/    # Core harness interfaces
-├── adapters/        # Adapter definitions
-├── handlers/        # Handler specs
-└── validators/      # Validation contracts
-```
+## Local Worktree Discipline
 
-### 5. Research & Analysis
+Current local work shows three relevant surfaces:
 
-```
-research/
-├── [domain]-analysis/   # Research documents
-├── [project]-specs/     # Specification documents
-└── prototypes/           # Prototype code/tests
-```
+- root checkout on `main`
+- linked worktree on `chore/governance-migration-hc`
+- clean PR-prep worktree on `chore/governance-pr-ready`
 
-## Extension Pattern
+The nested worktree path for `chore/governance-pr-ready` is awkward, but the branch itself is
+valid and currently serves as the clean isolation surface for governance-only prep.
 
-### Plugin Contract
+## Merge Exception Policy
 
-```python
-# plugins/protocol/base.py
-class Plugin(Protocol):
-    name: str
-    version: str
+The only acceptable merge exception is GitHub Actions billing or quota exhaustion where jobs never
+start. That exception still requires:
 
-    def initialize(self, config: dict) -> None: ...
-    def execute(self, ctx: Context) -> Result: ...
-    def shutdown(self) -> None: ...
-```
+- equivalent local verification
+- explicit worklog or session evidence
+- no red failing policy or test jobs
 
-### Extension Points
-
-- **codex extensions** → Extend heliosCLI
-- **harbor plugins** → Harbor framework integration
-- **portage modules** → Portage package system
-- **custom adapters** → External system connectors
-
-## Governance Rules
-
-1. **No production code** - Research/prototypes only
-2. **Clear provenance** - Document source projects
-3. **Plugin-first** - Use extension patterns over hardcoded deps
-4. **Modular** - Independent, composable components
-5. **Documented** - ADRs for architectural decisions
-
-## Directory Structure
-
-```
-heliosHarness/
-├── clones/           # Forked external projects
-├── plugins/          # Plugin system
-├── extensions/       # Extension definitions
-├── modules/          # Component interfaces
-├── research/         # Analysis documents
-├── prototypes/       # Experimental code
-├── specs/            # Specification documents
-└── artifacts/        # Generated artifacts
-```
-
-## Plugin Registry Example
-
-```yaml
-# plugins/registry.yaml
-plugins:
-  - name: codex-extension
-    type: helioscli-extension
-    source: clones/codex
-    path: extensions/codex-plugins/
-
-  - name: harbor-adapter
-    type: harbor-plugin
-    source: portage/harbor
-    path: extensions/harbor-plugins/
-```
+Failing checks, unresolved comments, and convenience bypasses are not valid exception paths.

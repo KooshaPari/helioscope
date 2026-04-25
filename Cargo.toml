@@ -1,15 +1,6 @@
 [workspace]
 resolver = "2"
 members = [
-    "crates/arch_test",
-    "crates/harness_cache",
-    "crates/harness_checkpoint",
-    "crates/harness_discoverer",
-    "crates/harness_elicitation",
-    "crates/harness_interfaces",
-    "crates/harness_normalizer",
-    "crates/harness_orchestrator",
-    "crates/harness_pyo3",
     "crates/harness_queue",
     "crates/harness_rollback",
     "crates/harness_runner",
@@ -20,13 +11,3 @@ members = [
     "crates/harness_utils",
     "crates/harness_verify",
 ]
-
-[workspace.package]
-name = "helios"
-version = "0.1.0"
-edition = "2021"
-authors = ["Koosha Pari <kooshapari@gmail.com>"]
-license = "MIT"
-
-[workspace.metadata]
-rustfmt.exclude = []

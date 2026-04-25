@@ -5,6 +5,10 @@ jobs = 4
 [target.x86_64-apple-darwin]
 linker = "clang"
 
+[target.aarch64-apple-darwin]
+linker = "clang"
+rustflags = ["-C", "link-arg=-undefined", "-C", "link-arg=dynamic_lookup"]
+
 [profile.dev]
 opt-level = 0
 debug = true

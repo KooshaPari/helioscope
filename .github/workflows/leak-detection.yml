@@ -3,6 +3,9 @@ name: Leak Detection
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   memory-leak-detect:
     runs-on: macos-latest

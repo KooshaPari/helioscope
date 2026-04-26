@@ -14,8 +14,8 @@
     "micromatch": "^4.0.8",
     "semver": "^7.7.1",
     "handlebars": "^4.7.9",
-    "minimatch": "^3.0.7",
-    "picomatch": "^2.3.2",
+    "minimatch": ">=3.0.7",
+    "picomatch": ">=2.3.2",
     "flatted": "^3.4.2"
   },
   "overrides": {

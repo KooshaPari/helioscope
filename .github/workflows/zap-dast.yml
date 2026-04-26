@@ -6,6 +6,9 @@ on:
       - 'docs/**'
       - 'src/**'
 
+permissions:
+  contents: read
+
 jobs:
   zap:
     runs-on: ubuntu-latest

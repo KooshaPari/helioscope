@@ -6,6 +6,9 @@ on:
       - opened
       - labeled
 
+permissions:
+  contents: read
+
 jobs:
   gather-duplicates:
     name: Identify potential duplicates

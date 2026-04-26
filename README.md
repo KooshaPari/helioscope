@@ -12,18 +12,10 @@ heliosCLI is organized as **two Rust workspaces**:
 
 ### Root Workspace (`./Cargo.toml`)
 
-The root workspace contains the **heliosHarness** system — a collection of 18 crates providing validation, caching, checkpointing, discovery, orchestration, and resilience for autonomous agent operations.
+The root workspace contains the **heliosHarness** system — a collection of 9 crates providing validation, orchestration, and resilience for autonomous agent operations.
 
 ```
 crates/
-├── harness_cache/          # Persistent caching layer
-├── harness_checkpoint/     # State checkpointing and recovery
-├── harness_discoverer/     # Task and capability discovery
-├── harness_elicitation/    # User input elicitation
-├── harness_interfaces/     # Shared trait definitions
-├── harness_normalizer/     # Input/output normalization
-├── harness_orchestrator/   # Sub-agent orchestration
-├── harness_pyo3/           # Python interop bindings
 ├── harness_queue/          # Task queue management
 ├── harness_rollback/       # Rollback and undo support
 ├── harness_runner/         # Task execution runner
@@ -34,6 +26,8 @@ crates/
 ├── harness_utils/          # Shared utilities
 └── harness_verify/         # Verification and validation
 ```
+
+**Note:** Additional crates in `crates/` (harness_cache, harness_checkpoint, harness_discoverer, harness_elicitation, harness_interfaces, harness_normalizer, harness_orchestrator, harness_pyo3, harness_mojo, harness_zig, thegent-*, adrs, api, arch_test, changes, governance) are utility, documentation, or test crates not included in the root workspace members list.
 
 ### Helios Workspace (`helios-rs/Cargo.toml`)
 

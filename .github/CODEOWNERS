@@ -1,2 +1,18 @@
-# CODEOWNERS - Repository Owners
+# CODEOWNERS — heliosCLI
+# Default fallback owner
 * @KooshaPari
+
+# Code areas
+/src/ @KooshaPari
+/tests/ @KooshaPari
+/docs/ @KooshaPari
+
+# Configuration
+/.github/ @KooshaPari
+/Cargo.toml @KooshaPari
+/package.json @KooshaPari
+/go.mod @KooshaPari
+
+# Sensitive
+/SECURITY.md @KooshaPari
+/.github/workflows/ @KooshaPari

@@ -3,6 +3,9 @@ name: Quality
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   docs-and-tests:
     runs-on: ubuntu-latest

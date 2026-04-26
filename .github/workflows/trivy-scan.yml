@@ -7,6 +7,10 @@ on:
   schedule:
     - cron: '0 0 * * *'
 
+permissions:
+  contents: read
+  security-events: write
+
 jobs:
   trivy-fs:
     runs-on: ubuntu-latest

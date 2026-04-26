@@ -3,6 +3,9 @@ name: Docs Site
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   docs-build:
     runs-on: ubuntu-latest

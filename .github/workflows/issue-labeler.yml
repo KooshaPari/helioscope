@@ -6,6 +6,9 @@ on:
       - opened
       - labeled
 
+permissions:
+  contents: read
+
 jobs:
   gather-labels:
     name: Generate label suggestions

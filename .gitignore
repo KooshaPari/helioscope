@@ -90,3 +90,7 @@ CHANGELOG.ignore.md
 __pycache__/
 *.pyc
 
+
+# Worktree directories (org policy)
+.worktrees/
+.claude/worktrees/

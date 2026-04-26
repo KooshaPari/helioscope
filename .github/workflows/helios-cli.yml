@@ -17,6 +17,9 @@ on:
       - ".github/workflows/helios-cli.yml"
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 env:
   CARGO_TERM_COLOR: always
 

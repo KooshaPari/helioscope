@@ -3,6 +3,9 @@ name: Network Optimization
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   circuit-breaker:
     runs-on: macos-latest

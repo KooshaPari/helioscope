@@ -2,25 +2,6 @@
 # Phenotype Standard - Do not modify directly
 # Inherit from phenotype-governance/configs/rust/
 
-# Critical lints that must pass
-deny = [
-    "clippy::all",
-    "clippy::correctness",
-    "clippy::suspicious",
-]
-
-# Warn on these
-warn = [
-    "clippy::style",
-    "clippy::complexity",
-    "clippy::perf",
-]
-
-# Allowed by default
-allow = [
-    "clippy::unnecessary_operation",
-]
-
 # Maximum function complexity
 max-trait-bounds = 7
 max-struct-bools = 3

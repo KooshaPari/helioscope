@@ -146,7 +146,7 @@ mcp_test_support = { path = "mcp-server/tests/common" }
 # External
 age = "0.11.1"
 allocative = "0.3.3"
-ansi-to-tui = "7.0.0"
+ansi-to-tui = "8.0.1"
 anyhow = "1"
 arboard = { version = "3", features = ["wayland-data-control"] }
 askama = "0.15.4"
@@ -219,8 +219,8 @@ predicates = "3"
 pretty_assertions = "1.4.1"
 pulldown-cmark = "0.10"
 rand = "0.9"
-ratatui = "0.29.0"
-ratatui-macros = "0.6.0"
+ratatui = "0.30.0"
+ratatui-macros = "0.7.0"
 regex = "1.12.3"
 regex-lite = "0.1.8"
 reqwest = "0.12"
@@ -370,7 +370,6 @@ opt-level = 0
 # Uncomment to debug local changes.
 # ratatui = { path = "../../ratatui" }
 crossterm = { git = "https://github.com/nornagon/crossterm", branch = "nornagon/color-query" }
-ratatui = { git = "https://github.com/nornagon/ratatui", branch = "nornagon-v0.29.0-patch" }
 tokio-tungstenite = { git = "https://github.com/openai-oss-forks/tokio-tungstenite", rev = "132f5b39c862e3a970f731d709608b3e6276d5f6" }
 tungstenite = { git = "https://github.com/openai-oss-forks/tungstenite-rs", rev = "9200079d3b54a1ff51072e24d81fd354f085156f" }
 

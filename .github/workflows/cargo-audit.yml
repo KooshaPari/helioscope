@@ -1,0 +1,20 @@
+name: cargo-audit
+
+on:
+  push:
+    branches: [main]
+    paths: ['Cargo.lock', 'Cargo.toml']
+  pull_request:
+    paths: ['Cargo.lock', 'Cargo.toml']
+  schedule:
+    - cron: '37 5 * * 3'  # weekly Wednesday
+  workflow_dispatch:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: rustsec/audit-check@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}

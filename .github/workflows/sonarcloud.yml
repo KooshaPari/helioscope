@@ -13,15 +13,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3
         with:
+          persist-credentials: false
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
           java-version: '17'
       - name: Install SonarScanner
         run: |
           curl -sSfL https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.9.0.2725-linux.zip -o sonar.zip
           unzip sonar.zip
-          export PATH=$PATH:$PWD/sonar-scanner-4.9.0.2725/bin
+          echo "$PWD/sonar-scanner-4.9.0.2725/bin" >> "$GITHUB_PATH"
       - name: Run SonarCloud
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

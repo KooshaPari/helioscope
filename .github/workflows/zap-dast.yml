@@ -14,9 +14,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - name: Install ZAP
         run: |
-          wget https://github.com/zaproxy/zap-full-bin/releases/download/2.15.0/zap-full-linux-amd64.tar.gz
+          wget -O zap-full-linux-amd64.tar.gz \
+            https://github.com/zaproxy/zap-full-bin/releases/latest/download/zap-full-linux-amd64.tar.gz
           tar -xzf zap-full-linux-amd64.tar.gz
           mv zap-full-linux-amd64 zap
       - name: Run ZAP

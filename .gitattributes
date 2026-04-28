@@ -1,0 +1,12 @@
+* text=auto eol=lf
+*.rs text diff=rust
+*.toml text
+*.md text
+*.yml text eol=lf
+*.yaml text eol=lf
+*.json text
+*.sh text eol=lf
+*.bat text eol=crlf
+Cargo.lock binary linguist-generated=false
+*.png binary
+*.jpg binary

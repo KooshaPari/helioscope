@@ -4,6 +4,7 @@
 [![Release](https://img.shields.io/github/v/release/KooshaPari/heliosCLI?include_prereleases&sort=semver)](https://github.com/KooshaPari/heliosCLI/releases)
 [![License](https://img.shields.io/github/license/KooshaPari/heliosCLI)](LICENSE)
 [![Phenotype](https://img.shields.io/badge/Phenotype-org-blueviolet)](https://github.com/KooshaPari)
+[![AI Slop Inside](https://sladge.net/badge.svg)](https://sladge.net)
 
 Rust-based CLI for managing Helioscope applications with multi-backend support and sandboxing. A community fork of [OpenAI Codex CLI](https://github.com/openai/codex) with performance optimizations, a multi-crate harness system, and Phenotype governance integration.
 

@@ -42,7 +42,7 @@ pub(super) async fn load_config_layers_internal(
     #[cfg(target_os = "macos")]
     let LoaderOverrides {
         managed_config_path,
-        managed_preferences_base64,
+        macos_managed_preferences_base64,
         ..
     } = overrides;
 
@@ -65,7 +65,7 @@ pub(super) async fn load_config_layers_internal(
 
     #[cfg(target_os = "macos")]
     let managed_preferences =
-        load_managed_admin_config_layer(managed_preferences_base64.as_deref())
+        load_managed_admin_config_layer(macos_managed_preferences_base64.as_deref())
             .await?
             .map(map_managed_admin_layer);
 

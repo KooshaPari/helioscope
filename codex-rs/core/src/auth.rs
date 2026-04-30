@@ -298,8 +298,10 @@ impl CodexAuth {
             Self::ChatgptAuthTokens(auth) => &auth.state,
             Self::ApiKey(_) => return None,
         };
-        #[expect(clippy::unwrap_used)]
-        state.auth_dot_json.lock().expect("mutex lock").clone()
+        let Ok(auth_dot_json) = state.auth_dot_json.lock() else {
+            return None;
+        };
+        auth_dot_json.clone()
     }
 
     /// Returns `None` if `is_chatgpt_auth()` is false.
@@ -343,8 +345,10 @@ impl CodexAuth {
 
 impl ChatgptAuth {
     fn current_auth_json(&self) -> Option<AuthDotJson> {
-        #[expect(clippy::unwrap_used)]
-        self.state.auth_dot_json.lock().expect("mutex lock").clone()
+        let Ok(auth_dot_json) = self.state.auth_dot_json.lock() else {
+            return None;
+        };
+        auth_dot_json.clone()
     }
 
     fn current_token_data(&self) -> Option<TokenData> {
@@ -1424,8 +1428,7 @@ mod tests {
             &auth_path,
             serde_json::to_string_pretty(&stale_auth).expect("serialize auth"),
         )
-        .expect("write auth json")
-        .expect("flush auth json");
+        .expect("write auth json");
         super::login_with_api_key(dir.path(), "sk-new", AuthCredentialsStoreMode::File)
             .expect("login_with_api_key should succeed");
 
@@ -1503,8 +1506,7 @@ mod tests {
             auth_file,
             r#"{"OPENAI_API_KEY":"sk-test-key","tokens":null,"last_refresh":null}"#,
         )
-        .expect("write auth json")
-        .expect("flush auth json");
+        .expect("write auth json");
         let auth = super::load_auth(dir.path(), false, AuthCredentialsStoreMode::File)
             .expect("load auth")
             .expect("auth should exist");

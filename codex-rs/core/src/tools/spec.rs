@@ -1901,17 +1901,11 @@ mod tests {
         description: &str,
         input_schema: serde_json::Value,
     ) -> rmcp::model::Tool {
-        rmcp::model::Tool {
-            name: name.to_string().into(),
-            title: None,
-            description: Some(description.to_string().into()),
-            input_schema: std::sync::Arc::new(rmcp::model::object(input_schema)),
-            output_schema: None,
-            annotations: None,
-            execution: None,
-            icons: None,
-            meta: None,
-        }
+        rmcp::model::Tool::new(
+            name.to_string(),
+            description.to_string(),
+            std::sync::Arc::new(rmcp::model::object(input_schema)),
+        )
     }
 
     #[test]
@@ -1919,17 +1913,11 @@ mod tests {
         let mut schema = rmcp::model::JsonObject::new();
         schema.insert("type".to_string(), serde_json::json!("object"));
 
-        let tool = rmcp::model::Tool {
-            name: "no_props".to_string().into(),
-            title: None,
-            description: Some("No properties".to_string().into()),
-            input_schema: std::sync::Arc::new(schema),
-            output_schema: None,
-            annotations: None,
-            execution: None,
-            icons: None,
-            meta: None,
-        };
+        let tool = rmcp::model::Tool::new(
+            "no_props",
+            "No properties",
+            std::sync::Arc::new(schema),
+        );
 
         let openai_tool =
             mcp_tool_to_openai_tool("server/no_props".to_string(), tool).expect("convert tool");
@@ -3280,7 +3268,8 @@ Examples of valid command strings:
             },
         })];
 
-        let responses_json = create_tools_json_for_responses_api(&tools).expect("create tools json");
+        let responses_json =
+            create_tools_json_for_responses_api(&tools).expect("create tools json");
         assert_eq!(
             responses_json,
             vec![json!({

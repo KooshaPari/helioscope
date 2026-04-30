@@ -23,6 +23,8 @@ use crate::spawn::CODEX_SANDBOX_ENV_VAR;
 use crate::spawn::CODEX_SANDBOX_NETWORK_DISABLED_ENV_VAR;
 use crate::tools::sandboxing::SandboxablePreference;
 use codex_network_proxy::NetworkProxy;
+#[cfg(any(test, windows))]
+use codex_process_hardening::windows_unsafe_env_keys;
 use codex_protocol::config_types::WindowsSandboxLevel;
 use codex_protocol::models::FileSystemPermissions;
 #[cfg(target_os = "macos")]
@@ -249,6 +251,13 @@ fn sandbox_policy_with_additional_permissions(
     Ok(policy)
 }
 
+#[cfg(any(test, windows))]
+fn sanitize_windows_command_env(env: &mut HashMap<String, String>) {
+    for key in windows_unsafe_env_keys() {
+        env.remove(*key);
+    }
+}
+
 #[derive(Default)]
 pub struct SandboxManager;
 
@@ -265,15 +274,6 @@ impl SandboxManager {
         has_managed_network_requirements: bool,
     ) -> SandboxType {
         match pref {
-            SandboxablePreference::Forbid => SandboxType::None,
-            SandboxablePreference::Require => {
-                // Require a platform sandbox when available; on Windows this
-                // respects the experimental_windows_sandbox feature.
-                crate::safety::get_platform_sandbox(
-                    windows_sandbox_level != WindowsSandboxLevel::Disabled,
-                )
-                .unwrap_or(SandboxType::None)
-            }
             SandboxablePreference::Auto => match policy {
                 SandboxPolicy::DangerFullAccess | SandboxPolicy::ExternalSandbox { .. } => {
                     if has_managed_network_requirements {
@@ -322,6 +322,10 @@ impl SandboxManager {
                 CODEX_SANDBOX_NETWORK_DISABLED_ENV_VAR.to_string(),
                 "1".to_string(),
             );
+        }
+        #[cfg(windows)]
+        if matches!(sandbox, SandboxType::WindowsRestrictedToken) {
+            sanitize_windows_command_env(&mut env);
         }
 
         let mut command = Vec::with_capacity(1 + spec.args.len());
@@ -412,11 +416,13 @@ pub async fn execute_env(
 #[cfg(test)]
 mod tests {
     use super::SandboxManager;
+    use super::sanitize_windows_command_env;
     use crate::exec::SandboxType;
     use crate::protocol::SandboxPolicy;
     use crate::tools::sandboxing::SandboxablePreference;
     use codex_protocol::config_types::WindowsSandboxLevel;
     use pretty_assertions::assert_eq;
+    use std::collections::HashMap;
 
     #[test]
     fn danger_full_access_defaults_to_no_sandbox_without_network_requirements() {
@@ -441,5 +447,21 @@ mod tests {
             true,
         );
         assert_eq!(sandbox, expected);
+    }
+
+    #[test]
+    fn sanitize_windows_command_env_removes_injection_vars() {
+        let mut env = HashMap::from([
+            ("PATH".to_string(), "C:\\Windows\\System32".to_string()),
+            ("NODE_OPTIONS".to_string(), "--require x".to_string()),
+            ("RUSTFLAGS".to_string(), "-Zshare-generics=y".to_string()),
+        ]);
+
+        sanitize_windows_command_env(&mut env);
+
+        assert_eq!(
+            env,
+            HashMap::from([("PATH".to_string(), "C:\\Windows\\System32".to_string())])
+        );
     }
 }

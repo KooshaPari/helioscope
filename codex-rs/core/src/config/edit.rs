@@ -78,7 +78,7 @@ pub fn status_line_items_edit(items: &[String]) -> ConfigEdit {
 
 pub fn model_availability_nux_count_edits(shown_count: &HashMap<String, u32>) -> Vec<ConfigEdit> {
     let mut shown_count_entries: Vec<_> = shown_count.iter().collect();
-    shown_count_entries.sort_unstable_by(|(left, _), (right, _)| left.cmp(right));
+    shown_count_entries.sort_unstable_by_key(|(left, _)| (*left).clone());
 
     let mut edits = vec![ConfigEdit::ClearPath {
         segments: vec!["tui".to_string(), "model_availability_nux".to_string()],
@@ -281,7 +281,7 @@ mod document_helpers {
         I: IntoIterator<Item = (&'a String, &'a String)>,
     {
         let mut entries: Vec<_> = pairs.into_iter().collect();
-        entries.sort_by(|(a, _), (b, _)| a.cmp(b));
+        entries.sort_unstable_by_key(|(key, _)| (*key).clone());
         let mut table = TomlTable::new();
         table.set_implicit(false);
         for (key, val) in entries {

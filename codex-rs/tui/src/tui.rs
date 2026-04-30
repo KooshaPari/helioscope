@@ -12,24 +12,24 @@ use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
 use std::time::Duration;
 
-use crossterm::Command;
-use crossterm::SynchronizedUpdate;
-use crossterm::event::DisableBracketedPaste;
-use crossterm::event::DisableFocusChange;
-use crossterm::event::EnableBracketedPaste;
-use crossterm::event::EnableFocusChange;
-use crossterm::event::KeyEvent;
-use crossterm::event::KeyboardEnhancementFlags;
-use crossterm::event::PopKeyboardEnhancementFlags;
-use crossterm::event::PushKeyboardEnhancementFlags;
-use crossterm::terminal::EnterAlternateScreen;
-use crossterm::terminal::LeaveAlternateScreen;
-use crossterm::terminal::supports_keyboard_enhancement;
 use ratatui::backend::Backend;
 use ratatui::backend::CrosstermBackend;
+use ratatui::crossterm::Command;
+use ratatui::crossterm::SynchronizedUpdate;
+use ratatui::crossterm::event::DisableBracketedPaste;
+use ratatui::crossterm::event::DisableFocusChange;
+use ratatui::crossterm::event::EnableBracketedPaste;
+use ratatui::crossterm::event::EnableFocusChange;
+use ratatui::crossterm::event::KeyEvent;
+use ratatui::crossterm::event::KeyboardEnhancementFlags;
+use ratatui::crossterm::event::PopKeyboardEnhancementFlags;
+use ratatui::crossterm::event::PushKeyboardEnhancementFlags;
 use ratatui::crossterm::execute;
+use ratatui::crossterm::terminal::EnterAlternateScreen;
+use ratatui::crossterm::terminal::LeaveAlternateScreen;
 use ratatui::crossterm::terminal::disable_raw_mode;
 use ratatui::crossterm::terminal::enable_raw_mode;
+use ratatui::crossterm::terminal::supports_keyboard_enhancement;
 use ratatui::layout::Offset;
 use ratatui::layout::Rect;
 use ratatui::text::Line;
@@ -151,17 +151,12 @@ pub fn restore_keep_raw() -> Result<()> {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum RestoreMode {
-    #[allow(dead_code)]
-    Full, // Fully restore the terminal (disables raw mode).
     KeepRaw, // Restore the terminal but keep raw mode enabled.
 }
 
 impl RestoreMode {
     fn restore(self) -> Result<()> {
-        match self {
-            RestoreMode::Full => restore(),
-            RestoreMode::KeepRaw => restore_keep_raw(),
-        }
+        restore_keep_raw()
     }
 }
 

@@ -1,0 +1,6 @@
+---
+source: tui/src/chatwidget/tests/slash_commands.rs
+assertion_line: 67
+expression: rendered
+---
+• `/copy` is unavailable before the first Codex output or right after a rollback.

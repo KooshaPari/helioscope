@@ -36,8 +36,7 @@ pub struct McpProcess {
     /// Retain this child process until the client is dropped. The Tokio runtime
     /// will make a "best effort" to reap the process after it exits, but it is
     /// not a guarantee. See the `kill_on_drop` documentation for details.
-    #[allow(dead_code)]
-    process: Child,
+    _process: Child,
     stdin: ChildStdin,
     stdout: BufReader<ChildStdout>,
 }
@@ -103,7 +102,7 @@ impl McpProcess {
         }
         Ok(Self {
             next_request_id: AtomicI64::new(0),
-            process,
+            _process: process,
             stdin,
             stdout,
         })
@@ -113,31 +112,18 @@ impl McpProcess {
     pub async fn initialize(&mut self) -> anyhow::Result<()> {
         let request_id = self.next_request_id.fetch_add(1, Ordering::Relaxed);
 
-        let params = InitializeRequestParams {
-            meta: None,
-            capabilities: ClientCapabilities {
-                elicitation: Some(ElicitationCapability {
-                    form: Some(FormElicitationCapability {
-                        schema_validation: None,
-                    }),
-                    url: None,
-                }),
-                experimental: None,
-                extensions: None,
-                roots: None,
-                sampling: None,
-                tasks: None,
-            },
-            client_info: Implementation {
-                name: "elicitation test".into(),
-                title: Some("Elicitation Test".into()),
-                version: "0.0.0".into(),
-                description: None,
-                icons: None,
-                website_url: None,
-            },
-            protocol_version: ProtocolVersion::V_2025_03_26,
-        };
+        let mut capabilities = ClientCapabilities::default();
+        capabilities.elicitation = Some(ElicitationCapability {
+            form: Some(FormElicitationCapability {
+                schema_validation: None,
+            }),
+            url: None,
+        });
+        let params = InitializeRequestParams::new(
+            capabilities,
+            Implementation::new("elicitation test", "0.0.0").with_title("Elicitation Test"),
+        )
+        .with_protocol_version(ProtocolVersion::V_2025_03_26);
         let params_value = serde_json::to_value(params)?;
 
         self.send_jsonrpc_message(JsonRpcMessage::Request(JsonRpcRequest {
@@ -202,15 +188,12 @@ impl McpProcess {
         &mut self,
         params: CodexToolCallParam,
     ) -> anyhow::Result<i64> {
-        let codex_tool_call_params = CallToolRequestParams {
-            meta: None,
-            name: "codex".into(),
-            arguments: Some(match serde_json::to_value(params)? {
+        let codex_tool_call_params = CallToolRequestParams::new("codex").with_arguments(
+            match serde_json::to_value(params)? {
                 serde_json::Value::Object(map) => map,
                 _ => unreachable!("params serialize to object"),
-            }),
-            task: None,
-        };
+            },
+        );
         self.send_request(
             "tools/call",
             Some(serde_json::to_value(codex_tool_call_params)?),
@@ -384,12 +367,12 @@ impl Drop for McpProcess {
         //
         // 1. Request termination with `start_kill()`.
         // 2. Poll `try_wait()` until the OS reports the child exited, with a short timeout.
-        let _ = self.process.start_kill();
+        let _ = self._process.start_kill();
 
         let start = std::time::Instant::now();
         let timeout = std::time::Duration::from_secs(5);
         while start.elapsed() < timeout {
-            match self.process.try_wait() {
+            match self._process.try_wait() {
                 Ok(Some(_)) => return,
                 Ok(None) => std::thread::sleep(std::time::Duration::from_millis(10)),
                 Err(_) => return,

@@ -556,7 +556,8 @@ impl ModelClientSession {
             }
             None
         };
-        let text = create_text_param_for_request(verbosity, &prompt.output_schema);
+        let text = create_text_param_for_request(verbosity, &prompt.output_schema)
+            .map_err(map_api_error)?;
         let prompt_cache_key = Some(self.client.state.conversation_id.to_string());
         let request = ResponsesApiRequest {
             model: model_info.slug.clone(),

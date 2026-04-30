@@ -111,6 +111,7 @@ mod tests {
     use pretty_assertions::assert_eq;
     use ratatui::buffer::Buffer;
     use ratatui::layout::Rect;
+    use ratatui::widgets::WidgetRef;
 
     static VARIANT_A: [&str; 1] = ["frame-a"];
     static VARIANT_B: [&str; 1] = ["frame-b"];
@@ -132,7 +133,7 @@ mod tests {
         let area = Rect::new(0, 0, MIN_ANIMATION_WIDTH, MIN_ANIMATION_HEIGHT);
         let mut buf = Buffer::empty(area);
         let frame_lines = widget.animation.current_frame().lines().count() as u16;
-        (&widget).render(area, &mut buf);
+        (&widget).render_ref(area, &mut buf);
 
         let welcome_row = row_containing(&buf, "Welcome");
         assert_eq!(welcome_row, Some(frame_lines + 1));
@@ -143,7 +144,7 @@ mod tests {
         let widget = WelcomeWidget::new(false, FrameRequester::test_dummy(), true);
         let area = Rect::new(0, 0, MIN_ANIMATION_WIDTH, MIN_ANIMATION_HEIGHT - 1);
         let mut buf = Buffer::empty(area);
-        (&widget).render(area, &mut buf);
+        (&widget).render_ref(area, &mut buf);
 
         let welcome_row = row_containing(&buf, "Welcome");
         assert_eq!(welcome_row, Some(0));

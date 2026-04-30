@@ -796,9 +796,8 @@ impl McpConnectionManager {
                 let mut cursor: Option<String> = None;
 
                 loop {
-                    let params = cursor.as_ref().map(|next| PaginatedRequestParams {
-                        meta: None,
-                        cursor: Some(next.clone()),
+                    let params = cursor.as_ref().map(|next| {
+                        PaginatedRequestParams::default().with_cursor(Some(next.clone()))
                     });
                     let response = match client.list_resources(params, timeout).await {
                         Ok(result) => result,
@@ -862,9 +861,8 @@ impl McpConnectionManager {
                 let mut cursor: Option<String> = None;
 
                 loop {
-                    let params = cursor.as_ref().map(|next| PaginatedRequestParams {
-                        meta: None,
-                        cursor: Some(next.clone()),
+                    let params = cursor.as_ref().map(|next| {
+                        PaginatedRequestParams::default().with_cursor(Some(next.clone()))
                     });
                     let response = match client.list_resource_templates(params, timeout).await {
                         Ok(result) => result,
@@ -1235,26 +1233,14 @@ async fn start_server_task(
         codex_apps_tools_cache_context,
     } = params;
     let elicitation = elicitation_capability_for_server(&server_name);
-    let params = InitializeRequestParams {
-        meta: None,
-        capabilities: ClientCapabilities {
-            experimental: None,
-            extensions: None,
-            roots: None,
-            sampling: None,
-            elicitation,
-            tasks: None,
-        },
-        client_info: Implementation {
-            name: "codex-mcp-client".to_owned(),
-            version: env!("CARGO_PKG_VERSION").to_owned(),
-            title: Some("Codex".into()),
-            description: None,
-            icons: None,
-            website_url: None,
-        },
-        protocol_version: ProtocolVersion::V_2025_06_18,
-    };
+    let mut capabilities = ClientCapabilities::default();
+    capabilities.elicitation = elicitation;
+
+    let params = InitializeRequestParams::new(
+        capabilities,
+        Implementation::new("codex-mcp-client", env!("CARGO_PKG_VERSION")).with_title("Codex"),
+    )
+    .with_protocol_version(ProtocolVersion::V_2025_06_18);
 
     let send_elicitation = elicitation_requests.make_sender(server_name.clone(), tx_event);
 
@@ -1595,17 +1581,11 @@ mod tests {
         ToolInfo {
             server_name: server_name.to_string(),
             tool_name: tool_name.to_string(),
-            tool: Tool {
-                name: tool_name.to_string().into(),
-                title: None,
-                description: Some(format!("Test tool: {tool_name}").into()),
-                input_schema: Arc::new(JsonObject::default()),
-                output_schema: None,
-                annotations: None,
-                execution: None,
-                icons: None,
-                meta: None,
-            },
+            tool: Tool::new(
+                tool_name.to_string(),
+                format!("Test tool: {tool_name}"),
+                Arc::new(JsonObject::default()),
+            ),
             connector_id: None,
             connector_name: None,
         }

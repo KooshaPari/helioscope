@@ -7,12 +7,12 @@ use std::sync::atomic::AtomicBool;
 use std::sync::atomic::AtomicU16;
 use std::sync::atomic::Ordering;
 
-use crossterm::cursor::MoveTo;
-use crossterm::cursor::Show;
-use crossterm::event::KeyCode;
-use crossterm::terminal::EnterAlternateScreen;
-use crossterm::terminal::LeaveAlternateScreen;
+use ratatui::crossterm::cursor::MoveTo;
+use ratatui::crossterm::cursor::Show;
+use ratatui::crossterm::event::KeyCode;
 use ratatui::crossterm::execute;
+use ratatui::crossterm::terminal::EnterAlternateScreen;
+use ratatui::crossterm::terminal::LeaveAlternateScreen;
 use ratatui::layout::Position;
 use ratatui::layout::Rect;
 
@@ -25,7 +25,7 @@ use super::Terminal;
 pub const SUSPEND_KEY: key_hint::KeyBinding = key_hint::ctrl(KeyCode::Char('z'));
 pub const SUSPEND_KEY_ALT: key_hint::KeyBinding = key_hint::ctrl(KeyCode::Char('b'));
 
-pub(crate) fn is_suspend_key(event: crossterm::event::KeyEvent) -> bool {
+pub(crate) fn is_suspend_key(event: ratatui::crossterm::event::KeyEvent) -> bool {
     SUSPEND_KEY.is_press(event) || SUSPEND_KEY_ALT.is_press(event)
 }
 

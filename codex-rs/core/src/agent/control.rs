@@ -471,8 +471,7 @@ mod tests {
             .codex_home(home.path().to_path_buf())
             .cli_overrides(cli_overrides)
             .loader_overrides(LoaderOverrides {
-                #[cfg(target_os = "macos")]
-                managed_preferences_base64: Some(String::new()),
+                macos_managed_preferences_base64: Some(String::new()),
                 macos_managed_config_requirements_base64: Some(String::new()),
                 ..LoaderOverrides::default()
             })

@@ -880,8 +880,7 @@ personality = true
             vec![],
             LoaderOverrides {
                 managed_config_path: Some(managed_path.clone()),
-                #[cfg(target_os = "macos")]
-                managed_preferences_base64: None,
+                macos_managed_preferences_base64: None,
                 macos_managed_config_requirements_base64: None,
             },
             CloudRequirementsLoader::default(),
@@ -955,8 +954,7 @@ personality = true
             vec![],
             LoaderOverrides {
                 managed_config_path: Some(managed_path.clone()),
-                #[cfg(target_os = "macos")]
-                managed_preferences_base64: None,
+                macos_managed_preferences_base64: None,
                 macos_managed_config_requirements_base64: None,
             },
             CloudRequirementsLoader::default(),
@@ -1050,7 +1048,8 @@ personality = true
     #[tokio::test]
     async fn invalid_user_value_rejected_even_if_overridden_by_managed() {
         let tmp = tempdir().expect("tempdir");
-        std::fs::write(tmp.path().join(CONFIG_TOML_FILE), "model = \"user\"").expect("write config");
+        std::fs::write(tmp.path().join(CONFIG_TOML_FILE), "model = \"user\"")
+            .expect("write config");
 
         let managed_path = tmp.path().join("managed_config.toml");
         std::fs::write(&managed_path, "approval_policy = \"never\"").expect("write managed config");
@@ -1060,8 +1059,7 @@ personality = true
             vec![],
             LoaderOverrides {
                 managed_config_path: Some(managed_path.clone()),
-                #[cfg(target_os = "macos")]
-                managed_preferences_base64: None,
+                macos_managed_preferences_base64: None,
                 macos_managed_config_requirements_base64: None,
             },
             CloudRequirementsLoader::default(),
@@ -1109,8 +1107,7 @@ personality = true
             cli_overrides,
             LoaderOverrides {
                 managed_config_path: Some(managed_path.clone()),
-                #[cfg(target_os = "macos")]
-                managed_preferences_base64: None,
+                macos_managed_preferences_base64: None,
                 macos_managed_config_requirements_base64: None,
             },
             CloudRequirementsLoader::default(),
@@ -1146,7 +1143,10 @@ personality = true
             layers.first().expect("layer 0").name,
             ConfigLayerSource::LegacyManagedConfigTomlFromFile { file: managed_file }
         );
-        assert_eq!(layers.get(1).expect("layer 1").name, ConfigLayerSource::SessionFlags);
+        assert_eq!(
+            layers.get(1).expect("layer 1").name,
+            ConfigLayerSource::SessionFlags
+        );
         assert_eq!(
             layers.get(2).expect("layer 2").name,
             ConfigLayerSource::User { file: user_file }
@@ -1167,8 +1167,7 @@ personality = true
             vec![],
             LoaderOverrides {
                 managed_config_path: Some(managed_path.clone()),
-                #[cfg(target_os = "macos")]
-                managed_preferences_base64: None,
+                macos_managed_preferences_base64: None,
                 macos_managed_config_requirements_base64: None,
             },
             CloudRequirementsLoader::default(),

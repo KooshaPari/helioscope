@@ -2,22 +2,28 @@ use crate::logging;
 use crate::winutil::format_last_error;
 use crate::winutil::quote_windows_arg;
 use crate::winutil::to_wide;
-use anyhow::anyhow;
 use anyhow::Result;
+use anyhow::anyhow;
 use std::collections::HashMap;
 use std::ffi::c_void;
 use std::path::Path;
 use windows_sys::Win32::Foundation::GetLastError;
-use windows_sys::Win32::Foundation::SetHandleInformation;
 use windows_sys::Win32::Foundation::HANDLE;
 use windows_sys::Win32::Foundation::HANDLE_FLAG_INHERIT;
 use windows_sys::Win32::Foundation::INVALID_HANDLE_VALUE;
+use windows_sys::Win32::Foundation::SetHandleInformation;
 use windows_sys::Win32::System::Console::GetStdHandle;
 use windows_sys::Win32::System::Console::STD_ERROR_HANDLE;
 use windows_sys::Win32::System::Console::STD_INPUT_HANDLE;
 use windows_sys::Win32::System::Console::STD_OUTPUT_HANDLE;
-use windows_sys::Win32::System::Threading::CreateProcessAsUserW;
+use windows_sys::Win32::System::JobObjects::AssignProcessToJobObject;
+use windows_sys::Win32::System::JobObjects::CreateJobObjectW;
+use windows_sys::Win32::System::JobObjects::JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
+use windows_sys::Win32::System::JobObjects::JOBOBJECT_EXTENDED_LIMIT_INFORMATION;
+use windows_sys::Win32::System::JobObjects::JobObjectExtendedLimitInformation;
+use windows_sys::Win32::System::JobObjects::SetInformationJobObject;
 use windows_sys::Win32::System::Threading::CREATE_UNICODE_ENVIRONMENT;
+use windows_sys::Win32::System::Threading::CreateProcessAsUserW;
 use windows_sys::Win32::System::Threading::PROCESS_INFORMATION;
 use windows_sys::Win32::System::Threading::STARTF_USESTDHANDLES;
 use windows_sys::Win32::System::Threading::STARTUPINFOW;
@@ -55,6 +61,36 @@ unsafe fn ensure_inheritable_stdio(si: &mut STARTUPINFOW) -> Result<()> {
     si.hStdInput = GetStdHandle(STD_INPUT_HANDLE);
     si.hStdOutput = GetStdHandle(STD_OUTPUT_HANDLE);
     si.hStdError = GetStdHandle(STD_ERROR_HANDLE);
+    Ok(())
+}
+
+pub unsafe fn create_kill_on_close_job() -> Result<HANDLE> {
+    let h = CreateJobObjectW(std::ptr::null_mut(), std::ptr::null());
+    if h == 0 {
+        return Err(anyhow!("CreateJobObjectW failed"));
+    }
+    let mut limits: JOBOBJECT_EXTENDED_LIMIT_INFORMATION = std::mem::zeroed();
+    limits.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
+    let ok = SetInformationJobObject(
+        h,
+        JobObjectExtendedLimitInformation,
+        &mut limits as *mut _ as *mut _,
+        std::mem::size_of::<JOBOBJECT_EXTENDED_LIMIT_INFORMATION>() as u32,
+    );
+    if ok == 0 {
+        return Err(anyhow!("SetInformationJobObject failed"));
+    }
+    Ok(h)
+}
+
+pub unsafe fn assign_process_to_kill_on_close_job(job: HANDLE, process: HANDLE) -> Result<()> {
+    let ok = AssignProcessToJobObject(job, process);
+    if ok == 0 {
+        return Err(anyhow!(
+            "AssignProcessToJobObject failed: {}",
+            GetLastError()
+        ));
+    }
     Ok(())
 }
 

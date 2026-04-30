@@ -6,28 +6,50 @@ use crate::wrapping::RtOptions;
 use crate::wrapping::adaptive_wrap_line;
 use crate::wrapping::line_contains_url_like;
 use crate::wrapping::line_has_mixed_url_and_non_url_tokens;
-use crossterm::Command;
-use crossterm::cursor::MoveDown;
-use crossterm::cursor::MoveTo;
-use crossterm::cursor::MoveToColumn;
-use crossterm::cursor::RestorePosition;
-use crossterm::cursor::SavePosition;
-use crossterm::queue;
-use crossterm::style::Color as CColor;
-use crossterm::style::Colors;
-use crossterm::style::Print;
-use crossterm::style::SetAttribute;
-use crossterm::style::SetBackgroundColor;
-use crossterm::style::SetColors;
-use crossterm::style::SetForegroundColor;
-use crossterm::terminal::Clear;
-use crossterm::terminal::ClearType;
+use ratatui::crossterm::Command;
+use ratatui::crossterm::cursor::MoveDown;
+use ratatui::crossterm::cursor::MoveTo;
+use ratatui::crossterm::cursor::MoveToColumn;
+use ratatui::crossterm::cursor::RestorePosition;
+use ratatui::crossterm::cursor::SavePosition;
+use ratatui::crossterm::queue;
+use ratatui::crossterm::style::Color as CColor;
+use ratatui::crossterm::style::Print;
+use ratatui::crossterm::style::SetAttribute;
+use ratatui::crossterm::style::SetBackgroundColor;
+use ratatui::crossterm::style::SetForegroundColor;
+use ratatui::crossterm::terminal::Clear;
+use ratatui::crossterm::terminal::ClearType;
 use ratatui::layout::Size;
 use ratatui::prelude::Backend;
 use ratatui::style::Color;
 use ratatui::style::Modifier;
 use ratatui::text::Line;
 use ratatui::text::Span;
+
+fn to_crossterm_color(color: Color) -> CColor {
+    match color {
+        Color::Reset => CColor::Reset,
+        Color::Black => CColor::Black,
+        Color::Red => CColor::Red,
+        Color::Green => CColor::Green,
+        Color::Yellow => CColor::Yellow,
+        Color::Blue => CColor::Blue,
+        Color::Magenta => CColor::Magenta,
+        Color::Cyan => CColor::Cyan,
+        Color::Gray => CColor::Grey,
+        Color::DarkGray => CColor::DarkGrey,
+        Color::LightRed => CColor::Red,
+        Color::LightGreen => CColor::Green,
+        Color::LightYellow => CColor::Yellow,
+        Color::LightBlue => CColor::Blue,
+        Color::LightMagenta => CColor::Magenta,
+        Color::LightCyan => CColor::Cyan,
+        Color::White => CColor::White,
+        Color::Rgb(r, g, b) => CColor::Rgb { r, g, b },
+        Color::Indexed(i) => CColor::AnsiValue(i),
+    }
+}
 
 /// Insert `lines` above the viewport using the terminal's backend writer
 /// (avoids direct stdout references).
@@ -36,7 +58,7 @@ pub fn insert_history_lines<B>(
     lines: Vec<Line>,
 ) -> io::Result<()>
 where
-    B: Backend + Write,
+    B: Backend<Error = io::Error> + Write,
 {
     let screen_size = terminal.backend().size().unwrap_or(Size::new(0, 0));
 
@@ -140,16 +162,18 @@ where
         }
         queue!(
             writer,
-            SetColors(Colors::new(
+            SetForegroundColor(
                 line.style
                     .fg
-                    .map(std::convert::Into::into)
-                    .unwrap_or(CColor::Reset),
+                    .map(to_crossterm_color)
+                    .unwrap_or(CColor::Reset)
+            ),
+            SetBackgroundColor(
                 line.style
                     .bg
-                    .map(std::convert::Into::into)
+                    .map(to_crossterm_color)
                     .unwrap_or(CColor::Reset)
-            ))
+            ),
         )?;
         queue!(writer, Clear(ClearType::UntilNewLine))?;
         // Merge line-level style into each span so that ANSI colors reflect
@@ -231,7 +255,7 @@ impl ModifierDiff {
     where
         W: io::Write,
     {
-        use crossterm::style::Attribute as CAttribute;
+        use ratatui::crossterm::style::Attribute as CAttribute;
         let removed = self.from - self.to;
         if removed.contains(Modifier::REVERSED) {
             queue!(w, SetAttribute(CAttribute::NoReverse))?;
@@ -312,7 +336,8 @@ where
         if next_fg != fg || next_bg != bg {
             queue!(
                 writer,
-                SetColors(Colors::new(next_fg.into(), next_bg.into()))
+                SetForegroundColor(to_crossterm_color(next_fg)),
+                SetBackgroundColor(to_crossterm_color(next_bg)),
             )?;
             fg = next_fg;
             bg = next_bg;
@@ -325,7 +350,7 @@ where
         writer,
         SetForegroundColor(CColor::Reset),
         SetBackgroundColor(CColor::Reset),
-        SetAttribute(crossterm::style::Attribute::Reset),
+        SetAttribute(ratatui::crossterm::style::Attribute::Reset),
     )
 }
 
@@ -349,13 +374,13 @@ mod tests {
         let mut expected: Vec<u8> = Vec::new();
         queue!(
             expected,
-            SetAttribute(crossterm::style::Attribute::Bold),
+            SetAttribute(ratatui::crossterm::style::Attribute::Bold),
             Print("A"),
-            SetAttribute(crossterm::style::Attribute::NormalIntensity),
+            SetAttribute(ratatui::crossterm::style::Attribute::NormalIntensity),
             Print("B"),
             SetForegroundColor(CColor::Reset),
             SetBackgroundColor(CColor::Reset),
-            SetAttribute(crossterm::style::Attribute::Reset),
+            SetAttribute(ratatui::crossterm::style::Attribute::Reset),
         )
         .unwrap();
 

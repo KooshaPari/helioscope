@@ -41,6 +41,7 @@ use ratatui::style::Stylize;
 use ratatui::text::Line as RtLine;
 use ratatui::text::Span as RtSpan;
 use ratatui::widgets::Paragraph;
+use ratatui::widgets::Widget;
 use std::collections::HashMap;
 use std::path::Path;
 use std::path::PathBuf;
@@ -352,7 +353,6 @@ pub(crate) fn create_diff_summary(
 // Shared row for per-file presentation
 #[derive(Clone)]
 struct Row {
-    #[allow(dead_code)]
     path: PathBuf,
     move_path: Option<PathBuf>,
     added: usize,
@@ -1310,7 +1310,6 @@ mod tests {
     use ratatui::backend::TestBackend;
     use ratatui::text::Text;
     use ratatui::widgets::Paragraph;
-    use ratatui::widgets::WidgetRef;
     use ratatui::widgets::Wrap;
 
     #[test]
@@ -1363,7 +1362,7 @@ mod tests {
             .draw(|f| {
                 Paragraph::new(Text::from(lines))
                     .wrap(Wrap { trim: false })
-                    .render_ref(f.area(), f.buffer_mut())
+                    .render(f.area(), f.buffer_mut())
             })
             .expect("draw");
         assert_snapshot!(name, terminal.backend());

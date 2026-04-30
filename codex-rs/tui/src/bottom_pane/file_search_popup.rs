@@ -5,12 +5,11 @@ use ratatui::buffer::Buffer;
 use ratatui::layout::Rect;
 use ratatui::widgets::WidgetRef;
 
-use crate::render::Insets;
-use crate::render::RectExt;
-
 use super::popup_consts::MAX_POPUP_ROWS;
 use super::scroll_state::ScrollState;
 use super::selection_popup_common::GenericDisplayRow;
+use super::selection_popup_common::menu_surface_padding_height;
+use super::selection_popup_common::render_menu_surface;
 use super::selection_popup_common::render_rows;
 
 /// Visual state for the file-search popup.
@@ -105,7 +104,8 @@ impl FileSearchPopup {
         // up to MAX_RESULTS regardless of the waiting flag so the list
         // remains stable while a newer search is in-flight.
 
-        self.matches.len().clamp(1, MAX_POPUP_ROWS) as u16
+        (self.matches.len().clamp(1, MAX_POPUP_ROWS) as u16)
+            .saturating_add(menu_surface_padding_height())
     }
 }
 
@@ -140,8 +140,9 @@ impl WidgetRef for &FileSearchPopup {
             "no matches"
         };
 
+        let content_area = render_menu_surface(area, buf);
         render_rows(
-            area.inset(Insets::tlbr(0, 2, 0, 0)),
+            content_area,
             buf,
             &rows_all,
             &self.state,
@@ -150,3 +151,6 @@ impl WidgetRef for &FileSearchPopup {
         );
     }
 }
+
+#[cfg(test)]
+mod tests;

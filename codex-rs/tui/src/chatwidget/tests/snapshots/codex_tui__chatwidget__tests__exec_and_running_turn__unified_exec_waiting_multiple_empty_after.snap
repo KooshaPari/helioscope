@@ -1,0 +1,6 @@
+---
+source: tui/src/chatwidget/tests/exec_and_running_turn.rs
+assertion_line: 784
+expression: combined
+---
+• Waited for background terminal · just fix

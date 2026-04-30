@@ -34,7 +34,6 @@ mod tests {
     use codex_experimental_api_macros::ExperimentalApi;
     use pretty_assertions::assert_eq;
 
-    #[allow(dead_code)]
     #[derive(ExperimentalApi)]
     enum EnumVariantShapes {
         #[experimental("enum/unit")]
@@ -50,21 +49,30 @@ mod tests {
 
     #[test]
     fn derive_supports_all_enum_variant_shapes() {
+        let unit = EnumVariantShapes::Unit;
+        let tuple = EnumVariantShapes::Tuple(1);
+        let named = EnumVariantShapes::Named { value: 1 };
+        let stable_tuple = EnumVariantShapes::StableTuple(1);
+
+        assert_eq!(ExperimentalApiTrait::experimental_reason(&unit), Some("enum/unit"));
+        assert_eq!(ExperimentalApiTrait::experimental_reason(&tuple), Some("enum/tuple"));
+        assert_eq!(ExperimentalApiTrait::experimental_reason(&named), Some("enum/named"));
         assert_eq!(
-            ExperimentalApiTrait::experimental_reason(&EnumVariantShapes::Unit),
-            Some("enum/unit")
-        );
-        assert_eq!(
-            ExperimentalApiTrait::experimental_reason(&EnumVariantShapes::Tuple(1)),
-            Some("enum/tuple")
-        );
-        assert_eq!(
-            ExperimentalApiTrait::experimental_reason(&EnumVariantShapes::Named { value: 1 }),
-            Some("enum/named")
-        );
-        assert_eq!(
-            ExperimentalApiTrait::experimental_reason(&EnumVariantShapes::StableTuple(1)),
+            ExperimentalApiTrait::experimental_reason(&stable_tuple),
             None
         );
+
+        match tuple {
+            EnumVariantShapes::Tuple(value) => assert_eq!(value, 1),
+            _ => panic!("expected tuple variant"),
+        }
+        match named {
+            EnumVariantShapes::Named { value } => assert_eq!(value, 1),
+            _ => panic!("expected named variant"),
+        }
+        match stable_tuple {
+            EnumVariantShapes::StableTuple(value) => assert_eq!(value, 1),
+            _ => panic!("expected stable tuple variant"),
+        }
     }
 }

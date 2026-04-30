@@ -42,14 +42,12 @@ pub(crate) struct RealtimeConversationManager {
     state: Mutex<Option<ConversationState>>,
 }
 
-#[allow(dead_code)]
 struct ConversationState {
     audio_tx: Sender<RealtimeAudioFrame>,
     text_tx: Sender<String>,
     task: JoinHandle<()>,
 }
 
-#[allow(dead_code)]
 impl RealtimeConversationManager {
     pub(crate) fn new() -> Self {
         Self {

@@ -1,4 +1,6 @@
 use super::*;
+use codex_protocol::protocol::UserMessageEvent;
+use pretty_assertions::assert_eq;
 
 #[tokio::test]
 async fn resumed_initial_messages_render_history() {

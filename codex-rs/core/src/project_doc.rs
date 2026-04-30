@@ -587,8 +587,10 @@ mod tests {
     #[tokio::test]
     async fn agents_local_md_preferred() {
         let tmp = tempfile::tempdir().expect("tempdir");
-        fs::write(tmp.path().join(DEFAULT_PROJECT_DOC_FILENAME), "versioned").expect("write AGENTS.md");
-        fs::write(tmp.path().join(LOCAL_PROJECT_DOC_FILENAME), "local").expect("write AGENTS.override.md");
+        fs::write(tmp.path().join(DEFAULT_PROJECT_DOC_FILENAME), "versioned")
+            .expect("write AGENTS.md");
+        fs::write(tmp.path().join(LOCAL_PROJECT_DOC_FILENAME), "local")
+            .expect("write AGENTS.override.md");
 
         let cfg = make_config(&tmp, 4096, None).await;
 
@@ -601,7 +603,10 @@ mod tests {
         let discovery = discover_project_doc_paths(&cfg).expect("discover paths");
         assert_eq!(discovery.len(), 1);
         assert_eq!(
-            discovery[0].file_name().expect("file name").to_string_lossy(),
+            discovery[0]
+                .file_name()
+                .expect("file name")
+                .to_string_lossy(),
             LOCAL_PROJECT_DOC_FILENAME
         );
     }

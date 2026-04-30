@@ -33,6 +33,7 @@ pub use thread_metadata::ThreadsPage;
 
 pub(crate) use agent_job::AgentJobItemRow;
 pub(crate) use agent_job::AgentJobRow;
+pub(crate) use agent_job::validate_strict_output_schema;
 pub(crate) use memories::Stage1OutputRow;
 pub(crate) use memories::stage1_output_ref_from_parts;
 pub(crate) use thread_metadata::ThreadRow;

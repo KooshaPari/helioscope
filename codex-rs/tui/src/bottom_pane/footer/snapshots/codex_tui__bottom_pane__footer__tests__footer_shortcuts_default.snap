@@ -1,0 +1,6 @@
+---
+source: tui/src/bottom_pane/footer/tests.rs
+assertion_line: 176
+expression: terminal.backend()
+---
+"  ? for shortcuts                                            100% context left  "

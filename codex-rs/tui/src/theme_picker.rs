@@ -163,6 +163,7 @@ fn centered_offset(available: u16, content: u16, min_frame: u16) -> u16 {
     frame + free.saturating_sub(frame.saturating_mul(2)) / 2
 }
 
+#[allow(clippy::explicit_counter_loop)]
 fn render_preview(
     area: Rect,
     buf: &mut Buffer,
@@ -202,12 +203,13 @@ fn render_preview(
     let mut y = area.y.saturating_add(top_pad);
     let render_width = area.width.saturating_sub(left_pad);
     let style_context = current_diff_render_style_context();
-    for (idx, row) in preview_rows.iter().enumerate() {
+    let mut syntax_lines = syntax_lines.as_ref().map(|lines| lines.iter());
+    for row in preview_rows {
         if y >= area.y + area.height {
             break;
         }
         let diff_type = preview_diff_line_type(row.kind);
-        let wrapped = if let Some(syn) = syntax_lines.as_ref().and_then(|sl| sl.get(idx)) {
+        let wrapped = if let Some(syn) = syntax_lines.as_mut().and_then(std::iter::Iterator::next) {
             push_wrapped_diff_line_with_syntax_and_style_context(
                 row.line_no,
                 diff_type,

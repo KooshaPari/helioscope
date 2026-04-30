@@ -74,7 +74,7 @@ use wiremock::matchers::method;
 use wiremock::matchers::path;
 use wiremock::matchers::query_param;
 
-#[expect(clippy::unwrap_used)]
+#[allow(clippy::expect_used)]
 fn assert_message_role(request_body: &serde_json::Value, role: &str) {
     assert_eq!(
         request_body["role"]
@@ -84,7 +84,7 @@ fn assert_message_role(request_body: &serde_json::Value, role: &str) {
     );
 }
 
-#[expect(clippy::unwrap_used)]
+#[allow(clippy::expect_used)]
 fn message_input_texts(item: &serde_json::Value) -> Vec<&str> {
     item["content"]
         .as_array()
@@ -96,7 +96,7 @@ fn message_input_texts(item: &serde_json::Value) -> Vec<&str> {
 
 /// Writes an `auth.json` into the provided `codex_home` with the specified parameters.
 /// Returns the fake JWT string written to `tokens.id_token`.
-#[expect(clippy::unwrap_used)]
+#[allow(clippy::expect_used)]
 fn write_auth_json(
     codex_home: &TempDir,
     openai_api_key: Option<&str>,

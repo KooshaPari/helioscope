@@ -9,6 +9,9 @@ impl StateRuntime {
     ) -> anyhow::Result<AgentJob> {
         let now = Utc::now().timestamp();
         let input_headers_json = serde_json::to_string(&params.input_headers)?;
+        if let Some(output_schema_json) = params.output_schema_json.as_ref() {
+            crate::model::validate_strict_output_schema(output_schema_json)?;
+        }
         let output_schema_json = params
             .output_schema_json
             .as_ref()

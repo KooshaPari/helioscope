@@ -124,7 +124,29 @@ fn set_core_file_size_limit_to_zero() {
 
 #[cfg(windows)]
 pub(crate) fn pre_main_hardening_windows() {
-    // tracked: https://github.com/KooshaPari/heliosCLI/issues/121
+    // Windows does not honor LD_* / DYLD_* the way Unix does, but other process-level
+    // injection knobs can still leak into spawned children. Clear the common ones here.
+    for key in windows_unsafe_env_keys() {
+        unsafe {
+            std::env::remove_var(key);
+        }
+    }
+}
+
+pub fn windows_unsafe_env_keys() -> &'static [&'static str] {
+    &[
+        "JAVA_TOOL_OPTIONS",
+        "JDK_JAVA_OPTIONS",
+        "NODE_OPTIONS",
+        "PYTHONPATH",
+        "PERL5LIB",
+        "RUBYLIB",
+        "GEM_HOME",
+        "GEM_PATH",
+        "CLASSPATH",
+        "RUSTC_WRAPPER",
+        "RUSTFLAGS",
+    ]
 }
 
 #[cfg(unix)]
@@ -186,5 +208,31 @@ mod tests {
         let keys = env_keys_with_prefix(vars, b"LD_");
         assert_eq!(keys.len(), 1);
         assert_eq!(keys[0].as_os_str(), ld_test_var);
+    }
+}
+
+#[cfg(test)]
+mod windows_tests {
+    use super::windows_unsafe_env_keys;
+    use pretty_assertions::assert_eq;
+
+    #[test]
+    fn windows_unsafe_env_keys_lists_known_injection_vars() {
+        assert_eq!(
+            windows_unsafe_env_keys(),
+            &[
+                "JAVA_TOOL_OPTIONS",
+                "JDK_JAVA_OPTIONS",
+                "NODE_OPTIONS",
+                "PYTHONPATH",
+                "PERL5LIB",
+                "RUBYLIB",
+                "GEM_HOME",
+                "GEM_PATH",
+                "CLASSPATH",
+                "RUSTC_WRAPPER",
+                "RUSTFLAGS",
+            ]
+        );
     }
 }

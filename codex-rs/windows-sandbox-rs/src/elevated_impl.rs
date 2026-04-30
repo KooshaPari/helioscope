@@ -1,25 +1,28 @@
 mod windows_impl {
     use crate::acl::allow_null_device;
-    use crate::allow::compute_allow_paths;
     use crate::allow::AllowDenyPaths;
+    use crate::allow::compute_allow_paths;
     use crate::cap::load_or_create_cap_sids;
     use crate::env::ensure_non_interactive_pager;
     use crate::env::inherit_path_env;
     use crate::env::normalize_null_device_env;
+    use crate::env::remove_unsafe_injection_env;
     use crate::identity::require_logon_sandbox_creds;
     use crate::logging::log_failure;
     use crate::logging::log_note;
     use crate::logging::log_start;
     use crate::logging::log_success;
-    use crate::policy::parse_policy;
     use crate::policy::SandboxPolicy;
+    use crate::policy::parse_policy;
+    use crate::process::assign_process_to_kill_on_close_job;
+    use crate::process::create_kill_on_close_job;
     use crate::token::convert_string_sid_to_sid;
     use crate::winutil::quote_windows_arg;
     use crate::winutil::to_wide;
     use anyhow::Result;
-    use rand::rngs::SmallRng;
     use rand::Rng;
     use rand::SeedableRng;
+    use rand::rngs::SmallRng;
     use std::collections::HashMap;
     use std::ffi::c_void;
     use std::fs;
@@ -43,11 +46,11 @@ mod windows_impl {
     use windows_sys::Win32::System::Pipes::PIPE_WAIT;
     use windows_sys::Win32::System::Threading::CreateProcessWithLogonW;
     use windows_sys::Win32::System::Threading::GetExitCodeProcess;
-    use windows_sys::Win32::System::Threading::WaitForSingleObject;
     use windows_sys::Win32::System::Threading::INFINITE;
     use windows_sys::Win32::System::Threading::LOGON_WITH_PROFILE;
     use windows_sys::Win32::System::Threading::PROCESS_INFORMATION;
     use windows_sys::Win32::System::Threading::STARTUPINFOW;
+    use windows_sys::Win32::System::Threading::WaitForSingleObject;
 
     /// Ensures the parent directory of a path exists before writing to it.
     /// Walks upward from `start` to locate the git worktree root, following gitfile redirects.
@@ -220,6 +223,7 @@ mod windows_impl {
         let policy = parse_policy(policy_json_or_preset)?;
         normalize_null_device_env(&mut env_map);
         ensure_non_interactive_pager(&mut env_map);
+        remove_unsafe_injection_env(&mut env_map);
         inherit_path_env(&mut env_map);
         inject_git_safe_directory(&mut env_map, cwd, None);
         let current_dir = cwd.to_path_buf();
@@ -365,6 +369,13 @@ mod windows_impl {
             return Err(anyhow::anyhow!("CreateProcessWithLogonW failed: {}", err));
         }
 
+        let h_job = unsafe { create_kill_on_close_job().ok() };
+        if let Some(job) = h_job {
+            unsafe {
+                assign_process_to_kill_on_close_job(job, pi.hProcess)?;
+            }
+        }
+
         // Pipes are no longer passed as std handles; no stdin payload is sent.
         connect_pipe(h_stdin_pipe)?;
         connect_pipe(h_stdout_pipe)?;
@@ -440,6 +451,9 @@ mod windows_impl {
             if pi.hProcess != 0 {
                 CloseHandle(pi.hProcess);
             }
+            if let Some(job) = h_job {
+                CloseHandle(job);
+            }
             CloseHandle(h_stdout_pipe);
             CloseHandle(h_stderr_pipe);
         }
@@ -503,8 +517,8 @@ pub use windows_impl::run_windows_sandbox_capture;
 
 #[cfg(not(target_os = "windows"))]
 mod stub {
-    use anyhow::bail;
     use anyhow::Result;
+    use anyhow::bail;
     use codex_protocol::protocol::SandboxPolicy;
     use std::collections::HashMap;
     use std::path::Path;

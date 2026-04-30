@@ -30,7 +30,6 @@ impl Default for RegularTask {
 }
 
 impl RegularTask {
-    #[allow(dead_code)]
     pub(crate) async fn with_startup_prewarm(
         model_client: ModelClient,
         prompt: Prompt,

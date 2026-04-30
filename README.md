@@ -11,6 +11,7 @@
 [![Release](https://img.shields.io/github/v/release/KooshaPari/heliosCLI?include_prereleases&sort=semver)](https://github.com/KooshaPari/heliosCLI/releases)
 [![License](https://img.shields.io/github/license/KooshaPari/heliosCLI)](LICENSE)
 [![Phenotype](https://img.shields.io/badge/Phenotype-org-blueviolet)](https://github.com/KooshaPari)
+[![AI Slop Inside](https://sladge.net/badge.svg)](https://sladge.net)
 
 Rust-based CLI for managing Helioscope applications with multi-backend support and sandboxing. A community fork of [OpenAI Codex CLI](https://github.com/openai/codex) with performance optimizations, a multi-crate harness system, and Phenotype governance integration.
 
@@ -20,11 +21,13 @@ Rust-based CLI for managing Helioscope applications with multi-backend support a
 
 ## Architecture Overview
 
-heliosCLI is organized as **two Rust workspaces**:
+heliosCLI is organized around the active `codex-rs` Rust workspace, the `codex-cli` TypeScript CLI,
+and Bazel monorepo rules:
 
-### Root Workspace (`./Cargo.toml`)
+### Rust Workspace (`codex-rs/Cargo.toml`)
 
-The root workspace contains the **heliosHarness** system — a collection of 9 crates providing validation, orchestration, and resilience for autonomous agent operations.
+The Rust workspace contains the core agent/runtime crates for validation, orchestration, and
+resilience for autonomous agent operations.
 
 ```
 crates/
@@ -41,51 +44,42 @@ crates/
 
 **Note:** Additional crates in `crates/` (harness_cache, harness_checkpoint, harness_discoverer, harness_elicitation, harness_interfaces, harness_normalizer, harness_orchestrator, harness_pyo3, harness_mojo, harness_zig, thegent-*, adrs, api, arch_test, changes, governance) are utility, documentation, or test crates not included in the root workspace members list.
 
-### Helios Workspace (`helios-rs/Cargo.toml`)
+### CLI Workspace (`codex-cli/package.json`)
 
-The `helios-rs/` workspace contains the **core CLI** and its 60+ crates, providing the full coding agent experience:
+The `codex-cli/` workspace contains the TypeScript CLI and supporting tooling used for the
+interactive agent experience:
 
 ```
-helios-rs/
-├── cli/                    # CLI entry point (helios binary)
+codex-rs/
+├── cli/                    # Rust CLI entry point
 ├── core/                   # Core agent logic and config
-├── tui/                    # Terminal UI (ratatui-based)
+├── tui/                    # Terminal UI
 ├── exec/                   # Non-interactive execution mode
-├── app-server/             # WebSocket/stdio app server
-├── app-server-protocol/    # App server protocol definitions
 ├── protocol/               # Wire protocol types
 ├── config/                 # Configuration loading
 ├── execpolicy/             # Execution policy engine
-├── linux-sandbox/          # Landlock+seccomp sandbox (Linux)
 ├── mcp-server/             # MCP server implementation
 ├── login/                  # Authentication (OAuth, API key)
 ├── secrets/                # Secure credential storage
 ├── hooks/                  # Pre/post execution hooks
-├── skills/                 # Skill definitions
 ├── state/                  # Session state management
-├── file-search/            # Codebase search (nucleo)
+├── file-search/            # Codebase search
 ├── apply-patch/            # Diff application
 ├── feedback/               # User feedback collection
-├── otel/                   # OpenTelemetry instrumentation
-└── utils/                  # Shared utilities (20+ sub-crates)
+└── utils/                  # Shared utilities
 ```
 
 ### Key Crates and Responsibilities
 
 | Crate                  | Responsibility                                                                        |
 | ---------------------- | ------------------------------------------------------------------------------------- |
-| `helios-cli`           | CLI entry point using clap; dispatches to subcommands (exec, tui, mcp, sandbox, etc.) |
-| `helios-core`          | Agent core: config loading, feature flags, terminal detection, session management     |
-| `helios-tui`           | Interactive terminal UI built on ratatui with streaming responses                     |
-| `helios-exec`          | Non-interactive execution mode for scripted/CI usage                                  |
-| `helios-app-server`    | Long-running server with stdio/WebSocket transport for IDE integration                |
-| `helios-execpolicy`    | File-based execution policies controlling what commands the agent may run             |
-| `helios-linux-sandbox` | Landlock + seccomp sandbox for safe command execution on Linux                        |
-| `helios-mcp-server`    | Model Context Protocol server for external tool integration                           |
-| `helios-config`        | TOML-based configuration with profile support and CLI overrides                       |
-| `helios-protocol`      | Wire protocol types for client-server communication                                   |
-| `helios-state`         | SQLite-backed session and conversation state persistence                              |
-| `helios-login`         | OAuth device code flow and API key authentication                                     |
+| `codex-cli`            | TypeScript CLI entry point and command registry                                       |
+| `codex-core`           | Agent core: config loading, terminal detection, session management                   |
+| `codex-tui`            | Interactive terminal UI with streaming responses                                     |
+| `codex-exec`           | Non-interactive execution mode for scripted/CI usage                                  |
+| `codex-protocol`       | Wire protocol types for client-server communication                                   |
+| `codex-state`          | Session and conversation state persistence                                            |
+| `codex-login`          | OAuth device code flow and API key authentication                                     |
 
 ## Setup Instructions
 
@@ -94,7 +88,7 @@ helios-rs/
 | Requirement | Details                                                              |
 | ----------- | -------------------------------------------------------------------- |
 | OS          | macOS 12+, Ubuntu 20.04+/Debian 10+, or Windows 11 via WSL2          |
-| Rust        | Edition 2024 (helios-rs workspace), Edition 2021 (harness workspace) |
+| Rust        | Edition 2024 (codex-rs workspace), Edition 2021 (harness workspace) |
 | RAM         | 4 GB minimum (8 GB recommended)                                      |
 | Git         | 2.23+ for built-in PR helpers (optional)                             |
 
@@ -118,15 +112,14 @@ rustup component add clippy
 cargo install just
 cargo install --locked cargo-nextest  # optional
 
-# Build the harness workspace
+# Build the Rust workspace
+cd codex-rs
 cargo build
 
-# Build the main CLI workspace
-cd helios-rs
-cargo build
-
-# Run the CLI
-cargo run --bin helios -- --help
+# Build the CLI workspace
+cd ../codex-cli
+npm install
+npm run build
 ```
 
 ### Running Quality Checks
@@ -308,9 +301,10 @@ helios -c model=gpt-4o -c approval_policy=auto-edit
 heliosCLI/
 ├── Cargo.toml              # Root workspace (harness crates)
 ├── Cargo.lock
-├── helios-rs/              # Main CLI workspace
+├── codex-rs/               # Main Rust workspace
 │   ├── Cargo.toml
 │   └── cli/src/main.rs     # CLI entry point
+├── codex-cli/              # TypeScript CLI workspace
 ├── crates/                 # Harness + thegent utility crates
 ├── docs/                   # Documentation (VitePress site)
 │   ├── adrs/               # Architecture decision records

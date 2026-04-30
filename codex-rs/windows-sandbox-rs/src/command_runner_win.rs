@@ -2,8 +2,11 @@
 
 use anyhow::Context;
 use anyhow::Result;
+use codex_windows_sandbox::SandboxPolicy;
 use codex_windows_sandbox::allow_null_device;
+use codex_windows_sandbox::assign_process_to_kill_on_close_job;
 use codex_windows_sandbox::convert_string_sid_to_sid;
+use codex_windows_sandbox::create_kill_on_close_job;
 use codex_windows_sandbox::create_process_as_user;
 use codex_windows_sandbox::create_readonly_token_with_caps_from;
 use codex_windows_sandbox::create_workspace_write_token_with_caps_from;
@@ -12,7 +15,6 @@ use codex_windows_sandbox::hide_current_user_profile_dir;
 use codex_windows_sandbox::log_note;
 use codex_windows_sandbox::parse_policy;
 use codex_windows_sandbox::to_wide;
-use codex_windows_sandbox::SandboxPolicy;
 use serde::Deserialize;
 use std::collections::HashMap;
 use std::ffi::c_void;
@@ -20,27 +22,20 @@ use std::path::Path;
 use std::path::PathBuf;
 use windows_sys::Win32::Foundation::CloseHandle;
 use windows_sys::Win32::Foundation::GetLastError;
-use windows_sys::Win32::Foundation::LocalFree;
 use windows_sys::Win32::Foundation::HANDLE;
 use windows_sys::Win32::Foundation::HLOCAL;
+use windows_sys::Win32::Foundation::LocalFree;
 use windows_sys::Win32::Storage::FileSystem::CreateFileW;
 use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_READ;
 use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_WRITE;
 use windows_sys::Win32::Storage::FileSystem::OPEN_EXISTING;
-use windows_sys::Win32::System::JobObjects::AssignProcessToJobObject;
-use windows_sys::Win32::System::JobObjects::CreateJobObjectW;
-use windows_sys::Win32::System::JobObjects::JobObjectExtendedLimitInformation;
-use windows_sys::Win32::System::JobObjects::SetInformationJobObject;
-use windows_sys::Win32::System::JobObjects::JOBOBJECT_EXTENDED_LIMIT_INFORMATION;
-use windows_sys::Win32::System::JobObjects::JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
+use windows_sys::Win32::System::Threading::INFINITE;
 use windows_sys::Win32::System::Threading::TerminateProcess;
 use windows_sys::Win32::System::Threading::WaitForSingleObject;
-use windows_sys::Win32::System::Threading::INFINITE;
 
 #[path = "cwd_junction.rs"]
 mod cwd_junction;
 
-#[allow(dead_code)]
 mod read_acl_mutex;
 
 #[derive(Debug, Deserialize)]
@@ -61,25 +56,6 @@ struct RunnerRequest {
 }
 
 const WAIT_TIMEOUT: u32 = 0x0000_0102;
-
-unsafe fn create_job_kill_on_close() -> Result<HANDLE> {
-    let h = CreateJobObjectW(std::ptr::null_mut(), std::ptr::null());
-    if h == 0 {
-        return Err(anyhow::anyhow!("CreateJobObjectW failed"));
-    }
-    let mut limits: JOBOBJECT_EXTENDED_LIMIT_INFORMATION = std::mem::zeroed();
-    limits.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
-    let ok = SetInformationJobObject(
-        h,
-        JobObjectExtendedLimitInformation,
-        &mut limits as *mut _ as *mut _,
-        std::mem::size_of::<JOBOBJECT_EXTENDED_LIMIT_INFORMATION>() as u32,
-    );
-    if ok == 0 {
-        return Err(anyhow::anyhow!("SetInformationJobObject failed"));
-    }
-    Ok(h)
-}
 
 fn read_request_file(req_path: &Path) -> Result<String> {
     let content = std::fs::read_to_string(req_path)
@@ -198,7 +174,9 @@ pub fn main() -> Result<()> {
             // Fail-safe: if we can't determine the state, assume the helper might be running and
             // use the junction path to avoid CWD failures on unreadable ancestors.
             log_note(
-                &format!("junction: read_acl_mutex_exists failed: {err}; assuming read ACL helper is running"),
+                &format!(
+                    "junction: read_acl_mutex_exists failed: {err}; assuming read ACL helper is running"
+                ),
                 log_dir,
             );
             true
@@ -250,10 +228,10 @@ pub fn main() -> Result<()> {
     };
 
     // Optional job kill on close.
-    let h_job = unsafe { create_job_kill_on_close().ok() };
+    let h_job = unsafe { create_kill_on_close_job().ok() };
     if let Some(job) = h_job {
         unsafe {
-            let _ = AssignProcessToJobObject(job, proc_info.hProcess);
+            let _ = assign_process_to_kill_on_close_job(job, proc_info.hProcess);
         }
     }
 

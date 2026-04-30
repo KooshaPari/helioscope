@@ -80,8 +80,7 @@ pub(crate) enum ShellRuntimeBackend {
 
 #[derive(Default)]
 pub struct ShellRuntime {
-    #[cfg_attr(not(unix), allow(dead_code))]
-    backend: ShellRuntimeBackend,
+    _backend: ShellRuntimeBackend,
 }
 
 #[derive(serde::Serialize, Clone, Debug, Eq, PartialEq, Hash)]
@@ -95,12 +94,12 @@ pub(crate) struct ApprovalKey {
 impl ShellRuntime {
     pub fn new() -> Self {
         Self {
-            backend: ShellRuntimeBackend::Generic,
+            _backend: ShellRuntimeBackend::Generic,
         }
     }
 
     pub(crate) fn for_shell_command(backend: ShellRuntimeBackend) -> Self {
-        Self { backend }
+        Self { _backend: backend }
     }
 
     fn stdout_stream(ctx: &ToolCtx) -> Option<crate::exec::StdoutStream> {
@@ -216,7 +215,7 @@ impl ToolRuntime<ShellRequest, ExecToolCallOutput> for ShellRuntime {
         };
 
         #[cfg(unix)]
-        if self.backend == ShellRuntimeBackend::ShellCommandZshFork {
+        if self._backend == ShellRuntimeBackend::ShellCommandZshFork {
             match unix_escalation::try_run_zsh_fork(req, attempt, ctx, &command).await? {
                 Some(out) => return Ok(out),
                 None => {

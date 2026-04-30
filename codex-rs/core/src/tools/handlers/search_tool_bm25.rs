@@ -282,17 +282,11 @@ mod tests {
             ToolInfo {
                 server_name: server_name.to_string(),
                 tool_name: tool_name.to_string(),
-                tool: Tool {
-                    name: tool_name.to_string().into(),
-                    title: None,
-                    description: Some(format!("Test tool: {tool_name}").into()),
-                    input_schema: Arc::new(JsonObject::default()),
-                    output_schema: None,
-                    annotations: None,
-                    execution: None,
-                    icons: None,
-                    meta: None,
-                },
+                tool: Tool::new(
+                    tool_name.to_string(),
+                    format!("Test tool: {tool_name}"),
+                    Arc::new(JsonObject::default()),
+                ),
                 connector_id: connector_id.map(str::to_string),
                 connector_name: connector_id.map(str::to_string),
             },

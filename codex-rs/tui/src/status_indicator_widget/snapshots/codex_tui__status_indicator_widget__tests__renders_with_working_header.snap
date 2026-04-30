@@ -1,0 +1,7 @@
+---
+source: tui/src/status_indicator_widget/tests.rs
+assertion_line: 36
+expression: terminal.backend()
+---
+"• Working (0s • esc to interrupt)                                               "
+"                                                                                "

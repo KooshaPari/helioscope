@@ -1,3 +1,5 @@
+#![allow(clippy::expect_used)]
+
 // Aggregates all former standalone integration tests as modules.
 // Aggregates all former standalone integration tests as modules.
 // Aggregates all former standalone integration tests as modules.
@@ -31,7 +33,7 @@ pub static CODEX_ALIASES_TEMP_DIR: TestCodexAliasesGuard = unsafe {
     // test-owned temp dir so startup never mutates the developer's real ~/.codex.
     //
     // Safety: #[ctor] runs before tests start, so no test threads exist yet.
-    std::env::set_var(CODEX_HOME_ENV_VAR, codex_home.path());
+    unsafe { std::env::set_var(CODEX_HOME_ENV_VAR, codex_home.path()) };
 
     let previous_codex_home = std::env::var_os(CODEX_HOME_ENV_VAR);
     #[allow(clippy::unwrap_used)]
@@ -39,8 +41,8 @@ pub static CODEX_ALIASES_TEMP_DIR: TestCodexAliasesGuard = unsafe {
     // Restore the process environment immediately so later tests observe the
     // same CODEX_HOME state they started with.
     match previous_codex_home.as_ref() {
-        Some(value) => std::env::set_var(CODEX_HOME_ENV_VAR, value),
-        None => std::env::remove_var(CODEX_HOME_ENV_VAR),
+        Some(value) => unsafe { std::env::set_var(CODEX_HOME_ENV_VAR, value) },
+        None => unsafe { std::env::remove_var(CODEX_HOME_ENV_VAR) },
     }
 
     TestCodexAliasesGuard {

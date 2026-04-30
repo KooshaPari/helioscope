@@ -1,0 +1,8 @@
+---
+source: tui/src/chatwidget/tests/exec_and_running_turn.rs
+assertion_line: 719
+expression: combined
+---
+• Waited for background terminal · cargo test -p codex-core
+
+• Streaming response.

@@ -406,10 +406,8 @@ async fn compact_resume_after_second_compaction_preserves_history() {
 
 fn normalize_line_endings(value: &mut Value) {
     match value {
-        Value::String(text) => {
-            if text.contains('\r') {
-                *text = text.replace("\r\n", "\n").replace('\r', "\n");
-            }
+        Value::String(text) if text.contains('\r') => {
+            *text = text.replace("\r\n", "\n").replace('\r', "\n");
         }
         Value::Array(items) => {
             for item in items {

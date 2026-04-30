@@ -621,13 +621,10 @@ mod tests {
         destructive_hint: Option<bool>,
         open_world_hint: Option<bool>,
     ) -> ToolAnnotations {
-        ToolAnnotations {
-            destructive_hint,
-            idempotent_hint: None,
-            open_world_hint,
-            read_only_hint: None,
-            title: None,
-        }
+        let mut annotations = ToolAnnotations::default();
+        annotations.destructive_hint = destructive_hint;
+        annotations.open_world_hint = open_world_hint;
+        annotations
     }
 
     fn app(id: &str) -> AppInfo {

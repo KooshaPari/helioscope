@@ -565,7 +565,6 @@ impl From<usize> for RtOptions<'_> {
     }
 }
 
-#[allow(dead_code)]
 impl<'a> RtOptions<'a> {
     pub fn new(width: usize) -> Self {
         RtOptions {
@@ -578,17 +577,6 @@ impl<'a> RtOptions<'a> {
             wrap_algorithm: textwrap::WrapAlgorithm::FirstFit,
             word_splitter: textwrap::WordSplitter::HyphenSplitter,
         }
-    }
-
-    pub fn line_ending(self, line_ending: textwrap::LineEnding) -> Self {
-        RtOptions {
-            line_ending,
-            ..self
-        }
-    }
-
-    pub fn width(self, width: usize) -> Self {
-        RtOptions { width, ..self }
     }
 
     pub fn initial_indent(self, initial_indent: Line<'a>) -> Self {
@@ -816,7 +804,7 @@ where
     out
 }
 
-#[allow(dead_code)]
+#[cfg(test)]
 pub(crate) fn word_wrap_lines_borrowed<'a, I, O>(lines: I, width_or_options: O) -> Vec<Line<'a>>
 where
     I: IntoIterator<Item = &'a Line<'a>>,

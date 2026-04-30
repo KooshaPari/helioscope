@@ -1,4 +1,4 @@
-use anyhow::{anyhow, Result};
+use anyhow::{Result, anyhow};
 use dirs_next::home_dir;
 use std::collections::HashMap;
 use std::env;
@@ -26,6 +26,24 @@ pub fn ensure_non_interactive_pager(env_map: &mut HashMap<String, String>) {
         .entry("PAGER".into())
         .or_insert_with(|| "more.com".into());
     env_map.entry("LESS".into()).or_insert_with(|| "".into());
+}
+
+pub fn remove_unsafe_injection_env(env_map: &mut HashMap<String, String>) {
+    for key in [
+        "JAVA_TOOL_OPTIONS",
+        "JDK_JAVA_OPTIONS",
+        "NODE_OPTIONS",
+        "PYTHONPATH",
+        "PERL5LIB",
+        "RUBYLIB",
+        "GEM_HOME",
+        "GEM_PATH",
+        "CLASSPATH",
+        "RUSTC_WRAPPER",
+        "RUSTFLAGS",
+    ] {
+        env_map.remove(key);
+    }
 }
 
 // Keep PATH and PATHEXT stable for callers that rely on inheriting the parent process env.
@@ -171,4 +189,27 @@ pub fn apply_no_network_to_env(env_map: &mut HashMap<String, String>) -> Result<
     prepend_path(env_map, &base.to_string_lossy());
     reorder_pathext_for_stubs(env_map);
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::remove_unsafe_injection_env;
+    use pretty_assertions::assert_eq;
+    use std::collections::HashMap;
+
+    #[test]
+    fn remove_unsafe_injection_env_strips_known_vars() {
+        let mut env_map = HashMap::from([
+            ("PATH".to_string(), "C:\\Windows\\System32".to_string()),
+            ("NODE_OPTIONS".to_string(), "--require x".to_string()),
+            ("RUSTFLAGS".to_string(), "-Zshare-generics=y".to_string()),
+        ]);
+
+        remove_unsafe_injection_env(&mut env_map);
+
+        assert_eq!(
+            env_map,
+            HashMap::from([("PATH".to_string(), "C:\\Windows\\System32".to_string())])
+        );
+    }
 }

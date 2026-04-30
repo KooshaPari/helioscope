@@ -2,6 +2,7 @@ use anyhow::Result;
 use chrono::DateTime;
 use chrono::Utc;
 use serde_json::Value;
+use std::collections::BTreeSet;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum AgentJobStatus {
@@ -79,7 +80,6 @@ pub struct AgentJob {
     pub instruction: String,
     pub auto_export: bool,
     pub max_runtime_seconds: Option<u64>,
-    // tracked: https://github.com/KooshaPari/heliosCLI/issues/122
     pub output_schema_json: Option<Value>,
     pub input_headers: Vec<String>,
     pub input_csv_path: String,
@@ -250,7 +250,175 @@ impl TryFrom<AgentJobItemRow> for AgentJobItem {
     }
 }
 
+pub(crate) fn validate_strict_output_schema(schema: &Value) -> Result<()> {
+    validate_strict_schema(schema, "$")
+}
+
+fn validate_strict_schema(schema: &Value, path: &str) -> Result<()> {
+    let Some(map) = schema.as_object() else {
+        return Err(anyhow::anyhow!("{path} must be a JSON object schema"));
+    };
+
+    let is_object_schema = map
+        .get("type")
+        .and_then(Value::as_str)
+        .is_some_and(|ty| ty == "object")
+        || map.contains_key("properties")
+        || map.contains_key("required")
+        || map.contains_key("additionalProperties");
+
+    if !is_object_schema {
+        if let Some(items) = map.get("items") {
+            validate_strict_schema(items, &format!("{path}.items"))?;
+        }
+        if let Some(items) = map.get("prefixItems").and_then(Value::as_array) {
+            for (index, item) in items.iter().enumerate() {
+                validate_strict_schema(item, &format!("{path}.prefixItems[{index}]"))?;
+            }
+        }
+        for key in ["oneOf", "anyOf", "allOf"] {
+            if let Some(branches) = map.get(key).and_then(Value::as_array) {
+                for (index, branch) in branches.iter().enumerate() {
+                    validate_strict_schema(branch, &format!("{path}.{key}[{index}]"))?;
+                }
+            }
+        }
+        for key in ["not", "if", "then", "else"] {
+            if let Some(nested) = map.get(key) {
+                validate_strict_schema(nested, &format!("{path}.{key}"))?;
+            }
+        }
+        if let Some(defs) = map.get("$defs").and_then(Value::as_object) {
+            for (name, nested) in defs {
+                validate_strict_schema(nested, &format!("{path}.$defs.{name}"))?;
+            }
+        }
+        if let Some(defs) = map.get("definitions").and_then(Value::as_object) {
+            for (name, nested) in defs {
+                validate_strict_schema(nested, &format!("{path}.definitions.{name}"))?;
+            }
+        }
+        return Ok(());
+    }
+
+    match map.get("additionalProperties") {
+        Some(Value::Bool(false)) => {}
+        Some(other) => {
+            return Err(anyhow::anyhow!(
+                "{path} must set additionalProperties to false in strict mode, got {other}"
+            ));
+        }
+        None => {
+            return Err(anyhow::anyhow!(
+                "{path} must set additionalProperties to false in strict mode"
+            ));
+        }
+    }
+
+    let Some(properties) = map.get("properties").and_then(Value::as_object) else {
+        return Err(anyhow::anyhow!(
+            "{path} must include an object properties map in strict mode"
+        ));
+    };
+
+    let Some(required) = map.get("required").and_then(Value::as_array) else {
+        return Err(anyhow::anyhow!(
+            "{path} must include required fields in strict mode"
+        ));
+    };
+
+    let mut required_names = BTreeSet::new();
+    for item in required {
+        let Some(name) = item.as_str() else {
+            return Err(anyhow::anyhow!("{path}.required must contain only strings"));
+        };
+        required_names.insert(name);
+    }
+
+    let property_names = properties
+        .keys()
+        .map(String::as_str)
+        .collect::<BTreeSet<_>>();
+    if required_names != property_names {
+        return Err(anyhow::anyhow!(
+            "{path} requires every property to appear exactly once in required"
+        ));
+    }
+
+    for (name, nested) in properties {
+        validate_strict_schema(nested, &format!("{path}.properties.{name}"))?;
+    }
+
+    if let Some(items) = map.get("items") {
+        validate_strict_schema(items, &format!("{path}.items"))?;
+    }
+    if let Some(items) = map.get("prefixItems").and_then(Value::as_array) {
+        for (index, item) in items.iter().enumerate() {
+            validate_strict_schema(item, &format!("{path}.prefixItems[{index}]"))?;
+        }
+    }
+    for key in ["oneOf", "anyOf", "allOf"] {
+        if let Some(branches) = map.get(key).and_then(Value::as_array) {
+            for (index, branch) in branches.iter().enumerate() {
+                validate_strict_schema(branch, &format!("{path}.{key}[{index}]"))?;
+            }
+        }
+    }
+    for key in ["not", "if", "then", "else"] {
+        if let Some(nested) = map.get(key) {
+            validate_strict_schema(nested, &format!("{path}.{key}"))?;
+        }
+    }
+    if let Some(defs) = map.get("$defs").and_then(Value::as_object) {
+        for (name, nested) in defs {
+            validate_strict_schema(nested, &format!("{path}.$defs.{name}"))?;
+        }
+    }
+    if let Some(defs) = map.get("definitions").and_then(Value::as_object) {
+        for (name, nested) in defs {
+            validate_strict_schema(nested, &format!("{path}.definitions.{name}"))?;
+        }
+    }
+
+    Ok(())
+}
+
 fn epoch_seconds_to_datetime(secs: i64) -> Result<DateTime<Utc>> {
     DateTime::<Utc>::from_timestamp(secs, 0)
         .ok_or_else(|| anyhow::anyhow!("invalid unix timestamp: {secs}"))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn validate_strict_output_schema_accepts_strict_object_schema() {
+        let schema = serde_json::json!({
+            "type": "object",
+            "properties": {
+                "answer": {"type": "string"}
+            },
+            "required": ["answer"],
+            "additionalProperties": false
+        });
+
+        validate_strict_output_schema(&schema).expect("valid strict schema");
+    }
+
+    #[test]
+    fn validate_strict_output_schema_rejects_missing_required_property() {
+        let schema = serde_json::json!({
+            "type": "object",
+            "properties": {
+                "answer": {"type": "string"},
+                "reason": {"type": "string"}
+            },
+            "required": ["answer"],
+            "additionalProperties": false
+        });
+
+        let err = validate_strict_output_schema(&schema).expect_err("invalid strict schema");
+        assert!(err.to_string().contains("requires every property"));
+    }
 }

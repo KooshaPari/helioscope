@@ -27,6 +27,7 @@ use crate::bottom_pane::bottom_pane_view::BottomPaneView;
 use crate::bottom_pane::scroll_state::ScrollState;
 use crate::bottom_pane::selection_popup_common::GenericDisplayRow;
 use crate::bottom_pane::selection_popup_common::measure_rows_height;
+use crate::bottom_pane::text_manipulation;
 use crate::history_cell;
 use crate::render::renderable::Renderable;
 
@@ -76,7 +77,7 @@ impl ComposerDraft {
             !self.text_elements.is_empty(),
             "pending pastes should always have matching text elements"
         );
-        let (expanded, _) = ChatComposer::expand_pending_pastes(
+        let (expanded, _) = text_manipulation::expand_pending_pastes(
             &self.text,
             self.text_elements.clone(),
             &self.pending_pastes,
@@ -1110,11 +1111,9 @@ impl BottomPaneView for RequestUserInputOverlay {
                     KeyCode::Backspace | KeyCode::Delete => {
                         self.clear_selection();
                     }
-                    KeyCode::Tab => {
-                        if self.selected_option_index().is_some() {
-                            self.focus = Focus::Notes;
-                            self.ensure_selected_for_notes();
-                        }
+                    KeyCode::Tab if self.selected_option_index().is_some() => {
+                        self.focus = Focus::Notes;
+                        self.ensure_selected_for_notes();
                     }
                     KeyCode::Enter => {
                         let has_selection = self.selected_option_index().is_some();

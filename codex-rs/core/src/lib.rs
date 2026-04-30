@@ -86,12 +86,6 @@ pub mod web_search;
 pub mod windows_sandbox_read_grants;
 pub use thread_manager::NewThread;
 pub use thread_manager::ThreadManager;
-#[deprecated(note = "use ThreadManager")]
-pub type ConversationManager = ThreadManager;
-#[deprecated(note = "use NewThread")]
-pub type NewConversation = NewThread;
-#[deprecated(note = "use CodexThread")]
-pub type CodexConversation = CodexThread;
 // Re-export common auth types for workspace consumers
 pub use auth::AuthManager;
 pub use auth::CodexAuth;
@@ -116,8 +110,6 @@ pub use rollout::RolloutRecorderParams;
 pub use rollout::SESSIONS_SUBDIR;
 pub use rollout::SessionMeta;
 pub use rollout::find_archived_thread_path_by_id_str;
-#[deprecated(note = "use find_thread_path_by_id_str")]
-pub use rollout::find_conversation_path_by_id_str;
 pub use rollout::find_thread_name_by_id;
 pub use rollout::find_thread_path_by_id_str;
 pub use rollout::find_thread_path_by_name_str;

@@ -16,6 +16,7 @@ use std::collections::VecDeque;
 /// Normalize newlines from various platforms to Unix-style LF.
 ///
 /// Handles both Windows (CRLF) and old Mac (CR) line endings.
+#[cfg(test)]
 pub(crate) fn normalize_newlines(text: &str) -> String {
     text.replace("\r\n", "\n").replace('\r', "\n")
 }
@@ -25,6 +26,7 @@ pub(crate) fn normalize_newlines(text: &str) -> String {
 /// If the position falls in the middle of a multi-byte character, this function
 /// backs up to the start of that character. This prevents accidental corruption
 /// of UTF-8 sequences when manipulating text.
+#[cfg(test)]
 pub(crate) fn clamp_to_char_boundary(text: &str, pos: usize) -> usize {
     if pos >= text.len() {
         return text.len();
@@ -197,6 +199,7 @@ pub(crate) fn expand_pending_pastes(
 ///
 /// Used to automatically attach images when pasting file paths instead of inserting
 /// the path as plain text.
+#[cfg(test)]
 pub(crate) fn is_image_path(path: &str) -> bool {
     let path_lower = path.to_lowercase();
     path_lower.ends_with(".png")
@@ -284,7 +287,7 @@ mod tests {
             ("[Paste #2]".to_string(), "more content".to_string()),
         ];
 
-        let (expanded, new_elements) = expand_pending_pastes(&text, elements, &pending_pastes);
+        let (expanded, new_elements) = expand_pending_pastes(text, elements, &pending_pastes);
 
         assert_eq!(expanded, "large content here more content");
         assert_eq!(new_elements.len(), 0); // Both placeholders were expanded
@@ -299,7 +302,7 @@ mod tests {
         )];
         let pending_pastes = vec![("[Paste #1]".to_string(), "EXPANDED".to_string())];
 
-        let (expanded, new_elements) = expand_pending_pastes(&text, elements, &pending_pastes);
+        let (expanded, new_elements) = expand_pending_pastes(text, elements, &pending_pastes);
 
         assert_eq!(expanded, "text EXPANDED more");
         assert_eq!(new_elements.len(), 0);

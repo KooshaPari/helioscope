@@ -1,4 +1,4 @@
-# HeliosCLI - Fork of OpenAI Codex CLI
+# HeliosCLI - Bazel monorepo for codex-rs and codex-cli
 
 ## Overview
 
@@ -43,9 +43,8 @@ git checkout -b helios-optimization
 
 ```
 heliosCLI/
-├── cli/              # CLI entry point
-├── helios-rs/        # Rust implementation
-├── packages/         # NPM packages  
+├── codex-rs/         # Rust implementation and workspace crates
+├── codex-cli/        # TypeScript CLI package
 ├── docs/             # Documentation
 └── scripts/          # Build/dev scripts
 ```
@@ -69,7 +68,7 @@ cargo flamegraph --bin codex -- --help
 
 # Compare with upstream
 git fetch upstream
-git diff main upstream/main -- helios-rs/
+git diff main upstream/main -- codex-rs/
 ```
 
 ## Syncing

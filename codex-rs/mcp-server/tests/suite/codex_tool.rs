@@ -74,8 +74,8 @@ async fn shell_command_approval_triggers_elicitation() -> anyhow::Result<()> {
 
     let McpHandle {
         process: mut mcp_process,
-        server: _server,
-        dir: _dir,
+        _server,
+        _dir,
     } = create_mcp_process(vec![
         create_shell_command_sse_response(
             shell_command.clone(),
@@ -237,8 +237,8 @@ async fn patch_approval_triggers_elicitation() -> anyhow::Result<()> {
 
     let McpHandle {
         process: mut mcp_process,
-        server: _server,
-        dir: _dir,
+        _server,
+        _dir,
     } = create_mcp_process(vec![
         create_apply_patch_sse_response(&patch_content, "call1234")?,
         create_final_assistant_message_sse_response("Patch has been applied successfully!")?,
@@ -464,11 +464,9 @@ fn create_expected_patch_approval_elicitation_request_params(
 pub struct McpHandle {
     pub process: McpProcess,
     /// Retain the server for the lifetime of the McpProcess.
-    #[allow(dead_code)]
-    server: MockServer,
+    _server: MockServer,
     /// Retain the temporary directory for the lifetime of the McpProcess.
-    #[allow(dead_code)]
-    dir: TempDir,
+    _dir: TempDir,
 }
 
 async fn create_mcp_process(responses: Vec<String>) -> anyhow::Result<McpHandle> {
@@ -479,8 +477,8 @@ async fn create_mcp_process(responses: Vec<String>) -> anyhow::Result<McpHandle>
     timeout(DEFAULT_READ_TIMEOUT, mcp_process.initialize()).await??;
     Ok(McpHandle {
         process: mcp_process,
-        server,
-        dir: codex_home,
+        _server: server,
+        _dir: codex_home,
     })
 }
 

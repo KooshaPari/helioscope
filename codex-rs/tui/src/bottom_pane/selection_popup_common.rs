@@ -44,21 +44,13 @@ pub(crate) struct GenericDisplayRow {
 /// Callers should use the same mode for both measurement and rendering, or the
 /// popup can reserve the wrong number of lines and clip content.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
-#[cfg_attr(not(test), allow(dead_code))]
 pub(crate) enum ColumnWidthMode {
     /// Derive column placement from only the visible viewport rows.
     #[default]
     AutoVisible,
     /// Derive column placement from all rows so scrolling does not shift columns.
     AutoAllRows,
-    /// Use a fixed two-column split: 30% left (name), 70% right (description).
-    Fixed,
 }
-
-// Fixed split used by explicitly fixed column mode: 30% label, 70%
-// description.
-const FIXED_LEFT_COLUMN_NUMERATOR: usize = 3;
-const FIXED_LEFT_COLUMN_DENOMINATOR: usize = 10;
 
 const MENU_SURFACE_INSET_V: u16 = 1;
 const MENU_SURFACE_INSET_H: u16 = 2;
@@ -133,18 +125,8 @@ fn compute_desc_col(
     }
 
     let max_desc_col = content_width.saturating_sub(1) as usize;
-    // Reuse the existing fixed split constants to derive the auto cap:
-    // if fixed mode is 30/70 (label/description), auto mode caps label width
-    // at 70% to keep at least 30% available for descriptions.
-    let max_auto_desc_col = max_desc_col.min(
-        ((content_width as usize * (FIXED_LEFT_COLUMN_DENOMINATOR - FIXED_LEFT_COLUMN_NUMERATOR))
-            / FIXED_LEFT_COLUMN_DENOMINATOR)
-            .max(1),
-    );
+    let max_auto_desc_col = max_desc_col.min(((content_width as usize * 7) / 10).max(1));
     match col_width_mode {
-        ColumnWidthMode::Fixed => ((content_width as usize * FIXED_LEFT_COLUMN_NUMERATOR)
-            / FIXED_LEFT_COLUMN_DENOMINATOR)
-            .clamp(1, max_desc_col),
         ColumnWidthMode::AutoVisible | ColumnWidthMode::AutoAllRows => {
             let max_name_width = match col_width_mode {
                 ColumnWidthMode::AutoVisible => rows_all
@@ -174,7 +156,6 @@ fn compute_desc_col(
                     })
                     .max()
                     .unwrap_or(0),
-                ColumnWidthMode::Fixed => 0,
             };
 
             max_name_width.saturating_add(2).min(max_auto_desc_col)
@@ -635,32 +616,6 @@ pub(crate) fn render_rows_stable_col_widths(
     )
 }
 
-/// Render a list of rows using the provided ScrollState and explicit
-/// [`ColumnWidthMode`] behavior.
-///
-/// This is the low-level entry point for callers that need to thread a mode
-/// through higher-level configuration.
-/// Returns the number of terminal lines actually rendered.
-pub(crate) fn render_rows_with_col_width_mode(
-    area: Rect,
-    buf: &mut Buffer,
-    rows_all: &[GenericDisplayRow],
-    state: &ScrollState,
-    max_results: usize,
-    empty_message: &str,
-    col_width_mode: ColumnWidthMode,
-) -> u16 {
-    render_rows_inner(
-        area,
-        buf,
-        rows_all,
-        state,
-        max_results,
-        empty_message,
-        col_width_mode,
-    )
-}
-
 /// Render rows as a single line each (no wrapping), truncating overflow with an ellipsis.
 ///
 /// This path always uses viewport-local width alignment and is best for dense
@@ -786,19 +741,6 @@ pub(crate) fn measure_rows_height_stable_col_widths(
         width,
         ColumnWidthMode::AutoAllRows,
     )
-}
-
-/// Measure selection-row height using explicit [`ColumnWidthMode`] behavior.
-///
-/// This is the low-level companion to [`render_rows_with_col_width_mode`].
-pub(crate) fn measure_rows_height_with_col_width_mode(
-    rows_all: &[GenericDisplayRow],
-    state: &ScrollState,
-    max_results: usize,
-    width: u16,
-    col_width_mode: ColumnWidthMode,
-) -> u16 {
-    measure_rows_height_inner(rows_all, state, max_results, width, col_width_mode)
 }
 
 fn measure_rows_height_inner(

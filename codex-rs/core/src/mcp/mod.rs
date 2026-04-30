@@ -369,16 +369,11 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     fn make_tool(name: &str) -> Tool {
-        Tool {
-            name: name.to_string(),
-            title: None,
-            description: None,
-            input_schema: serde_json::json!({"type": "object", "properties": {}}),
-            output_schema: None,
-            annotations: None,
-            icons: None,
-            meta: None,
-        }
+        Tool::from_mcp_value(serde_json::json!({
+            "name": name,
+            "inputSchema": {"type": "object", "properties": {}},
+        }))
+        .expect("tool")
     }
 
     #[test]

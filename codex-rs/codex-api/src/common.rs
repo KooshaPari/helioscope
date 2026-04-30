@@ -225,12 +225,16 @@ pub enum ResponsesWsRequest {
 pub fn create_text_param_for_request(
     verbosity: Option<VerbosityConfig>,
     output_schema: &Option<Value>,
-) -> Option<TextControls> {
+) -> Result<Option<TextControls>, ApiError> {
     if verbosity.is_none() && output_schema.is_none() {
-        return None;
+        return Ok(None);
     }
 
-    Some(TextControls {
+    if let Some(schema) = output_schema {
+        validate_strict_output_schema(schema)?;
+    }
+
+    Ok(Some(TextControls {
         verbosity: verbosity.map(std::convert::Into::into),
         format: output_schema.as_ref().map(|schema| TextFormat {
             r#type: TextFormatType::JsonSchema,
@@ -238,7 +242,146 @@ pub fn create_text_param_for_request(
             schema: schema.clone(),
             name: "codex_output_schema".to_string(),
         }),
-    })
+    }))
+}
+
+fn validate_strict_output_schema(schema: &Value) -> Result<(), ApiError> {
+    validate_strict_schema(schema, "$")
+}
+
+fn validate_strict_schema(schema: &Value, path: &str) -> Result<(), ApiError> {
+    let Some(map) = schema.as_object() else {
+        return Err(ApiError::InvalidRequest {
+            message: format!("{path} must be a JSON object schema"),
+        });
+    };
+
+    let is_object_schema = map
+        .get("type")
+        .and_then(Value::as_str)
+        .is_some_and(|ty| ty == "object")
+        || map.contains_key("properties")
+        || map.contains_key("required")
+        || map.contains_key("additionalProperties");
+
+    if !is_object_schema {
+        if let Some(items) = map.get("items") {
+            validate_strict_schema(items, &format!("{path}.items"))?;
+        }
+        if let Some(items) = map.get("prefixItems").and_then(Value::as_array) {
+            for (index, item) in items.iter().enumerate() {
+                validate_strict_schema(item, &format!("{path}.prefixItems[{index}]"))?;
+            }
+        }
+        for key in ["oneOf", "anyOf", "allOf"] {
+            if let Some(branches) = map.get(key).and_then(Value::as_array) {
+                for (index, branch) in branches.iter().enumerate() {
+                    validate_strict_schema(branch, &format!("{path}.{key}[{index}]"))?;
+                }
+            }
+        }
+        for key in ["not", "if", "then", "else"] {
+            if let Some(nested) = map.get(key) {
+                validate_strict_schema(nested, &format!("{path}.{key}"))?;
+            }
+        }
+        if let Some(defs) = map.get("$defs").and_then(Value::as_object) {
+            for (name, nested) in defs {
+                validate_strict_schema(nested, &format!("{path}.$defs.{name}"))?;
+            }
+        }
+        if let Some(defs) = map.get("definitions").and_then(Value::as_object) {
+            for (name, nested) in defs {
+                validate_strict_schema(nested, &format!("{path}.definitions.{name}"))?;
+            }
+        }
+        return Ok(());
+    }
+
+    match map.get("additionalProperties") {
+        Some(Value::Bool(false)) => {}
+        Some(other) => {
+            return Err(ApiError::InvalidRequest {
+                message: format!(
+                    "{path} must set additionalProperties to false in strict mode, got {other}"
+                ),
+            });
+        }
+        None => {
+            return Err(ApiError::InvalidRequest {
+                message: format!("{path} must set additionalProperties to false in strict mode"),
+            });
+        }
+    }
+
+    let Some(properties) = map.get("properties").and_then(Value::as_object) else {
+        return Err(ApiError::InvalidRequest {
+            message: format!("{path} must include an object properties map in strict mode"),
+        });
+    };
+
+    let Some(required) = map.get("required").and_then(Value::as_array) else {
+        return Err(ApiError::InvalidRequest {
+            message: format!("{path} must include required fields in strict mode"),
+        });
+    };
+
+    let mut required_names = std::collections::BTreeSet::new();
+    for item in required {
+        let Some(name) = item.as_str() else {
+            return Err(ApiError::InvalidRequest {
+                message: format!("{path}.required must contain only strings"),
+            });
+        };
+        required_names.insert(name);
+    }
+
+    let property_names = properties
+        .keys()
+        .map(String::as_str)
+        .collect::<std::collections::BTreeSet<_>>();
+    if required_names != property_names {
+        return Err(ApiError::InvalidRequest {
+            message: format!("{path} requires every property to appear exactly once in required"),
+        });
+    }
+
+    for (name, nested) in properties {
+        validate_strict_schema(nested, &format!("{path}.properties.{name}"))?;
+    }
+
+    if let Some(items) = map.get("items") {
+        validate_strict_schema(items, &format!("{path}.items"))?;
+    }
+    if let Some(items) = map.get("prefixItems").and_then(Value::as_array) {
+        for (index, item) in items.iter().enumerate() {
+            validate_strict_schema(item, &format!("{path}.prefixItems[{index}]"))?;
+        }
+    }
+    for key in ["oneOf", "anyOf", "allOf"] {
+        if let Some(branches) = map.get(key).and_then(Value::as_array) {
+            for (index, branch) in branches.iter().enumerate() {
+                validate_strict_schema(branch, &format!("{path}.{key}[{index}]"))?;
+            }
+        }
+    }
+    for key in ["not", "if", "then", "else"] {
+        if let Some(nested) = map.get(key) {
+            validate_strict_schema(nested, &format!("{path}.{key}"))?;
+        }
+    }
+    if let Some(defs) = map.get("$defs").and_then(Value::as_object) {
+        for (name, nested) in defs {
+            validate_strict_schema(nested, &format!("{path}.$defs.{name}"))?;
+        }
+    }
+    if let Some(defs) = map.get("definitions").and_then(Value::as_object) {
+        for (name, nested) in defs {
+            validate_strict_schema(nested, &format!("{path}.definitions.{name}"))?;
+        }
+    }
+
+    Ok(())
 }
 
 pub struct ResponseStream {

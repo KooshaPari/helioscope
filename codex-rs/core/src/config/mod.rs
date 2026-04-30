@@ -3010,7 +3010,8 @@ trust_level = "trusted"
             temp_dir.path().to_path_buf(),
         )?;
 
-        let expected_backend = AbsolutePathBuf::try_from(backend).expect("backend path should be valid");
+        let expected_backend =
+            AbsolutePathBuf::try_from(backend).expect("backend path should be valid");
         if cfg!(target_os = "windows") {
             match config.permissions.sandbox_policy.get() {
                 SandboxPolicy::ReadOnly { .. } => {}
@@ -3480,8 +3481,7 @@ profile = "project"
 
         let overrides = LoaderOverrides {
             managed_config_path: Some(managed_path.clone()),
-            #[cfg(target_os = "macos")]
-            managed_preferences_base64: None,
+            macos_managed_preferences_base64: None,
             macos_managed_config_requirements_base64: None,
         };
 
@@ -3611,8 +3611,7 @@ profile = "project"
 
         let overrides = LoaderOverrides {
             managed_config_path: Some(managed_path),
-            #[cfg(target_os = "macos")]
-            managed_preferences_base64: None,
+            macos_managed_preferences_base64: None,
             macos_managed_config_requirements_base64: None,
         };
 

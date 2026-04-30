@@ -872,7 +872,9 @@ mod tests {
 
     #[test]
     fn usage_limit_reached_error_formats_team_plan() {
-        let base = Utc.with_ymd_and_hms(2024, 1, 1, 0, 0, 0).expect("valid timestamp");
+        let base = Utc
+            .with_ymd_and_hms(2024, 1, 1, 0, 0, 0)
+            .single().expect("valid timestamp");
         let resets_at = base + ChronoDuration::hours(1);
         with_now_override(base, move || {
             let expected_time = format_retry_timestamp(&resets_at);
@@ -919,7 +921,9 @@ mod tests {
 
     #[test]
     fn usage_limit_reached_error_formats_pro_plan_with_reset() {
-        let base = Utc.with_ymd_and_hms(2024, 1, 1, 0, 0, 0).expect("valid timestamp");
+        let base = Utc
+            .with_ymd_and_hms(2024, 1, 1, 0, 0, 0)
+            .single().expect("valid timestamp");
         let resets_at = base + ChronoDuration::hours(1);
         with_now_override(base, move || {
             let expected_time = format_retry_timestamp(&resets_at);
@@ -938,7 +942,9 @@ mod tests {
 
     #[test]
     fn usage_limit_reached_error_hides_upsell_for_non_codex_limit_name() {
-        let base = Utc.with_ymd_and_hms(2024, 1, 1, 0, 0, 0).expect("valid timestamp");
+        let base = Utc
+            .with_ymd_and_hms(2024, 1, 1, 0, 0, 0)
+            .single().expect("valid timestamp");
         let resets_at = base + ChronoDuration::hours(1);
         with_now_override(base, move || {
             let expected_time = format_retry_timestamp(&resets_at);
@@ -964,7 +970,9 @@ mod tests {
 
     #[test]
     fn usage_limit_reached_includes_minutes_when_available() {
-        let base = Utc.with_ymd_and_hms(2024, 1, 1, 0, 0, 0).expect("valid timestamp");
+        let base = Utc
+            .with_ymd_and_hms(2024, 1, 1, 0, 0, 0)
+            .single().expect("valid timestamp");
         let resets_at = base + ChronoDuration::minutes(5);
         with_now_override(base, move || {
             let expected_time = format_retry_timestamp(&resets_at);
@@ -1073,7 +1081,9 @@ mod tests {
 
     #[test]
     fn usage_limit_reached_includes_hours_and_minutes() {
-        let base = Utc.with_ymd_and_hms(2024, 1, 1, 0, 0, 0).expect("valid timestamp");
+        let base = Utc
+            .with_ymd_and_hms(2024, 1, 1, 0, 0, 0)
+            .single().expect("valid timestamp");
         let resets_at = base + ChronoDuration::hours(3) + ChronoDuration::minutes(32);
         with_now_override(base, move || {
             let expected_time = format_retry_timestamp(&resets_at);
@@ -1092,7 +1102,9 @@ mod tests {
 
     #[test]
     fn usage_limit_reached_includes_days_hours_minutes() {
-        let base = Utc.with_ymd_and_hms(2024, 1, 1, 0, 0, 0).expect("valid timestamp");
+        let base = Utc
+            .with_ymd_and_hms(2024, 1, 1, 0, 0, 0)
+            .single().expect("valid timestamp");
         let resets_at =
             base + ChronoDuration::days(2) + ChronoDuration::hours(3) + ChronoDuration::minutes(5);
         with_now_override(base, move || {
@@ -1110,7 +1122,9 @@ mod tests {
 
     #[test]
     fn usage_limit_reached_less_than_minute() {
-        let base = Utc.with_ymd_and_hms(2024, 1, 1, 0, 0, 0).expect("valid timestamp");
+        let base = Utc
+            .with_ymd_and_hms(2024, 1, 1, 0, 0, 0)
+            .single().expect("valid timestamp");
         let resets_at = base + ChronoDuration::seconds(30);
         with_now_override(base, move || {
             let expected_time = format_retry_timestamp(&resets_at);
@@ -1127,7 +1141,9 @@ mod tests {
 
     #[test]
     fn usage_limit_reached_with_promo_message() {
-        let base = Utc.with_ymd_and_hms(2024, 1, 1, 0, 0, 0).expect("valid timestamp");
+        let base = Utc
+            .with_ymd_and_hms(2024, 1, 1, 0, 0, 0)
+            .single().expect("valid timestamp");
         let resets_at = base + ChronoDuration::seconds(30);
         with_now_override(base, move || {
             let expected_time = format_retry_timestamp(&resets_at);

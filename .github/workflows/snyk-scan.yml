@@ -20,41 +20,58 @@ jobs:
     env:
       SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
     steps:
+      - name: Check Snyk token
+        id: snyk_token
+        run: |
+          if [ -z "$SNYK_TOKEN" ]; then
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "SNYK_TOKEN is not configured; skipping Snyk test job." | tee -a "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          echo "enabled=true" >> "$GITHUB_OUTPUT"
+          echo "SNYK_TOKEN is configured." | tee -a "$GITHUB_STEP_SUMMARY"
+
       - name: Checkout code
+        if: steps.snyk_token.outputs.enabled == 'true'
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Set up Rust
+        if: steps.snyk_token.outputs.enabled == 'true'
         uses: dtolnay/rust-toolchain@stable
 
       - name: Install Snyk CLI
+        if: steps.snyk_token.outputs.enabled == 'true'
         run: npm install -g snyk
 
       - name: Authenticate with Snyk
+        if: steps.snyk_token.outputs.enabled == 'true'
         run: snyk auth "$SNYK_TOKEN"
 
       - name: Run Snyk test
+        if: steps.snyk_token.outputs.enabled == 'true'
         id: snyk_test
         continue-on-error: true
         run: |
           snyk test --severity-threshold=high --json-file-output=snyk-test-report.json --all-projects --detection-depth=3
 
       - name: Generate SARIF report
-        if: always()
+        if: steps.snyk_token.outputs.enabled == 'true'
         continue-on-error: true
         run: |
           snyk test --sarif-file-output=snyk.sarif --severity-threshold=low --all-projects --detection-depth=3 || true
 
       - name: Upload SARIF to GitHub Code Scanning
-        if: always()
+        if: steps.snyk_token.outputs.enabled == 'true'
         uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: snyk.sarif
           category: snyk-security-scan
 
       - name: Add PR comment
-        if: github.event_name == 'pull_request' && always()
+        if: github.event_name == 'pull_request' && steps.snyk_token.outputs.enabled == 'true'
         uses: actions/github-script@v7
         with:
           script: |
@@ -66,7 +83,7 @@ jobs:
             });
 
       - name: Fail on critical vulnerabilities
-        if: steps.snyk_test.outcome == 'failure'
+        if: steps.snyk_token.outputs.enabled == 'true' && steps.snyk_test.outcome == 'failure'
         run: echo "Critical vulnerabilities detected." && exit 1
 
   snyk-monitor:
@@ -76,10 +93,24 @@ jobs:
     env:
       SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
     steps:
+      - name: Check Snyk token
+        id: snyk_token
+        run: |
+          if [ -z "$SNYK_TOKEN" ]; then
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "SNYK_TOKEN is not configured; skipping Snyk monitor job." | tee -a "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          echo "enabled=true" >> "$GITHUB_OUTPUT"
+          echo "SNYK_TOKEN is configured." | tee -a "$GITHUB_STEP_SUMMARY"
+
       - name: Checkout code
+        if: steps.snyk_token.outputs.enabled == 'true'
         uses: actions/checkout@v4
 
       - name: Monitor dependencies
+        if: steps.snyk_token.outputs.enabled == 'true'
         run: |
           npm install -g snyk
           snyk auth "$SNYK_TOKEN"

@@ -1,4 +1,4 @@
-#![expect(clippy::expect_used)]
+#![allow(clippy::expect_used)]
 
 //! Optional smoke tests that hit the real OpenAI /v1/responses endpoint. They are `#[ignore]` by
 //! default so CI stays deterministic and free. Developers can run them locally with
@@ -17,7 +17,6 @@ fn require_api_key() -> String {
 
 /// Helper that spawns the binary inside a TempDir with minimal flags. Returns (Assert, TempDir).
 fn run_live(prompt: &str) -> (assert_cmd::assert::Assert, TempDir) {
-    #![expect(clippy::unwrap_used)]
     use std::io::Read;
     use std::io::Write;
     use std::thread;

@@ -73,13 +73,6 @@ pub struct ThreadItem {
     pub updated_at: Option<String>,
 }
 
-#[allow(dead_code)]
-#[deprecated(note = "use ThreadItem")]
-pub type ConversationItem = ThreadItem;
-#[allow(dead_code)]
-#[deprecated(note = "use ThreadsPage")]
-pub type ConversationsPage = ThreadsPage;
-
 #[derive(Default)]
 struct HeadTailSummary {
     saw_session_meta: bool,
@@ -1211,7 +1204,7 @@ async fn find_thread_path_by_id_str_in_subdir(
     if !root.exists() {
         return Ok(None);
     }
-    let limit = NonZero::new(1).expect("file search limit must be non-zero");
+    let limit = NonZero::new(1).unwrap_or_else(|| unreachable!("1 is non-zero"));
     let options = file_search::FileSearchOptions {
         limit,
         compute_indices: false,

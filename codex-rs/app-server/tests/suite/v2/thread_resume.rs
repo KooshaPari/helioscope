@@ -1443,7 +1443,6 @@ async fn wait_for_thread_status_active(
     }
 }
 
-#[allow(dead_code)]
 fn set_rollout_mtime(path: &Path, updated_at_rfc3339: &str) -> Result<()> {
     let parsed = chrono::DateTime::parse_from_rfc3339(updated_at_rfc3339)?.with_timezone(&Utc);
     let times = FileTimes::new().set_modified(parsed.into());

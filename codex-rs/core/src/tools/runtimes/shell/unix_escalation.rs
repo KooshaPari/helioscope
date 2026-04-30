@@ -384,7 +384,7 @@ impl CoreShellActionProvider {
                                     .insert(
                                         program.clone(),
                                         ExecveSessionApproval {
-                                            skill: Some(skill.clone()),
+                                            _skill: Some(skill.clone()),
                                         },
                                     );
                             }
@@ -468,7 +468,7 @@ impl EscalationPolicy for CoreShellActionProvider {
                 "Found session approval for {program:?}, allowing execution without further checks"
             );
             let execution = approval
-                .skill
+                ._skill
                 .as_ref()
                 .map(Self::skill_escalation_execution)
                 .unwrap_or(EscalationExecution::TurnDefault);

@@ -10,7 +10,7 @@ use super::LocalImageAttachment;
 use super::textarea::TextArea;
 use crate::bottom_pane::chat_composer::AttachedImage;
 
-pub(super) fn current_text_with_pending(
+pub(crate) fn current_text_with_pending(
     textarea: &TextArea,
     pending_pastes: &[(String, String)],
 ) -> String {
@@ -23,7 +23,7 @@ pub(super) fn current_text_with_pending(
     text
 }
 
-pub(super) fn filter_pending_pastes(
+pub(crate) fn filter_pending_pastes(
     text: &str,
     pending_pastes: Vec<(String, String)>,
 ) -> Vec<(String, String)> {
@@ -33,6 +33,7 @@ pub(super) fn filter_pending_pastes(
         .collect()
 }
 
+#[cfg(test)]
 pub(super) fn local_image_paths(attached_images: &[AttachedImage]) -> Vec<PathBuf> {
     attached_images.iter().map(|img| img.path.clone()).collect()
 }

@@ -283,10 +283,8 @@ impl OutgoingMessageSender {
     ) -> Vec<ServerRequest> {
         let request_id_to_callback = self.request_id_to_callback.lock().await;
         let mut requests = request_id_to_callback
-            .iter()
-            .filter_map(|(_, entry)| {
-                (entry.thread_id == Some(thread_id)).then_some(entry.request.clone())
-            })
+            .values()
+            .filter_map(|entry| (entry.thread_id == Some(thread_id)).then_some(entry.request.clone()))
             .collect::<Vec<_>>();
         requests.sort_by(|left, right| left.id().cmp(right.id()));
         requests

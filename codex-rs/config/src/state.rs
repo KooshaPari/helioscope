@@ -17,9 +17,8 @@ use toml::Value as TomlValue;
 #[derive(Debug, Default, Clone)]
 pub struct LoaderOverrides {
     pub managed_config_path: Option<PathBuf>,
-    // tracked: https://github.com/KooshaPari/heliosCLI/issues/119
-    #[cfg(target_os = "macos")]
-    pub managed_preferences_base64: Option<String>,
+    /// Raw macOS managed preferences payload used by the config loader.
+    pub macos_managed_preferences_base64: Option<String>,
     pub macos_managed_config_requirements_base64: Option<String>,
 }
 

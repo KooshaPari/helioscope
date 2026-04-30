@@ -1300,7 +1300,9 @@ fn image_data_url_payload_does_not_dominate_message_estimate() {
         phase: None,
     };
 
-    let raw_len = serde_json::to_string(&image_item).expect("serialize image item").len() as i64;
+    let raw_len = serde_json::to_string(&image_item)
+        .expect("serialize image item")
+        .len() as i64;
     let estimated = estimate_response_item_model_visible_bytes(&image_item);
     let expected = raw_len - payload.len() as i64 + IMAGE_BYTES_ESTIMATE;
     let text_only_estimated = estimate_response_item_model_visible_bytes(&text_only_item);
@@ -1376,11 +1378,15 @@ fn non_base64_image_urls_are_unchanged() {
 
     assert_eq!(
         estimate_response_item_model_visible_bytes(&message_item),
-        serde_json::to_string(&message_item).expect("serialize message item").len() as i64
+        serde_json::to_string(&message_item)
+            .expect("serialize message item")
+            .len() as i64
     );
     assert_eq!(
         estimate_response_item_model_visible_bytes(&function_output_item),
-        serde_json::to_string(&function_output_item).expect("serialize function output item").len() as i64
+        serde_json::to_string(&function_output_item)
+            .expect("serialize function output item")
+            .len() as i64
     );
 }
 

@@ -2,7 +2,7 @@ use std::fmt;
 use std::io;
 use std::io::stdout;
 
-use crossterm::Command;
+use ratatui::crossterm::Command;
 use ratatui::crossterm::execute;
 
 #[derive(Debug, Default)]

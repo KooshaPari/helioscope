@@ -623,13 +623,11 @@ mod tests {
         destructive: Option<bool>,
         open_world: Option<bool>,
     ) -> ToolAnnotations {
-        ToolAnnotations {
-            destructive_hint: destructive,
-            idempotent_hint: None,
-            open_world_hint: open_world,
-            read_only_hint: read_only,
-            title: None,
-        }
+        let mut annotations = ToolAnnotations::default();
+        annotations.read_only_hint = read_only;
+        annotations.destructive_hint = destructive;
+        annotations.open_world_hint = open_world;
+        annotations
     }
 
     #[test]

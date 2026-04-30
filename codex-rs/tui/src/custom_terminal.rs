@@ -24,19 +24,20 @@
 use std::io;
 use std::io::Write;
 
-use crossterm::cursor::MoveTo;
-use crossterm::queue;
-use crossterm::style::Colors;
-use crossterm::style::Print;
-use crossterm::style::SetAttribute;
-use crossterm::style::SetBackgroundColor;
-use crossterm::style::SetColors;
-use crossterm::style::SetForegroundColor;
-use crossterm::terminal::Clear;
 use derive_more::IsVariant;
 use ratatui::backend::Backend;
 use ratatui::backend::ClearType;
 use ratatui::buffer::Buffer;
+use ratatui::crossterm::cursor::MoveTo;
+use ratatui::crossterm::queue;
+use ratatui::crossterm::style::Color as CColor;
+use ratatui::crossterm::style::Colors;
+use ratatui::crossterm::style::Print;
+use ratatui::crossterm::style::SetAttribute;
+use ratatui::crossterm::style::SetBackgroundColor;
+use ratatui::crossterm::style::SetColors;
+use ratatui::crossterm::style::SetForegroundColor;
+use ratatui::crossterm::terminal::Clear;
 use ratatui::layout::Position;
 use ratatui::layout::Rect;
 use ratatui::layout::Size;
@@ -44,6 +45,30 @@ use ratatui::style::Color;
 use ratatui::style::Modifier;
 use ratatui::widgets::WidgetRef;
 use unicode_width::UnicodeWidthStr;
+
+fn to_crossterm_color(color: Color) -> CColor {
+    match color {
+        Color::Reset => CColor::Reset,
+        Color::Black => CColor::Black,
+        Color::Red => CColor::Red,
+        Color::Green => CColor::Green,
+        Color::Yellow => CColor::Yellow,
+        Color::Blue => CColor::Blue,
+        Color::Magenta => CColor::Magenta,
+        Color::Cyan => CColor::Cyan,
+        Color::Gray => CColor::Grey,
+        Color::DarkGray => CColor::DarkGrey,
+        Color::LightRed => CColor::Red,
+        Color::LightGreen => CColor::Green,
+        Color::LightYellow => CColor::Yellow,
+        Color::LightBlue => CColor::Blue,
+        Color::LightMagenta => CColor::Magenta,
+        Color::LightCyan => CColor::Cyan,
+        Color::White => CColor::White,
+        Color::Rgb(r, g, b) => CColor::Rgb { r, g, b },
+        Color::Indexed(i) => CColor::AnsiValue(i),
+    }
+}
 
 /// Returns the display width of a cell symbol, ignoring OSC escape sequences.
 ///
@@ -137,7 +162,7 @@ impl Frame<'_> {
 #[derive(Debug, Default, Clone, Eq, PartialEq, Hash)]
 pub struct Terminal<B>
 where
-    B: Backend + Write,
+    B: Backend<Error = io::Error> + Write,
 {
     /// The backend used to interface with the terminal
     backend: B,
@@ -161,7 +186,7 @@ where
 
 impl<B> Drop for Terminal<B>
 where
-    B: Backend,
+    B: Backend<Error = io::Error>,
     B: Write,
 {
     #[allow(clippy::print_stderr)]
@@ -177,7 +202,7 @@ where
 
 impl<B> Terminal<B>
 where
-    B: Backend,
+    B: Backend<Error = io::Error>,
     B: Write,
 {
     /// Creates a new [`Terminal`] with the given [`Backend`] and [`TerminalOptions`].
@@ -398,7 +423,6 @@ where
     /// Gets the current cursor position.
     ///
     /// This is the position of the cursor after the last draw call.
-    #[allow(dead_code)]
     pub fn get_cursor_position(&mut self) -> io::Result<Position> {
         self.backend.get_cursor_position()
     }
@@ -433,7 +457,10 @@ where
         // Use an explicit cursor-home around scrollback purge for terminals that
         // are sensitive to inline viewport cursor placement (e.g. Terminal.app).
         self.set_cursor_position(home)?;
-        queue!(self.backend, Clear(crossterm::terminal::ClearType::Purge))?;
+        queue!(
+            self.backend,
+            Clear(ratatui::crossterm::terminal::ClearType::Purge)
+        )?;
         self.set_cursor_position(home)?;
         std::io::Write::flush(&mut self.backend)?;
         self.previous_buffer_mut().reset();
@@ -601,7 +628,10 @@ where
                 if cell.fg != fg || cell.bg != bg {
                     queue!(
                         writer,
-                        SetColors(Colors::new(cell.fg.into(), cell.bg.into()))
+                        SetColors(Colors::new(
+                            to_crossterm_color(cell.fg),
+                            to_crossterm_color(cell.bg),
+                        ))
                     )?;
                     fg = cell.fg;
                     bg = cell.bg;
@@ -610,20 +640,26 @@ where
                 queue!(writer, Print(cell.symbol()))?;
             }
             DrawCommand::ClearToEnd { bg: clear_bg, .. } => {
-                queue!(writer, SetAttribute(crossterm::style::Attribute::Reset))?;
+                queue!(
+                    writer,
+                    SetAttribute(ratatui::crossterm::style::Attribute::Reset)
+                )?;
                 modifier = Modifier::empty();
-                queue!(writer, SetBackgroundColor(clear_bg.into()))?;
+                queue!(writer, SetBackgroundColor(to_crossterm_color(clear_bg)))?;
                 bg = clear_bg;
-                queue!(writer, Clear(crossterm::terminal::ClearType::UntilNewLine))?;
+                queue!(
+                    writer,
+                    Clear(ratatui::crossterm::terminal::ClearType::UntilNewLine)
+                )?;
             }
         }
     }
 
     queue!(
         writer,
-        SetForegroundColor(crossterm::style::Color::Reset),
-        SetBackgroundColor(crossterm::style::Color::Reset),
-        SetAttribute(crossterm::style::Attribute::Reset),
+        SetForegroundColor(ratatui::crossterm::style::Color::Reset),
+        SetBackgroundColor(ratatui::crossterm::style::Color::Reset),
+        SetAttribute(ratatui::crossterm::style::Attribute::Reset),
     )?;
 
     Ok(())
@@ -639,7 +675,7 @@ struct ModifierDiff {
 
 impl ModifierDiff {
     fn queue<W: io::Write>(self, w: &mut W) -> io::Result<()> {
-        use crossterm::style::Attribute as CAttribute;
+        use ratatui::crossterm::style::Attribute as CAttribute;
         let removed = self.from - self.to;
         if removed.contains(Modifier::REVERSED) {
             queue!(w, SetAttribute(CAttribute::NoReverse))?;

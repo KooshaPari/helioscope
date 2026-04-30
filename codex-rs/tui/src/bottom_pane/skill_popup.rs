@@ -10,10 +10,10 @@ use ratatui::widgets::WidgetRef;
 use super::popup_consts::MAX_POPUP_ROWS;
 use super::scroll_state::ScrollState;
 use super::selection_popup_common::GenericDisplayRow;
+use super::selection_popup_common::menu_surface_padding_height;
+use super::selection_popup_common::render_menu_surface;
 use super::selection_popup_common::render_rows_single_line;
 use crate::key_hint;
-use crate::render::Insets;
-use crate::render::RectExt;
 use crate::text_formatting::truncate_text;
 use codex_utils_fuzzy_match::fuzzy_match;
 
@@ -57,7 +57,9 @@ impl SkillPopup {
     pub(crate) fn calculate_required_height(&self, _width: u16) -> u16 {
         let rows = self.rows_from_matches(self.filtered());
         let visible = rows.len().clamp(1, MAX_POPUP_ROWS);
-        (visible as u16).saturating_add(2)
+        (visible as u16)
+            .saturating_add(2)
+            .saturating_add(menu_surface_padding_height())
     }
 
     pub(crate) fn move_up(&mut self) {
@@ -171,20 +173,21 @@ impl SkillPopup {
 
 impl WidgetRef for SkillPopup {
     fn render_ref(&self, area: Rect, buf: &mut Buffer) {
-        let (list_area, hint_area) = if area.height > 2 {
+        let content_area = render_menu_surface(area, buf);
+        let (list_area, hint_area) = if content_area.height > 2 {
             let [list_area, _spacer_area, hint_area] = Layout::vertical([
-                Constraint::Length(area.height - 2),
+                Constraint::Length(content_area.height - 2),
                 Constraint::Length(1),
                 Constraint::Length(1),
             ])
-            .areas(area);
+            .areas(content_area);
             (list_area, Some(hint_area))
         } else {
-            (area, None)
+            (content_area, None)
         };
         let rows = self.rows_from_matches(self.filtered());
         render_rows_single_line(
-            list_area.inset(Insets::tlbr(0, 2, 0, 0)),
+            list_area,
             buf,
             &rows,
             &self.state,
@@ -192,12 +195,6 @@ impl WidgetRef for SkillPopup {
             "no matches",
         );
         if let Some(hint_area) = hint_area {
-            let hint_area = Rect {
-                x: hint_area.x + 2,
-                y: hint_area.y,
-                width: hint_area.width.saturating_sub(2),
-                height: hint_area.height,
-            };
             skill_popup_hint_line().render(hint_area, buf);
         }
     }

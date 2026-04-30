@@ -682,18 +682,6 @@ impl MultiSelectPickerBuilder {
         self
     }
 
-    /// Sets a callback invoked whenever an item's state changes.
-    ///
-    /// This includes both toggles and reordering operations.
-    #[allow(dead_code)]
-    pub fn on_change<F>(mut self, callback: F) -> Self
-    where
-        F: Fn(&[MultiSelectItem], &AppEventSender) + Send + Sync + 'static,
-    {
-        self.on_change = Some(Box::new(callback));
-        self
-    }
-
     /// Sets a callback invoked when the user confirms their selection (Enter).
     ///
     /// The callback receives a list of IDs for all enabled items.

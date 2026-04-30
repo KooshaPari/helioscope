@@ -23,8 +23,7 @@ pub mod unified_exec;
 pub(crate) struct ExecveSessionApproval {
     /// If this execve session approval is associated with a skill script, this
     /// field contains metadata about the skill.
-    #[cfg_attr(not(unix), allow(dead_code))]
-    pub skill: Option<SkillMetadata>,
+    pub _skill: Option<SkillMetadata>,
 }
 
 /// Shared helper to construct a CommandSpec from a tokenized command line.

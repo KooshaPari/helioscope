@@ -2,7 +2,6 @@ use anyhow::Context;
 use anyhow::Result;
 use serde_json::Map;
 use serde_json::Value;
-use std::cmp::Ordering;
 use std::collections::BTreeMap;
 use std::path::Path;
 use std::path::PathBuf;
@@ -125,20 +124,13 @@ fn canonicalize_json(value: &Value) -> Value {
 
             let mut items = items.into_iter().zip(sortable).collect::<Vec<_>>();
 
-            items.sort_by(
-                |(_, (key_left, stable_left)), (_, (key_right, stable_right))| match key_left
-                    .cmp(key_right)
-                {
-                    Ordering::Equal => stable_left.cmp(stable_right),
-                    other => other,
-                },
-            );
+            items.sort_by_key(|(_, (key, stable))| (key.clone(), stable.clone()));
 
             Value::Array(items.into_iter().map(|(item, _)| item).collect())
         }
         Value::Object(map) => {
             let mut entries: Vec<_> = map.iter().collect();
-            entries.sort_by(|(left, _), (right, _)| left.cmp(right));
+            entries.sort_by_key(|(left, _)| *left);
             let mut sorted = Map::with_capacity(map.len());
             for (key, child) in entries {
                 sorted.insert(key.clone(), canonicalize_json(child));

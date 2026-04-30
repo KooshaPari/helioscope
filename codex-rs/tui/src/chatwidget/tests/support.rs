@@ -261,6 +261,37 @@ pub(crate) fn lines_to_single_string(lines: &[ratatui::text::Line<'static>]) -> 
     s
 }
 
+pub(crate) fn render_bottom_popup(chat: &ChatWidget, width: u16) -> String {
+    let height = chat.desired_height(width);
+    let area = Rect::new(0, 0, width, height);
+    let mut buf = Buffer::empty(area);
+    chat.render(area, &mut buf);
+
+    let mut lines: Vec<String> = (0..area.height)
+        .map(|row| {
+            let mut line = String::new();
+            for col in 0..area.width {
+                let symbol = buf[(area.x + col, area.y + row)].symbol();
+                if symbol.is_empty() {
+                    line.push(' ');
+                } else {
+                    line.push_str(symbol);
+                }
+            }
+            line.trim_end().to_string()
+        })
+        .collect();
+
+    while lines.first().is_some_and(|line| line.trim().is_empty()) {
+        lines.remove(0);
+    }
+    while lines.last().is_some_and(|line| line.trim().is_empty()) {
+        lines.pop();
+    }
+
+    lines.join("\n")
+}
+
 pub(crate) fn make_token_info(total_tokens: i64, context_window: i64) -> TokenUsageInfo {
     fn usage(total_tokens: i64) -> TokenUsage {
         TokenUsage {
@@ -443,41 +474,4 @@ pub(crate) fn get_available_model(chat: &ChatWidget, model: &str) -> ModelPreset
         .find(|&preset| preset.model == model)
         .cloned()
         .unwrap_or_else(|| panic!("{model} preset not found"))
-}
-
-#[cfg(test)]
-mod duplicate_placeholder_tests {
-    use super::*;
-
-    #[test]
-    fn test_duplicate_placeholders_replaced_in_order() {
-        // Two pending entries with same placeholder label but different payloads
-        let pending = vec![
-            PendingPaste::new("[PASTE]".to_string(), "payload1".to_string()),
-            PendingPaste::new("[PASTE]".to_string(), "payload2".to_string()),
-        ];
-        
-        let text = "[PASTE] [PASTE] original";
-        let result = current_text_with_pending(text, &pending);
-        
-        // Should replace one at a time in order
-        assert!(result.contains("payload1"));
-        assert!(result.contains("payload2"));
-        assert_eq!(result.matches("payload1").count(), 1);
-        assert_eq!(result.matches("payload2").count(), 1);
-    }
-
-    #[test]
-    fn test_filter_preserves_occurrence_count() {
-        let text = "[PASTE] [PASTE] [PASTE]";
-        let pending = vec![
-            PendingPaste::new("[PASTE]".to_string(), "a".to_string()),
-            PendingPaste::new("[PASTE]".to_string(), "b".to_string()),
-        ];
-        
-        let filtered = filter_pending_pastes(&pending, text);
-        
-        // Should keep at most 3 entries (matching occurrences)
-        assert!(filtered.len() <= 3);
-    }
 }

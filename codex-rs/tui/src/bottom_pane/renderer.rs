@@ -72,14 +72,9 @@ impl Renderable for ChatComposer {
 impl ChatComposer {
     /// Computes the vertical spacing (in rows) between the composer and footer.
     ///
-    /// Returns 0 if the footer height is 0 (i.e., no footer), otherwise returns
-    /// the configured [`FOOTER_SPACING_HEIGHT`] constant.
+    /// Returns 0 because this layout currently does not reserve footer spacing.
     pub(crate) fn footer_spacing(footer_hint_height: u16) -> u16 {
-        const FOOTER_SPACING_HEIGHT: u16 = 0;
-        if footer_hint_height == 0 {
-            0
-        } else {
-            FOOTER_SPACING_HEIGHT
-        }
+        let _ = footer_hint_height;
+        0
     }
 }

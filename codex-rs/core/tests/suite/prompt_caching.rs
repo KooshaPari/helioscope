@@ -1,3 +1,4 @@
+#![allow(clippy::expect_used)]
 #![allow(clippy::unwrap_used)]
 
 use codex_apply_patch::APPLY_PATCH_TOOL_INSTRUCTIONS;

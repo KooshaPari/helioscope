@@ -2128,7 +2128,8 @@ permissions:
         // Invalid because missing closing frontmatter.
         let invalid_dir = codex_home.path().join("skills/invalid");
         fs::create_dir_all(&invalid_dir).expect("create invalid dir");
-        fs::write(invalid_dir.join(SKILLS_FILENAME), "---\nname: bad").expect("write invalid skill");
+        fs::write(invalid_dir.join(SKILLS_FILENAME), "---\nname: bad")
+            .expect("write invalid skill");
 
         let cfg = make_config(&codex_home).await;
         let outcome = load_skills_for_test(&cfg);

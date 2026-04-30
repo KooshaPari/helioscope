@@ -521,7 +521,10 @@ mod tests {
 
         // Simulate apply: create the file on disk.
         fs::write(&file, "foo\n").expect("write file");
-        let first = acc.get_unified_diff().expect("unified diff").expect("unified diff");
+        let first = acc
+            .get_unified_diff()
+            .expect("unified diff")
+            .expect("unified diff");
         let first = normalize_diff_for_test(&first, dir.path());
         let expected_first = {
             let mode = file_mode_for_path(&file).unwrap_or(FileMode::Regular);
@@ -551,7 +554,10 @@ index {ZERO_OID}..{right_oid}
 
         // Simulate apply: append a new line.
         fs::write(&file, "foo\nbar\n").expect("write file");
-        let combined = acc.get_unified_diff().expect("unified diff").expect("unified diff");
+        let combined = acc
+            .get_unified_diff()
+            .expect("unified diff")
+            .expect("unified diff");
         let combined = normalize_diff_for_test(&combined, dir.path());
         let expected_combined = {
             let mode = file_mode_for_path(&file).unwrap_or(FileMode::Regular);
@@ -589,7 +595,10 @@ index {ZERO_OID}..{right_oid}
         // Simulate apply: delete the file from disk.
         let baseline_mode = file_mode_for_path(&file).unwrap_or(FileMode::Regular);
         fs::remove_file(&file).expect("remove file");
-        let diff = acc.get_unified_diff().expect("get unified diff").expect("diff should be present");
+        let diff = acc
+            .get_unified_diff()
+            .expect("get unified diff")
+            .expect("diff should be present");
         let diff = normalize_diff_for_test(&diff, dir.path());
         let expected = {
             let left_oid = git_blob_sha1_hex("x\n");
@@ -628,7 +637,10 @@ index {left_oid}..{ZERO_OID}
         fs::rename(&src, &dest).expect("rename file");
         fs::write(&dest, "line2\n").expect("write dest file");
 
-        let out = acc.get_unified_diff().expect("unified diff").expect("unified diff");
+        let out = acc
+            .get_unified_diff()
+            .expect("unified diff")
+            .expect("unified diff");
         let out = normalize_diff_for_test(&out, dir.path());
         let expected = {
             let left_oid = git_blob_sha1_hex("line\n");
@@ -687,7 +699,10 @@ index {left_oid}..{right_oid}
         acc.on_patch_begin(&mv);
         // No file existed initially; create only dest
         fs::write(&dest, "hello\n").expect("write dest");
-        let diff = acc.get_unified_diff().expect("get unified diff").expect("diff should be present");
+        let diff = acc
+            .get_unified_diff()
+            .expect("get unified diff")
+            .expect("diff should be present");
         let diff = normalize_diff_for_test(&diff, dir.path());
         let expected = {
             let mode = file_mode_for_path(&dest).unwrap_or(FileMode::Regular);
@@ -727,7 +742,10 @@ index {ZERO_OID}..{right_oid}
         acc.on_patch_begin(&update_a);
         // Simulate apply: modify a.txt on disk.
         fs::write(&a, "foo\nbar\n").expect("write a");
-        let first = acc.get_unified_diff().expect("unified diff").expect("unified diff");
+        let first = acc
+            .get_unified_diff()
+            .expect("unified diff")
+            .expect("unified diff");
         let first = normalize_diff_for_test(&first, dir.path());
         let expected_first = {
             let left_oid = git_blob_sha1_hex("foo\n");
@@ -757,7 +775,10 @@ index {left_oid}..{right_oid}
         let baseline_mode = file_mode_for_path(&b).unwrap_or(FileMode::Regular);
         fs::remove_file(&b).expect("remove b");
 
-        let combined = acc.get_unified_diff().expect("unified diff").expect("unified diff");
+        let combined = acc
+            .get_unified_diff()
+            .expect("unified diff")
+            .expect("unified diff");
         let combined = normalize_diff_for_test(&combined, dir.path());
         let expected = {
             let left_oid_a = git_blob_sha1_hex("foo\n");
@@ -809,7 +830,10 @@ index {left_oid_b}..{ZERO_OID}
         // Apply update on disk
         fs::write(&file, &right_bytes).expect("write right bytes");
 
-        let diff = acc.get_unified_diff().expect("get unified diff").expect("diff should be present");
+        let diff = acc
+            .get_unified_diff()
+            .expect("get unified diff")
+            .expect("diff should be present");
         let diff = normalize_diff_for_test(&diff, dir.path());
         let expected = {
             let left_oid = format!("{:x}", git_blob_sha1_hex_bytes(&left_bytes));
@@ -844,7 +868,10 @@ Binary files differ
 
         // Simulate apply: create the file on disk.
         fs::write(&file, "foo\n").expect("write file");
-        let first = acc.get_unified_diff().expect("unified diff").expect("unified diff");
+        let first = acc
+            .get_unified_diff()
+            .expect("unified diff")
+            .expect("unified diff");
         let first = normalize_diff_for_test(&first, dir.path());
         let expected_first = {
             let mode = file_mode_for_path(&file).unwrap_or(FileMode::Regular);
@@ -874,7 +901,10 @@ index {ZERO_OID}..{right_oid}
 
         // Simulate apply: append a new line with a space.
         fs::write(&file, "foo\nbar baz\n").expect("write file");
-        let combined = acc.get_unified_diff().expect("unified diff").expect("unified diff");
+        let combined = acc
+            .get_unified_diff()
+            .expect("unified diff")
+            .expect("unified diff");
         let combined = normalize_diff_for_test(&combined, dir.path());
         let expected_combined = {
             let mode = file_mode_for_path(&file).unwrap_or(FileMode::Regular);

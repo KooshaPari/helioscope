@@ -828,7 +828,12 @@ mod tests {
             .expect("Failed to init bare remote");
 
         Command::new("git")
-            .args(["remote", "add", "origin", remote_path.to_str().expect("remote path")])
+            .args([
+                "remote",
+                "add",
+                "origin",
+                remote_path.to_str().expect("remote path"),
+            ])
             .current_dir(&repo_path)
             .output()
             .await
@@ -840,7 +845,10 @@ mod tests {
             .output()
             .await
             .expect("Failed to get branch");
-        let branch = String::from_utf8(output.stdout).expect("branch utf8").trim().to_string();
+        let branch = String::from_utf8(output.stdout)
+            .expect("branch utf8")
+            .trim()
+            .to_string();
 
         Command::new("git")
             .args(["push", "-u", "origin", &branch])
@@ -913,7 +921,10 @@ mod tests {
             .expect("Failed to read remote url");
         // Some dev environments rewrite remotes (e.g., force SSH), so compare against
         // whatever URL Git reports instead of a fixed placeholder.
-        let expected_remote = String::from_utf8(remote_url_output.stdout).expect("remote url utf8").trim().to_string();
+        let expected_remote = String::from_utf8(remote_url_output.stdout)
+            .expect("remote url utf8")
+            .trim()
+            .to_string();
 
         // Should have repository URL
         assert_eq!(git_info.repository_url, Some(expected_remote));
@@ -931,7 +942,10 @@ mod tests {
             .output()
             .await
             .expect("Failed to get HEAD");
-        let commit_hash = String::from_utf8(output.stdout).expect("commit hash utf8").trim().to_string();
+        let commit_hash = String::from_utf8(output.stdout)
+            .expect("commit hash utf8")
+            .trim()
+            .to_string();
 
         // Checkout the commit directly (detached HEAD)
         Command::new("git")
@@ -1014,7 +1028,10 @@ mod tests {
             .output()
             .await
             .expect("Failed to rev-parse remote");
-        let remote_sha = String::from_utf8(remote_sha.stdout).expect("remote sha utf8").trim().to_string();
+        let remote_sha = String::from_utf8(remote_sha.stdout)
+            .expect("remote sha utf8")
+            .trim()
+            .to_string();
 
         let state = git_diff_to_remote(&repo_path)
             .await
@@ -1038,7 +1055,10 @@ mod tests {
             .output()
             .await
             .expect("Failed to rev-parse remote");
-        let remote_sha = String::from_utf8(remote_sha.stdout).expect("remote sha utf8").trim().to_string();
+        let remote_sha = String::from_utf8(remote_sha.stdout)
+            .expect("remote sha utf8")
+            .trim()
+            .to_string();
 
         let state = git_diff_to_remote(&repo_path)
             .await
@@ -1079,7 +1099,10 @@ mod tests {
             .output()
             .await
             .expect("Failed to rev-parse remote");
-        let remote_sha = String::from_utf8(remote_sha.stdout).expect("remote sha utf8").trim().to_string();
+        let remote_sha = String::from_utf8(remote_sha.stdout)
+            .expect("remote sha utf8")
+            .trim()
+            .to_string();
 
         let state = git_diff_to_remote(&repo_path)
             .await
@@ -1169,7 +1192,10 @@ mod tests {
             .output()
             .await
             .expect("Failed to rev-parse remote");
-        let remote_sha = String::from_utf8(remote_sha.stdout).expect("remote sha utf8").trim().to_string();
+        let remote_sha = String::from_utf8(remote_sha.stdout)
+            .expect("remote sha utf8")
+            .trim()
+            .to_string();
 
         fs::write(repo_path.join("test.txt"), "updated").expect("write test.txt");
         Command::new("git")
@@ -1223,8 +1249,23 @@ mod tests {
         let parsed: serde_json::Value = serde_json::from_str(&json).expect("Should parse JSON");
 
         // Fields with None values should be omitted due to skip_serializing_if
-        assert!(!parsed.as_object().expect("parse as object").contains_key("commit_hash"));
-        assert!(!parsed.as_object().expect("parse as object").contains_key("branch"));
-        assert!(!parsed.as_object().expect("parse as object").contains_key("repository_url"));
+        assert!(
+            !parsed
+                .as_object()
+                .expect("parse as object")
+                .contains_key("commit_hash")
+        );
+        assert!(
+            !parsed
+                .as_object()
+                .expect("parse as object")
+                .contains_key("branch")
+        );
+        assert!(
+            !parsed
+                .as_object()
+                .expect("parse as object")
+                .contains_key("repository_url")
+        );
     }
 }

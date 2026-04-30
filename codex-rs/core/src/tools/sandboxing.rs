@@ -276,10 +276,6 @@ pub(crate) trait Approvable<Req> {
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(crate) enum SandboxablePreference {
     Auto,
-    #[allow(dead_code)] // Will be used by later tools.
-    Require,
-    #[allow(dead_code)] // Will be used by later tools.
-    Forbid,
 }
 
 pub(crate) trait Sandboxable {

@@ -381,7 +381,7 @@ The GitHub Release also contains a [DotSlash](https://dotslash-cli.com/) file fo
 ```bash
 # Clone the repository and navigate to the root of the Cargo workspace.
 git clone https://github.com/openai/helios-cli.git
-cd helios-cli/helios-rs
+cd helios-cli/codex-rs
 
 # Install the Rust toolchain, if necessary.
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
@@ -393,13 +393,13 @@ cargo install just
 # Optional: install nextest for the `just test` helper
 cargo install --locked cargo-nextest
 
-# Build Helios CLI.
-cargo build
+# Build the CLI binary.
+cargo build -p codex-cli
 
-# Launch the TUI with a sample prompt.
-cargo run --bin helios -- "explain this codebase to me"
+# Launch the CLI with a sample prompt.
+cargo run -p codex-cli --bin codex -- "explain this codebase to me"
 
-# After making changes, use the root justfile helpers (they default to helios-rs):
+# After making changes, use the root justfile helpers (they default to codex-rs):
 just fmt
 just fix -p <crate-you-touched>
 

@@ -2,7 +2,7 @@
 
 ## Product Vision
 
-heliosCLI is a multi-runtime AI coding assistant CLI that unifies multiple AI coding backends (Codex/OpenAI, Claude, Gemini, ChatGPT, local OSS providers) behind a single `helios` command. It is structured as a Bazel monorepo with three primary layers: a Rust core (`codex-rs`) providing sandboxed execution, protocol handling, MCP server hosting, and TUI; a Helios-specific Rust CLI layer (`helios-rs/cli`) that extends the core with login, app-server management, cloud tasks, and platform-specific sandbox controls; and a TypeScript CLI (`codex-cli`) as the user-facing command interface. A harness subsystem (`crates/harness_*`) provides benchmarking, scaling, and multi-agent orchestration for AI workload evaluation.
+heliosCLI is a multi-runtime AI coding assistant CLI that unifies multiple AI coding backends (Codex/OpenAI, Claude, Gemini, ChatGPT, local OSS providers) behind a single `helios` command. It is structured as a Bazel monorepo with three primary layers: a Rust core (`codex-rs`) providing sandboxed execution, protocol handling, MCP server hosting, and TUI; a Helios-specific Rust CLI layer (`codex-rs/cli`) that extends the core with login, app-server management, cloud tasks, and platform-specific sandbox controls; and a TypeScript CLI (`codex-cli`) as the user-facing command interface. A harness subsystem (`crates/harness_*`) provides benchmarking, scaling, and multi-agent orchestration for AI workload evaluation.
 
 ---
 

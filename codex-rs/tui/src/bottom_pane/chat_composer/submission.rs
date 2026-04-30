@@ -1,133 +1,20 @@
 use super::*;
 
-#[derive(Clone, Debug)]
-struct SubmissionRestoreState {
-    input: String,
-    text_elements: Vec<TextElement>,
-    mention_bindings: Vec<MentionBinding>,
-    local_image_paths: Vec<PathBuf>,
-    pending_pastes: Vec<(String, String)>,
-}
-
-#[derive(Debug)]
-struct PreparedSubmission {
-    text: String,
-    text_elements: Vec<TextElement>,
-}
-
-fn prepare_submission_draft(
-    input: &str,
-    text_elements: Vec<TextElement>,
-    pending_pastes: &[(String, String)],
-) -> PreparedSubmission {
-    let (expanded_text, expanded_elements) = if pending_pastes.is_empty() {
-        (input.to_string(), text_elements)
-    } else {
-        ChatComposer::expand_pending_pastes(input, text_elements, pending_pastes)
-    };
-    let trimmed_text = expanded_text.trim().to_string();
-    let trimmed_elements =
-        ChatComposer::trim_text_elements(&expanded_text, &trimmed_text, expanded_elements);
-    PreparedSubmission {
-        text: trimmed_text,
-        text_elements: trimmed_elements,
-    }
-}
-
-fn is_known_slash_command_name(
-    name: &str,
-    custom_prompts: &[CustomPrompt],
-    collaboration_modes_enabled: bool,
-    connectors_enabled: bool,
-    personality_command_enabled: bool,
-    realtime_conversation_enabled: bool,
-    audio_device_selection_enabled: bool,
-    windows_degraded_sandbox_active: bool,
-) -> bool {
-    if slash_commands::find_builtin_command(
-        name,
-        collaboration_modes_enabled,
-        connectors_enabled,
-        personality_command_enabled,
-        realtime_conversation_enabled,
-        audio_device_selection_enabled,
-        windows_degraded_sandbox_active,
-    )
-    .is_some()
-    {
-        return true;
-    }
-
-    let prompt_prefix = format!("{PROMPTS_CMD_PREFIX}:");
-    name.strip_prefix(&prompt_prefix)
-        .map(|prompt_name| {
-            custom_prompts
-                .iter()
-                .any(|prompt| prompt.name == prompt_name)
-        })
-        .unwrap_or(false)
-}
-
-fn unrecognized_slash_command_message(name: &str) -> String {
-    format!(r#"Unrecognized command '/{name}'. Type "/" for a list of supported commands."#)
-}
-
-fn slash_command_args_elements(
-    rest: &str,
-    rest_offset: usize,
-    text_elements: &[TextElement],
-) -> Vec<TextElement> {
-    if rest.is_empty() || text_elements.is_empty() {
-        return Vec::new();
-    }
-    text_elements
-        .iter()
-        .filter_map(|elem| {
-            if elem.byte_range.end <= rest_offset {
-                return None;
-            }
-            let start = elem.byte_range.start.saturating_sub(rest_offset);
-            let mut end = elem.byte_range.end.saturating_sub(rest_offset);
-            if start >= rest.len() {
-                return None;
-            }
-            end = end.min(rest.len());
-            (start < end).then_some(elem.map_range(|_| ByteRange { start, end }))
-        })
-        .collect()
-}
+mod draft;
+mod slash_submission;
+use self::draft::PreparedSubmission;
+use self::draft::prepare_submission_draft;
+use self::slash_submission::SlashCommandLookupOptions;
+use self::slash_submission::is_known_slash_command_name;
+use self::slash_submission::slash_command_args_elements;
+use self::slash_submission::unrecognized_slash_command_message;
 
 impl ChatComposer {
-    fn capture_submission_restore_state(&self) -> SubmissionRestoreState {
-        SubmissionRestoreState {
-            input: self.textarea.text().to_string(),
-            text_elements: self.textarea.text_elements(),
-            mention_bindings: self.snapshot_mention_bindings(),
-            local_image_paths: self
-                .attached_images
-                .iter()
-                .map(|img| img.path.clone())
-                .collect(),
-            pending_pastes: self.pending_pastes.clone(),
-        }
-    }
-
-    fn restore_submission_restore_state(&mut self, state: &SubmissionRestoreState) {
-        self.set_text_content_with_mention_bindings(
-            state.input.clone(),
-            state.text_elements.clone(),
-            state.local_image_paths.clone(),
-            state.mention_bindings.clone(),
-        );
-        self.pending_pastes.clone_from(&state.pending_pastes);
-        self.textarea.set_cursor(state.input.len());
-    }
-
     /// Prepare text for submission/queuing. Returns None if submission should be suppressed.
     /// On success, clears pending paste payloads because placeholders have been expanded.
     ///
     /// When `record_history` is true, the final submission is stored for ↑/↓ recall.
-    fn prepare_submission_text(
+    pub(crate) fn prepare_submission_text(
         &mut self,
         record_history: bool,
     ) -> Option<(String, Vec<TextElement>)> {
@@ -148,17 +35,16 @@ impl ChatComposer {
             && let Some((name, _rest, _rest_offset)) = parse_slash_name(&text)
         {
             let treat_as_plain_text = input_starts_with_space || name.contains('/');
+            let lookup_options = SlashCommandLookupOptions {
+                collaboration_modes_enabled: self.collaboration_modes_enabled,
+                connectors_enabled: self.connectors_enabled,
+                personality_command_enabled: self.personality_command_enabled,
+                realtime_conversation_enabled: self.realtime_conversation_enabled,
+                audio_device_selection_enabled: self.audio_device_selection_enabled,
+                windows_degraded_sandbox_active: self.windows_degraded_sandbox_active,
+            };
             if !treat_as_plain_text
-                && !is_known_slash_command_name(
-                    name,
-                    &self.custom_prompts,
-                    self.collaboration_modes_enabled,
-                    self.connectors_enabled,
-                    self.personality_command_enabled,
-                    self.realtime_conversation_enabled,
-                    self.audio_device_selection_enabled,
-                    self.windows_degraded_sandbox_active,
-                )
+                && !is_known_slash_command_name(name, &self.custom_prompts, lookup_options)
             {
                 self.app_event_tx.send(AppEvent::InsertHistoryCell(Box::new(
                     history_cell::new_info_event(unrecognized_slash_command_message(name), None),
@@ -194,7 +80,11 @@ impl ChatComposer {
             self.restore_submission_restore_state(&restore_state);
             return None;
         }
-        self.prune_attached_images_for_submission(&text, &text_elements);
+        chat_composer_images::prune_attached_images_for_submission(
+            &mut self.attached_images,
+            &text,
+            &text_elements,
+        );
         if text.is_empty() && self.attached_images.is_empty() && self.remote_image_urls.is_empty() {
             return None;
         }
@@ -224,11 +114,11 @@ impl ChatComposer {
 
     /// Common logic for handling message submission/queuing.
     /// Returns the appropriate InputResult based on `should_queue`.
-    fn handle_submission(&mut self, should_queue: bool) -> (InputResult, bool) {
+    pub(super) fn handle_submission(&mut self, should_queue: bool) -> (InputResult, bool) {
         self.handle_submission_with_time(should_queue, Instant::now())
     }
 
-    fn handle_submission_with_time(
+    pub(crate) fn handle_submission_with_time(
         &mut self,
         should_queue: bool,
         now: Instant,
@@ -359,7 +249,7 @@ impl ChatComposer {
         let mut args_elements =
             slash_command_args_elements(rest, rest_offset, &self.textarea.text_elements());
         let trimmed_rest = rest.trim();
-        args_elements = Self::trim_text_elements(rest, trimmed_rest, args_elements);
+        args_elements = text_manipulation::trim_text_elements(rest, trimmed_rest, args_elements);
         Some(InputResult::CommandWithArgs(
             cmd,
             trimmed_rest.to_string(),
@@ -382,7 +272,8 @@ impl ChatComposer {
         let mut args_elements =
             slash_command_args_elements(prepared_rest, prepared_rest_offset, &prepared_elements);
         let trimmed_rest = prepared_rest.trim();
-        args_elements = Self::trim_text_elements(prepared_rest, trimmed_rest, args_elements);
+        args_elements =
+            text_manipulation::trim_text_elements(prepared_rest, trimmed_rest, args_elements);
         Some((trimmed_rest.to_string(), args_elements))
     }
 

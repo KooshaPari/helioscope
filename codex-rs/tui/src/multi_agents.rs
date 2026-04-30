@@ -67,11 +67,7 @@ pub(crate) fn format_agent_picker_item_name(
 }
 
 pub(crate) fn sort_agent_picker_threads(agent_threads: &mut [(ThreadId, AgentPickerThreadEntry)]) {
-    agent_threads.sort_by(|(left_id, left), (right_id, right)| {
-        left.is_closed
-            .cmp(&right.is_closed)
-            .then_with(|| left_id.to_string().cmp(&right_id.to_string()))
-    });
+    agent_threads.sort_by_key(|(thread_id, entry)| (entry.is_closed, thread_id.to_string()));
 }
 
 pub(crate) fn spawn_end(ev: CollabAgentSpawnEndEvent) -> PlainHistoryCell {
@@ -359,7 +355,7 @@ fn wait_complete_lines(
                 status: status.clone(),
             })
             .collect::<Vec<_>>();
-        entries.sort_by(|left, right| left.thread_id.to_string().cmp(&right.thread_id.to_string()));
+        entries.sort_by_key(|entry| entry.thread_id.to_string());
         entries
     } else {
         let mut entries = agent_statuses.to_vec();
@@ -377,7 +373,7 @@ fn wait_complete_lines(
                 status: status.clone(),
             })
             .collect::<Vec<_>>();
-        extras.sort_by(|left, right| left.thread_id.to_string().cmp(&right.thread_id.to_string()));
+        extras.sort_by_key(|entry| entry.thread_id.to_string());
         entries.extend(extras);
         entries
     };

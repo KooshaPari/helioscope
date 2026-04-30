@@ -67,17 +67,23 @@ pub use identity::require_logon_sandbox_creds;
 #[cfg(target_os = "windows")]
 pub use identity::sandbox_setup_is_complete;
 #[cfg(target_os = "windows")]
-pub use logging::log_note;
-#[cfg(target_os = "windows")]
 pub use logging::LOG_FILE_NAME;
+#[cfg(target_os = "windows")]
+pub use logging::log_note;
 #[cfg(target_os = "windows")]
 pub use path_normalization::canonicalize_path;
 #[cfg(target_os = "windows")]
-pub use policy::parse_policy;
-#[cfg(target_os = "windows")]
 pub use policy::SandboxPolicy;
 #[cfg(target_os = "windows")]
+pub use policy::parse_policy;
+#[cfg(target_os = "windows")]
+pub use process::assign_process_to_kill_on_close_job;
+#[cfg(target_os = "windows")]
+pub use process::create_kill_on_close_job;
+#[cfg(target_os = "windows")]
 pub use process::create_process_as_user;
+#[cfg(target_os = "windows")]
+pub use setup::SETUP_VERSION;
 #[cfg(target_os = "windows")]
 pub use setup::run_elevated_setup;
 #[cfg(target_os = "windows")]
@@ -89,7 +95,11 @@ pub use setup::sandbox_dir;
 #[cfg(target_os = "windows")]
 pub use setup::sandbox_secrets_dir;
 #[cfg(target_os = "windows")]
-pub use setup::SETUP_VERSION;
+pub use setup_error::SetupErrorCode;
+#[cfg(target_os = "windows")]
+pub use setup_error::SetupErrorReport;
+#[cfg(target_os = "windows")]
+pub use setup_error::SetupFailure;
 #[cfg(target_os = "windows")]
 pub use setup_error::extract_failure as extract_setup_failure;
 #[cfg(target_os = "windows")]
@@ -98,12 +108,6 @@ pub use setup_error::sanitize_setup_metric_tag_value;
 pub use setup_error::setup_error_path;
 #[cfg(target_os = "windows")]
 pub use setup_error::write_setup_error_report;
-#[cfg(target_os = "windows")]
-pub use setup_error::SetupErrorCode;
-#[cfg(target_os = "windows")]
-pub use setup_error::SetupErrorReport;
-#[cfg(target_os = "windows")]
-pub use setup_error::SetupFailure;
 #[cfg(target_os = "windows")]
 pub use token::convert_string_sid_to_sid;
 #[cfg(target_os = "windows")]
@@ -115,11 +119,11 @@ pub use token::create_workspace_write_token_with_caps_from;
 #[cfg(target_os = "windows")]
 pub use token::get_current_token_for_restriction;
 #[cfg(target_os = "windows")]
+pub use windows_impl::CaptureResult;
+#[cfg(target_os = "windows")]
 pub use windows_impl::run_windows_sandbox_capture;
 #[cfg(target_os = "windows")]
 pub use windows_impl::run_windows_sandbox_legacy_preflight;
-#[cfg(target_os = "windows")]
-pub use windows_impl::CaptureResult;
 #[cfg(target_os = "windows")]
 pub use winutil::string_from_sid_bytes;
 #[cfg(target_os = "windows")]
@@ -132,13 +136,13 @@ pub use workspace_acl::protect_workspace_agents_dir;
 pub use workspace_acl::protect_workspace_codex_dir;
 
 #[cfg(not(target_os = "windows"))]
+pub use stub::CaptureResult;
+#[cfg(not(target_os = "windows"))]
 pub use stub::apply_world_writable_scan_and_denies;
 #[cfg(not(target_os = "windows"))]
 pub use stub::run_windows_sandbox_capture;
 #[cfg(not(target_os = "windows"))]
 pub use stub::run_windows_sandbox_legacy_preflight;
-#[cfg(not(target_os = "windows"))]
-pub use stub::CaptureResult;
 
 #[cfg(target_os = "windows")]
 mod windows_impl {
@@ -146,20 +150,23 @@ mod windows_impl {
     use super::acl::add_deny_write_ace;
     use super::acl::allow_null_device;
     use super::acl::revoke_ace;
-    use super::allow::compute_allow_paths;
     use super::allow::AllowDenyPaths;
+    use super::allow::compute_allow_paths;
     use super::cap::load_or_create_cap_sids;
     use super::cap::workspace_cap_sid_for_cwd;
     use super::env::apply_no_network_to_env;
     use super::env::ensure_non_interactive_pager;
     use super::env::normalize_null_device_env;
+    use super::env::remove_unsafe_injection_env;
     use super::logging::debug_log;
     use super::logging::log_failure;
     use super::logging::log_start;
     use super::logging::log_success;
     use super::path_normalization::canonicalize_path;
-    use super::policy::parse_policy;
     use super::policy::SandboxPolicy;
+    use super::policy::parse_policy;
+    use super::process::assign_process_to_kill_on_close_job;
+    use super::process::create_kill_on_close_job;
     use super::process::make_env_block;
     use super::token::convert_string_sid_to_sid;
     use super::token::create_workspace_write_token_with_caps_from;
@@ -178,18 +185,18 @@ mod windows_impl {
     use std::ptr;
     use windows_sys::Win32::Foundation::CloseHandle;
     use windows_sys::Win32::Foundation::GetLastError;
-    use windows_sys::Win32::Foundation::SetHandleInformation;
     use windows_sys::Win32::Foundation::HANDLE;
     use windows_sys::Win32::Foundation::HANDLE_FLAG_INHERIT;
+    use windows_sys::Win32::Foundation::SetHandleInformation;
     use windows_sys::Win32::System::Pipes::CreatePipe;
+    use windows_sys::Win32::System::Threading::CREATE_UNICODE_ENVIRONMENT;
     use windows_sys::Win32::System::Threading::CreateProcessAsUserW;
     use windows_sys::Win32::System::Threading::GetExitCodeProcess;
-    use windows_sys::Win32::System::Threading::WaitForSingleObject;
-    use windows_sys::Win32::System::Threading::CREATE_UNICODE_ENVIRONMENT;
     use windows_sys::Win32::System::Threading::INFINITE;
     use windows_sys::Win32::System::Threading::PROCESS_INFORMATION;
     use windows_sys::Win32::System::Threading::STARTF_USESTDHANDLES;
     use windows_sys::Win32::System::Threading::STARTUPINFOW;
+    use windows_sys::Win32::System::Threading::WaitForSingleObject;
 
     type PipeHandles = ((HANDLE, HANDLE), (HANDLE, HANDLE), (HANDLE, HANDLE));
 
@@ -250,6 +257,7 @@ mod windows_impl {
         let apply_network_block = should_apply_network_block(&policy);
         normalize_null_device_env(&mut env_map);
         ensure_non_interactive_pager(&mut env_map);
+        remove_unsafe_injection_env(&mut env_map);
         if apply_network_block {
             apply_no_network_to_env(&mut env_map)?;
         }
@@ -409,6 +417,13 @@ mod windows_impl {
             return Err(anyhow::anyhow!("CreateProcessAsUserW failed: {}", err));
         }
 
+        let h_job = unsafe { create_kill_on_close_job().ok() };
+        if let Some(job) = h_job {
+            unsafe {
+                assign_process_to_kill_on_close_job(job, pi.hProcess)?;
+            }
+        }
+
         unsafe {
             CloseHandle(in_r);
             // Close the parent's stdin write end so the child sees EOF immediately.
@@ -482,6 +497,9 @@ mod windows_impl {
             }
             if pi.hProcess != 0 {
                 CloseHandle(pi.hProcess);
+            }
+            if let Some(job) = h_job {
+                CloseHandle(job);
             }
             CloseHandle(h_token);
         }
@@ -598,8 +616,8 @@ mod windows_impl {
 
 #[cfg(not(target_os = "windows"))]
 mod stub {
-    use anyhow::bail;
     use anyhow::Result;
+    use anyhow::bail;
     use codex_protocol::protocol::SandboxPolicy;
     use std::collections::HashMap;
     use std::path::Path;

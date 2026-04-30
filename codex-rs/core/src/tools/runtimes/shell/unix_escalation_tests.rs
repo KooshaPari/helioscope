@@ -62,14 +62,16 @@ fn starlark_string(value: &str) -> String {
 #[test]
 fn extract_shell_script_preserves_login_flag() {
     assert_eq!(
-        extract_shell_script(&["/bin/zsh".into(), "-lc".into(), "echo hi".into()]).expect("parse zsh login shell command"),
+        extract_shell_script(&["/bin/zsh".into(), "-lc".into(), "echo hi".into()])
+            .expect("parse zsh login shell command"),
         ParsedShellCommand {
             script: "echo hi".to_string(),
             login: true,
         }
     );
     assert_eq!(
-        extract_shell_script(&["/bin/zsh".into(), "-c".into(), "echo hi".into()]).expect("parse zsh command"),
+        extract_shell_script(&["/bin/zsh".into(), "-c".into(), "echo hi".into()])
+            .expect("parse zsh command"),
         ParsedShellCommand {
             script: "echo hi".to_string(),
             login: false,
@@ -149,7 +151,8 @@ fn join_program_and_argv_replaces_original_argv_zero() {
 
 #[test]
 fn commands_for_intercepted_exec_policy_parses_plain_shell_wrappers() {
-    let program = AbsolutePathBuf::try_from(host_absolute_path(&["bin", "bash"])).expect("absolute bash path");
+    let program = AbsolutePathBuf::try_from(host_absolute_path(&["bin", "bash"]))
+        .expect("absolute bash path");
     let candidate_commands = commands_for_intercepted_exec_policy(
         &program,
         &["not-bash".into(), "-lc".into(), "git status && pwd".into()],
@@ -197,7 +200,9 @@ fn shell_request_escalation_execution_is_explicit() {
         ..Default::default()
     };
     let sandbox_policy = SandboxPolicy::WorkspaceWrite {
-        writable_roots: vec![AbsolutePathBuf::from_absolute_path("/tmp/original/output").expect("absolute path")],
+        writable_roots: vec![
+            AbsolutePathBuf::from_absolute_path("/tmp/original/output").expect("absolute path"),
+        ],
         read_only_access: ReadOnlyAccess::FullAccess,
         network_access: false,
         exclude_tmpdir_env_var: false,
@@ -246,9 +251,12 @@ fn shell_request_escalation_execution_is_explicit() {
 fn evaluate_intercepted_exec_policy_uses_wrapper_command_when_shell_wrapper_parsing_disabled() {
     let policy_src = r#"prefix_rule(pattern = ["npm", "publish"], decision = "prompt")"#;
     let mut parser = PolicyParser::new();
-    parser.parse("test.rules", policy_src).expect("parse policy src");
+    parser
+        .parse("test.rules", policy_src)
+        .expect("parse policy src");
     let policy = parser.build();
-    let program = AbsolutePathBuf::try_from(host_absolute_path(&["bin", "zsh"])).expect("absolute zsh path");
+    let program =
+        AbsolutePathBuf::try_from(host_absolute_path(&["bin", "zsh"])).expect("absolute zsh path");
 
     let enable_intercepted_exec_policy_shell_wrapper_parsing = false;
     let evaluation = evaluate_intercepted_exec_policy(
@@ -294,9 +302,12 @@ ultimately intercept the `npm publish` command and apply the policy rules to it.
 fn evaluate_intercepted_exec_policy_matches_inner_shell_commands_when_enabled() {
     let policy_src = r#"prefix_rule(pattern = ["npm", "publish"], decision = "prompt")"#;
     let mut parser = PolicyParser::new();
-    parser.parse("test.rules", policy_src).expect("parse policy src");
+    parser
+        .parse("test.rules", policy_src)
+        .expect("parse policy src");
     let policy = parser.build();
-    let program = AbsolutePathBuf::try_from(host_absolute_path(&["bin", "bash"])).expect("absolute bash path");
+    let program = AbsolutePathBuf::try_from(host_absolute_path(&["bin", "bash"]))
+        .expect("absolute bash path");
 
     let enable_intercepted_exec_policy_shell_wrapper_parsing = true;
     let evaluation = evaluate_intercepted_exec_policy(
@@ -338,7 +349,9 @@ host_executable(name = "git", paths = ["{git_path_literal}"])
 "#
     );
     let mut parser = PolicyParser::new();
-    parser.parse("test.rules", &policy_src).expect("parse starlark policy");
+    parser
+        .parse("test.rules", &policy_src)
+        .expect("parse starlark policy");
     let policy = parser.build();
     let program = AbsolutePathBuf::try_from(git_path).expect("absolute git path");
 
@@ -382,7 +395,9 @@ host_executable(name = "git", paths = ["{allowed_git_literal}"])
 "#
     );
     let mut parser = PolicyParser::new();
-    parser.parse("test.rules", &policy_src).expect("parse starlark policy");
+    parser
+        .parse("test.rules", &policy_src)
+        .expect("parse starlark policy");
     let policy = parser.build();
     let program = AbsolutePathBuf::try_from(other_git.clone()).expect("absolute other git path");
 

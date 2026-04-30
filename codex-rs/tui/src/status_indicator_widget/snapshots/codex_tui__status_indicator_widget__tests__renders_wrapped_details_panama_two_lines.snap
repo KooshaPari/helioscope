@@ -1,0 +1,8 @@
+---
+source: tui/src/status_indicator_widget/tests.rs
+assertion_line: 75
+expression: terminal.backend()
+---
+"• Working (0s)                "
+"  └ A man a plan a canal      "
+"    panama                    "

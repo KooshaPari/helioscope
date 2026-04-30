@@ -2,8 +2,11 @@ use crate::app_backtrack::BacktrackState;
 use crate::app_event::AppEvent;
 use crate::app_event::ExitMode;
 use crate::app_event::RealtimeAudioDeviceKind;
+use crate::app_event::StatusLineEvent;
 #[cfg(target_os = "windows")]
 use crate::app_event::WindowsSandboxEnableMode;
+#[cfg(target_os = "windows")]
+use crate::app_event::WindowsSandboxEvent;
 use crate::app_event_sender::AppEventSender;
 use crate::bottom_pane::ApprovalRequest;
 use crate::bottom_pane::FeedbackAudience;
@@ -98,6 +101,7 @@ use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
 use std::thread;
 use std::time::Duration;
+#[cfg(target_os = "windows")]
 use std::time::Instant;
 use tokio::select;
 use tokio::sync::Mutex;
@@ -682,6 +686,7 @@ pub(crate) struct App {
     /// so shutdown events from other threads still take the normal failover path.
     pending_shutdown_exit_thread_id: Option<ThreadId>,
 
+    #[cfg(target_os = "windows")]
     windows_sandbox: WindowsSandboxState,
 
     thread_event_channels: HashMap<ThreadId, ThreadEventChannel>,
@@ -694,6 +699,7 @@ pub(crate) struct App {
     pending_primary_events: VecDeque<Event>,
 }
 
+#[cfg(target_os = "windows")]
 #[derive(Default)]
 struct WindowsSandboxState {
     setup_started_at: Option<Instant>,
@@ -1721,6 +1727,7 @@ impl App {
             pending_update_action: None,
             suppress_shutdown_complete: false,
             pending_shutdown_exit_thread_id: None,
+            #[cfg(target_os = "windows")]
             windows_sandbox: WindowsSandboxState::default(),
             thread_event_channels: HashMap::new(),
             thread_event_listener_tasks: HashMap::new(),
@@ -2248,12 +2255,15 @@ impl App {
                 self.chat_widget
                     .open_full_access_confirmation(preset, return_to_permissions);
             }
-            AppEvent::OpenWorldWritableWarningConfirmation {
-                preset,
-                sample_paths,
-                extra_count,
-                failed_scan,
-            } => {
+            #[cfg(target_os = "windows")]
+            AppEvent::WindowsSandbox(
+                WindowsSandboxEvent::OpenWorldWritableWarningConfirmation {
+                    preset,
+                    sample_paths,
+                    extra_count,
+                    failed_scan,
+                },
+            ) => {
                 self.chat_widget.open_world_writable_warning_confirmation(
                     preset,
                     sample_paths,
@@ -2275,10 +2285,16 @@ impl App {
                     self.launch_external_editor(tui).await;
                 }
             }
-            AppEvent::OpenWindowsSandboxEnablePrompt { preset } => {
+            #[cfg(target_os = "windows")]
+            AppEvent::WindowsSandbox(WindowsSandboxEvent::OpenWindowsSandboxEnablePrompt {
+                preset,
+            }) => {
                 self.chat_widget.open_windows_sandbox_enable_prompt(preset);
             }
-            AppEvent::OpenWindowsSandboxFallbackPrompt { preset } => {
+            #[cfg(target_os = "windows")]
+            AppEvent::WindowsSandbox(WindowsSandboxEvent::OpenWindowsSandboxFallbackPrompt {
+                preset,
+            }) => {
                 self.otel_manager
                     .counter("codex.windows_sandbox.fallback_prompt_shown", 1, &[]);
                 self.chat_widget.clear_windows_sandbox_setup_status();
@@ -2292,7 +2308,10 @@ impl App {
                 self.chat_widget
                     .open_windows_sandbox_fallback_prompt(preset);
             }
-            AppEvent::BeginWindowsSandboxElevatedSetup { preset } => {
+            #[cfg(target_os = "windows")]
+            AppEvent::WindowsSandbox(WindowsSandboxEvent::BeginWindowsSandboxElevatedSetup {
+                preset,
+            }) => {
                 #[cfg(target_os = "windows")]
                 {
                     let policy = preset.sandbox.clone();
@@ -2307,10 +2326,12 @@ impl App {
                     // elevation again - just flip the config to use the elevated path.
                     if codex_core::windows_sandbox::sandbox_setup_is_complete(codex_home.as_path())
                     {
-                        tx.send(AppEvent::EnableWindowsSandboxForAgentMode {
-                            preset,
-                            mode: WindowsSandboxEnableMode::Elevated,
-                        });
+                        tx.send(AppEvent::WindowsSandbox(
+                            WindowsSandboxEvent::EnableWindowsSandboxForAgentMode {
+                                preset,
+                                mode: WindowsSandboxEnableMode::Elevated,
+                            },
+                        ));
                         return Ok(AppRunControl::Continue);
                     }
 
@@ -2332,10 +2353,12 @@ impl App {
                                     1,
                                     &[],
                                 );
-                                AppEvent::EnableWindowsSandboxForAgentMode {
-                                    preset: preset.clone(),
-                                    mode: WindowsSandboxEnableMode::Elevated,
-                                }
+                                AppEvent::WindowsSandbox(
+                                    WindowsSandboxEvent::EnableWindowsSandboxForAgentMode {
+                                        preset: preset.clone(),
+                                        mode: WindowsSandboxEnableMode::Elevated,
+                                    },
+                                )
                             }
                             Err(err) => {
                                 let mut code_tag: Option<String> = None;
@@ -2366,7 +2389,11 @@ impl App {
                                     error = %err,
                                     "failed to run elevated Windows sandbox setup"
                                 );
-                                AppEvent::OpenWindowsSandboxFallbackPrompt { preset }
+                                AppEvent::WindowsSandbox(
+                                    WindowsSandboxEvent::OpenWindowsSandboxFallbackPrompt {
+                                        preset,
+                                    },
+                                )
                             }
                         };
                         tx.send(event);
@@ -2377,7 +2404,10 @@ impl App {
                     let _ = preset;
                 }
             }
-            AppEvent::BeginWindowsSandboxLegacySetup { preset } => {
+            #[cfg(target_os = "windows")]
+            AppEvent::WindowsSandbox(WindowsSandboxEvent::BeginWindowsSandboxLegacySetup {
+                preset,
+            }) => {
                 #[cfg(target_os = "windows")]
                 {
                     let policy = preset.sandbox.clone();
@@ -2408,10 +2438,12 @@ impl App {
                                 "failed to preflight non-admin Windows sandbox setup"
                             );
                         }
-                        tx.send(AppEvent::EnableWindowsSandboxForAgentMode {
-                            preset,
-                            mode: WindowsSandboxEnableMode::Legacy,
-                        });
+                        tx.send(AppEvent::WindowsSandbox(
+                            WindowsSandboxEvent::EnableWindowsSandboxForAgentMode {
+                                preset,
+                                mode: WindowsSandboxEnableMode::Legacy,
+                            },
+                        ));
                     });
                 }
                 #[cfg(not(target_os = "windows"))]
@@ -2419,7 +2451,10 @@ impl App {
                     let _ = preset;
                 }
             }
-            AppEvent::BeginWindowsSandboxGrantReadRoot { path } => {
+            #[cfg(target_os = "windows")]
+            AppEvent::WindowsSandbox(WindowsSandboxEvent::BeginWindowsSandboxGrantReadRoot {
+                path,
+            }) => {
                 #[cfg(target_os = "windows")]
                 {
                     self.chat_widget
@@ -2446,14 +2481,18 @@ impl App {
                             codex_home.as_path(),
                             requested_path.as_path(),
                         ) {
-                            Ok(canonical_path) => AppEvent::WindowsSandboxGrantReadRootCompleted {
-                                path: canonical_path,
-                                error: None,
-                            },
-                            Err(err) => AppEvent::WindowsSandboxGrantReadRootCompleted {
-                                path: requested_path,
-                                error: Some(err.to_string()),
-                            },
+                            Ok(canonical_path) => AppEvent::WindowsSandbox(
+                                WindowsSandboxEvent::WindowsSandboxGrantReadRootCompleted {
+                                    path: canonical_path,
+                                    error: None,
+                                },
+                            ),
+                            Err(err) => AppEvent::WindowsSandbox(
+                                WindowsSandboxEvent::WindowsSandboxGrantReadRootCompleted {
+                                    path: requested_path,
+                                    error: Some(err.to_string()),
+                                },
+                            ),
                         };
                         tx.send(event);
                     });
@@ -2463,7 +2502,10 @@ impl App {
                     let _ = path;
                 }
             }
-            AppEvent::WindowsSandboxGrantReadRootCompleted { path, error } => match error {
+            #[cfg(target_os = "windows")]
+            AppEvent::WindowsSandbox(
+                WindowsSandboxEvent::WindowsSandboxGrantReadRootCompleted { path, error },
+            ) => match error {
                 Some(err) => {
                     self.chat_widget
                         .add_to_history(history_cell::new_error_event(format!("Error: {err}")));
@@ -2476,7 +2518,11 @@ impl App {
                         ));
                 }
             },
-            AppEvent::EnableWindowsSandboxForAgentMode { preset, mode } => {
+            #[cfg(target_os = "windows")]
+            AppEvent::WindowsSandbox(WindowsSandboxEvent::EnableWindowsSandboxForAgentMode {
+                preset,
+                mode,
+            }) => {
                 #[cfg(target_os = "windows")]
                 {
                     self.chat_widget.clear_windows_sandbox_setup_status();
@@ -2527,14 +2573,14 @@ impl App {
                                         personality: None,
                                     },
                                 ));
-                                self.app_event_tx.send(
-                                    AppEvent::OpenWorldWritableWarningConfirmation {
+                                self.app_event_tx.send(AppEvent::WindowsSandbox(
+                                    WindowsSandboxEvent::OpenWorldWritableWarningConfirmation {
                                         preset: Some(preset.clone()),
                                         sample_paths,
                                         extra_count,
                                         failed_scan,
                                     },
-                                );
+                                ));
                             } else {
                                 self.app_event_tx.send(AppEvent::CodexOp(
                                     Op::OverrideTurnContext {
@@ -2830,13 +2876,17 @@ impl App {
                     ));
                 }
             }
-            AppEvent::SkipNextWorldWritableScan => {
+            #[cfg(target_os = "windows")]
+            AppEvent::WindowsSandbox(WindowsSandboxEvent::SkipNextWorldWritableScan) => {
                 self.windows_sandbox.skip_world_writable_scan_once = true;
             }
             AppEvent::UpdateFullAccessWarningAcknowledged(ack) => {
                 self.chat_widget.set_full_access_warning_acknowledged(ack);
             }
-            AppEvent::UpdateWorldWritableWarningAcknowledged(ack) => {
+            #[cfg(target_os = "windows")]
+            AppEvent::WindowsSandbox(
+                WindowsSandboxEvent::UpdateWorldWritableWarningAcknowledged(ack),
+            ) => {
                 self.chat_widget
                     .set_world_writable_warning_acknowledged(ack);
             }
@@ -2863,7 +2913,10 @@ impl App {
                     ));
                 }
             }
-            AppEvent::PersistWorldWritableWarningAcknowledged => {
+            #[cfg(target_os = "windows")]
+            AppEvent::WindowsSandbox(
+                WindowsSandboxEvent::PersistWorldWritableWarningAcknowledged,
+            ) => {
                 if let Err(err) = ConfigEditsBuilder::new(&self.config.codex_home)
                     .set_hide_world_writable_warning(true)
                     .apply()
@@ -3104,7 +3157,8 @@ impl App {
                 self.chat_widget.replace_transcription(&id, &text);
             }
             #[cfg(not(target_os = "linux"))]
-            AppEvent::TranscriptionFailed { id, error: _ } => {
+            AppEvent::TranscriptionFailed { id, error } => {
+                tracing::debug!("transcription failed for placeholder {id}: {error}");
                 self.chat_widget.remove_transcription_placeholder(&id);
             }
             #[cfg(not(target_os = "linux"))]
@@ -3115,7 +3169,7 @@ impl App {
                     tui.frame_requester().schedule_frame();
                 }
             }
-            AppEvent::StatusLineSetup { items } => {
+            AppEvent::StatusLine(StatusLineEvent::Setup { items }) => {
                 let ids = items.iter().map(ToString::to_string).collect::<Vec<_>>();
                 let edit = codex_core::config::edit::status_line_items_edit(&ids);
                 let apply_result = ConfigEditsBuilder::new(&self.config.codex_home)
@@ -3134,11 +3188,11 @@ impl App {
                     }
                 }
             }
-            AppEvent::StatusLineBranchUpdated { cwd, branch } => {
+            AppEvent::StatusLine(StatusLineEvent::BranchUpdated { cwd, branch }) => {
                 self.chat_widget.set_status_line_branch(cwd, branch);
                 self.refresh_status_line();
             }
-            AppEvent::StatusLineSetupCancelled => {
+            AppEvent::StatusLine(StatusLineEvent::SetupCancelled) => {
                 self.chat_widget.cancel_status_line_setup();
             }
             AppEvent::SyntaxThemeSelected { name } => {
@@ -3516,14 +3570,17 @@ impl App {
                 code: KeyCode::Esc,
                 kind: KeyEventKind::Press | KeyEventKind::Repeat,
                 ..
+            } if self.chat_widget.is_normal_backtrack_mode()
+                && self.chat_widget.composer_is_empty() =>
+            {
+                self.handle_backtrack_esc_key(tui);
+            }
+            KeyEvent {
+                code: KeyCode::Esc,
+                kind: KeyEventKind::Press | KeyEventKind::Repeat,
+                ..
             } => {
-                if self.chat_widget.is_normal_backtrack_mode()
-                    && self.chat_widget.composer_is_empty()
-                {
-                    self.handle_backtrack_esc_key(tui);
-                } else {
-                    self.chat_widget.handle_key_event(key_event);
-                }
+                self.chat_widget.handle_key_event(key_event);
             }
             // Enter confirms backtrack when primed + count > 0. Otherwise pass to widget.
             KeyEvent {
@@ -3578,12 +3635,14 @@ impl App {
             );
             if result.is_err() {
                 // Scan failed: warn without examples.
-                tx.send(AppEvent::OpenWorldWritableWarningConfirmation {
-                    preset: None,
-                    sample_paths: Vec::new(),
-                    extra_count: 0usize,
-                    failed_scan: true,
-                });
+                tx.send(AppEvent::WindowsSandbox(
+                    WindowsSandboxEvent::OpenWorldWritableWarningConfirmation {
+                        preset: None,
+                        sample_paths: Vec::new(),
+                        extra_count: 0usize,
+                        failed_scan: true,
+                    },
+                ));
             }
         });
     }
@@ -4381,6 +4440,7 @@ mod tests {
             pending_update_action: None,
             suppress_shutdown_complete: false,
             pending_shutdown_exit_thread_id: None,
+            #[cfg(target_os = "windows")]
             windows_sandbox: WindowsSandboxState::default(),
             thread_event_channels: HashMap::new(),
             thread_event_listener_tasks: HashMap::new(),
@@ -4441,6 +4501,7 @@ mod tests {
                 pending_update_action: None,
                 suppress_shutdown_complete: false,
                 pending_shutdown_exit_thread_id: None,
+                #[cfg(target_os = "windows")]
                 windows_sandbox: WindowsSandboxState::default(),
                 thread_event_channels: HashMap::new(),
                 thread_event_listener_tasks: HashMap::new(),

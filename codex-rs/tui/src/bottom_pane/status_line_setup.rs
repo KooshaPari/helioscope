@@ -27,6 +27,7 @@ use strum_macros::EnumIter;
 use strum_macros::EnumString;
 
 use crate::app_event::AppEvent;
+use crate::app_event::StatusLineEvent;
 use crate::app_event_sender::AppEventSender;
 use crate::bottom_pane::CancellationEvent;
 use crate::bottom_pane::bottom_pane_view::BottomPaneView;
@@ -157,8 +158,8 @@ impl StatusLineItem {
 /// Wraps a [`MultiSelectPicker`] with status-line-specific behavior:
 /// - Pre-populates items from current configuration
 /// - Shows a live preview of the configured status line
-/// - Emits [`AppEvent::StatusLineSetup`] on confirmation
-/// - Emits [`AppEvent::StatusLineSetupCancelled`] on cancellation
+/// - Emits [`AppEvent::StatusLine`] on confirmation
+/// - Emits [`AppEvent::StatusLine`] on cancellation
 pub(crate) struct StatusLineSetupView {
     /// The underlying multi-select picker widget.
     picker: MultiSelectPicker,
@@ -232,10 +233,10 @@ impl StatusLineSetupView {
                     .map(|id| id.parse::<StatusLineItem>())
                     .collect::<Result<Vec<_>, _>>()
                     .unwrap_or_default();
-                app_event.send(AppEvent::StatusLineSetup { items });
+                app_event.send(AppEvent::StatusLine(StatusLineEvent::Setup { items }));
             })
             .on_cancel(|app_event| {
-                app_event.send(AppEvent::StatusLineSetupCancelled);
+                app_event.send(AppEvent::StatusLine(StatusLineEvent::SetupCancelled));
             })
             .build(),
         }

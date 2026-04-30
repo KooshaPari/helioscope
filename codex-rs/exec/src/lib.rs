@@ -455,7 +455,7 @@ pub async fn run_main(cli: Cli, arg0_paths: Arg0DispatchPaths) -> anyhow::Result
             let prompt_text = resolve_prompt(prompt_arg);
             let mut items: Vec<UserInput> = imgs
                 .into_iter()
-                .chain(args.images.into_iter())
+                .chain(args.images)
                 .map(|path| UserInput::LocalImage { path })
                 .collect();
             items.push(UserInput::Text {

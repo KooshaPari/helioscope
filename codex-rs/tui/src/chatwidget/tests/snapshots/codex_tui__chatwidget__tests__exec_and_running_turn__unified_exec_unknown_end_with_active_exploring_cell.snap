@@ -1,0 +1,12 @@
+---
+source: tui/src/chatwidget/tests/exec_and_running_turn.rs
+assertion_line: 591
+expression: snapshot
+---
+History:
+• Ran echo repro-marker
+  └ repro-marker
+
+Active:
+• Exploring
+  └ Read null

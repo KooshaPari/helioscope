@@ -79,10 +79,8 @@ fn reserialize_shell_outputs(items: &mut [ResponseItem]) {
             call_id,
             name,
             input: _,
-        } => {
-            if name == "apply_patch" {
-                shell_call_ids.insert(call_id.clone());
-            }
+        } if name == "apply_patch" => {
+            shell_call_ids.insert(call_id.clone());
         }
         ResponseItem::FunctionCall { name, call_id, .. }
             if is_shell_tool_name(name) || name == "apply_patch" =>
@@ -90,14 +88,13 @@ fn reserialize_shell_outputs(items: &mut [ResponseItem]) {
             shell_call_ids.insert(call_id.clone());
         }
         ResponseItem::FunctionCallOutput { call_id, output }
-        | ResponseItem::CustomToolCallOutput { call_id, output } => {
+        | ResponseItem::CustomToolCallOutput { call_id, output }
             if shell_call_ids.remove(call_id)
                 && let Some(structured) = output
                     .text_content()
-                    .and_then(parse_structured_shell_output)
-            {
-                output.body = FunctionCallOutputBody::Text(structured);
-            }
+                    .and_then(parse_structured_shell_output) =>
+        {
+            output.body = FunctionCallOutputBody::Text(structured);
         }
         _ => {}
     })
@@ -280,6 +277,7 @@ mod tests {
                 "answer": {"type": "string"}
             },
             "required": ["answer"],
+            "additionalProperties": false,
         });
         let text_controls =
             create_text_param_for_request(None, &Some(schema.clone())).expect("text controls");
@@ -296,7 +294,7 @@ mod tests {
             stream: true,
             include: vec![],
             prompt_cache_key: None,
-            text: Some(text_controls),
+            text: text_controls,
         };
 
         let v = serde_json::to_value(&req).expect("json");
@@ -314,6 +312,25 @@ mod tests {
         );
         assert_eq!(format.get("strict"), Some(&serde_json::Value::Bool(true)));
         assert_eq!(format.get("schema"), Some(&schema));
+    }
+
+    #[test]
+    fn rejects_non_strict_output_schema() {
+        let schema = serde_json::json!({
+            "type": "object",
+            "properties": {
+                "answer": {"type": "string"},
+                "reason": {"type": "string"}
+            },
+            "required": ["answer"],
+            "additionalProperties": false
+        });
+
+        let err = create_text_param_for_request(None, &Some(schema)).expect_err("invalid schema");
+        assert!(
+            err.to_string()
+                .contains("requires every property to appear exactly once in required")
+        );
     }
 
     #[test]

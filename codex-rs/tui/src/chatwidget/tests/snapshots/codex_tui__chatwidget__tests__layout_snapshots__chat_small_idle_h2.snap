@@ -1,0 +1,7 @@
+---
+source: tui/src/chatwidget/tests/layout_snapshots.rs
+assertion_line: 16
+expression: terminal.backend()
+---
+"                                        "
+"                                        "

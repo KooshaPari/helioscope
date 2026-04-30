@@ -141,6 +141,7 @@ use ratatui::text::Span;
 use ratatui::widgets::Block;
 use ratatui::widgets::Paragraph;
 use ratatui::widgets::StatefulWidgetRef;
+use ratatui::widgets::Widget;
 use ratatui::widgets::WidgetRef;
 
 use super::chat_composer_history::ChatComposerHistory;
@@ -184,7 +185,6 @@ use crate::bottom_pane::prompt_args::prompt_has_numeric_placeholders;
 use crate::bottom_pane::text_manipulation;
 use crate::render::Insets;
 use crate::render::RectExt;
-use crate::render::renderable::Renderable;
 use crate::slash_command::SlashCommand;
 use crate::style::user_message_style;
 use codex_protocol::custom_prompts::CustomPrompt;
@@ -198,7 +198,6 @@ use codex_utils_fuzzy_match::fuzzy_match;
 use crate::app_event::AppEvent;
 use crate::app_event::ConnectorsSnapshot;
 use crate::app_event_sender::AppEventSender;
-use crate::bottom_pane::LocalImageAttachment;
 use crate::bottom_pane::MentionBinding;
 use crate::bottom_pane::textarea::TextArea;
 use crate::bottom_pane::textarea::TextAreaState;
@@ -214,7 +213,6 @@ use codex_file_search::FileMatch;
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::collections::HashSet;
-use std::collections::VecDeque;
 use std::ops::Range;
 use std::path::PathBuf;
 use std::sync::Arc;
@@ -229,6 +227,7 @@ use std::time::Instant;
 #[cfg(not(target_os = "linux"))]
 use tokio::runtime::Handle;
 
+mod images;
 mod submission;
 
 /// If the pasted content exceeds this number of characters, replace it with a
@@ -346,9 +345,9 @@ impl VoiceState {
 }
 
 pub(crate) struct ChatComposer {
-    textarea: TextArea,
-    textarea_state: RefCell<TextAreaState>,
-    active_popup: ActivePopup,
+    pub(super) textarea: TextArea,
+    pub(super) textarea_state: RefCell<TextAreaState>,
+    pub(super) active_popup: ActivePopup,
     app_event_tx: AppEventSender,
     history: ChatComposerHistory,
     quit_shortcut_expires_at: Option<Instant>,
@@ -370,7 +369,7 @@ pub(crate) struct ChatComposer {
     spinner_stop_flags: HashMap<String, Arc<AtomicBool>>,
     is_task_running: bool,
     /// When false, the composer is temporarily read-only (e.g. during sandbox setup).
-    input_enabled: bool,
+    pub(super) input_enabled: bool,
     input_disabled_placeholder: Option<String>,
     /// Non-bracketed paste burst tracker (see `bottom_pane/paste_burst.rs`).
     paste_burst: PasteBurst,
@@ -382,7 +381,7 @@ pub(crate) struct ChatComposer {
     remote_image_urls: Vec<String>,
     /// Tracks keyboard selection for the remote-image rows so Up/Down + Delete/Backspace
     /// can highlight and remove remote attachments from the composer UI.
-    selected_remote_image_index: Option<usize>,
+    pub(super) selected_remote_image_index: Option<usize>,
     footer_flash: Option<FooterFlash>,
     context_window_percent: Option<i64>,
     // Monotonically increasing identifier for textarea elements we insert.
@@ -419,14 +418,12 @@ struct ComposerMentionBinding {
 }
 
 /// Popup state – at most one can be visible at any time.
-enum ActivePopup {
+pub(super) enum ActivePopup {
     None,
     Command(CommandPopup),
     File(FileSearchPopup),
     Skill(SkillPopup),
 }
-
-const FOOTER_SPACING_HEIGHT: u16 = 0;
 
 impl ChatComposer {
     pub fn new(
@@ -623,7 +620,7 @@ impl ChatComposer {
     pub fn set_windows_degraded_sandbox_active(&mut self, enabled: bool) {
         self.windows_degraded_sandbox_active = enabled;
     }
-    fn layout_areas(&self, area: Rect) -> [Rect; 4] {
+    pub(super) fn layout_areas(&self, area: Rect) -> [Rect; 4] {
         let footer_props = self.footer_props();
         let footer_hint_height = self
             .custom_footer_height()
@@ -660,14 +657,6 @@ impl ChatComposer {
         textarea_rect.y = textarea_rect.y.saturating_add(consumed);
         textarea_rect.height = textarea_rect.height.saturating_sub(consumed);
         [composer_rect, remote_images_rect, textarea_rect, popup_rect]
-    }
-
-    fn footer_spacing(footer_hint_height: u16) -> u16 {
-        if footer_hint_height == 0 {
-            0
-        } else {
-            FOOTER_SPACING_HEIGHT
-        }
     }
 
     pub fn cursor_pos(&self, area: Rect) -> Option<(u16, u16)> {
@@ -755,23 +744,6 @@ impl ChatComposer {
         } else {
             self.insert_str(&pasted);
         }
-        self.paste_burst.clear_after_explicit_paste();
-        self.sync_popups();
-        true
-    }
-
-    /// Integrate pasted text verbatim, bypassing burst/image/placeholder heuristics.
-    ///
-    /// This is used for explicit "verbatim paste" entry points where callers
-    /// want the exact text inserted as-is.
-    #[allow(dead_code)]
-    pub fn handle_verbatim_paste(&mut self, pasted: String) -> bool {
-        #[cfg(not(target_os = "linux"))]
-        if self.voice_state.voice.is_some() {
-            return false;
-        }
-        let pasted = pasted.replace("\r\n", "\n").replace('\r', "\n");
-        self.insert_str(&pasted);
         self.paste_burst.clear_after_explicit_paste();
         self.sync_popups();
         true
@@ -1105,50 +1077,12 @@ impl ChatComposer {
         self.textarea.text_elements()
     }
 
-    #[cfg(test)]
-    pub(crate) fn local_image_paths(&self) -> Vec<PathBuf> {
-        chat_composer_images::local_image_paths(&self.attached_images)
-    }
-
-    pub(crate) fn local_images(&self) -> Vec<LocalImageAttachment> {
-        chat_composer_images::local_images(&self.attached_images)
-    }
-
     pub(crate) fn mention_bindings(&self) -> Vec<MentionBinding> {
         self.snapshot_mention_bindings()
     }
 
     pub(crate) fn take_recent_submission_mention_bindings(&mut self) -> Vec<MentionBinding> {
         std::mem::take(&mut self.recent_submission_mention_bindings)
-    }
-
-    fn prune_attached_images_for_submission(&mut self, text: &str, text_elements: &[TextElement]) {
-        chat_composer_images::prune_attached_images_for_submission(
-            &mut self.attached_images,
-            text,
-            text_elements,
-        );
-    }
-
-    /// Insert an attachment placeholder and track it for the next submission.
-    pub fn attach_image(&mut self, path: PathBuf) {
-        chat_composer_images::attach_image(
-            &mut self.textarea,
-            &mut self.attached_images,
-            self.remote_image_urls.len(),
-            path,
-        );
-    }
-
-    #[cfg(test)]
-    pub fn take_recent_submission_images(&mut self) -> Vec<PathBuf> {
-        chat_composer_images::take_recent_submission_images(&mut self.attached_images)
-    }
-
-    pub fn take_recent_submission_images_with_placeholders(&mut self) -> Vec<LocalImageAttachment> {
-        chat_composer_images::take_recent_submission_images_with_placeholders(
-            &mut self.attached_images,
-        )
     }
 
     /// Flushes any due paste-burst state.
@@ -1416,8 +1350,11 @@ impl ChatComposer {
                 let mut text = self.textarea.text().to_string();
                 let mut text_elements = self.textarea.text_elements();
                 if !self.pending_pastes.is_empty() {
-                    let (expanded, expanded_elements) =
-                        Self::expand_pending_pastes(&text, text_elements, &self.pending_pastes);
+                    let (expanded, expanded_elements) = text_manipulation::expand_pending_pastes(
+                        &text,
+                        text_elements,
+                        &self.pending_pastes,
+                    );
                     text = expanded;
                     text_elements = expanded_elements;
                 }
@@ -1428,7 +1365,8 @@ impl ChatComposer {
                     && let Some(expanded) =
                         expand_if_numeric_with_positional_args(prompt, first_line, &text_elements)
                 {
-                    self.prune_attached_images_for_submission(
+                    chat_composer_images::prune_attached_images_for_submission(
+                        &mut self.attached_images,
                         &expanded.text,
                         &expanded.text_elements,
                     );
@@ -1461,7 +1399,8 @@ impl ChatComposer {
                                         text,
                                         text_elements,
                                     } => {
-                                        self.prune_attached_images_for_submission(
+                                        chat_composer_images::prune_attached_images_for_submission(
+                                            &mut self.attached_images,
                                             &text,
                                             &text_elements,
                                         );
@@ -1798,23 +1737,6 @@ impl ChatComposer {
             || lower.ends_with(".webp")
     }
 
-    fn trim_text_elements(
-        original: &str,
-        trimmed: &str,
-        elements: Vec<TextElement>,
-    ) -> Vec<TextElement> {
-        text_manipulation::trim_text_elements(original, trimmed, elements)
-    }
-
-    /// Expand large-paste placeholders using element ranges and rebuild other element spans.
-    pub(crate) fn expand_pending_pastes(
-        text: &str,
-        mut elements: Vec<TextElement>,
-        pending_pastes: &[(String, String)],
-    ) -> (String, Vec<TextElement>) {
-        text_manipulation::expand_pending_pastes(text, elements, pending_pastes)
-    }
-
     pub fn skills(&self) -> Option<&Vec<SkillMetadata>> {
         self.skills.as_ref()
     }
@@ -2132,29 +2054,8 @@ impl ChatComposer {
         }
     }
 
-    fn remote_images_lines(&self, _width: u16) -> Vec<Line<'static>> {
-        chat_composer_images::remote_images_lines(
-            &self.remote_image_urls,
-            self.selected_remote_image_index,
-        )
-    }
-
     fn clear_remote_image_selection(&mut self) {
         self.selected_remote_image_index = None;
-    }
-
-    fn remove_selected_remote_image(&mut self, selected_index: usize) {
-        chat_composer_images::remove_selected_remote_image(
-            &mut self.remote_image_urls,
-            &mut self.selected_remote_image_index,
-            selected_index,
-        );
-        chat_composer_images::relabel_attached_images_and_update_placeholders(
-            &mut self.textarea,
-            &mut self.attached_images,
-            self.remote_image_urls.len(),
-        );
-        self.sync_popups();
     }
 
     fn handle_remote_image_selection_key(
@@ -2624,14 +2525,6 @@ impl ChatComposer {
         }
     }
 
-    fn relabel_attached_images_and_update_placeholders(&mut self) {
-        chat_composer_images::relabel_attached_images_and_update_placeholders(
-            &mut self.textarea,
-            &mut self.attached_images,
-            self.remote_image_urls.len(),
-        );
-    }
-
     fn handle_shortcut_overlay_key(&mut self, key_event: &KeyEvent) -> bool {
         if key_event.kind != KeyEventKind::Press {
             return false;
@@ -2656,7 +2549,7 @@ impl ChatComposer {
         changed
     }
 
-    fn footer_props(&self) -> FooterProps {
+    pub(super) fn footer_props(&self) -> FooterProps {
         let mode = self.footer_mode();
         let is_wsl = {
             #[cfg(target_os = "linux")]
@@ -2713,7 +2606,7 @@ impl ChatComposer {
         }
     }
 
-    fn custom_footer_height(&self) -> Option<u16> {
+    pub(super) fn custom_footer_height(&self) -> Option<u16> {
         if self.footer_flash_visible() {
             return Some(1);
         }
@@ -3149,7 +3042,6 @@ impl ChatComposer {
         self.voice_state.voice.is_some()
     }
 
-    #[allow(dead_code)]
     pub(crate) fn set_input_enabled(&mut self, enabled: bool, placeholder: Option<String>) {
         self.input_enabled = enabled;
         self.input_disabled_placeholder = if enabled { None } else { placeholder };
@@ -3760,7 +3652,10 @@ impl ChatComposer {
                     }
                 } else if self.footer_flash_visible() {
                     if let Some(flash) = self.footer_flash.as_ref() {
-                        flash.line.render(inset_footer_hint_area(hint_rect), buf);
+                        flash
+                            .line
+                            .clone()
+                            .render(inset_footer_hint_area(hint_rect), buf);
                     }
                 } else if let Some(items) = self.footer_hint_override.as_ref() {
                     render_footer_hint_items(hint_rect, buf, items);
@@ -3786,11 +3681,11 @@ impl ChatComposer {
             }
         }
         let style = user_message_style();
-        Block::default().style(style).render_ref(composer_rect, buf);
+        Block::default().style(style).render(composer_rect, buf);
         if !remote_images_rect.is_empty() {
             Paragraph::new(self.remote_images_lines(remote_images_rect.width))
                 .style(style)
-                .render_ref(remote_images_rect, buf);
+                .render(remote_images_rect, buf);
         }
         if !textarea_rect.is_empty() {
             let prompt = if self.input_enabled {
@@ -3824,8 +3719,7 @@ impl ChatComposer {
             };
             if !textarea_rect.is_empty() {
                 let placeholder = Span::from(text).dim();
-                Line::from(vec![placeholder])
-                    .render_ref(textarea_rect.inner(Margin::new(0, 0)), buf);
+                Line::from(vec![placeholder]).render(textarea_rect.inner(Margin::new(0, 0)), buf);
             }
         }
     }
@@ -3915,6 +3809,7 @@ mod tests {
     use crate::bottom_pane::prompt_args::PromptArg;
     use crate::bottom_pane::prompt_args::extract_positional_args_for_prompt_line;
     use crate::bottom_pane::textarea::TextArea;
+    use crate::render::renderable::Renderable;
     use tokio::sync::mpsc::unbounded_channel;
 
     #[test]

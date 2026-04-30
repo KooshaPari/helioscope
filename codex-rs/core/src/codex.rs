@@ -63,7 +63,6 @@ use codex_hooks::Hooks;
 use codex_hooks::HooksConfig;
 use codex_network_proxy::NetworkProxy;
 use codex_network_proxy::NetworkProxyAuditMetadata;
-use codex_network_proxy::normalize_host;
 use codex_protocol::ThreadId;
 use codex_protocol::approvals::ExecPolicyAmendment;
 use codex_protocol::approvals::NetworkPolicyAmendment;
@@ -187,7 +186,6 @@ use crate::mentions::build_connector_slug_counts;
 use crate::mentions::build_skill_name_counts;
 use crate::mentions::collect_explicit_app_ids;
 use crate::mentions::collect_tool_mentions_from_messages;
-use crate::network_policy_decision::execpolicy_network_rule_amendment;
 use crate::project_doc::get_user_instructions;
 use crate::protocol::AgentMessageContentDeltaEvent;
 use crate::protocol::AgentReasoningSectionBreakEvent;
@@ -1441,7 +1439,9 @@ impl Session {
             unified_exec_manager: UnifiedExecProcessManager::new(
                 config.background_terminal_max_timeout,
             ),
+            #[cfg(unix)]
             shell_zsh_path: config.zsh_path.clone(),
+            #[cfg(unix)]
             main_execve_wrapper_exe: config.main_execve_wrapper_exe.clone(),
             analytics_events_client: AnalyticsEventsClient::new(
                 Arc::clone(&config),
@@ -1459,6 +1459,7 @@ impl Session {
             otel_manager,
             models_manager: Arc::clone(&models_manager),
             tool_approvals: Mutex::new(ApprovalStore::default()),
+            #[cfg(unix)]
             execve_session_approvals: RwLock::new(HashMap::new()),
             skills_manager,
             file_watcher,
@@ -1522,7 +1523,7 @@ impl Session {
                 rollout_path,
             }),
         })
-        .chain(post_session_configured_events.into_iter());
+        .chain(post_session_configured_events);
         for event in events {
             sess.send_event_raw(event).await;
         }
@@ -1880,10 +1881,10 @@ impl Session {
                 continue;
             };
             match response_item {
-                ResponseItem::FunctionCall { name, call_id, .. } => {
-                    if name == SEARCH_TOOL_BM25_TOOL_NAME {
-                        search_call_ids.insert(call_id.clone());
-                    }
+                ResponseItem::FunctionCall { name, call_id, .. }
+                    if name == SEARCH_TOOL_BM25_TOOL_NAME =>
+                {
+                    search_call_ids.insert(call_id.clone());
                 }
                 ResponseItem::FunctionCallOutput { call_id, output } => {
                     if !search_call_ids.contains(call_id) {
@@ -2428,106 +2429,6 @@ impl Session {
             .is_err()
         {
             warn!("no active turn found to record execpolicy amendment message for {sub_id}");
-        }
-    }
-
-    #[allow(dead_code)]
-    pub(crate) async fn persist_network_policy_amendment(
-        &self,
-        amendment: &NetworkPolicyAmendment,
-        network_approval_context: &NetworkApprovalContext,
-    ) -> anyhow::Result<()> {
-        let host =
-            Self::validated_network_policy_amendment_host(amendment, network_approval_context)?;
-        let codex_home = self
-            .state
-            .lock()
-            .await
-            .session_configuration
-            .codex_home()
-            .clone();
-        let execpolicy_amendment =
-            execpolicy_network_rule_amendment(amendment, network_approval_context, &host);
-
-        if let Some(started_network_proxy) = self.services.network_proxy.as_ref() {
-            let proxy = started_network_proxy.proxy();
-            match amendment.action {
-                NetworkPolicyRuleAction::Allow => proxy
-                    .add_allowed_domain(&host)
-                    .await
-                    .map_err(|err| anyhow::anyhow!("failed to update runtime allowlist: {err}"))?,
-                NetworkPolicyRuleAction::Deny => proxy
-                    .add_denied_domain(&host)
-                    .await
-                    .map_err(|err| anyhow::anyhow!("failed to update runtime denylist: {err}"))?,
-            }
-        }
-
-        self.services
-            .exec_policy
-            .append_network_rule_and_update(
-                &codex_home,
-                &host,
-                execpolicy_amendment.protocol,
-                execpolicy_amendment.decision,
-                Some(execpolicy_amendment.justification),
-            )
-            .await
-            .map_err(|err| {
-                anyhow::anyhow!("failed to persist network policy amendment to execpolicy: {err}")
-            })?;
-
-        Ok(())
-    }
-
-    #[allow(dead_code)]
-    fn validated_network_policy_amendment_host(
-        amendment: &NetworkPolicyAmendment,
-        network_approval_context: &NetworkApprovalContext,
-    ) -> anyhow::Result<String> {
-        let approved_host = normalize_host(&network_approval_context.host);
-        let amendment_host = normalize_host(&amendment.host);
-        if amendment_host != approved_host {
-            return Err(anyhow::anyhow!(
-                "network policy amendment host '{}' does not match approved host '{}'",
-                amendment.host,
-                network_approval_context.host
-            ));
-        }
-        Ok(approved_host)
-    }
-
-    #[allow(dead_code)]
-    pub(crate) async fn record_network_policy_amendment_message(
-        &self,
-        sub_id: &str,
-        amendment: &NetworkPolicyAmendment,
-    ) {
-        let (action, list_name) = match amendment.action {
-            NetworkPolicyRuleAction::Allow => ("Allowed", "allowlist"),
-            NetworkPolicyRuleAction::Deny => ("Denied", "denylist"),
-        };
-        let text = format!(
-            "{action} network rule saved in execpolicy ({list_name}): {}",
-            amendment.host
-        );
-        let message: ResponseItem = DeveloperInstructions::new(text.clone()).into();
-
-        if let Some(turn_context) = self.turn_context_for_sub_id(sub_id).await {
-            self.record_conversation_items(&turn_context, std::slice::from_ref(&message))
-                .await;
-            return;
-        }
-
-        if self
-            .inject_response_items(vec![ResponseInputItem::Message {
-                role: "developer".to_string(),
-                content: vec![ContentItem::InputText { text }],
-            }])
-            .await
-            .is_err()
-        {
-            warn!("no active turn found to record network policy amendment message for {sub_id}");
         }
     }
 
@@ -3706,11 +3607,7 @@ async fn submission_loop(sess: Arc<Session>, config: Arc<Config>, rx_sub: Receiv
             } => {
                 handlers::resolve_elicitation(&sess, server_name, request_id, decision).await;
             }
-            Op::Shutdown => {
-                if handlers::shutdown(&sess, sub.id.clone()).await {
-                    break;
-                }
-            }
+            Op::Shutdown if handlers::shutdown(&sess, sub.id.clone()).await => break,
             Op::Review { review_request } => {
                 handlers::review(&sess, &config, sub.id.clone(), review_request).await;
             }
@@ -6456,7 +6353,6 @@ mod tests {
     use crate::protocol::CompactedItem;
     use crate::protocol::CreditsSnapshot;
     use crate::protocol::InitialHistory;
-    use crate::protocol::NetworkApprovalProtocol;
     use crate::protocol::RateLimitSnapshot;
     use crate::protocol::RateLimitWindow;
     use crate::protocol::ResumedHistory;
@@ -6617,17 +6513,11 @@ mod tests {
         ToolInfo {
             server_name: server_name.to_string(),
             tool_name: tool_name.to_string(),
-            tool: Tool {
-                name: tool_name.to_string().into(),
-                title: None,
-                description: Some(format!("Test tool: {tool_name}").into()),
-                input_schema: Arc::new(JsonObject::default()),
-                output_schema: None,
-                annotations: None,
-                execution: None,
-                icons: None,
-                meta: None,
-            },
+            tool: Tool::new(
+                tool_name.to_string(),
+                format!("Test tool: {tool_name}"),
+                Arc::new(JsonObject::default()),
+            ),
             connector_id: connector_id.map(str::to_string),
             connector_name: connector_name.map(str::to_string),
         }
@@ -6647,41 +6537,6 @@ mod tests {
             call_id: call_id.to_string(),
             output: FunctionCallOutputPayload::from_text(output.to_string()),
         })
-    }
-
-    #[test]
-    fn validated_network_policy_amendment_host_allows_normalized_match() {
-        let amendment = NetworkPolicyAmendment {
-            host: "ExAmPlE.Com.:443".to_string(),
-            action: NetworkPolicyRuleAction::Allow,
-        };
-        let context = NetworkApprovalContext {
-            host: "example.com".to_string(),
-            protocol: NetworkApprovalProtocol::Https,
-        };
-
-        let host = Session::validated_network_policy_amendment_host(&amendment, &context)
-            .expect("normalized hosts should match");
-
-        assert_eq!(host, "example.com");
-    }
-
-    #[test]
-    fn validated_network_policy_amendment_host_rejects_mismatch() {
-        let amendment = NetworkPolicyAmendment {
-            host: "evil.example.com".to_string(),
-            action: NetworkPolicyRuleAction::Deny,
-        };
-        let context = NetworkApprovalContext {
-            host: "api.example.com".to_string(),
-            protocol: NetworkApprovalProtocol::Https,
-        };
-
-        let err = Session::validated_network_policy_amendment_host(&amendment, &context)
-            .expect_err("mismatched hosts should be rejected");
-
-        let message = err.to_string();
-        assert!(message.contains("does not match approved host"));
     }
 
     #[tokio::test]
@@ -7840,7 +7695,8 @@ mod tests {
         let got = FunctionCallOutputPayload::from(&ctr);
         let expected = FunctionCallOutputPayload {
             body: FunctionCallOutputBody::Text(
-                serde_json::to_string(&vec![text_block("hello"), text_block("world")]).expect("serialize text blocks"),
+                serde_json::to_string(&vec![text_block("hello"), text_block("world")])
+                    .expect("serialize text blocks"),
             ),
             success: Some(true),
         };
@@ -7860,7 +7716,8 @@ mod tests {
         let got = FunctionCallOutputPayload::from(&ctr);
         let expected = FunctionCallOutputPayload {
             body: FunctionCallOutputBody::Text(
-                serde_json::to_string(&json!({ "message": "bad" })).expect("serialize error message"),
+                serde_json::to_string(&json!({ "message": "bad" }))
+                    .expect("serialize error message"),
             ),
             success: Some(false),
         };
@@ -8166,7 +8023,9 @@ mod tests {
             unified_exec_manager: UnifiedExecProcessManager::new(
                 config.background_terminal_max_timeout,
             ),
+            #[cfg(unix)]
             shell_zsh_path: None,
+            #[cfg(unix)]
             main_execve_wrapper_exe: config.main_execve_wrapper_exe.clone(),
             analytics_events_client: AnalyticsEventsClient::new(
                 Arc::clone(&config),
@@ -8184,6 +8043,7 @@ mod tests {
             otel_manager: otel_manager.clone(),
             models_manager: Arc::clone(&models_manager),
             tool_approvals: Mutex::new(ApprovalStore::default()),
+            #[cfg(unix)]
             execve_session_approvals: RwLock::new(HashMap::new()),
             skills_manager,
             file_watcher,
@@ -8326,7 +8186,9 @@ mod tests {
             unified_exec_manager: UnifiedExecProcessManager::new(
                 config.background_terminal_max_timeout,
             ),
+            #[cfg(unix)]
             shell_zsh_path: None,
+            #[cfg(unix)]
             main_execve_wrapper_exe: config.main_execve_wrapper_exe.clone(),
             analytics_events_client: AnalyticsEventsClient::new(
                 Arc::clone(&config),
@@ -8344,6 +8206,7 @@ mod tests {
             otel_manager: otel_manager.clone(),
             models_manager: Arc::clone(&models_manager),
             tool_approvals: Mutex::new(ApprovalStore::default()),
+            #[cfg(unix)]
             execve_session_approvals: RwLock::new(HashMap::new()),
             skills_manager,
             file_watcher,

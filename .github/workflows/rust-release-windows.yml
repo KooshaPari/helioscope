@@ -67,7 +67,7 @@ jobs:
               labels: codex-windows-arm64
 
     steps:
-      - uses: actions/checkout@v6@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
       - name: Print runner specs (Windows)
         shell: powershell
         run: |
@@ -92,7 +92,7 @@ jobs:
           cargo build --target ${{ matrix.target }} --release --timings ${{ matrix.build_args }}
 
       - name: Upload Cargo timings
-        uses: actions/upload-artifact@v6@4af7530f1b58858243c2b3a3e3f2e6c8f8a5e8d7
+        uses: actions/upload-artifact@4af7530f1b58858243c2b3a3e3f2e6c8f8a5e8d7
         with:
           name: cargo-timings-rust-release-windows-${{ matrix.target }}-${{ matrix.bundle }}
           path: codex-rs/target/**/cargo-timings/cargo-timing.html
@@ -112,7 +112,7 @@ jobs:
           fi
 
       - name: Upload Windows binaries
-        uses: actions/upload-artifact@v6@4af7530f1b58858243c2b3a3e3f2e6c8f8a5e8d7
+        uses: actions/upload-artifact@4af7530f1b58858243c2b3a3e3f2e6c8f8a5e8d7
         with:
           name: windows-binaries-${{ matrix.target }}-${{ matrix.bundle }}
           path: |
@@ -147,7 +147,7 @@ jobs:
               labels: codex-windows-arm64
 
     steps:
-      - uses: actions/checkout@v6@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
 
       - name: Download prebuilt Windows primary binaries
         uses: actions/download-artifact@v7
@@ -257,7 +257,7 @@ jobs:
             "${GITHUB_WORKSPACE}/.github/workflows/zstd" -T0 -19 "$dest/$base"
           done
 
-      - uses: actions/upload-artifact@v6@4af7530f1b58858243c2b3a3e3f2e6c8f8a5e8d7
+      - uses: actions/upload-artifact@4af7530f1b58858243c2b3a3e3f2e6c8f8a5e8d7
         with:
           name: ${{ matrix.target }}
           path: |

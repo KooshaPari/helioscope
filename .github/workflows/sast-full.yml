@@ -18,7 +18,7 @@ jobs:
       matrix:
         language: [python, cpp, javascript, go]
     steps:
-      - uses: actions/checkout@v4@34e114876b0b11c390a56381ad16ebd13914f8d5
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
@@ -32,7 +32,7 @@ jobs:
     name: Trivy Repository Scan
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4@34e114876b0b11c390a56381ad16ebd13914f8d5
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
       - uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25  # was: @master
         with:
           scan-type: fs
@@ -62,7 +62,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4@34e114876b0b11c390a56381ad16ebd13914f8d5
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
 
       - uses: returntocorp/semgrep-action@v1
         with:
@@ -93,7 +93,7 @@ jobs:
     name: Full Secret Scan
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4@34e114876b0b11c390a56381ad16ebd13914f8d5
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
         with:
           fetch-depth: 0
 

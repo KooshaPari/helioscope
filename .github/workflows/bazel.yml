@@ -51,10 +51,10 @@ jobs:
     name: Local Bazel build on ${{ matrix.os }} for ${{ matrix.target }}
 
     steps:
-      - uses: actions/checkout@v6@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
 
       - name: Set up Node.js for js_repl tests
-        uses: actions/setup-node@v6@511c269d2baa7c51e8a0bff3ef856a17ca32f5da
+        uses: actions/setup-node@511c269d2baa7c51e8a0bff3ef856a17ca32f5da
         with:
           node-version-file: codex-rs/node-version.txt
 

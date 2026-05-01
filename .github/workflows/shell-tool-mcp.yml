@@ -161,7 +161,7 @@ jobs:
           mkdir -p "$dest"
           cp bash "$dest/bash"
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: shell-tool-mcp-bash-${{ matrix.target }}-${{ matrix.variant }}
           path: artifacts/**
@@ -203,7 +203,7 @@ jobs:
           mkdir -p "$dest"
           cp bash "$dest/bash"
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: shell-tool-mcp-bash-${{ matrix.target }}-${{ matrix.variant }}
           path: artifacts/**
@@ -329,7 +329,7 @@ jobs:
           grep -Fx "smoke-zsh" "$tmpdir/stdout.txt"
           grep -Fx "/bin/echo" "$tmpdir/wrapper.log"
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: shell-tool-mcp-zsh-${{ matrix.target }}-${{ matrix.variant }}
           path: artifacts/**
@@ -407,7 +407,7 @@ jobs:
           grep -Fx "smoke-zsh" "$tmpdir/stdout.txt"
           grep -Fx "/bin/echo" "$tmpdir/wrapper.log"
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: shell-tool-mcp-zsh-${{ matrix.target }}-${{ matrix.variant }}
           path: artifacts/**
@@ -434,7 +434,7 @@ jobs:
           run_install: false
 
       - name: Setup Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
         with:
           node-version: ${{ env.NODE_VERSION }}
 
@@ -504,7 +504,7 @@ jobs:
           filename=$(PACK_INFO="$pack_info" node -e 'const data = JSON.parse(process.env.PACK_INFO); console.log(data[0].filename);')
           mv "dist/npm/${filename}" "dist/npm/codex-shell-tool-mcp-npm-${PACKAGE_VERSION}.tgz"
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: codex-shell-tool-mcp-npm
           path: dist/npm/codex-shell-tool-mcp-npm-${{ env.PACKAGE_VERSION }}.tgz
@@ -522,7 +522,7 @@ jobs:
       contents: read
     steps:
       - name: Setup Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
         with:
           node-version: ${{ env.NODE_VERSION }}
           registry-url: https://registry.npmjs.org

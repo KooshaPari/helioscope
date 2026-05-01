@@ -214,7 +214,7 @@ jobs:
           cargo build --target ${{ matrix.target }} --release --timings --bin codex --bin codex-responses-api-proxy
 
       - name: Upload Cargo timings
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: cargo-timings-rust-release-${{ matrix.target }}
           path: codex-rs/target/**/cargo-timings/cargo-timing.html
@@ -353,7 +353,7 @@ jobs:
             zstd -T0 -19 --rm "$dest/$base"
           done
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: ${{ matrix.target }}
           # Upload the per-binary .zst files as well as the new .tar.gz
@@ -475,7 +475,7 @@ jobs:
           run_install: false
 
       - name: Setup Node.js for npm packaging
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
         with:
           node-version: 22
 
@@ -544,7 +544,7 @@ jobs:
 
     steps:
       - name: Setup Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
         with:
           node-version: 22
           registry-url: "https://registry.npmjs.org"

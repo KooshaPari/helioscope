@@ -439,7 +439,7 @@ jobs:
 
       - name: Upload Cargo timings (clippy)
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: cargo-timings-rust-ci-clippy-${{ matrix.target }}-${{ matrix.profile }}
           path: codex-rs/target/**/cargo-timings/cargo-timing.html
@@ -529,7 +529,7 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
       - name: Set up Node.js for js_repl tests
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
         with:
           node-version-file: codex-rs/node-version.txt
       - name: Install Linux build dependencies
@@ -634,7 +634,7 @@ jobs:
 
       - name: Upload Cargo timings (nextest)
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: cargo-timings-rust-ci-nextest-${{ matrix.target }}-${{ matrix.profile }}
           path: codex-rs/target/**/cargo-timings/cargo-timing.html

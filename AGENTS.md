@@ -1,7 +1,7 @@
 <!-- Base: platforms/thegent/governance/AGENTS.base.md -->
 <!-- Last synced: 2026-03-29 -->
 
-# AGENTS.md — heliosCLI
+# AGENTS.md — helioscope
 
 Extends thegent governance base. See `platforms/thegent/governance/AGENTS.base.md` for canonical definitions of agent expectations, testing requirements, research patterns, and standard operating procedures.
 
@@ -9,9 +9,9 @@ Extends thegent governance base. See `platforms/thegent/governance/AGENTS.base.m
 
 ### Project Overview
 
-- **Name**: heliosCLI
+- **Name**: helioscope
 - **Description**: Rust-based CLI for managing Helioscope applications with multi-backend support and sandboxing
-- **Location**: `/Users/kooshapari/CodeProjects/Phenotype/repos/heliosCLI`
+- **Location**: `/Users/kooshapari/CodeProjects/Phenotype/repos/helioscope`
 - **Language Stack**: Rust (edition 2021)
 - **Published**: Internal
 

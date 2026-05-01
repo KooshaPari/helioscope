@@ -1,15 +1,15 @@
 <!-- Base: platforms/thegent/dotfiles/governance/CLAUDE.base.md -->
 <!-- Last synced: 2026-03-29 -->
 
-# heliosCLI — CLAUDE.md
+# helioscope — CLAUDE.md
 
 Extends thegent governance base. See `platforms/thegent/dotfiles/governance/CLAUDE.base.md` for canonical definitions.
 
 ## Project Overview
 
-- **Name**: heliosCLI
+- **Name**: helioscope (formerly heliosCLI)
 - **Description**: Rust-based CLI for managing Helioscope applications with multi-backend support and sandboxing
-- **Location**: `/Users/kooshapari/CodeProjects/Phenotype/repos/heliosCLI`
+- **Location**: `/Users/kooshapari/CodeProjects/Phenotype/repos/helioscope`
 - **Language Stack**: Rust (edition 2021)
 - **Published**: Internal
 

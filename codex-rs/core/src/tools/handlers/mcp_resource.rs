@@ -262,10 +262,9 @@ async fn handle_list_resources(
 
     let payload_result: Result<ListResourcesPayload, FunctionCallError> = async {
         if let Some(server_name) = server.clone() {
-            let params = cursor.clone().map(|value| PaginatedRequestParams {
-                meta: None,
-                cursor: Some(value),
-            });
+            let params = cursor
+                .clone()
+                .map(|value| PaginatedRequestParams::default().with_cursor(Some(value)));
             let result = session
                 .list_resources(&server_name, params)
                 .await
@@ -368,10 +367,9 @@ async fn handle_list_resource_templates(
 
     let payload_result: Result<ListResourceTemplatesPayload, FunctionCallError> = async {
         if let Some(server_name) = server.clone() {
-            let params = cursor.clone().map(|value| PaginatedRequestParams {
-                meta: None,
-                cursor: Some(value),
-            });
+            let params = cursor
+                .clone()
+                .map(|value| PaginatedRequestParams::default().with_cursor(Some(value)));
             let result = session
                 .list_resource_templates(&server_name, params)
                 .await
@@ -476,13 +474,7 @@ async fn handle_read_resource(
 
     let payload_result: Result<ReadResourcePayload, FunctionCallError> = async {
         let result = session
-            .read_resource(
-                &server,
-                ReadResourceRequestParams {
-                    meta: None,
-                    uri: uri.clone(),
-                },
-            )
+            .read_resource(&server, ReadResourceRequestParams::new(uri.clone()))
             .await
             .map_err(|err| {
                 FunctionCallError::RespondToModel(format!("resources/read failed: {err:#}"))
@@ -767,7 +759,9 @@ mod tests {
     #[test]
     fn parse_arguments_handles_empty_and_json() {
         assert!(
-            parse_arguments(" \n\t").expect("parse empty args").is_none(),
+            parse_arguments(" \n\t")
+                .expect("parse empty args")
+                .is_none(),
             "expected None for empty arguments"
         );
 

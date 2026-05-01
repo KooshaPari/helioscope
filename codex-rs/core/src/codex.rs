@@ -7840,7 +7840,8 @@ mod tests {
         let got = FunctionCallOutputPayload::from(&ctr);
         let expected = FunctionCallOutputPayload {
             body: FunctionCallOutputBody::Text(
-                serde_json::to_string(&vec![text_block("hello"), text_block("world")]).expect("serialize text blocks"),
+                serde_json::to_string(&vec![text_block("hello"), text_block("world")])
+                    .expect("serialize text blocks"),
             ),
             success: Some(true),
         };
@@ -7860,7 +7861,8 @@ mod tests {
         let got = FunctionCallOutputPayload::from(&ctr);
         let expected = FunctionCallOutputPayload {
             body: FunctionCallOutputBody::Text(
-                serde_json::to_string(&json!({ "message": "bad" })).expect("serialize error message"),
+                serde_json::to_string(&json!({ "message": "bad" }))
+                    .expect("serialize error message"),
             ),
             success: Some(false),
         };

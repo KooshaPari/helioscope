@@ -141,6 +141,7 @@ use ratatui::text::Span;
 use ratatui::widgets::Block;
 use ratatui::widgets::Paragraph;
 use ratatui::widgets::StatefulWidgetRef;
+use ratatui::widgets::Widget;
 use ratatui::widgets::WidgetRef;
 
 use super::chat_composer_history::ChatComposerHistory;
@@ -419,7 +420,7 @@ struct ComposerMentionBinding {
 }
 
 /// Popup state – at most one can be visible at any time.
-enum ActivePopup {
+pub(crate) enum ActivePopup {
     None,
     Command(CommandPopup),
     File(FileSearchPopup),
@@ -623,7 +624,7 @@ impl ChatComposer {
     pub fn set_windows_degraded_sandbox_active(&mut self, enabled: bool) {
         self.windows_degraded_sandbox_active = enabled;
     }
-    fn layout_areas(&self, area: Rect) -> [Rect; 4] {
+    pub(crate) fn layout_areas(&self, area: Rect) -> [Rect; 4] {
         let footer_props = self.footer_props();
         let footer_hint_height = self
             .custom_footer_height()
@@ -662,7 +663,7 @@ impl ChatComposer {
         [composer_rect, remote_images_rect, textarea_rect, popup_rect]
     }
 
-    fn footer_spacing(footer_hint_height: u16) -> u16 {
+    pub(crate) fn footer_spacing(footer_hint_height: u16) -> u16 {
         if footer_hint_height == 0 {
             0
         } else {
@@ -683,6 +684,28 @@ impl ChatComposer {
         let [_, _, textarea_rect, _] = self.layout_areas(area);
         let state = *self.textarea_state.borrow();
         self.textarea.cursor_pos_with_state(textarea_rect, state)
+    }
+
+    pub(crate) fn is_cursor_visible(&self) -> bool {
+        self.input_enabled && self.selected_remote_image_index.is_none()
+    }
+
+    pub(crate) fn textarea_cursor_pos(&self, textarea_rect: Rect) -> Option<(u16, u16)> {
+        let state = *self.textarea_state.borrow();
+        self.textarea.cursor_pos_with_state(textarea_rect, state)
+    }
+
+    pub(crate) fn textarea_desired_height(&self, width: u16) -> u16 {
+        self.textarea.desired_height(width)
+    }
+
+    pub(crate) fn popup_or_footer_height(&self, width: u16, footer_total_height: u16) -> u16 {
+        match &self.active_popup {
+            ActivePopup::None => footer_total_height,
+            ActivePopup::Command(popup) => popup.calculate_required_height(width),
+            ActivePopup::File(popup) => popup.calculate_required_height(),
+            ActivePopup::Skill(popup) => popup.calculate_required_height(width),
+        }
     }
     /// Returns true if the composer currently contains no user-entered input.
     pub(crate) fn is_empty(&self) -> bool {
@@ -2132,7 +2155,7 @@ impl ChatComposer {
         }
     }
 
-    fn remote_images_lines(&self, _width: u16) -> Vec<Line<'static>> {
+    pub(crate) fn remote_images_lines(&self, _width: u16) -> Vec<Line<'static>> {
         chat_composer_images::remote_images_lines(
             &self.remote_image_urls,
             self.selected_remote_image_index,
@@ -2656,7 +2679,7 @@ impl ChatComposer {
         changed
     }
 
-    fn footer_props(&self) -> FooterProps {
+    pub(crate) fn footer_props(&self) -> FooterProps {
         let mode = self.footer_mode();
         let is_wsl = {
             #[cfg(target_os = "linux")]
@@ -2713,7 +2736,7 @@ impl ChatComposer {
         }
     }
 
-    fn custom_footer_height(&self) -> Option<u16> {
+    pub(crate) fn custom_footer_height(&self) -> Option<u16> {
         if self.footer_flash_visible() {
             return Some(1);
         }
@@ -3760,7 +3783,10 @@ impl ChatComposer {
                     }
                 } else if self.footer_flash_visible() {
                     if let Some(flash) = self.footer_flash.as_ref() {
-                        flash.line.render(inset_footer_hint_area(hint_rect), buf);
+                        flash
+                            .line
+                            .clone()
+                            .render(inset_footer_hint_area(hint_rect), buf);
                     }
                 } else if let Some(items) = self.footer_hint_override.as_ref() {
                     render_footer_hint_items(hint_rect, buf, items);
@@ -3786,11 +3812,11 @@ impl ChatComposer {
             }
         }
         let style = user_message_style();
-        Block::default().style(style).render_ref(composer_rect, buf);
+        Block::default().style(style).render(composer_rect, buf);
         if !remote_images_rect.is_empty() {
             Paragraph::new(self.remote_images_lines(remote_images_rect.width))
                 .style(style)
-                .render_ref(remote_images_rect, buf);
+                .render(remote_images_rect, buf);
         }
         if !textarea_rect.is_empty() {
             let prompt = if self.input_enabled {
@@ -3824,8 +3850,7 @@ impl ChatComposer {
             };
             if !textarea_rect.is_empty() {
                 let placeholder = Span::from(text).dim();
-                Line::from(vec![placeholder])
-                    .render_ref(textarea_rect.inner(Margin::new(0, 0)), buf);
+                Line::from(vec![placeholder]).render(textarea_rect.inner(Margin::new(0, 0)), buf);
             }
         }
     }

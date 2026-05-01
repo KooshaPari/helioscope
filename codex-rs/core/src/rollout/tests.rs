@@ -1211,7 +1211,8 @@ async fn test_stable_ordering_same_second_pagination() {
         .join(format!("rollout-2025-07-01T00-00-00-{u2}.jsonl"));
     let updated_page1: Vec<Option<String>> =
         page1.items.iter().map(|i| i.updated_at.clone()).collect();
-    let expected_cursor1: Cursor = serde_json::from_str(&format!("\"{ts}|{u2}\"")).expect("parse cursor");
+    let expected_cursor1: Cursor =
+        serde_json::from_str(&format!("\"{ts}|{u2}\"")).expect("parse cursor");
     let expected_page1 = ThreadsPage {
         items: vec![
             ThreadItem {

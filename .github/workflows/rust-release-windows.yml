@@ -67,7 +67,7 @@ jobs:
               labels: codex-windows-arm64
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6@de0fac2e4500dabe0009e67214ff5f5447ce83dd
       - name: Print runner specs (Windows)
         shell: powershell
         run: |
@@ -147,7 +147,7 @@ jobs:
               labels: codex-windows-arm64
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6@de0fac2e4500dabe0009e67214ff5f5447ce83dd
 
       - name: Download prebuilt Windows primary binaries
         uses: actions/download-artifact@v7

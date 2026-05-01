@@ -10,9 +10,9 @@ use std::sync::atomic::Ordering;
 use crossterm::cursor::MoveTo;
 use crossterm::cursor::Show;
 use crossterm::event::KeyCode;
+use crossterm::execute;
 use crossterm::terminal::EnterAlternateScreen;
 use crossterm::terminal::LeaveAlternateScreen;
-use ratatui::crossterm::execute;
 use ratatui::layout::Position;
 use ratatui::layout::Rect;
 

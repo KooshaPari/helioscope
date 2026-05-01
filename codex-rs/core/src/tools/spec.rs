@@ -3280,7 +3280,8 @@ Examples of valid command strings:
             },
         })];
 
-        let responses_json = create_tools_json_for_responses_api(&tools).expect("create tools json");
+        let responses_json =
+            create_tools_json_for_responses_api(&tools).expect("create tools json");
         assert_eq!(
             responses_json,
             vec![json!({

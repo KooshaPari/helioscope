@@ -503,12 +503,10 @@ impl RmcpClient {
             }
             None => None,
         };
-        let rmcp_params = CallToolRequestParams {
-            meta: None,
-            name: name.into(),
-            arguments,
-            task: None,
-        };
+        let mut rmcp_params = CallToolRequestParams::new(name);
+        if let Some(arguments) = arguments {
+            rmcp_params = rmcp_params.with_arguments(arguments);
+        }
         let fut = service.call_tool(rmcp_params);
         let result = run_with_timeout(fut, timeout, "tools/call").await?;
         self.persist_oauth_tokens().await;
@@ -609,6 +607,9 @@ async fn create_oauth_transport_and_runtime(
         OAuthState::Unauthorized(manager) => manager,
         OAuthState::Session(_) | OAuthState::AuthorizedHttpClient(_) => {
             return Err(anyhow!("unexpected OAuth state during client setup"));
+        }
+        _ => {
+            return Err(anyhow!("unsupported OAuth state during client setup"));
         }
     };
 

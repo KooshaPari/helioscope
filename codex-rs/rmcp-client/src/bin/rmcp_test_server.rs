@@ -62,13 +62,12 @@ struct EchoArgs {
 
 impl ServerHandler for TestToolServer {
     fn get_info(&self) -> ServerInfo {
-        ServerInfo {
-            capabilities: ServerCapabilities::builder()
+        ServerInfo::new(
+            ServerCapabilities::builder()
                 .enable_tools()
                 .enable_tool_list_changed()
                 .build(),
-            ..ServerInfo::default()
-        }
+        )
     }
 
     fn list_tools(
@@ -112,12 +111,7 @@ impl ServerHandler for TestToolServer {
                     "env": env_snapshot.get("MCP_TEST_VALUE"),
                 });
 
-                Ok(CallToolResult {
-                    content: Vec::new(),
-                    structured_content: Some(structured_content),
-                    is_error: Some(false),
-                    meta: None,
-                })
+                Ok(CallToolResult::structured(structured_content))
             }
             other => Err(McpError::invalid_params(
                 format!("unknown tool: {other}"),

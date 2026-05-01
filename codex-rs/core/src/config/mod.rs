@@ -3010,7 +3010,8 @@ trust_level = "trusted"
             temp_dir.path().to_path_buf(),
         )?;
 
-        let expected_backend = AbsolutePathBuf::try_from(backend).expect("backend path should be valid");
+        let expected_backend =
+            AbsolutePathBuf::try_from(backend).expect("backend path should be valid");
         if cfg!(target_os = "windows") {
             match config.permissions.sandbox_policy.get() {
                 SandboxPolicy::ReadOnly { .. } => {}

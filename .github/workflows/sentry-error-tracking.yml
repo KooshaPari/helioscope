@@ -38,7 +38,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4@34e114876b0b11c390a56381ad16ebd13914f8d5
         with:
           fetch-depth: 10
 
@@ -89,7 +89,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4@34e114876b0b11c390a56381ad16ebd13914f8d5
 
       - name: Verify GitHub integration setup
         run: |
@@ -124,7 +124,7 @@ jobs:
 
     steps:
       - name: Create issue for tracking failures
-        uses: actions/github-script@v7
+        uses: actions/github-script@v7@f28e40c7f34bde8b3046d885e986cb6290c5673b
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |

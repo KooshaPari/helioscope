@@ -128,14 +128,8 @@ impl McpProcess {
                 sampling: None,
                 tasks: None,
             },
-            client_info: Implementation {
-                name: "elicitation test".into(),
-                title: Some("Elicitation Test".into()),
-                version: "0.0.0".into(),
-                description: None,
-                icons: None,
-                website_url: None,
-            },
+            client_info: Implementation::new("elicitation test", "0.0.0")
+                .with_title("Elicitation Test"),
             protocol_version: ProtocolVersion::V_2025_03_26,
         };
         let params_value = serde_json::to_value(params)?;

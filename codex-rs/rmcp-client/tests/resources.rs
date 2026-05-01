@@ -9,8 +9,6 @@ use codex_utils_cargo_bin::CargoBinError;
 use futures::FutureExt as _;
 use rmcp::model::AnnotateAble;
 use rmcp::model::ClientCapabilities;
-use rmcp::model::ElicitationCapability;
-use rmcp::model::FormElicitationCapability;
 use rmcp::model::Implementation;
 use rmcp::model::InitializeRequestParams;
 use rmcp::model::ListResourceTemplatesResult;
@@ -26,31 +24,14 @@ fn stdio_server_bin() -> Result<PathBuf, CargoBinError> {
 }
 
 fn init_params() -> InitializeRequestParams {
-    InitializeRequestParams {
-        meta: None,
-        capabilities: ClientCapabilities {
-            experimental: None,
-            extensions: None,
-            roots: None,
-            sampling: None,
-            elicitation: Some(ElicitationCapability {
-                form: Some(FormElicitationCapability {
-                    schema_validation: None,
-                }),
-                url: None,
-            }),
-            tasks: None,
-        },
-        client_info: Implementation {
-            name: "codex-test".into(),
-            version: "0.0.0-test".into(),
-            title: Some("Codex rmcp resource test".into()),
-            description: None,
-            icons: None,
-            website_url: None,
-        },
-        protocol_version: ProtocolVersion::V_2025_06_18,
-    }
+    let capabilities = ClientCapabilities::builder()
+        .enable_elicitation()
+        .build();
+    InitializeRequestParams::new(
+        capabilities,
+        Implementation::new("codex-test", "0.0.0-test").with_title("Codex rmcp resource test"),
+    )
+    .with_protocol_version(ProtocolVersion::V_2025_06_18)
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 1)]
@@ -128,10 +109,7 @@ async fn rmcp_client_can_list_and_read_resources() -> anyhow::Result<()> {
 
     let read = client
         .read_resource(
-            ReadResourceRequestParams {
-                meta: None,
-                uri: RESOURCE_URI.to_string(),
-            },
+            ReadResourceRequestParams::new(RESOURCE_URI),
             Some(Duration::from_secs(5)),
         )
         .await?;

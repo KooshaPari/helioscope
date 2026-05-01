@@ -3,7 +3,7 @@ use std::io;
 use std::io::stdout;
 
 use crossterm::Command;
-use ratatui::crossterm::execute;
+use crossterm::execute;
 
 #[derive(Debug, Default)]
 pub struct Osc9Backend;

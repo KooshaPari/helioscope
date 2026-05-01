@@ -224,7 +224,7 @@ impl ChatComposer {
 
     /// Common logic for handling message submission/queuing.
     /// Returns the appropriate InputResult based on `should_queue`.
-    fn handle_submission(&mut self, should_queue: bool) -> (InputResult, bool) {
+    pub(crate) fn handle_submission(&mut self, should_queue: bool) -> (InputResult, bool) {
         self.handle_submission_with_time(should_queue, Instant::now())
     }
 

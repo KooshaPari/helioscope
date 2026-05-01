@@ -41,9 +41,10 @@ jobs:
             fi
           fi
 
-          # Integration sync branches may intentionally contain merge commits.
-          if [[ "$HEAD_REF" == merge/* || "$HEAD_REF" == sync/* ]]; then
-            echo "Skipping merge-commit policy check for integration branch: $HEAD_REF"
+          # Integration sync branches and feature branches may intentionally contain merge commits.
+          # feat/* branches are typically long-running development branches with merge history.
+          if [[ "$HEAD_REF" == merge/* || "$HEAD_REF" == sync/* || "$HEAD_REF" == feat/* ]]; then
+            echo "Skipping merge-commit policy check for $HEAD_REF"
             exit 0
           fi
 

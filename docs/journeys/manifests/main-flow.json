@@ -1,0 +1,9 @@
+{
+  "id": "helioscli-main",
+  "intent": "Demonstrate primary user interaction: HeliosCLI: Rust CLI framework",
+  "recording": null,
+  "recording_gif": null,
+  "keyframe_count": 0,
+  "passed": false,
+  "steps": []
+}

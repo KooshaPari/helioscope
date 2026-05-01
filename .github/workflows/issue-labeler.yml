@@ -20,7 +20,7 @@ jobs:
     outputs:
       codex_output: ${{ steps.codex.outputs.final-message }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6@de0fac2e4500dabe0009e67214ff5f5447ce83dd
 
       - id: codex
         uses: openai/codex-action@48c4212272635ce5c50529ae1f6516040f84dc35  # was: @main

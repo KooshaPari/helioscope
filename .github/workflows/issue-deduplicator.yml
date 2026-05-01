@@ -20,7 +20,7 @@ jobs:
     outputs:
       codex_output: ${{ steps.select-final.outputs.codex_output }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6@de0fac2e4500dabe0009e67214ff5f5447ce83dd
 
       - name: Prepare Codex inputs
         env:
@@ -300,7 +300,7 @@ jobs:
       issues: write
     steps:
       - name: Comment on issue
-        uses: actions/github-script@v8
+        uses: actions/github-script@v8@68e85be83db3f4a4a16c9e2a3e8f5f2e1a6d7c9b
         env:
           CODEX_OUTPUT: ${{ needs.gather-duplicates.outputs.codex_output }}
         with:

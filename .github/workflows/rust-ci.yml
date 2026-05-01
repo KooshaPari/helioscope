@@ -29,7 +29,7 @@ jobs:
       feature_drift: ${{ steps.detect.outputs.feature_drift }}
       skip_rust_ci: ${{ steps.detect.outputs.skip_rust_ci }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           fetch-depth: 0
       - name: Detect changed paths (no external action)
@@ -105,7 +105,7 @@ jobs:
       run:
         working-directory: codex-rs
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6@de0fac2e4500dabe0009e67214ff5f5447ce83dd
       - uses: dtolnay/rust-toolchain@1.93.0
 
       - name: Enforce Cargo.lock/manifest sync
@@ -155,7 +155,7 @@ jobs:
       run:
         working-directory: codex-rs
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6@de0fac2e4500dabe0009e67214ff5f5447ce83dd
       - uses: dtolnay/rust-toolchain@1.93.0
         with:
           components: rustfmt
@@ -171,7 +171,7 @@ jobs:
       run:
         working-directory: codex-rs
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6@de0fac2e4500dabe0009e67214ff5f5447ce83dd
       - uses: dtolnay/rust-toolchain@1.93.0
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2
         with:
@@ -229,7 +229,7 @@ jobs:
             profile: release
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6@de0fac2e4500dabe0009e67214ff5f5447ce83dd
       - name: Install Linux build dependencies
         if: ${{ runner.os == 'Linux' }}
         shell: bash
@@ -439,7 +439,7 @@ jobs:
 
       - name: Upload Cargo timings (clippy)
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v6@4af7530f1b58858243c2b3a3e3f2e6c8f8a5e8d7
         with:
           name: cargo-timings-rust-ci-clippy-${{ matrix.target }}-${{ matrix.profile }}
           path: codex-rs/target/**/cargo-timings/cargo-timing.html
@@ -527,9 +527,9 @@ jobs:
             profile: dev
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6@de0fac2e4500dabe0009e67214ff5f5447ce83dd
       - name: Set up Node.js for js_repl tests
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v6@511c269d2baa7c51e8a0bff3ef856a17ca32f5da
         with:
           node-version-file: codex-rs/node-version.txt
       - name: Install Linux build dependencies
@@ -634,7 +634,7 @@ jobs:
 
       - name: Upload Cargo timings (nextest)
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v6@4af7530f1b58858243c2b3a3e3f2e6c8f8a5e8d7
         with:
           name: cargo-timings-rust-ci-nextest-${{ matrix.target }}-${{ matrix.profile }}
           path: codex-rs/target/**/cargo-timings/cargo-timing.html

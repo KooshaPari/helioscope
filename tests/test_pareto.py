@@ -18,7 +18,7 @@ def test_pareto_front_mask_single_row():
     df = pd.DataFrame({"cost": [10], "quality": [5]})
     result = pareto_front_mask(df, minimize=["cost"], maximize=["quality"])
     assert len(result) == 1
-    assert result.iloc[0] == True
+    assert result.iloc[0]
 
 
 def test_pareto_front_mask_dominates():

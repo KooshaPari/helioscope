@@ -10,7 +10,6 @@ from datetime import datetime
 from typing import Any
 
 import nats
-from typing import Optional
 from nats.errors import NotFoundError
 from nats.js.api import StorageType, StreamConfig
 
@@ -55,10 +54,10 @@ class ParetoUpdateEvent:
 class NATSClient:
     """NATS client with JetStream and KV support"""
 
-    def __init__(self, servers: list[str] = None):
+    def __init__(self, servers: list[str] | None = None):
         self.servers = servers or ["nats://localhost:4222"]
-        self.nc: Optional[nats.NATS] = None
-        self.js: Optional[Any] = None
+        self.nc: nats.NATS | None = None
+        self.js: Any | None = None
 
     async def connect(self) -> "NATSClient":
         """Connect to NATS"""
@@ -134,7 +133,7 @@ class NATSClient:
         """Get KV store handle"""
         return await self.js.key_value(store_name)
 
-    async def kv_put(self, store: str, key: str, value: Any, ttl: int = None):
+    async def kv_put(self, store: str, key: str, value: Any, ttl: int | None = None):
         """Put value in KV store"""
         kv = await self.get_kv(store)
         data = json.dumps(value) if not isinstance(value, str) else value

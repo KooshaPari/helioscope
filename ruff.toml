@@ -5,6 +5,34 @@
 # Target Python 3.10 minimum
 target-version = "py310"
 
+# Line length (should match .editorconfig)
+line-length = 100
+
+# Exclude patterns
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pytype",
+    ".pytest_cache",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "venv",
+]
+
 # Enable rule sections
 [lint]
 # pyflakes + pycodestyle
@@ -31,37 +59,9 @@ ignore = [
     "SIM102", # Use a single if statement instead of nested if
 ]
 
-# Line length (should match .editorconfig)
-line-length = 100
-
 # Fixable rules (auto-fix on format)
 fixable = ["ALL"]
 unfixable = []
-
-# Exclude patterns
-exclude = [
-    ".bzr",
-    ".direnv",
-    ".eggs",
-    ".git",
-    ".hg",
-    ".mypy_cache",
-    ".nox",
-    ".pants.d",
-    ".pytype",
-    ".pytest_cache",
-    ".ruff_cache",
-    ".svn",
-    ".tox",
-    ".venv",
-    "__pypackages__",
-    "_build",
-    "buck-out",
-    "build",
-    "dist",
-    "node_modules",
-    "venv",
-]
 
 # Per-file ignores
 [lint.per-file-ignores]

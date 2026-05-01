@@ -294,7 +294,7 @@ def init_db():
     conn.close()
 
 
-def log_audit(table_name: str, action: str, key: str, before: dict = None, after: dict = None):
+def log_audit(table_name: str, action: str, key: str, before: dict | None = None, after: dict | None = None):
     """Log an audit entry."""
     import json
 

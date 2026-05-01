@@ -5,11 +5,11 @@
 > - Branch protection: 1 reviewer required, no force-push
 > - Authority: phenotype-org-governance/SUPERSEDED.md
 
-# heliosCLI
+# helioscope
 
-[![Build](https://img.shields.io/github/actions/workflow/status/KooshaPari/heliosCLI/ci.yml?branch=main&label=build)](https://github.com/KooshaPari/heliosCLI/actions)
-[![Release](https://img.shields.io/github/v/release/KooshaPari/heliosCLI?include_prereleases&sort=semver)](https://github.com/KooshaPari/heliosCLI/releases)
-[![License](https://img.shields.io/github/license/KooshaPari/heliosCLI)](LICENSE)
+[![Build](https://img.shields.io/github/actions/workflow/status/KooshaPari/helioscope/ci.yml?branch=main&label=build)](https://github.com/KooshaPari/helioscope/actions)
+[![Release](https://img.shields.io/github/v/release/KooshaPari/helioscope?include_prereleases&sort=semver)](https://github.com/KooshaPari/helioscope/releases)
+[![License](https://img.shields.io/github/license/KooshaPari/helioscope)](LICENSE)
 [![Phenotype](https://img.shields.io/badge/Phenotype-org-blueviolet)](https://github.com/KooshaPari)
 [![AI Slop Inside](https://sladge.net/badge.svg)](https://sladge.net)
 
@@ -21,7 +21,7 @@ Rust-based CLI for managing Helioscope applications with multi-backend support a
 
 ## Architecture Overview
 
-heliosCLI is organized around the active `codex-rs` Rust workspace, the `codex-cli` TypeScript CLI,
+helioscope is organized around the active `codex-rs` Rust workspace, the `codex-cli` TypeScript CLI,
 and Bazel monorepo rules:
 
 ### Rust Workspace (`codex-rs/Cargo.toml`)
@@ -96,8 +96,8 @@ codex-rs/
 
 ```bash
 # Clone the repository
-git clone https://github.com/KooshaPari/helios-cli.git heliosCLI
-cd heliosCLI
+git clone https://github.com/KooshaPari/helios-cli.git helioscope
+cd helioscope
 
 # Add upstream for tracking OpenAI Codex changes
 git remote add upstream https://github.com/openai/codex.git
@@ -298,7 +298,7 @@ helios -c model=gpt-4o -c approval_policy=auto-edit
 ## Project Structure
 
 ```
-heliosCLI/
+helioscope/
 ├── Cargo.toml              # Root workspace (harness crates)
 ├── Cargo.lock
 ├── codex-rs/               # Main Rust workspace
